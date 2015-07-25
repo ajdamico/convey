@@ -4,12 +4,48 @@ library(survey)
 des_eusilc <- svydesign(ids=~1, weights=~rb050, data=eusilc) 
 percent<-.6
 order<-.5
+# auxilary functions
+# estimate density function
+densfun <- function(formula, design, x, type=c("F","S")){
+inc <- terms.formula(formula)[[2]] 
+ w<- weights(design)
+ N<-sum(w) 
+ sd_inc <-eval(bquote(sqrt(coef(svyvar(~.(inc),design))))) 
+ h <-sd_inc/(N^(-1/5))
+ df <- model.frame(design)
+inc_var<-df[[as.character(inc)]]
+ u<-(x-inc_var)/h
+ vectf<-exp(-(u^2)/2)/sqrt(2*pi)
+ if(type="F") res <- sum(vectf*w)/(N*h) else {
+ v <- w* inc_var
+ res<- sum(vectf*v)/h  
+ }
+ res
+}
 
-quantfun<-function(x,inc=inc,h=h,w=w){
-  N<-sum(w)
-  u<-(x-inc)/h
-  vectf<-exp(-u^2/2)/sqrt(2*pi)
-  sum(vectf*w)/(N*h)
+ICDF<-function(formula, design, x){
+inc <- terms.formula(formula)[[2]]
+df <- model.frame(design)
+inc_var<-df[[as.character(inc)]]
+w <- weights(design) 
+N <- sum (w)
+cdf_fun <- eval(bquote(svymean(~I((.(inc)<=x)*1), design)))
+inf_fun<-(1/N)* ((inc_var<=x)-coef(cdf_fun))
+inf_fun
+}
+
+
+Iq_alpha<- function(formula, design, alpha){
+inc <- terms.formula(formula)[[2]]
+df <- model.frame(design)
+inc_var<-df[[as.character(inc)]]
+q_alpha<- eval(bquote(svyquantile(~.(inc), design, alpha)))
+q_alpha<- as.vector(q_alpha)
+w <- weights(design) 
+N <- sum (w)
+Fprime<- eval(bquote(densfun(~.(inc), design, q_alpha, type="F")))
+iqalpha <- -(1/(N*Fprime))*((inc_var<=q_alpha)-alpha)
+iqalpha
 }
 
 
@@ -18,20 +54,9 @@ quantfun<-function(x,inc=inc,h=h,w=w){
 # CALCULATION OF THE AT-RISK-OF-POVERTY THRESHOLD (ARPT)
 ####################################################################
   quantil_val<-svyquantile(~eqIncome,des_eusilc,order)
-  quantil_val<-as.vector(thres_val)
-  thres_val <- percent* quantil_val
-  inc<-eusilc$eqIncome
-  #bandwith parameter
-  w<-weights(des_eusilc)
-  N<-sum(w)
-  sd_inc_w<-sqrt(coef(svyvar(~eqIncome,des_eusilc)))
-  h<-sd_inc_w/(N^(-1/5))
-  
-  ## expression with quant_val
-  f_quant1<-quantfun(quantil_val,inc=inc,h=h,w=w)
-  
-  
-  lin_ARPT <- -(percent * (1/N)*((inc<=quantil_val)*1-order))/f_quant1
+  quantil_val<-as.vector(quantil_val)
+  ARPT <- percent* quantil_val
+  lin_ARPT <- percent * Iq_alpha(~eqIncome,des_eusilc,order)
   
   # variance estimate 
   des_eusilc$variables$lin_ARPT<-lin_ARPT
@@ -43,30 +68,42 @@ quantfun<-function(x,inc=inc,h=h,w=w){
 # LINEARIZATION OF THE AT-RISK-OF-POVERTY RATE (ARPR)
 ############################################################  
 
-  rate_val<-coef(svymean(~I((eqIncome<=thres_val)*1),des_eusilc))
-  median_poor<-svyquantile(~eqIncome,subset(des_eusilc,eqIncome<=thres_val),.5)
-  median_poor<-as.vector(median_poor)  
-  
-  #bandwith parameter
-  
-  # expression with tresh_ val
-    f_quant2<-quantfun(thres_val,inc=inc,h=h,w=w)
-    # expression with median_poor
-    f_quant3<-quantfun(median_poor,inc=inc,h=h,w=w)
-  lin_thres<--percent*(1/N)*((inc<=quant_val)*1-order/100)/f_quant1;
-  lin_rate <-(1/N)*((inc<=thres_val)*1-rate_val)+f_quant2*lin_thres;
-  lin_median_poor<-(0.5*lin_rate-(1/N)*((inc<=median_poor)*1-0.5*rate_val))/f_quant3;
-  
-  # linearized variable
-    lin_ARPR <- median_poor*lin_thres/(thres_val*thres_val)-lin_median_poor/thres_val
+  ARPR <- coef(svymean(~I((eqIncome<=ARPT)*1),des_eusilc))
+    
+  lin_ARPR <- ICDF(~eqIncome,des_eusilc,ARPT) + 
+  densfun(~eqIncome,des_eusilc,ARPT, type="F")*lin_ARPT
+    
     # compute variance
+	des_eusilc$variables$lin_ARPR<-lin_ARPR
     lin_ARPR_tot<-svytotal(~lin_ARPR,des_eusilc)
     var_ARPR<-attr(lin_ARPR_tot, "var")
   
     list_ARPR<-list(rate_val=rate_val,se=sqrt(var_ARPR))
+
+
+#################################################################
+# LINEARIZATION OF THE RELATIVE MEDIAN POVERTY GAP
+##########################################################	
+
+# median income of people whose income is lower than ARPT (RMPG)
+
+MED_p <- svyquantile(~eqIncome,subset(des_eusilc,eqIncome<= ARPT) ,.5)
+MED_p<-as.vector(MED_p)
+RMPG<- 1 - (MED_p/ ARPT)
+lin_median <- Iq_alpha(~eqIncome,des_eusilc,.5)
+
+lin_RMPG <- (MED_p*lin_ARPT)/(ARPT*ARPT) - lin_median/ARPT
+
+# compute variance
+des_eusilc$variables$lin_RMPG<-lin_RMPG
+lin_RMPG_tot <- svytotal(~lin_RMPG,des_eusilc )
+var_RMPG<-attr(lin_RMPG_tot, "var")
+list_RMPG<-list(RMPG=RMPG,se=sqrt(var_RMPG))
+	
+	
 ###############################################################################################
     
-# LINEARIZATION OF THE RELATIVE MEDIAN AT-RISK-OF-POVERTY GAP (RMRPG)
+# LINEARIZATION OF S80/S20
 ######################################################################
    
   alpha<-.20
@@ -80,28 +117,25 @@ quantfun<-function(x,inc=inc,h=h,w=w){
   den_val <- coef(svytotal(~I((eqIncome>quant_sup)*1),des_eusilc))
   num_val <- coef(svytotal(~I((eqIncome<=quant_inf)*1),des_eusilc))
   share_ratio <-  num_val/den_val
-  # linearization
+  
   
   # Linearization of the bottom quantile
   
-  f_quant1<-quantfun(quant_inf,inc=inc,h=h,w=w)
-  lin_inf=-(1/N)*((inc<=quant_inf)*1-alpha1)/f_quant1
+    lin_inf<- Iq_alpha(~eqIncome,des_eusilc,alpha1)
   
   # Linearization of the top quantile
   
-  f_quant2<-quantfun(quant_sup,inc=inc,h=h,w=w)
+  lin_sup <- Iq_alpha(~eqIncome,des_eusilc,alpha2)
+    
+  # Linearization of the total income for the top quantile 
   
-  lin_sup=-(1/N)*((inc<=quant_sup)*1-alpha2)/f_quant2
+  f_quant3<- densfun( ~eqIncome,des_eusilc,quant_sup, type="S")
   
-  # Linearization of the total income for the top quintile 
-  
-  f_quant3<-quantfun(quant_sup,inc=inc,h=h,w=w)
-  
-  lin_num<-inc-inc*(inc<=quant_sup)*1-f_quant3*lin_sup
+  lin_num <- inc-inc*(inc<=quant_sup)-f_quant3*lin_sup
   
   # Linearization of the total income for the bottom quintile
-  f_quant4<-quantfun(quant_inf,inc=inc,h=h,w=w)
-  lin_den<-inc*(inc<=quant_inf)*1+f_quant4*lin_inf
+  f_quant4 <- densfun( ~eqIncome,des_eusilc,quant_inf, type="S")
+  lin_den <- inc*(inc<=quant_inf)*1+f_quant4*lin_inf
   
   # LINEARIZED VARIABLE OF THE SHARE RATIO
   lin_share_ratio<-(den_val*lin_num-num_val*lin_den)/(den_val*den_val)
