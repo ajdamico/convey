@@ -33,7 +33,7 @@ incvar<-df[[as.character(inc)]]
 w <- weights(design) 
 N <- sum (w)
 poor<- (incvar<=x)*1
-design$variables$poor <- poor
+design <- update(design, poor = poor)
 cdf_fun <- svymean(poor, design)
 inf_fun<-(1/N)* ((incvar<=x)-coef(cdf_fun))
 inf_fun
@@ -81,14 +81,14 @@ isq <- function(formula, design, alpha,type=c("inf","sup")){
 # LINEARIZATION OF THE AT-RISK-OF-POVERTY THRESHOLD (ARPT)
 #############################################################
 
-svyarpt <- function(formula, design, order, percent ) {
+svyarpt <- function(formula, design, order = .50, percent =.6 ) {
   quant_val<- svyquantile(x = formula, design=design, 
   quantiles = order, method="constant")
   quant_val <- as.vector(quant_val)
   ARPT <- percent* quant_val
   lin_ARPT <- percent * iqalpha(formula = formula, design = design, alpha = order)
   # variance estimate 
-  design$variables$lin_ARPT <- lin_ARPT
+  design<- update(design,lin_ARPT = lin_ARPT)
   lin_ARPT_tot <- svytotal(~lin_ARPT, design = design)
   var_ARPT <- attr(lin_ARPT_tot, "var")
   list(value = ARPT, se=sqrt(var_ARPT), lin = lin_ARPT)
@@ -99,7 +99,7 @@ svyarpt <- function(formula, design, order, percent ) {
 # LINEARIZATION OF THE AT-RISK-OF-POVERTY RATE (ARPR)
 ############################################################
 
-svyarpr <- function(formula, design, order, percent){
+svyarpr <- function(formula, design, order = .50, percent =.6){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
@@ -108,13 +108,13 @@ svyarpr <- function(formula, design, order, percent){
   ARPT <- list_ARPT$value
   lin_ARPT <- list_ARPT$lin
   poor <- (incvar < ARPT) *1
-  design$variables$poor <- poor
+  design <- update (design, poor = poor)
   ARPR <- svymean (~poor, design = design)
   ARPR <- coef (ARPR)
   lin_ARPR <- icdf(formula = formula, design = design, ARPT) + 
       densfun(formula = formula, design = design , ARPT, type="F")*lin_ARPT 
   # compute variance
-  design$variables$lin_ARPR <- lin_ARPR
+  design <- update(design, lin_ARPR = lin_ARPR)
   lin_ARPR_tot<-svytotal(~lin_ARPR, design = design)
   var_ARPR<-attr(lin_ARPR_tot, "var")
   list(value = ARPR, se = sqrt(var_ARPR) , lin = lin_ARPR)
@@ -125,7 +125,7 @@ svyarpr <- function(formula, design, order, percent){
 # LINEARIZATION OF THE RELATIVE MEDIAN POVERTY GAP
 ########################################################	
 
-svyrmpg <- function(formula, design, order, percent){
+svyrmpg <- function(formula, design, order =.50, percent = .60){
 w<-weights(design) 
 N<-sum(w)
 inc <- terms.formula(formula)[[2]]
@@ -143,7 +143,7 @@ dsub<- subset (design, subset= (incvar<= arpt))
 medp <- svyquantile(x = formula, dsub, .5) 
 medp<-as.vector(medp)
 RMPG <- 1 - (medp/ arpt)    
-design$variables$poor<- (incvar<= arpt)*1
+design <- update(design, poor = (incvar<= arpt)*1)
 medprate<-coef(svymean(~poor,design = design))       
 Fprimemedp <- densfun(formula = formula, design = design , medp, type="F")      
 Fprimearpt<-  densfun(formula = formula, design = design, arpt, type="F")
@@ -154,7 +154,7 @@ linmedp <- (.5*linarpr-ifmedp)/Fprimemedp
 # linearize RMPG
 linrmpg <- (medp*linarpt/(arpt*arpt))-(linmedp/arpt)
 # compute variance
-design$variables$linrmpg <-linrmpg
+design <- update(design, linrmpg =linrmpg)
 linrmpgtot <- svytotal(~linrmpg, design= design)
 varrmpg<-attr(linrmpgtot, "var")
 list(value = RMPG, se=sqrt(varrmpg), lin = linrmpg  )
@@ -195,7 +195,7 @@ list(value = RMPG, se=sqrt(varrmpg), lin = linrmpg  )
   
   # estimate variance
   
-  design$variables$lin_qsr <- lin_qsr
+  design <- update(design, lin_qsr = lin_qsr)
   lin_qsr_tot <- svytotal(~lin_qsr,design= design)
   var_qsr <- attr(lin_qsr_tot, "var")
   list(value = qsr, se = sqrt(var_qsr ),lin = lin_qsr )
@@ -235,7 +235,7 @@ svygini<- function(formula, design){
    lin_gini<-(2*(T-G+incvar*w+N*(incvar*F))-incvar-(Gini+1)*(T+N*incvar))/(N*T)
      # variance estimation
    
-   design$variables$lin_gini <- lin_gini
+   design <- update(design, lin_gini = lin_gini)
    lin_gini_tot<-svytotal(~lin_gini,design = design)
    gini_var<-attr(lin_gini_tot, "var")
    list(gini_coef=Gini,gini_var=gini_var, lin = lin_gini)
@@ -326,6 +326,11 @@ summary(d5vardpoor$lin)
 d5 <- svygini(~eqIncome, des_eusilc)
 d5$gini_coef
 summary(d5$lin)
+
+## domains
+
+#svyby(formula= ~eqIncome, by= ~db040, design=des_eusilc, 
+#  FUN=svyarpt, keep.var= FALSE, deff=FALSE)->lixo
 
 
 
