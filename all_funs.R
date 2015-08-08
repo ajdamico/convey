@@ -126,6 +126,8 @@ svyarpr <- function(formula, design, order, percent){
 ########################################################	
 
 svyrmpg <- function(formula, design, order, percent){
+w<-weights(design) 
+N<-sum(w)
 inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)
 incvar<-df[[as.character(inc)]]
@@ -133,6 +135,10 @@ list_ARPT <- svyarpt(formula=formula, design = design,
 order = order, percent = percent)
 arpt <- list_ARPT$value
 linarpt <- list_ARPT$lin
+list_ARPR <- svyarpr(formula=formula, design = design, 
+  order = order, percent = percent)
+arpr <- list_ARPR$value
+linarpr <- list_ARPR$lin
 dsub<- subset (design, subset= (incvar<= arpt))
 medp <- svyquantile(x = formula, dsub, .5) 
 medp<-as.vector(medp)
@@ -141,17 +147,12 @@ design$variables$poor<- (incvar<= arpt)*1
 medprate<-coef(svymean(~poor,design = design))       
 Fprimemedp <- densfun(formula = formula, design = design , medp, type="F")      
 Fprimearpt<-  densfun(formula = formula, design = design, arpt, type="F")
-# linearize cdf for ARPT
-ifarpt<- icdf(formula = formula, design = design, arpt)
 # linearize cdf for medp 
 ifmedp <- icdf(formula = formula, design = design, medp)
 # linearize medp
-linmedp <- (.5*(ifarpt +Fprimearpt*linarpt)-ifmedp)/Fprimemedp
-
+linmedp <- (.5*linarpr-ifmedp)/Fprimemedp
 # linearize RMPG
-
-linrmpg <- (arpt*linmedp-medp*linarpt)/(arpt*arpt)
-
+linrmpg <- (medp*linarpt/(arpt*arpt))-(linmedp/arpt)
 # compute variance
 design$variables$linrmpg <-linrmpg
 linrmpgtot <- svytotal(~linrmpg, design= design)
@@ -210,12 +211,12 @@ svygini<- function(formula, design){
   w<- weights(design)
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
-  incvar <-incvar[order(incvar)]
-  w<-w[order(incvar)]
+  w <- w[order(incvar)]
+  incvar <- incvar[order(incvar)]
   # population size 
    N <-  sum(w)
    # sample size
-   n<-length(inc)
+   n <- length(inc)
    # total income
    T <- sum(incvar*w)
    # cumulative weight
@@ -223,12 +224,12 @@ svygini<- function(formula, design){
    Num <- sum((2*r-1)*incvar*w)
    Den <- N*T
    # Gini coeficient
-   Gini<-(Num/Den)-1
+   Gini <- (Num/Den)-1
     # cumulative distribution function
-   F<-cumsum(w/N)
+   F <- cumsum(w/N)
    
    # partial weighted function 
-   G<-cumsum(incvar*w)
+   G <- cumsum(incvar*w)
    
    # Gini coefficient linerized variable  
    lin_gini<-(2*(T-G+incvar*w+N*(incvar*F))-incvar-(Gini+1)*(T+N*incvar))/(N*T)
@@ -297,8 +298,6 @@ d3<- svyrmpg(~eqIncome, des_eusilc, .5, .6)
 d3$value
 summary(d3$lin)
 
-# values don't match
-
 
 ###################
 ## S80/S20
@@ -328,7 +327,9 @@ d5 <- svygini(~eqIncome, des_eusilc)
 d5$gini_coef
 summary(d5$lin)
 
-# don't match
+
+
+
 
 
 
