@@ -5,7 +5,7 @@
 ######################################
 # estimation of the density function
 #####################################
-densfun <- function(formula, design, x, type=c("F","S")){
+densfun <- function(formula, design, x, type=c("F","S"),...){
 inc <- terms.formula(formula)[[2]] 
  w<- weights(design)
  N<-sum(w)
@@ -26,7 +26,7 @@ inc <- terms.formula(formula)[[2]]
 # linearization of the cdf
 ##############################
 
-icdf<-function(formula, design, x){
+icdf<-function(formula, design, x,...){
 inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)
 incvar<-df[[as.character(inc)]]
@@ -43,7 +43,7 @@ inf_fun
 # linearization of the quantile
 ##################################
 
-iqalpha<- function(formula, design, alpha){
+iqalpha<- function(formula, design, alpha,...){
 inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)
 incvar<-df[[as.character(inc)]]
@@ -60,7 +60,7 @@ iq
 # linearization of the total <= quantile (inf)  or total> quantile (sup)
 #################################################################
 
-isq <- function(formula, design, alpha,type=c("inf","sup")){
+isq <- function(formula, design, alpha,type=c("inf","sup"),...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
@@ -81,7 +81,7 @@ isq <- function(formula, design, alpha,type=c("inf","sup")){
 # LINEARIZATION OF THE AT-RISK-OF-POVERTY THRESHOLD (ARPT)
 #############################################################
 
-svyarpt <- function(formula, design, order = .50, percent =.6 ) {
+svyarpt <- function(formula, design, order = .50, percent =.6 ,...) {
   quant_val<- svyquantile(x = formula, design=design, 
   quantiles = order, method="constant")
   quant_val <- as.vector(quant_val)
@@ -99,7 +99,7 @@ svyarpt <- function(formula, design, order = .50, percent =.6 ) {
 # LINEARIZATION OF THE AT-RISK-OF-POVERTY RATE (ARPR)
 ############################################################
 
-svyarpr <- function(formula, design, order = .50, percent =.6){
+svyarpr <- function(formula, design, order = .50, percent =.6,...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
@@ -125,7 +125,7 @@ svyarpr <- function(formula, design, order = .50, percent =.6){
 # LINEARIZATION OF THE RELATIVE MEDIAN POVERTY GAP
 ########################################################	
 
-svyrmpg <- function(formula, design, order =.50, percent = .60){
+svyrmpg <- function(formula, design, order =.50, percent = .60,...){
 w<-weights(design) 
 N<-sum(w)
 inc <- terms.formula(formula)[[2]]
@@ -165,7 +165,7 @@ list(value = RMPG, se=sqrt(varrmpg), lin = linrmpg  )
 # LINEARIZATION OF S80/S20
 #####################################
 
-  svyqsr <- function(formula, design, alpha= .20) {
+  svyqsr <- function(formula, design, alpha= .20,...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]  
@@ -206,7 +206,7 @@ list(value = RMPG, se=sqrt(varrmpg), lin = linrmpg  )
 # LINEARIZATION OF THE GINI COEFFICIENT 
 ##############################################
   
-svygini<- function(formula, design){
+svygini<- function(formula, design,...){
   inc <- terms.formula(formula)[[2]] 
   w<- weights(design)
   df <- model.frame(design)
