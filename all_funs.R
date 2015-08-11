@@ -89,8 +89,7 @@ svyarpt <- function(formula, design, order = .50, percent =.6 ,...) {
   lin_ARPT <- percent * iqalpha(formula = formula, design = design, alpha = order)
   # variance estimate 
   design<- update(design,lin_ARPT = lin_ARPT)
-  lin_ARPT_tot <- svytotal(~lin_ARPT, design = design)
-  var_ARPT <- attr(lin_ARPT_tot, "var")
+  var_ARPT <- vcov(svytotal(~lin_ARPT, design = design))
   list(value = ARPT, se=sqrt(var_ARPT), lin = lin_ARPT)
   }
 
@@ -115,8 +114,7 @@ svyarpr <- function(formula, design, order = .50, percent =.6,...){
       densfun(formula = formula, design = design , ARPT, type="F")*lin_ARPT 
   # compute variance
   design <- update(design, lin_ARPR = lin_ARPR)
-  lin_ARPR_tot<-svytotal(~lin_ARPR, design = design)
-  var_ARPR<-attr(lin_ARPR_tot, "var")
+  var_ARPR<-vcov(svytotal(~lin_ARPR, design = design))
   list(value = ARPR, se = sqrt(var_ARPR) , lin = lin_ARPR)
   }
 
@@ -155,8 +153,7 @@ linmedp <- (.5*linarpr-ifmedp)/Fprimemedp
 linrmpg <- (medp*linarpt/(arpt*arpt))-(linmedp/arpt)
 # compute variance
 design <- update(design, linrmpg =linrmpg)
-linrmpgtot <- svytotal(~linrmpg, design= design)
-varrmpg<-attr(linrmpgtot, "var")
+varrmpg <- vcov(svytotal(~linrmpg, design= design))
 list(value = RMPG, se=sqrt(varrmpg), lin = linrmpg  )
 } 
 
@@ -196,8 +193,7 @@ list(value = RMPG, se=sqrt(varrmpg), lin = linrmpg  )
   # estimate variance
   
   design <- update(design, lin_qsr = lin_qsr)
-  lin_qsr_tot <- svytotal(~lin_qsr,design= design)
-  var_qsr <- attr(lin_qsr_tot, "var")
+  var_qsr <- vcov(svytotal(~lin_qsr,design= design))
   list(value = qsr, se = sqrt(var_qsr ),lin = lin_qsr )
   }
 
@@ -236,8 +232,7 @@ svygini<- function(formula, design,...){
      # variance estimation
    
    design <- update(design, lin_gini = lin_gini)
-   lin_gini_tot<-svytotal(~lin_gini,design = design)
-   gini_var<-attr(lin_gini_tot, "var")
+   gini_var<-vcov(svytotal(~lin_gini,design = design))
    list(gini_coef=Gini,gini_var=gini_var, lin = lin_gini)
    } 
 
@@ -267,7 +262,31 @@ summary(d1vardpoor$lin)
 d1 <-  svyarpt(~eqIncome, des_eusilc, .5, .6)
 d1$value
 summary(d1$lin)
+d1$se
 
+# arpt  estimates by domains
+#  using library vardpoor
+dd <- linarpt(Y="eqIncome", id="IDd", weight="rb050", Dom="db040",
+  dataset=dati, percentage=60, order_quant=50)
+
+data.frame(db040=dd$value$db040, value=dd$value$threshold)
+
+# #  using functions
+
+svyarpt_by_db040 <- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpt,
+  keep.var= FALSE, deff=FALSE )
+
+svyarpt_by_db040[, c("db040","statistic.value")]
+# estimates match with the obtained by library vardpoor
+
+## check linearized variables
+
+# using vardpoor
+summary(dd$lin)
+# using functions
+lapply(svyarpt_by_db040$statistic.lin,summary)
+
+# results don't match!!!
 
 #######################
 # ARPR
@@ -327,14 +346,42 @@ d5 <- svygini(~eqIncome, des_eusilc)
 d5$gini_coef
 summary(d5$lin)
 
-## domains
-
-#svyby(formula= ~eqIncome, by= ~db040, design=des_eusilc, 
-#  FUN=svyarpt, keep.var= FALSE, deff=FALSE)->lixo
 
 
+# check variance estimates
+
+data(eusilc)
+dataset <- data.frame(1:nrow(eusilc),eusilc)
+colnames(dataset)[1] <- "IDd"
+dataset1 <- dataset[1:1000,]
+
+aa<-varpoord(Y = "eqIncome", w_final = "rb050",
+  Y_thres = NULL, wght_thres = NULL,
+  ID_household = "db030", id = "IDd", 
+  H = "db040", PSU = "rb030", N_h = NULL,
+  sort = NULL, Dom = NULL,
+  gender = NULL, X = NULL,
+  X_ID_household = NULL, g = NULL,
+  datasetX = NULL,
+  q = rep(1, if (is.null(datasetX)) 
+    nrow(as.data.frame(H)) else nrow(datasetX)),
+  dataset =  dataset1, percentage=60, order_quant=50,
+  alpha = 20, confidence = .95, outp_lin = FALSE,
+  outp_res = FALSE, several.ok=FALSE, type="linarpt")
 
 
+data.frame(db040=aa$all_result$db040,value=aa$all_result$value, se=aa$all_result$se)
+
+
+# using functions
+des_eusilc1 <- svydesign(ids=~rb030, strata= ~db040, weights =~rb050, data=dataset1) 
+
+arpt_dom1 <- svyby(formula=~eqIncome, by=~db040, design=des_eusilc1, FUN = svyarpt,
+  keep.var= FALSE, deff=FALSE)
+
+arpt_dom1[,c("db040","statistic.value","statistic.se")]
+
+# not ok!
 
 
 
