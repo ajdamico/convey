@@ -47,7 +47,8 @@ iqalpha<- function(formula, design, alpha,...){
 inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)
 incvar<-df[[as.character(inc)]]
-q_alpha<- svyquantile(x =formula, design =design, quantiles= alpha, method="constant")
+q_alpha<- svyquantile(x =formula, design =design, quantiles= alpha,
+  method="constant")
 q_alpha<- as.vector(q_alpha)
 w <- weights(design) 
 N <- sum (w)
@@ -237,6 +238,8 @@ svygini<- function(formula, design,...){
    } 
 
 
+
+
 ######################################  
 # tests:  functions vs library vardpoor
 ######################################
@@ -255,6 +258,7 @@ order<-.5
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
 d1vardpoor <- linarpt(Y="eqIncome", id="IDd", weight = "rb050", Dom = NULL,
   dataset = dati, percentage = 60, order_quant=50)
+str(d1vardpoor)
 d1vardpoor$value
 summary(d1vardpoor$lin)
 
@@ -270,7 +274,7 @@ dd <- linarpt(Y="eqIncome", id="IDd", weight="rb050", Dom="db040",
   dataset=dati, percentage=60, order_quant=50)
 
 data.frame(db040=dd$value$db040, value=dd$value$threshold)
-
+dd$quantile$quantile
 # #  using functions
 
 svyarpt_by_db040 <- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpt,
@@ -287,6 +291,35 @@ summary(dd$lin)
 lapply(svyarpt_by_db040$statistic.lin,summary)
 
 # results don't match!!!
+
+# CORRECT method to break out by groups
+dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
+d1 <- linarpt(Y="eqIncome", id="IDd", weight = "rb050", Dom = "db040",
+  dataset = dati, percentage = 60, order_quant=50)
+svyby(~eqIncome, by=~db040, design=des_eusilc, FUN=svyquantile, quantiles=.5)
+str(d1)
+# INCORRECT SUBSET
+ics <- subset(dati,db040=='Tyrol')
+d2 <- linarpt(Y="eqIncome", id="IDd", weight = "rb050", Dom = NULL,
+  dataset = ics , percentage = 60, order_quant=50)
+
+# your function matches the incorrect subsetting technique
+d3 <-  svyarpt(~eqIncome, subset( des_eusilc , db040 == 'Tyrol' ) , .5, .6)
+des_eusilc<- update(des_eusilc,eqIncome_Tyrol=eqIncome*(db040 == 'Tyrol'))
+
+
+# this is the correct way to use `linarpt`
+table( d1$lin$lin_arpt__db040.Tyrol )
+# NOTICE that the zeroes are maintained!
+
+# this is the incorrect way to use `linarpt`
+summary(d2$lin)
+
+# your function matches the incorrect method
+table(d3$lin)
+
+
+
 
 #######################
 # ARPR
@@ -383,7 +416,44 @@ arpt_dom1[,c("db040","statistic.value","statistic.se")]
 
 # not ok!
 
+############################################################################
+## new form svyby to get the lin variable:
 
+svybylin_svyrpt<-function(formula, by, design, FUN,...){
+  byfactors<-model.frame(by, model.frame(design), na.action=na.pass)
+  byfactor<-do.call("interaction", byfactors)
+  uniquelevels<-sort(unique(byfactor))
+  uniques <- match(uniquelevels, byfactor)
+  # run for icdf0 for each group
+  all.meds<- lapply(uniques, 
+    function(i) svyquantile(formula,design[byfactor%in%byfactor[i]],quantiles=.5,method="constant"))
+  names(all.meds)<-uniquelevels
+  all.meds<-lapply(all.meds,as.vector)
+  all.lins<- lapply(uniques, 
+    function(i) FUN(formula,design[byfactor%in%byfactor[i]])$lin)
+  # back to the original dimension
+  all.lins.correct<-lapply(uniques,function(i){
+    lin<-rep(0,length(byfactor))
+    lin[byfactor%in%byfactor[i]]<-all.lins[[byfactor[i]]]
+    lin
+  })
+  names(all.lins.correct)<-uniquelevels
+  all.lins.correct
+}
+
+## example
+
+# estimated using functions
+by_db040_lin<- svybylin_svyrpt(formula=~eqIncome,by=~db040,design=des_eusilc,
+  FUN=svyarpt,order = .50, percent =.6)
+
+table(by_db040_lin$Tyrol)
+
+# estimated using library vardpoor
+
+table( d1$lin$lin_arpt__db040.Tyrol )
+
+# not exactly equal!! needs checking
 
 
 
