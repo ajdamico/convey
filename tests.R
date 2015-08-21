@@ -1,4 +1,4 @@
-######################################  
+######################################
 # tests:  functions vs library vardpoor
 ######################################
 
@@ -7,7 +7,7 @@ data(eusilc)
 dati=data.frame(1:nrow(eusilc),eusilc)
 colnames(dati)[1] <- "IDd"
 library(survey)
-des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc) 
+des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 percent<-.6
 order<-.5
 htot<- h_fun(eusilc$eqIncome,eusilc$rb050)
@@ -24,7 +24,7 @@ table(d1vardpoor$lin$lin_arpt)
 
 ## entire population
 #  function svyarpt
-d1 <-  svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot, 
+d1 <-  svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
   ncom=nrow(des_eusilc$variables), comp=TRUE)
 
 d1$value
@@ -65,7 +65,7 @@ d2vardpoor <- linarpr(Y="eqIncome", id="IDd", weight = "rb050", Dom = NULL,
   dataset = dati, percentage = 60, order_quant=50)
 
 
-# function svyarpr 
+# function svyarpr
 d2 <-svyarpr(~eqIncome, des_eusilc, .5, .6, h=htot,ncom=nrow(des_eusilc$variables), comp=TRUE)
 # test
 
@@ -103,7 +103,7 @@ d3vardpoor$value
 
 table(d3vardpoor$lin$lin_rmpg)
 
-# function svyrmpg 
+# function svyrmpg
 d3<- svyrmpg(~eqIncome, des_eusilc, .5, .6, h=htot, ncom=nrow(des_eusilc$variables),ARPT=ARPT_pop  )
 d3$value
 table(d3$lin)
@@ -118,7 +118,7 @@ dd$value
 table(dd$lin$lin_rmpg__db040.Tyrol)
 
 ##
-ARPT_pop<-svyarpt(~eqIncome, design=des_eusilc, order = .50, percent =.6, 
+ARPT_pop<-svyarpt(~eqIncome, design=des_eusilc, order = .50, percent =.6,
   h=htot, ncom=nrow(des_eusilc$variables), comp=TRUE)
 
 dd1<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyrmpg, order = .50, percent =.6,
@@ -157,37 +157,22 @@ dd4vardpoor$value
 summary(dd4vardpoor$lin$lin_qsr__db040.Tyrol)
 
 
-dd4<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
+dd4<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE, incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
 
 dd4$statistic.value
 summary(dd4$statistic.lin[[6]])
 str(dd4)
 (dd4$db040)[1:20]
+
+
 ## Tyrol
 
+
 dd_Tyrol<-svyqsr(~eqIncome,  subset(des_eusilc,db040=="Tyrol"), .20, h=htot,
-  ncom=nrow(des_eusilc$variables),comp=TRUE)
+  ncom=nrow(eusilc),comp=TRUE, incvec = eusilc$eqIncome)
 
 dd_Tyrol$value
 summary(dd_Tyrol$lin)
-
-
-lin_S20 <- isq(~eqIncome, subset(des_eusilc,db040=="Tyrol"), .20, type="inf", h=NULL, 
-  ncom= nrow(eusilc), comp = FALSE)$lin
-
-lin_S80 <- isq(~eqIncome, subset(des_eusilc,db040=="Tyrol"), .80, type="sup", h=NULL,
-  ncom= nrow(eusilc), comp=FALSE)$lin
-
-summary(lin_S20)
-summary(lin_S80)
-
-
-Fprime_q20<- densfun(~eqIncome, subset(des_eusilc,db040=="Tyrol"), 12271.11, htot=NULL, fun="F")
-Fprime_q80<- densfun(~eqIncome, subset(des_eusilc,db040=="Tyrol"), 23172.59, htot=NULL, fun="F")
-Fprime_S80<- densfun(~eqIncome, subset(des_eusilc,db040=="Tyrol"), 23172.59, htot=NULL, fun="S")
-Fprime_S20<- densfun(~eqIncome, subset(des_eusilc,db040=="Tyrol"), 12271.11, htot=NULL, fun="S")
-
-
 
 
 ##################
@@ -210,7 +195,27 @@ summary(d5$lin)
 d5vardpoor$value$Gini==d5$gini_coef*100
 all.equal(d5vardpoor$lin$lin_gini,  d5$lin*100)
 
-str(d5$lin*100)
+d5_Tyrol <- svygini(~eqIncome, subset(des_eusilc, db040=="Tyrol"))
+d5_Tyrol$gini_coef
+length(d5_Tyrol$lin)
+
+# domain
+# using vardpoor
+dd5vardpoor <- lingini(Y="eqIncome", id="IDd", weight="rb050", Dom=c("db040"), dataset=dati)
+dd5vardpoor$value
+summary(dd5vardpoor$lin$lin_gini__db040.Tyrol)
+
+# using function
+dd5<- svyby(~eqIncome,by=~db040, design=des_eusilc, FUN=svygini, ncom = nrow(eusilc),
+  comp=TRUE, deff=FALSE, keep.var=FALSE)
+
+dd5$statistic.gini_coef
+all.equal(dd5$statistic.lin[[6]],dd5vardpoor$lin$lin_gini__db040.Tyrol)
+
+dd5$statistic.lin[[6]][1:100]
+dd5vardpoor$lin$lin_gini__db040.Tyrol[1:100]
+
+
 
 
 
@@ -223,13 +228,13 @@ dataset1 <- dataset[1:1000,]
 
 aa<-varpoord(Y = "eqIncome", w_final = "rb050",
   Y_thres = NULL, wght_thres = NULL,
-  ID_household = "db030", id = "IDd", 
+  ID_household = "db030", id = "IDd",
   H = "db040", PSU = "rb030", N_h = NULL,
   sort = NULL, Dom = NULL,
   gender = NULL, X = NULL,
   X_ID_household = NULL, g = NULL,
   datasetX = NULL,
-  q = rep(1, if (is.null(datasetX)) 
+  q = rep(1, if (is.null(datasetX))
     nrow(as.data.frame(H)) else nrow(datasetX)),
   dataset =  dataset1, percentage=60, order_quant=50,
   alpha = 20, confidence = .95, outp_lin = FALSE,
@@ -240,7 +245,7 @@ data.frame(db040=aa$all_result$db040,value=aa$all_result$value, se=aa$all_result
 
 
 # using functions
-des_eusilc1 <- svydesign(ids=~rb030, strata= ~db040, weights =~rb050, data=dataset1) 
+des_eusilc1 <- svydesign(ids=~rb030, strata= ~db040, weights =~rb050, data=dataset1)
 
 arpt_dom1 <- svyby(formula=~eqIncome, by=~db040, design=des_eusilc1, FUN = svyarpt,
   keep.var= FALSE, deff=FALSE)
@@ -258,11 +263,11 @@ svybylin_svyrpt<-function(formula, by, design, FUN,...){
   uniquelevels<-sort(unique(byfactor))
   uniques <- match(uniquelevels, byfactor)
   # run for icdf0 for each group
-  all.meds<- lapply(uniques, 
+  all.meds<- lapply(uniques,
     function(i) svyquantile(formula,design[byfactor%in%byfactor[i]],quantiles=.5,method="constant"))
   names(all.meds)<-uniquelevels
   all.meds<-lapply(all.meds,as.vector)
-  all.lins<- lapply(uniques, 
+  all.lins<- lapply(uniques,
     function(i) FUN(formula,design[byfactor%in%byfactor[i]])$lin)
   # back to the original dimension
   all.lins.correct<-lapply(uniques,function(i){
