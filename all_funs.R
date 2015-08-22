@@ -249,7 +249,7 @@ list(value = RMPG, lin = linrmpg)
 # LINEARIZATION OF THE GINI COEFFICIENT
 ##############################################
 
-svygini<- function(formula, design, ncom, comp,...){
+svygini<- function(formula, design, ncom, comp=TRUE,...){
   inc <- terms.formula(formula)[[2]]
   w<- weights(design)
   ind<-names(w)
@@ -260,7 +260,6 @@ svygini<- function(formula, design, ncom, comp,...){
     # population size
    N <-  sum(w)
    # sample size
-
    n <- length(incvar)
    # total income
    T <- sum(incvar*w)
@@ -278,13 +277,18 @@ svygini<- function(formula, design, ncom, comp,...){
 
    # Gini coefficient linearized variable
    lin_gini<-(2*(T-G+incvar*w+N*(incvar*F))-incvar-(Gini+1)*(T+N*incvar))/(N*T)
-   lin_gini<- lin_gini[ind]
+   # original order
+   #lin_gini<- lin_gini[ind]
+   # complete 0's
    names(lin_gini)<-names(w)
    lin_gini_comp <- complete(lin_gini, ncom)
    if(comp) res<-lin_gini_comp else res <-lin_gini
-
    list(gini_coef=Gini, lin = res)
    }
+
+
+
+
 
 
 
