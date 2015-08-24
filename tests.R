@@ -225,7 +225,7 @@ se=SE(svytotal(form_dom,des_eusilc))
 res_var_rmpg$cv<-100*res_var_rmpg$se/res_var_rmpg$values
 res_var_rmpg
 
-
+##
 
 
 
