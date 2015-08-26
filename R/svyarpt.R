@@ -32,7 +32,7 @@
 #'
 #' @export
 
-svyarpt_lin <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {
+svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {
   w <- weights(design)
   ind<-names(w)
   quant_val<- svyquantile(x = formula, design=design,
@@ -47,7 +47,7 @@ svyarpt_lin <- function(formula, design, order = .50, percent =.6, h, ncom, comp
   list(value = ARPT, lin = lin)
 }
 
-svyarpt_rep <- function(formula, design, order = .50, percent =.6,...) {
+svyarpt.svyrep.design <- function(formula, design, order = .50, percent =.6,...) {
   w <- weights(design)
   ind<-names(w)
   quant_val<- svyquantile(x = formula, design=design,
@@ -56,5 +56,13 @@ svyarpt_rep <- function(formula, design, order = .50, percent =.6,...) {
   ARPT <- percent* quant_val
   ARPT
 }
+
+
+svyarpt <- 
+	function( formula , design , ... ){
+		
+		UseMethod( "svyarpt" , design )
+		
+	}
 
 
