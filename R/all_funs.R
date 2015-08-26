@@ -118,11 +118,31 @@ isq <- function(formula, design, alpha, type = c("inf","sup"), h=NULL, ncom, inc
 
 
 
+computeQuantiles<-function(xx, w, p=quantiles){
+  #if (any(is.na(x))) return(NA*p)
+  oo<-order(xx)
+  cum.w<-cumsum(w[oo])/sum(w)
+  cdf<-approxfun(cum.w,xx[oo],method="constant", f=1,
+    yleft=min(xx),yright=max(xx),ties=min)
+  cdf(p)
+}
 
 
 
+computeQuantiles(eusilc$eqIncome,eusilc$rb050,  p=.5)
 
 
+computeQuantilesRounded<-function(xx, w,p=quantiles){
+  if (any(is.na(xx))) return(NA*p)
+  ww<-rowsum(w,xx,reorder=TRUE)
+  xx<-sort(unique(xx))
+  cum.w <- cumsum(ww)/sum(ww)
+  cdf <- approxfun(cum.w, xx, method = "constant", f = 1,
+    yleft = min(xx), yright = max(xx),ties=min)
+  cdf(p)
+}
+
+computeQuantilesRounded(eusilc$eqIncome,eusilc$rb050, p=.5)
 
 
 

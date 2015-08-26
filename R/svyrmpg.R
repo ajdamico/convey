@@ -46,8 +46,13 @@
 #'
 #' @export
 
+svyrmpg <-  function( formula , design , ... ){
 
-svyrmpg_lin <- function(formula, design, order =.50, percent = .60, ncom , h, comp, ARPT, ...){
+  UseMethod( "svyrmpg" , design )
+
+}
+
+svyrmpg.survey.design <- function(formula, design, order =.50, percent = .60, ncom , h, comp, ARPT, ...){
   w<-weights(design)
   ind<-names(w)
   N<-sum(w)
@@ -79,7 +84,7 @@ svyrmpg_lin <- function(formula, design, order =.50, percent = .60, ncom , h, co
   list(value = RMPG, lin = linrmpg)
 }
 
-svyrmpg_rep <- function(formula, design, order =.50, percent = .60, ARPT, ...){
+svyrmpg.svyrep.design <- function(formula, design, order =.50, percent = .60, ARPT, ...){
   w<-weights(design)
   ind<-names(w)
   N<-sum(w)

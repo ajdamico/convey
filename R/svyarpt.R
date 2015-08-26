@@ -38,6 +38,12 @@
 #'
 #' @export
 
+svyarpt <-  function( formula , design , ... ){
+
+    UseMethod( "svyarpt" , design )
+
+  }
+
 svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {
   w <- weights(design)
   ind<-names(w)
@@ -53,22 +59,23 @@ svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, 
   list(value = ARPT, lin = lin)
 }
 
+
+
 svyarpt.svyrep.design <- function(formula, design, order = .50, percent =.6,...) {
-  w <- weights(design)
-  ind<-names(w)
-  quant_val<- svyquantile(x = formula, design=design,
-  quantiles = order, method="constant")
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar<-df[[as.character(inc)]]
+  w <- weights(design, "sampling")
+  quant_val <- computeQuantiles(incvar, w,  p = order)
   quant_val <- as.vector(quant_val)
-  ARPT <- percent* quant_val
-  ARPT
+  rval <- percent* quant_val
+  ww<-weights(design,"analysis")
+  qq <- apply(ww, 2, function(wi) 0.6*computeQuantiles(incvar, wi,p = order))
+  variance <- svrVar(qq,design$scale,design$rscales, mse=design$mse, coef=rval)
+list(value= rval, se=sqrt(variance))
 }
 
 
-svyarpt <- 
-	function( formula , design , ... ){
-		
-		UseMethod( "svyarpt" , design )
-		
-	}
+
 
 

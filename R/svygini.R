@@ -1,4 +1,12 @@
-svygini_lin<- function(formula, design, ncom, comp=TRUE,...){
+
+svygini <-  function( formula , design , ... ){
+
+  UseMethod( "svygini" , design )
+
+}
+
+
+svygini.survey.design<- function(formula, design, ncom, comp=TRUE,...){
   inc <- terms.formula(formula)[[2]]
   w<- weights(design)
   ind<-names(w)
@@ -35,7 +43,8 @@ svygini_lin<- function(formula, design, ncom, comp=TRUE,...){
   list(gini_coef=Gini, lin = res)
 }
 
-svygini_rep<- function(formula, design,...){
+
+svygini.svyrep.design<- function(formula, design,...){
   inc <- terms.formula(formula)[[2]]
   w<- weights(design)
   ind<-names(w)

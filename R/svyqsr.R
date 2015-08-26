@@ -42,7 +42,14 @@
 #'
 #' @export
 
-svyqsr_lin <- function(formula, design, alpha= .20, ncom, comp,incvec, ...) {
+svyqsr <-  function( formula , design , ... ){
+
+  UseMethod( "svyqsr" , design )
+
+}
+
+
+svyqsr.survey.design <- function(formula, design, alpha= .20, ncom, comp,incvec, ...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
@@ -79,7 +86,7 @@ svyqsr_lin <- function(formula, design, alpha= .20, ncom, comp,incvec, ...) {
   list(value = qsr, lin = lin_qsr)
 }
 
-svyqsr_rep <- function(formula, design, alpha= .20, ...) {
+svyqsr.svyrep.design <- function(formula, design, alpha= .20, ...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]

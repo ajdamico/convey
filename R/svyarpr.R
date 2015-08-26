@@ -41,8 +41,14 @@
 #' ARPT = arpt_eusilc, ncom=nrow(eusilc), comp=TRUE)
 #'
 #' @export
+#'
+ svyarpr <-function( formula , design , ... ){
 
-svyarpr_lin <- function(formula, design, order = .50, percent =.6, h, ARPT, ncom, ...){
+  UseMethod( "svyarpr" , design )
+
+}
+
+svyarpr.survey.design <- function(formula, design, order = .50, percent =.6, h, ARPT, ncom, ...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
@@ -59,7 +65,7 @@ svyarpr_lin <- function(formula, design, order = .50, percent =.6, h, ARPT, ncom
   list(value = ARPRC, lin = lin_ARPR)
 }
 
-svyarpr_rep <- function(formula, design, order = .50, percent =.6, ...){
+svyarpr.svyrep.design <- function(formula, design, order = .50, percent =.6, ...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
