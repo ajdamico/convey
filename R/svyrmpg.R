@@ -40,9 +40,8 @@
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' arpt_eusilc <- svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot,
 #' ncom=nrow(eusilc), comp=TRUE)
-#' rmpg_eulsilc<- svyrmpg_lin(~eqIncome, design=des_eusilc, order =.50,
-#' percent = .60,  h = htot, ncom=nrow(eusilc), comp=TRUE,
-#' comp=TRUE, ARPT = arpt_eusilc)
+#' rmpg_eulsilc<- svyrmpg(~eqIncome, design=des_eusilc, order =.50,
+#' percent = .60,  h = htot, ncom=nrow(eusilc), comp=TRUE, ARPT = arpt_eusilc)
 #'
 #' @export
 
@@ -84,19 +83,21 @@ svyrmpg.survey.design <- function(formula, design, order =.50, percent = .60, nc
   list(value = RMPG, lin = linrmpg)
 }
 
-svyrmpg.svyrep.design <- function(formula, design, order =.50, percent = .60, ARPT, ...){
-  w<-weights(design)
-  ind<-names(w)
-  N<-sum(w)
+svyrmpg.svyrep.design <- function(formula, design, order =.50, percent = .60, ...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
-  arpt <- svyarpt_rep(formula = formula, design = design, order = order,
-    percent =percent,...)
-  arpr <-sum((incvar<=arpt)*w)/N
-  dsub<- subset (design, subset= (incvar<= arpt))
-  medp <- svyquantile(x = formula, dsub, .5, method="constant")
-  medp<-as.vector(medp)
-  RMPG <- 1 - (medp/ arpt)
-  RMPG
+  ComputeRmpg <- function(x, w, order, percent) {
+   tresh <- percent*computeQuantiles(incvar, w,p = order)
+   arpr <- sum((incvar<=tresh)*w)/sum(w)
+   indpoor <- (x <= tresh)
+   medp <- computeQuantiles(x[indpoor], w[indpoor],  p = .5)
+   1- (medp/tresh)
+  }
+ws <- weights(design, "sampling")
+rval <- ComputeRmpg(incvar, ws, order = order, percent = percent )
+ww <- weights(design, "analysis")
+qq <- apply(ww, 2, function(wi)ComputeRmpg(incvar, wi, order = order, percent = percent ))
+variance <- svrVar(qq,design$scale,design$rscales, mse = design$mse, coef = rval)
+list(value = rval, se = sqrt(variance))
 }

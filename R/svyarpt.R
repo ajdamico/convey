@@ -60,7 +60,6 @@ svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, 
 }
 
 
-
 svyarpt.svyrep.design <- function(formula, design, order = .50, percent =.6,...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)

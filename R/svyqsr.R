@@ -18,7 +18,7 @@
 #' and the linearized variable \code {lin}.
 #'
 #' @author Djalma Pessoa and Anthony Damico
-#' #' @seealso \code{\link{arpt}}
+#' @seealso \code{\link{arpt}}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
 #'of poverty and inequality. \emph{Journal of the European Survey Research
@@ -36,9 +36,8 @@
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' arpt_eusilc<-svyarpt_lin(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=nrow(eusilc), comp=TRUE)
-#' arpr_eulsilc<- svyarpr_lin(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-#' ARPT = arpt_eusilc, ncom=nrow(eusilc), comp=TRUE)
+#' qsr_eulsilc<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = nrow(eusilc),
+#' comp=TRUE, incvec = eusilc$eqIncome)
 #'
 #' @export
 
@@ -49,7 +48,7 @@ svyqsr <-  function( formula , design , ... ){
 }
 
 
-svyqsr.survey.design <- function(formula, design, alpha= .20, ncom, comp,incvec, ...) {
+svyqsr.survey.design <- function(formula, design, alpha= .20, ncom, comp, incvec, ...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
@@ -90,22 +89,22 @@ svyqsr.svyrep.design <- function(formula, design, alpha= .20, ...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
-  w<-weights(design)
-  ind<-names(w)
-  alpha1<- alpha
-  alpha2<- 1-alpha
-  quant_inf <-  svyquantile(x = formula, design = design, quantiles = alpha1,
-    method = "constant")
-  quant_inf<-as.vector(quant_inf)
-  quant_sup <- svyquantile(x = formula, design = design, quantiles= alpha2,
-    method = "constant")
-  quant_sup <- as.vector(quant_sup)
-  tot_var<- sum(incvar*w)
-  rich<- (incvar > quant_sup)*incvar
-  S80 <- sum(rich*w)
-  poor<- (incvar <= quant_inf)*incvar
-  S20 <- sum(poor*w)
-  qsr<- S80/S20
-  qsr
+  ComputeQsr <- function(x, w, alpha){
+    alpha1<- alpha
+    alpha2<- 1-alpha
+    quant_inf <- computeQuantiles(x, w,  p = alpha1)
+    quant_sup <- computeQuantiles(x, w,  p = alpha2)
+    rich<- (x > quant_sup)*x
+    S80 <- sum(rich*w)
+    poor<- (x <= quant_inf)*x
+    S20 <- sum(poor*w)
+    S80/S20
+    }
+ws <-weights(design, "sampling")
+rval <- ComputeQsr(incvar, ws, alpha = alpha)
+ww <- weights(design, "analysis")
+qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha ))
+variance <- svrVar(qq,design$scale,design$rscales, mse = design$mse, coef = rval)
+list(value = rval, se = sqrt(variance))
 }
 

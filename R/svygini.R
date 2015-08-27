@@ -46,22 +46,23 @@ svygini.survey.design<- function(formula, design, ncom, comp=TRUE,...){
 
 svygini.svyrep.design<- function(formula, design,...){
   inc <- terms.formula(formula)[[2]]
-  w<- weights(design)
-  ind<-names(w)
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
-  w <- w[order(incvar)]
-  incvar <- incvar[order(incvar)]
-  # population size
-  N <-  sum(w)
-  # sample size
-  n <- length(incvar)
-  # total income
-  T <- sum(incvar*w)
-  # cumulative weight
-  r <- cumsum(w)
-  Num <- sum((2*r-1)*incvar*w)
-  Den <- N*T
-  # Gini coeficient
-  Gini <- (Num/Den)-1
+  ComputeGini <- function(x, w){
+   w <- w[order(x)]
+   x <- x[order(x)]
+   N <-  sum(w)
+   n<- length(x)
+   T<- sum(x*w)
+   r <- cumsum(w)
+   Num <- sum((2*r-1)*x*w)
+   Den <- N*T
+   (Num/Den)-1
+  }
+  ws <- weights(design, "sampling")
+  rval <- ComputeGini(incvar, ws)
+  ww <- weights(design, "analysis")
+  qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
+  variance <- svrVar(qq,design$scale,design$rscales, mse = design$mse, coef = rval)
+  list(value = rval, se = sqrt(variance))
 }

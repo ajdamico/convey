@@ -36,7 +36,7 @@
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' arpt_eusilc<-svyarpt_lin(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=nrow(eusilc), comp=TRUE)
+#' arpt_eusilc<-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=nrow(eusilc), comp=TRUE)
 #' arpr_eulsilc<- svyarpr_lin(~eqIncome, design=des_eusilc, .5, .6, h = htot,
 #' ARPT = arpt_eusilc, ncom=nrow(eusilc), comp=TRUE)
 #'
@@ -69,12 +69,14 @@ svyarpr.svyrep.design <- function(formula, design, order = .50, percent =.6, ...
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]
-  w <- weights(design)
-  ARPT_val <- svyarpt_rep(formula = formula, design = design, order = order,
-    percent = percent,...)
-  poor <- (incvar < ARPT_val) *1
-  design <- update (design, poor = poor)
-  ARPR <- svymean (~poor, design = design)
-  ARPR <- coef (ARPRC)
-  ARPR
+  ws <- weights(design, "sampling")
+  ComputeArpr <- function (x, w, order, percent){
+    tresh <-percent*computeQuantiles(x, w, p = order)
+ sum((incvar< tresh)*w )/sum(w)
+  }
+  rval <- ComputeArpr(x=incvar, w=ws, order = order, percent = percent)
+ ww <- weights(design, "analysis")
+ qq <- apply(ww, 2, function(wi) 0.6*ComputeArpr(incvar, wi, order = order, percent = percent ))
+ variance <- svrVar(qq,design$scale,design$rscales, mse = design$mse, coef = rval)
+ list(value = rval, se = sqrt(variance))
 }
