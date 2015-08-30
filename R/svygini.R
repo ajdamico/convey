@@ -1,3 +1,40 @@
+#' Gini coefficient
+#'
+#' Estimate the Gini coefficient which is a measure of inequalty
+#'
+#' @param formula a formula specifying the income variable
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
+#' of the library survey
+#' @param ncom length of the income vector for the whole sample
+#' @param comp logical variable \code{TRUE} if the inearized variable for domains
+#' should be completed with zeros
+#' @return a list with two components: the indicator estimate \code{value}
+#' and the linearized variable \code{lin}.
+#'
+#' @author Djalma Pessoa and Anthony Damico
+#'
+#' @seealso \code{\link{arpr}}
+#'
+#' @references Guillaume Osier (2009). Variance estimation for complex indicators
+#'of poverty and inequality. \emph{Journal of the European Survey Research
+#' Association}, Vol.3, No.3, pp. 167-195,
+#' ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+
+#'Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
+#' linearization and residual techniques. Survey Methodology, 25, 193-203,
+#' URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
+#'
+#' @keywords survey
+#'
+#' @examples
+#' library(vardpoor)
+#' data(eusilc)
+#' library(survey)
+#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
+#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' gini_eqIncome <- svygini(~eqIncome, design=des_eusilc, ncom=nrow(eusilc), comp=TRUE)
+#'
+#' @export
 
 svygini <-  function( formula , design , ... ){
 

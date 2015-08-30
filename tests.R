@@ -21,14 +21,22 @@ vardpoor_arptw <- linarpt(Y="eqIncome", id="IDd", weight = "rb050", Dom = NULL,
 vardpoor_arptw$value
 table(vardpoor_arptw$lin$lin_arpt)
 
+
+# ARPT_var<-svyCprod(lin/design$prob,design$strata,
+#   design$cluster[[1]], design$fpc,
+#   design$nPSU,design$certainty,design$postStrata)
+
+
 ## whole population
 #  function svyarpt
- fun_arptw <-  svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
+ fun_arptw <-  svyarpt.survey.design(~eqIncome, design=des_eusilc, .5, .6, h=htot,
   ncom=nrow(des_eusilc$variables), comp=TRUE)
+
+ svyarpt.survey.design(~eqIncome, design=des_eusilc, .5, .6, h=htot,
+   ncom=nrow(des_eusilc$variables), comp=TRUE)
 
 fun_arptw$value
 table(fun_arptw$lin)
-
 
 
 #  domains
@@ -44,8 +52,14 @@ table(vardpoor_arptd$lin$lin_arpt__db040.Tyrol)
 fun_arptd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpt, order = .50, percent =.6,
   h= htot,ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE, keep.names = TRUE)
 
+
+str(fun_arptd)
 fun_arptd$statistic.value
 table(fun_arptd$statistic.lin[[6]])
+
+# check zeroes
+table(fun_arptd$statistic.lin[[6]]==0,eusilc$db040=='Tyrol')
+
 
 
 #######################
@@ -81,6 +95,9 @@ fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = 
 unlist(fun_arprd$statistic.value)*100
 
 table(fun_arprd$statistic.lin[[1]]*100)
+
+# check zeroes
+table(fun_arprd$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
 
 ##################
 # RMPG
@@ -121,7 +138,8 @@ fun_rmpgd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyrmpg, order = 
 unlist(fun_rmpgd$statistic.value)*100
 table(fun_rmpgd$statistic.lin[[6]]*100)
 
-
+# check zeroes
+table(fun_rmpgd$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
 ###################
 ## S80/S20
 ###################
@@ -135,7 +153,7 @@ vardpoor_qsrw$value
 summary(vardpoor_qsrw$lin)
 
 # function svyqsr
-fun_qsrw<-svyqsr(~eqIncome, des_eusilc, .20, h=htot, ncom=nrow(des_eusilc$variables), 
+fun_qsrw<-svyqsr(~eqIncome, des_eusilc, .20, h=htot, ncom=nrow(des_eusilc$variables),
   comp=TRUE, incvec = eusilc$eqIncome)
 
 vardpoor_qsrw$value$QSR ==fun_qsrw$value
@@ -155,7 +173,8 @@ fun_qsrd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyqsr, alpha=.20
 fun_qsrd$statistic.value
 summary(fun_qsrd$statistic.lin[[6]])
 
-
+# check zeroes
+table(fun_qsrd$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
 ##################
 # GINI
 #################
@@ -190,6 +209,46 @@ fun_ginid<- svyby(~eqIncome,by=~db040, design=des_eusilc, FUN=svygini, ncom = nr
 unlist(fun_ginid$statistic.gini_coef)*100
 summary(fun_ginid$statistic.lin[[6]]*100)
 
+
+# check zeroes
+table(fun_ginid$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
+
+# compute se
+
+lapply(fun_ginid$statistic.lin,
+  function(t){
+ x<- update(des_eusilc,t=t)
+ SE(svytotal(~t,des_eusilc ) )
+}
+)
+
+SE_lin(fun_ginid,des_eusilc )
+SE_lin(fun_giniw,des_eusilc )
+
+
+SE_lin <- function(object, design){
+  if(length(object)==2){
+  x<- update(design ,t=object$lin)
+  res<-SE(svytotal(~t,design ))
+  }
+  else{
+  lincomp<- object$statistic.lin
+  res<-lapply(lincomp,
+    function(t){
+      x<- update(design,t=t)
+      SE(svytotal(~t,design ) )
+    }
+  )
+  names(res)<-object[[1]]
+  }
+  res
+}
+
+
+str(fun_giniw)
+
+length(fun_giniw)
+
 ########################################end tests########################################
 
 
@@ -208,11 +267,11 @@ res <- data.frame(indicator= c("arpt", "arpr", "rmpg", "qsr", "gini"),
 
 res$cv<- (res$se/res$value)*100
  res
- 
+
 # variance estimates for domains
 # RMPG
 
-list_rmpg_lin<- fun_rmpgd$statistic.lin 
+list_rmpg_lin<- fun_rmpgd$statistic.lin
 names(list_rmpg_lin)<- fun_rmpgd$db040
 frame_rmpg_lin<-as.data.frame(list_rmpg_lin)
 eusilc<-cbind(eusilc,frame_rmpg_lin)
@@ -225,7 +284,9 @@ se=SE(svytotal(form_dom,des_eusilc))
 res_var_rmpg$cv<-100*res_var_rmpg$se/res_var_rmpg$values
 res_var_rmpg
 
-##
+
+
+
 
 
 

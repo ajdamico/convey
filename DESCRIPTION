@@ -1,9 +1,11 @@
 Package: convey
-Title: What the Package Does (one line, title case)
+Title: Variance Estimation of Indicators of Income Concentration and Poverty
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph)
+Authors@R: c(person(given="Djalma", family="Pessoa", email = "pessoad@gmail.com", role = c("aut", "cre"))
+            person(given="Anthony", family="Damico", email= "adamico@gmail.com", role= "aut"))
+Description: Estimate the variance of indicators by linearization using influence functions
+and by replicated weights.
 Depends: R (>= 3.2.1)
-License: What license is it under?
+License: GPL-2
 LazyData: true
 Suggests: testthat
