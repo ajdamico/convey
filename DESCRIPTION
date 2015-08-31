@@ -1,9 +1,9 @@
 Package: convey
-Title: income concentration analysis with complex survey samples
+Title: Variance Estimation of Indicators of Income Concentration and Poverty
 Version: 0.1
 Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("aut","cre")),
             person("Anthony", "Damico", email= "ajdamico@gmail.com", role= "aut"))
-Description: Variance estimation on indicators of income concentration and poverty using linearized or replication-based survey designs.  Wrapper around packages vardpoor and survey.
+Description: Estimation of the variance of indicators by linearization or by replicated weights.
 Depends: R (>= 3.2.1)
 License: GPL-2
 LazyData: true
