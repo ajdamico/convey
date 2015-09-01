@@ -52,7 +52,7 @@ svyrmpg <-  function( formula , design , ... ){
 
 }
 
-svyrmpg.survey.design <- function(formula, design, order =.50, percent = .60, ncom , h, comp, ARPT, ...){
+svyrmpg.survey.design2 <- svyrmpg.survey.design <- function(formula, design, order =.50, percent = .60, ncom , h, comp, ARPT, ...){
   w<-weights(design)
   ind<-names(w)
   N<-sum(w)

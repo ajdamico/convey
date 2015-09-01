@@ -49,7 +49,7 @@ svyqsr <-  function( formula , design , ... ){
 }
 
 
-svyqsr.survey.design <- function(formula, design, alpha= .20, ncom, comp, incvec, ...) {
+svyqsr.survey.design2 <- svyqsr.survey.design <- function(formula, design, alpha= .20, ncom, comp, incvec, ...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]

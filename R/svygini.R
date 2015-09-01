@@ -43,7 +43,7 @@ svygini <-  function( formula , design , ... ){
 }
 
 
-svygini.survey.design<- function(formula, design, ncom, comp=TRUE,...){
+svygini.survey.design2 <- svygini.survey.design <- function(formula, design, ncom, comp=TRUE,...){
   inc <- terms.formula(formula)[[2]]
   w<- weights(design)
   ind<-names(w)

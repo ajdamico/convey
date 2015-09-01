@@ -49,7 +49,7 @@
 
 }
 
-svyarpr.survey.design <- function(formula, design, order = .50, percent =.6, h, ARPT, ncom, ...){
+svyarpr.survey.design2 <- svyarpr.survey.design <- function(formula, design, order = .50, percent =.6, h, ARPT, ncom, ...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   incvar<-df[[as.character(inc)]]

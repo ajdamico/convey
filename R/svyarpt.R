@@ -46,7 +46,7 @@ svyarpt <-  function( formula , design , ... ){
 
   }
 
-svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {
+svyarpt.survey.design2 <- svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {
   w <- weights(design)
   ind<-names(w)
   quant_val<- svyquantile(x = formula, design=design,
