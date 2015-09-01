@@ -1,3 +1,16 @@
+#'Complete the linearezed values with 0's
+#'
+#' Complete the vector of the linearized value of an indicator for a domain with
+#' 0 values coresponding to the other domains
+#'
+#' @param x vetor with linearized vaues for the domain
+#' @param n the length of the vector forthe whole sample
+#'
+#' @return vector with 0 in the elements outside the domain
+#' @author Djalma Pessoa and Anthony Damico
+#' @keywords survey
+#' @export
+
 
 complete<-function(x,n){
   ind.all<-as.character(1:n)
@@ -7,14 +20,17 @@ complete<-function(x,n){
   x.comp
 }
 
+#'Computes the bandwidth needed to compute the derivative of the cdf function
+#'
+#'Using the whole sample, computes the bandwith used to get the linearized variable
+#'
+#' @param inc_var income variable used in the estimation of the indicators
+#' @param w vector of design weights
+#' @return value of the bandwidth
+#' @author Djalma Pessoa and Anthony Damico
+#' @keywords survey
+#' @export
 
-######################################
-# estimation of the density function
-#####################################
-
-
-
-# h  has to be computed from all values
 
 h_fun<-function(inc_var, w){
   N<-sum(w)
@@ -23,6 +39,20 @@ h_fun<-function(inc_var, w){
   h
  }
 
+#'Estimate the derivative of the cdf function using kernel estimator
+#'
+#'computes the derivative of a function in a point using kernel estimation
+#'
+#'@param formula a formula specifying the income variable
+#'@param design a design object of class \code{survey.design} of the library survey
+#'@param x the point where the derivative is calculated
+#'@param htot value of the bandwidth based on the whole sample
+#'@param if \code{F} estimates the derivative of the cdf function; if \code{S} estimates
+#'the derivative of total in the tails of the distribution
+#'@return the value of the derivative at \code{x}
+#'@author Djalma Pessoa and Anthony Damico
+#'@keywords survey
+#'@export
 
 densfun <- function(formula, design, x, htot=NULL, fun=c("F","S"),...){
 inc <- terms.formula(formula)[[2]]
@@ -228,6 +258,7 @@ isq <- function(formula, design, alpha, type = c("inf","sup"), h=NULL, ncom, inc
 
 
 
+
 computeQuantiles<-function(xx, w, p=quantiles){
   if (any(is.na(xx))) return(NA*p)
   oo<-order(xx)
@@ -238,23 +269,48 @@ computeQuantiles<-function(xx, w, p=quantiles){
 }
 
 
-
-
-# function to extract the variance
+#' Extracts the se estimate
+#'
+#' Computes the se from the linearized variable.
+#'
+#' @param object output of a linearizing indicator function
+#' @param design a survey design object of the library survey
+#' @return the estime of the indicator se
+#'
+#' @author Djalma Pessoa and Anthony Damico
+#'
+#' @keywords survey
+#'
+#' @examples
+#' library(vardpoor)
+#' data(eusilc)
+#' library(survey)
+#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
+#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = nrow(eusilc),
+#' comp=TRUE, incvec = eusilc$eqIncome)
+#' # se estimate of isq_eqIncome for the whole sample
+#' SE_lin(qsr_eqIncome, des_eusilc)
+#' # se estimates for domains
+#' isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
+#' FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE,
+#' incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
+#' SE_lin(isq_eqIncome_dom, des_eusilc)
+#' @export
 
 SE_lin <- function(object, design){
 
   if(length(object)==2){
     t<-object$lin
     x<- update(design,t=t)
-    res<-SE(svytotal(~t,design ))
+    res<-SE(svytotal(~t,x ))
   }
   else{
   lincomp<- object$statistic.lin
   list_se<-lapply(lincomp,
     function(t){
       x<- update(design,t=t)
-      SE(svytotal(~t,design ) )
+      SE(svytotal(~t,x ) )
     }
   )
     names(list_se)<-object[[1]]
@@ -263,11 +319,6 @@ SE_lin <- function(object, design){
 
   res
 }
-
-
-
-
-
 
 
 

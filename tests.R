@@ -295,6 +295,22 @@ lin_median$value
 SE_lin(lin_median, des_eusilc)
 names(lin_median)
 
+## compare with vardpoor
+## example of function varpoord of the library vardpoor
+
+dataset1<- eusilc[1:1000,]
+
+des_eusilc0<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050, data = dataset1, nest = TRUE)
+
+htot <-h_fun(dataset1$eqIncome, dataset1$rb050)
+
+test_arpt<-svyarpt(~eqIncome, des_eusilc0, .5, .6, h=htot, ncom=nrow(dataset1), comp=TRUE )
+
+test_arpt$value
+SE_lin(test_arpt, des_eusilc0 )
+
+
+
 
 
 
