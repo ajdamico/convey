@@ -39,12 +39,11 @@
 #' ncom=nrow(eusilc), comp=TRUE)
 #'
 #' @export
+svyarpt <-function( formula , design , ... ){
 
-svyarpt <-  function( formula , design , ... ){
+  UseMethod( "svyarpt" , design )
 
-    UseMethod( "svyarpt" , design )
-
-  }
+}
 
 #' @export
 svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {

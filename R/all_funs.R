@@ -238,19 +238,18 @@ computeQuantiles<-function(xx, w, p=quantiles){
 }
 
 
-computeQuantilesRounded<-function(xx, w,p=quantiles){
-  if (any(is.na(xx))) return(NA*p)
-  ww<-rowsum(w,xx,reorder=TRUE)
-  xx<-sort(unique(xx))
-  cum.w <- cumsum(ww)/sum(ww)
-  cdf <- approxfun(cum.w, xx, method = "constant", f = 1,
-    yleft = min(xx), yright = max(xx),ties=min)
-  cdf(p)
-}
+
 
 # function to extract the variance
 
 SE_lin <- function(object, design){
+
+  if(length(object)==2){
+    t<-object$lin
+    x<- update(design,t=t)
+    res<-SE(svytotal(~t,design ))
+  }
+  else{
   lincomp<- object$statistic.lin
   list_se<-lapply(lincomp,
     function(t){
@@ -258,8 +257,11 @@ SE_lin <- function(object, design){
       SE(svytotal(~t,design ) )
     }
   )
-  names(list_se)<-object[[1]]
-  list_se
+    names(list_se)<-object[[1]]
+    res<- list_se
+    }
+
+  res
 }
 
 

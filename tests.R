@@ -29,11 +29,9 @@ table(vardpoor_arptw$lin$lin_arpt)
 
 ## whole population
 #  function svyarpt
- fun_arptw <-  svyarpt.survey.design(~eqIncome, design=des_eusilc, .5, .6, h=htot,
+ fun_arptw <-  svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
   ncom=nrow(des_eusilc$variables), comp=TRUE)
 
- svyarpt.survey.design(~eqIncome, design=des_eusilc, .5, .6, h=htot,
-   ncom=nrow(des_eusilc$variables), comp=TRUE)
 
 fun_arptw$value
 table(fun_arptw$lin)
@@ -283,6 +281,20 @@ se=SE(svytotal(form_dom,des_eusilc))
     )
 res_var_rmpg$cv<-100*res_var_rmpg$se/res_var_rmpg$values
 res_var_rmpg
+
+# teste quantile linearization vs svyquantile
+
+SE(svyquantile(~eqIncome, des_eusilc, .5 , ci=TRUE, method="constant"))
+
+lin_median<-iqalpha(~eqIncome, des_eusilc, .5, h=NULL, ncom= nrow(eusilc),
+  comp=TRUE, incvec=eusilc$eqIncome)
+
+names(lin_median)
+lin_median$value
+
+SE_lin(lin_median, des_eusilc)
+names(lin_median)
+
 
 
 
