@@ -45,8 +45,7 @@ svyarpt <-  function( formula , design , ... ){
     UseMethod( "svyarpt" , design )
 
   }
-  
-#' @export
+
 svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {
   w <- weights(design)
   ind<-names(w)
@@ -67,7 +66,6 @@ svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, 
 
 }
 
-#' @export
 svyarpt.svyrep.design <- function(formula, design, order = .50, percent =.6,...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
