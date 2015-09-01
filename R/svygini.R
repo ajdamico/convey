@@ -42,7 +42,7 @@ svygini <-  function( formula , design , ... ){
 
 }
 
-
+#' @export
 svygini.survey.design<- function(formula, design, ncom, comp=TRUE,...){
   inc <- terms.formula(formula)[[2]]
   w<- weights(design)
@@ -80,7 +80,7 @@ svygini.survey.design<- function(formula, design, ncom, comp=TRUE,...){
   list(gini_coef=Gini, lin = res)
 }
 
-
+#' @export
 svygini.svyrep.design<- function(formula, design,...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)

@@ -48,7 +48,7 @@ svyqsr <-  function( formula , design , ... ){
 
 }
 
-
+#' @export
 svyqsr.survey.design <- function(formula, design, alpha= .20, ncom, comp, incvec, ...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
@@ -86,6 +86,7 @@ svyqsr.survey.design <- function(formula, design, alpha= .20, ncom, comp, incvec
   list(value = qsr, lin = lin_qsr)
 }
 
+#' @export
 svyqsr.svyrep.design <- function(formula, design, alpha= .20, ...) {
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)

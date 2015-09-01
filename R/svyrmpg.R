@@ -52,6 +52,7 @@ svyrmpg <-  function( formula , design , ... ){
 
 }
 
+#' @export
 svyrmpg.survey.design <- function(formula, design, order =.50, percent = .60, ncom , h, comp, ARPT, ...){
   w<-weights(design)
   ind<-names(w)
@@ -84,6 +85,7 @@ svyrmpg.survey.design <- function(formula, design, order =.50, percent = .60, nc
   list(value = RMPG, lin = linrmpg)
 }
 
+#' @export
 svyrmpg.svyrep.design <- function(formula, design, order =.50, percent = .60, ...){
   inc <- terms.formula(formula)[[2]]
   df <- model.frame(design)
