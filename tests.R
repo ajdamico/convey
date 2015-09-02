@@ -10,7 +10,7 @@ library(survey)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 percent<-.6
 order<-.5
-htot<- h_fun(eusilc$eqIncome,eusilc$rb050)
+htot<- convey:::h_fun(eusilc$eqIncome,eusilc$rb050)
 ################
 # ARPT
 ###############
@@ -295,24 +295,80 @@ lin_median$value
 SE_lin(lin_median, des_eusilc)
 names(lin_median)
 
-## compare with vardpoor
-## example of function varpoord of the library vardpoor
+########################################################################################
+## Estimation of se
+## compare vardpoor with functions
+## examples of function varpoord of the library vardpoor
+
+
+#1.  whole sample
+data(eusilc)
+dataset <- data.frame(1:nrow(eusilc),eusilc)
+colnames(dataset)[1] <- "IDd"
+dataset1 <- dataset[1:1000,]
+
+aa<-varpoord(Y = "eqIncome", w_final = "rb050",
+  Y_thres = NULL, wght_thres = NULL,
+  ID_household = "db030", id = "IDd",
+  H = "db040", PSU = "rb030", N_h = NULL,
+  sort = NULL, Dom = NULL,
+  gender = NULL, X = NULL,
+  X_ID_household = NULL, g = NULL,
+  datasetX = NULL,
+  q = rep(1, if (is.null(datasetX))
+    nrow(as.data.frame(H)) else nrow(datasetX)),
+  dataset =  dataset1, percentage=60, order_quant=50,
+  alpha = 20, confidence = .95, outp_lin = FALSE,
+  outp_res = FALSE, several.ok=FALSE, type="linarpt")
+
+aa$all_result$value
+aa$all_result$se
+
+# using the functions
 
 dataset1<- eusilc[1:1000,]
 
 des_eusilc0<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050, data = dataset1, nest = TRUE)
 
-htot <-h_fun(dataset1$eqIncome, dataset1$rb050)
+htot <-convey:::h_fun(dataset1$eqIncome, dataset1$rb050)
 
 test_arpt<-svyarpt(~eqIncome, des_eusilc0, .5, .6, h=htot, ncom=nrow(dataset1), comp=TRUE )
 
 test_arpt$value
-SE_lin(test_arpt, des_eusilc0 )
+
+convey:::SE_lin(test_arpt, des_eusilc0 )
 
 
+# 2.  domains
+##vardpoor
+data(eusilc)
+dataset <- data.frame(1:nrow(eusilc),eusilc)
+colnames(dataset)[1] <- "IDd"
+dataset1 <- dataset[1:1000,]
+aa1 <-varpoord(Y = "eqIncome", w_final = "rb050",
+  Y_thres = NULL, wght_thres = NULL,
+  ID_household = "db030", id = "IDd",
+  H = "db040", PSU = "rb030", N_h = NULL,
+  sort = NULL, Dom = "db040",
+  gender = NULL, X = NULL,
+  X_ID_household = NULL, g = NULL,
+  datasetX = NULL,
+  q = rep(1, if (is.null(datasetX))
+    nrow(as.data.frame(H)) else nrow(datasetX)),
+  dataset =  dataset1, percentage=60, order_quant=50,
+  alpha = 20, confidence = .95, outp_lin = FALSE,
+  outp_res = FALSE, several.ok=FALSE, type="linarpt")
 
+aa1$all_result$value
+aa1$all_result$se
 
+## using the functions
 
+test_arpt_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpt, design = des_eusilc0, .5, .6,
+  h=htot, ncom=nrow(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
+
+test_arpt_dom$statistic.value
+convey:::SE_lin(test_arpt_dom, des_eusilc0 )
 
 
 
