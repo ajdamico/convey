@@ -1,5 +1,5 @@
 ######################################
-# tests:  functions vs library vardpoor
+# tests:  convey vs vardpoor
 ######################################
 
 library(vardpoor)
@@ -7,56 +7,56 @@ data(eusilc)
 dati=data.frame(1:nrow(eusilc),eusilc)
 colnames(dati)[1] <- "IDd"
 library(survey)
+# create a design object
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-percent<-.6
-order<-.5
-htot<- convey:::h_fun(eusilc$eqIncome,eusilc$rb050)
+
+
 ################
 # ARPT
 ###############
-# library vardpoor
+
+# linearize the indicator arpt:  whole sample
+#  library vardpoor
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
 vardpoor_arptw <- linarpt(Y="eqIncome", id="IDd", weight = "rb050", Dom = NULL,
   dataset = dati, percentage = 60, order_quant=50)
+# show results from vardpoor
+  # arpt estimate
 vardpoor_arptw$value
+  # linearized arpt for whole sample
 table(vardpoor_arptw$lin$lin_arpt)
 
 
-# ARPT_var<-svyCprod(lin/design$prob,design$strata,
-#   design$cluster[[1]], design$fpc,
-#   design$nPSU,design$certainty,design$postStrata)
-
-
-## whole population
-#  function svyarpt
+#  library convey
+# whole sample
  fun_arptw <-  svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
   ncom=nrow(des_eusilc$variables), comp=TRUE)
-
-
+# show results from convey
+  # arpt estimate
 fun_arptw$value
+  # linearized arpt for whole sample
 table(fun_arptw$lin)
 
 
-#  domains
+#  Linearize the indicator arpt: domains
 #  library vardpoor
 vardpoor_arptd <- linarpt(Y="eqIncome", id="IDd", weight="rb050", Dom="db040",
   dataset=dati, percentage=60, order_quant=50)
-
+# show results from library convey:
+  # arpt estimate
 vardpoor_arptd$value
+  # linearized arpt for the domain Tyrol
 table(vardpoor_arptd$lin$lin_arpt__db040.Tyrol)
 
-#  convey
 
+#  library convey
 fun_arptd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpt, order = .50, percent =.6,
   h= htot,ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE, keep.names = TRUE)
-
-
-str(fun_arptd)
+# show results from library convey
+   # arpt estimates
 fun_arptd$statistic.value
+   # linearized arpt for the domain Tyrol
 table(fun_arptd$statistic.lin[[6]])
-
-# check zeroes
-table(fun_arptd$statistic.lin[[6]]==0,eusilc$db040=='Tyrol')
 
 
 
@@ -64,221 +64,179 @@ table(fun_arptd$statistic.lin[[6]]==0,eusilc$db040=='Tyrol')
 # ARPR
 #######################
 
-# entire population
-# library vardpoor
+# linearize the indicator arpr:  whole sample
+# vardpoor
 vardpoor_arprw <- linarpr(Y="eqIncome", id="IDd", weight = "rb050", Dom = NULL,
   dataset = dati, percentage = 60, order_quant=50)
+# show results from vardpoor
+  # arpr estimate
+vardpoor_arptw$value
+  # linearized arpr for whole sample
+table(vardpoor_arptw$lin$lin_arpt)
 
+# convey
+fun_arprw <-svyarpr(~eqIncome, des_eusilc, .5, .6, h=htot, ARPT=fun_arptw,
+  ncom=nrow(des_eusilc$variables))
 
-# function svyarpr
-fun_arprw <-svyarpr(~eqIncome, des_eusilc, .5, .6, h=htot, ARPT=fun_arptw,  ncom=nrow(des_eusilc$variables))
-
-# test
+# compare results from vardpoor and convey
 vardpoor_arprw$value==fun_arprw$value*100
 all.equal(vardpoor_arprw$lin$lin_arpr,(fun_arprw$lin)*100)
 
-# domains
+#  Linearize the indicator arpr: domains
 
 #library vardpoor
 vardpoor_arprd <- linarpr(Y="eqIncome", id="IDd", weight = "rb050", Dom = "db040",
   dataset = dati, percentage = 60, order_quant=50)
-
+# show results from vardpoor
+ #  estimates of arpr
 vardpoor_arprd$value
+# linearized arpr for the domain Tyrol
 table(vardpoor_arprd$lin$lin_arpr__db040.Burgenland)
 
-# svyarpr
-
+# convey
 fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50, percent =.6, h= htot, ARPT=fun_arptw, ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
-
+# show results from convey
+ # arpr estimates
 unlist(fun_arprd$statistic.value)*100
-
+# linearized arpr for Burgenland
 table(fun_arprd$statistic.lin[[1]]*100)
-
-# check zeroes
-table(fun_arprd$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
 
 ##################
 # RMPG
 ##################
-data(eusilc)
-dati=data.frame(1:nrow(eusilc),eusilc)
-colnames(dati)[1] <- "IDd"
 
-# whole population
+# linearize the indicator rmpg:  whole sample
 # library vardpoor
 vardpoor_rmpgw<-linrmpg(Y="eqIncome", id="IDd", weight="rb050", Dom=NULL,
   dataset=dati, percentage=60, order_quant=50)
-
+# show results from library vardpoor
+ # rmpg estimate
 vardpoor_rmpgw$value
+ # linearized rmpg
 table(vardpoor_rmpgw$lin$lin_rmpg)
 
-# function svyrmpg
-fun_rmpgw<- svyrmpg(~eqIncome, des_eusilc, .5, .6, h=htot, ncom=nrow(des_eusilc$variables), ARPT=fun_arptw)
-
+# library convey
+fun_rmpgw<- svyrmpg(~eqIncome, des_eusilc, .5, .6, h=htot, ncom=nrow(des_eusilc$variables),
+  ARPT=fun_arptw)
+# show results from library convey
+  # rmpg estimate
 fun_rmpgw$value*100
+ # rmpg linearized variable
 table(fun_rmpgw$lin*100)
 
 
-# domains
+# Linearize the indicator rmpg: domains
 
-# By domains
+
 # library vardpoor
 vardpoor_rmpgd<-linrmpg(Y="eqIncome", id="IDd", weight = "rb050", Dom="db040",
   dataset=dati, percentage=60, order_quant=50)
-
+# show results from library vardpoor
+  # rmpg estimates
 vardpoor_rmpgd$value
+  # rmpg linearizd variable for the domain Tyrol
 table(vardpoor_rmpgd$lin$lin_rmpg__db040.Tyrol)
-# svyrmpg
 
+# library convey
 fun_rmpgd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyrmpg, order = .50, percent =.6,
   h= htot, ARPT=fun_arptw,  ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
 
+# show results from library convey
+  # rmpg estimates
 unlist(fun_rmpgd$statistic.value)*100
+  # rmpg linearizd variable for the domain Tyrol
 table(fun_rmpgd$statistic.lin[[6]]*100)
 
-# check zeroes
-table(fun_rmpgd$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
+
 ###################
 ## S80/S20
 ###################
-#  whole population
-
+# linearize the indicator qsr:  whole sample
 # library vardpoor
+
 vardpoor_qsrw <- linqsr(Y="eqIncome", id="IDd", weight="rb050",
   Dom=NULL, dataset= dati, alpha=20)
-
+# show results from the library vardpoor
+# qsr estimate
 vardpoor_qsrw$value
+#  summary of the linearized qsr
 summary(vardpoor_qsrw$lin)
 
-# function svyqsr
+# library convey
 fun_qsrw<-svyqsr(~eqIncome, des_eusilc, .20, h=htot, ncom=nrow(des_eusilc$variables),
   comp=TRUE, incvec = eusilc$eqIncome)
 
+# compare results from vardpoor and convey
+  # qsr estimate
 vardpoor_qsrw$value$QSR ==fun_qsrw$value
-
+  # linearized qsr
 all.equal(vardpoor_qsrw$lin$lin_qsr,fun_qsrw$lin)
 
-# domain
+# Linearize the indicator qsr: domains
 
+# library vardpoor
 vardpoor_qsrd <- linqsr(Y="eqIncome", id="IDd", weight="rb050",
   Dom="db040", dataset= dati, alpha=20)
+# Show results from library vardpoor
+ # qsr estimate
 vardpoor_qsrd$value
+ # linearized qsr
 summary(vardpoor_qsrd$lin$lin_qsr__db040.Tyrol)
 
-
+# library convey
 fun_qsrd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE, incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
-
+# Show results from library convey
+ # qsr estimate
 fun_qsrd$statistic.value
+ # linearized qsr
 summary(fun_qsrd$statistic.lin[[6]])
 
-# check zeroes
-table(fun_qsrd$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
 ##################
 # GINI
 #################
-# whole population
+# linearize the indicator gini:  whole sample
 # library vardpoor
 
 vardpoor_giniw<-lingini(Y="eqIncome", id="IDd", weight="rb050", dataset=dati)
-
+# show the results from library vardpoor
+# gini estimate
 vardpoor_giniw$value$Gini
+# linearized gini
 summary(vardpoor_giniw$lin$lin_gini)
 
-
-
-# function svygini
+# library convey
 fun_giniw <- svygini(~eqIncome, des_eusilc, ncom = nrow(eusilc), comp=TRUE)
-
+# Show the results from library convey
+  # gini estimate
 fun_giniw$gini_coef
+  # linearized gini
 summary(fun_giniw$lin)
 
-
-
-# domain
-# using vardpoor
+# Linearize the indicator qsr: domains
+# library vardpoor
 vardpoor_ginid <- lingini(Y="eqIncome", id="IDd", weight="rb050", Dom=c("db040"), dataset=dati)
+# show results from library vardpoor
+# gini estimates
 vardpoor_ginid$value
+# linearized gini for the Tyrol domain
 summary(vardpoor_ginid$lin$lin_gini__db040.Tyrol)
 
-# using function
+# library convey
 fun_ginid<- svyby(~eqIncome,by=~db040, design=des_eusilc, FUN=svygini, ncom = nrow(eusilc),
   comp=TRUE, deff=FALSE, keep.var=FALSE)
-
+# show results from library convey
+  # gini estimates
 unlist(fun_ginid$statistic.gini_coef)*100
+  # linearized gini for the Tyrol domain
 summary(fun_ginid$statistic.lin[[6]]*100)
 
 
-# check zeroes
-table(fun_ginid$statistic.lin[[6]]==0, eusilc$db040=='Tyrol')
+###########################################################
+## se estimation
+############################################################
 
-# compute se
-
-lapply(fun_ginid$statistic.lin,
-  function(t){
- x<- update(des_eusilc,t=t)
- SE(svytotal(~t,des_eusilc ) )
-}
-)
-
-SE_lin(fun_ginid,des_eusilc )
-SE_lin(fun_giniw,des_eusilc )
-
-
-########################################end tests########################################
-
-
-# variance estimes for the whole population
-
-# include linearized variables in the design object
-des_eusilc <- update(des_eusilc,linarpt=fun_arptw$lin, linarpr=fun_arprw$lin, linrmg=fun_rmpgw$lin,
-   linqsr=fun_qsrw$lin, lingini=fun_giniw$lin)
-
-SE(svytotal(~linarpt+linarpr+linrmg+linqsr+lingini, des_eusilc))
-
-res <- data.frame(indicator= c("arpt", "arpr", "rmpg", "qsr", "gini"),
-    value= c(fun_arptw$value,fun_arprw$value,fun_rmpgw$value, fun_qsrw$value, fun_giniw$gini_coef),
-     se=SE(svytotal(~linarpt+linarpr+linrmg+linqsr+lingini, des_eusilc))
-    )
-
-res$cv<- (res$se/res$value)*100
- res
-
-# variance estimates for domains
-# RMPG
-
-list_rmpg_lin<- fun_rmpgd$statistic.lin
-names(list_rmpg_lin)<- fun_rmpgd$db040
-frame_rmpg_lin<-as.data.frame(list_rmpg_lin)
-eusilc<-cbind(eusilc,frame_rmpg_lin)
-des_eusilc<-svydesign(ids=~db040, weights=~rb050, data=eusilc)
-form_dom<-make.formula(names(frame_rmpg_lin))
-res_var_rmpg<- data.frame(domains=names(frame_rmpg_lin),
-  values=unlist(fun_rmpgd$statistic.value),
-se=SE(svytotal(form_dom,des_eusilc))
-    )
-res_var_rmpg$cv<-100*res_var_rmpg$se/res_var_rmpg$values
-res_var_rmpg
-
-# teste quantile linearization vs svyquantile
-
-SE(svyquantile(~eqIncome, des_eusilc, .5 , ci=TRUE, method="constant"))
-
-lin_median<-iqalpha(~eqIncome, des_eusilc, .5, h=NULL, ncom= nrow(eusilc),
-  comp=TRUE, incvec=eusilc$eqIncome)
-
-names(lin_median)
-lin_median$value
-
-SE_lin(lin_median, des_eusilc)
-names(lin_median)
-
-########################################################################################
-## Estimation of se
-## compare vardpoor with functions
-## examples of function varpoord of the library vardpoor
-
-
-#1.  whole sample - arpt
+#  indicator arpt, whole sample
+# library vardpoor
 data(eusilc)
 dataset <- data.frame(1:nrow(eusilc),eusilc)
 colnames(dataset)[1] <- "IDd"
@@ -298,42 +256,33 @@ aa<-varpoord(Y = "eqIncome", w_final = "rb050",
   alpha = 20, confidence = .95, outp_lin = TRUE,
   outp_res = FALSE, several.ok=FALSE, type="linarpt")
 
+# Show results from library vardpoor
+   # arpt estimate
 aa$all_result$value
+   # se of the arpt estimate
 aa$all_result$se
 
 
-# using convey
 
+# library convey
 dataset1<- eusilc[1:1000,]
-
 # introduce fpc in the design object:
 dataset1$fpc<- 1/dataset1$rb050
 
 des_eusilc0<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
   data = dataset1, fpc = ~fpc, nest = TRUE)
-
+# estimate bandwdth using the whole sample
 htot <- h_fun(dataset1$eqIncome, dataset1$rb050)
 
 test_arpt<-svyarpt(~eqIncome, des_eusilc0, .5, .6, h=htot, ncom=nrow(dataset1), comp=TRUE )
-
+#show results from convey
+   # arpt estimate
 test_arpt$value
+  # se of the arpt estimate
 SE_lin(test_arpt, des_eusilc0 )
 
-# compare
+##  indicator arpt, domains
 
-# linearized variables matching:
-all.equal(aa$lin_out$lin_arpt,test_arpt$lin )
-
-# values
-aa$all_result$value
-test_arpt$value
-
-# se
-aa$all_result$se
-SE_lin(test_arpt, des_eusilc0 )
-
-
-# 2.  domains - arpt
 ##vardpoor
 data(eusilc)
 dataset <- data.frame(1:nrow(eusilc),eusilc)
@@ -353,34 +302,31 @@ aa1 <-varpoord(Y = "eqIncome", w_final = "rb050",
   alpha = 20, confidence = .95, outp_lin = TRUE,
   outp_res = FALSE, several.ok=FALSE, type="linarpt")
 
-
+# Show results from vardpoor
 res_vardpoor_arpt<- as.data.frame(aa1$all_result)
-res_vardpoor_arpt<- res_vardpoor_se_arpt[,c("type","db040","value", "se")]
+res_vardpoor_arpt<- res_vardpoor_arpt[,c("type","db040","value", "se")]
+as.data.frame(as.data.frame(aa1$all_result))[,c("type","db040","value", "se")]
 
-## using convey
+## convey
 
 test_arpt_dom1<-svyby(~eqIncome, by=~db040, FUN=svyarpt, design = des_eusilc0, .5, .6,
   h=htot, ncom=nrow(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
 se_arpt_dom1 <- SE_lin(test_arpt_dom1,des_eusilc0)
 
+# show resuts from convey
 res_convey_arpt<- data.frame(domain=test_arpt_dom1$db040, type= rep("arpt",length(se_arpt_dom1)),
   value= unlist(test_arpt_dom1$statistic.value), se=unlist(se_arpt_dom1))
 
-# compare res_vardpoor_arpt with res_convey_arpt
-res_vardpoor_arpt
-res_convey_arpt
 
-# Note; the linearized variable by convey and vardpoor coincide
-# the difference in the se value is due the estimation of the total
-# of the linearized variable.
+# Note: the linearized variable by convey and vardpoor coincide
+# the difference in the se value is due to the differece in the estimation of the of the total
 
 
 
 
+# all indicators, domains
 
-
-##################################################################
-## all indicators domain
+# vardpoor
 
 aa2 <- varpoord(Y = "eqIncome", w_final = "rb050",
   Y_thres = NULL, wght_thres = NULL,
@@ -396,63 +342,76 @@ aa2 <- varpoord(Y = "eqIncome", w_final = "rb050",
   alpha = 20, confidence = .95, outp_lin = TRUE,
   outp_res = TRUE, several.ok=FALSE, type="all_choices")
 
-aa2$all_result$value
-as.data.frame(aa2$all_result)-> res_vardpoor_se
-res_vardpoor_se<- res_vardpoor_se[,c("type","db040","value", "se")]
+# Show results from vardpoorresult for ARPT from example 3:
+subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="ARPT")
 
 
+# convey
 
-## using convey
-
+# arpt domains
 test_arpt_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpt, design = des_eusilc0, order=.5,
   percent=.6, h=htot, ncom=nrow(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
-se_arpt_dom <- convey:::SE_lin(test_arpt_dom,des_eusilc0)
+se_arpt_dom <- SE_lin(test_arpt_dom,des_eusilc0)
+# organize results for arpt
 frame_arpt<- data.frame(domain=test_arpt_dom$db040, type= rep("arpt",length(se_arpt_dom)),
   value= unlist(test_arpt_dom$statistic.value), se=unlist(se_arpt_dom))
 
-
+# arpr domains
 test_arpr_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpr, design = des_eusilc0, order=.5,
   percent=.6,  h=htot, ARPT=test_arpt, ncom=nrow(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
-se_arpr_dom <- convey:::SE_lin(test_arpr_dom,des_eusilc0)
+se_arpr_dom <- SE_lin(test_arpr_dom,des_eusilc0)
+# organize results for arpr
 frame_arpr<- data.frame(domain=test_arpr_dom$db040, type= rep("arpr",length(se_arpr_dom)),
   value= unlist(test_arpr_dom$statistic.value), se=unlist(se_arpr_dom))
 
-
-
+# rmpg domains
 test_rmpg_dom<-svyby(~eqIncome, by=~db040, FUN=svyrmpg, design = des_eusilc0, order=.5,
   percent=.6, h=htot, ncom=nrow(dataset1), comp=TRUE, ARPT=test_arpt, deff=FALSE, keep.var=FALSE)
 se_rmpg_dom <- convey:::SE_lin(test_rmpg_dom,des_eusilc0)
+# organize results for rmpg
 frame_rmpg<- data.frame(domain=test_rmpg_dom$db040, type= rep("rmpg",length(se_rmpg_dom)),
   value= unlist(test_rmpg_dom$statistic.value), se=unlist(se_rmpg_dom))
 
+# qsr domains
 test_qsr_dom<-svyby(~eqIncome, by=~db040, FUN=svyqsr, design = des_eusilc0, alpha=.20,
   ncom=nrow(dataset1), comp=TRUE, incvec= dataset1$eqIncome,deff=FALSE, keep.var=FALSE)
-se_qsr_dom <- convey:::SE_lin(test_qsr_dom,des_eusilc0)
+se_qsr_dom <- SE_lin(test_qsr_dom,des_eusilc0)
+# organize results for qsr
 frame_qsr<- data.frame(domain=test_qsr_dom$db040, type= rep("qsr",length(se_arpr_dom)),
   value= unlist(test_qsr_dom$statistic.value), se=unlist(se_qsr_dom))
 
-
+# gini domains
 test_gini_dom<-svyby(~eqIncome, by=~db040, FUN=svygini, design = des_eusilc0,
   ncom=nrow(dataset1), comp=TRUE,deff=FALSE, keep.var=FALSE)
-se_gini_dom <- convey:::SE_lin(test_gini_dom,des_eusilc0)
+se_gini_dom <- SE_lin(test_gini_dom,des_eusilc0)
+# organize results for gini
 frame_gini<- data.frame(domain=test_gini_dom$db040, type= rep("gini",length(se_gini_dom)),
   value= unlist(test_gini_dom$statistic.gini_coef), se=unlist(se_gini_dom))
 
-## organize results
-table(res_vardpoor_se$type)
 
+# compare results from vardpoor and convey
+# arpt
 frame_arpt
 subset(res_vardpoor_se, type=="ARPT")
 
+# arpr
 frame_arpr
 subset(res_vardpoor_se, type=="ARPR")
 
+# rmpg
 frame_rmpg
 subset(res_vardpoor_se, type=="RMPG")
 
-
+# qsr
 frame_qsr
 subset(res_vardpoor_se, type=="QSR")
 
+# gini
+frame_gini
+subset(res_vardpoor_se, type=="GINI")
+
+
+# Note: subset(res_vardpoor_se, type=="ARPT")
+# should have been the same as the result of the second example.
 
 
