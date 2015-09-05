@@ -1,0 +1,21 @@
+library(convey)
+context("icdf output")
+set.seed(1)
+Y<- rchisq(10,3)
+H<- rep("str1",10)
+PSU<-1:10
+w<- rep(2,10)
+test<- data.frame(Y=Y, H=H, PSU=PSU, w=w)
+des<- svydesign(id=~PSU, strata = ~H, weights=w, data=test)
+a<-icdf(~Y, des, 3, 10, comp=TRUE)
+
+test_that("out components", {
+  expect_is(a,"list")
+  expect_equal(length(a),2)
+  expect_is(a$value,"numeric")
+  expect_is(a$lin,"numeric")
+  expect_equal(length(a$lin),nrow(test))
+  expect_named(a$lin)
+  expect_less_than(a$value,1)
+  expect_more_than(a$value,0)
+})

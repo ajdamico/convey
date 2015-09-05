@@ -3,7 +3,7 @@
 #' Complete the vector of the linearized value of an indicator for a domain with
 #' 0 values coresponding to the other domains
 #'
-#' @param x vetor with linearized vaues for the domain
+#' @param x vetor with linearized values for the domain
 #' @param n the length of the vector forthe whole sample
 #'
 #' @return vector with 0 in the elements outside the domain
