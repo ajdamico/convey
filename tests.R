@@ -29,6 +29,7 @@ table(vardpoor_arptw$lin$lin_arpt)
 
 #  library convey
 # whole sample
+ htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
  fun_arptw <-  svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
   ncom=nrow(des_eusilc$variables), comp=TRUE)
 # show results from convey
@@ -187,7 +188,7 @@ summary(vardpoor_qsrd$lin$lin_qsr__db040.Tyrol)
 fun_qsrd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE, incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
 # Show results from library convey
  # qsr estimate
-fun_qsrd$statistic.value
+unlist(fun_qsrd$statistic.value)
  # linearized qsr
 summary(fun_qsrd$statistic.lin[[6]])
 
@@ -262,15 +263,22 @@ aa$all_result$value
    # se of the arpt estimate
 aa$all_result$se
 
-
-
 # library convey
 dataset1<- eusilc[1:1000,]
+
 # introduce fpc in the design object:
-dataset1$fpc<- 1/dataset1$rb050
+
+N_h <- aggregate(dataset1[,"rb050"],list(db040=dataset1$db040),FUN= sum)
+names(N_h)[2]<-"Nh"
+n_h<- aggregate(dataset1[,"rb050"],list(db040=dataset1$db040),FUN= length)
+names(n_h)[2]<-"nh"
+f_h<-merge(N_h,n_h)
+dataset1<-merge(dataset1,f_h)
+
 
 des_eusilc0<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
-  data = dataset1, fpc = ~fpc, nest = TRUE)
+  data = dataset1, fpc=~I(nh/Nh), nest = TRUE)
+
 # estimate bandwdth using the whole sample
 htot <- h_fun(dataset1$eqIncome, dataset1$rb050)
 
@@ -280,6 +288,7 @@ test_arpt<-svyarpt(~eqIncome, des_eusilc0, .5, .6, h=htot, ncom=nrow(dataset1), 
 test_arpt$value
   # se of the arpt estimate
 SE_lin(test_arpt, des_eusilc0 )
+
 
 ##  indicator arpt, domains
 
@@ -319,9 +328,8 @@ res_convey_arpt<- data.frame(domain=test_arpt_dom1$db040, type= rep("arpt",lengt
 
 
 # Note: the linearized variable by convey and vardpoor coincide
-# the difference in the se value is due to the differece in the estimation of the of the total
-
-
+# the difference in the se value is due to the difference in the estimation of the of  variance of
+# the total
 
 
 # all indicators, domains
@@ -343,47 +351,59 @@ aa2 <- varpoord(Y = "eqIncome", w_final = "rb050",
   outp_res = TRUE, several.ok=FALSE, type="all_choices")
 
 # Show results from vardpoorresult for ARPT from example 3:
-subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="ARPT")
-
 
 # convey
+N_h <- aggregate(eusilc[,"rb050"],list(db040=eusilc$db040),FUN= sum)
+names(N_h)[2]<-"Nh"
+n_h<- aggregate(eusilc[,"rb050"],list(db040=eusilc$db040),FUN= length)
+names(n_h)[2]<-"nh"
+f_h<-merge(N_h,n_h)
+eusilc<-merge(eusilc,f_h)
+
+
+des_eusilc<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
+  data = eusilc, fpc=~I(nh/Nh), nest = TRUE)
+htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
+arptw<- svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
+  ncom=nrow(des_eusilc$variables), comp=TRUE)
+
 
 # arpt domains
-test_arpt_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpt, design = des_eusilc0, order=.5,
-  percent=.6, h=htot, ncom=nrow(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
-se_arpt_dom <- SE_lin(test_arpt_dom,des_eusilc0)
+test_arpt_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpt, design = des_eusilc, order=.5,
+  percent=.6, h=htot, ncom=nrow(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
+se_arpt_dom <- SE_lin(test_arpt_dom,des_eusilc)
 # organize results for arpt
 frame_arpt<- data.frame(domain=test_arpt_dom$db040, type= rep("arpt",length(se_arpt_dom)),
   value= unlist(test_arpt_dom$statistic.value), se=unlist(se_arpt_dom))
 
 # arpr domains
-test_arpr_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpr, design = des_eusilc0, order=.5,
-  percent=.6,  h=htot, ARPT=test_arpt, ncom=nrow(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
-se_arpr_dom <- SE_lin(test_arpr_dom,des_eusilc0)
+test_arpr_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpr, design = des_eusilc, order=.5,
+  percent=.6,  h=htot, ARPT=arptw, ncom=nrow(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
+se_arpr_dom <- SE_lin(test_arpr_dom,des_eusilc)
 # organize results for arpr
 frame_arpr<- data.frame(domain=test_arpr_dom$db040, type= rep("arpr",length(se_arpr_dom)),
   value= unlist(test_arpr_dom$statistic.value), se=unlist(se_arpr_dom))
 
 # rmpg domains
-test_rmpg_dom<-svyby(~eqIncome, by=~db040, FUN=svyrmpg, design = des_eusilc0, order=.5,
-  percent=.6, h=htot, ncom=nrow(dataset1), comp=TRUE, ARPT=test_arpt, deff=FALSE, keep.var=FALSE)
-se_rmpg_dom <- convey:::SE_lin(test_rmpg_dom,des_eusilc0)
+test_rmpg_dom<-svyby(~eqIncome, by=~db040, FUN=svyrmpg, design = des_eusilc, order=.5,
+  percent=.6, h=htot, ncom=nrow(eusilc), comp=TRUE, ARPT=test_arpt, deff=FALSE, keep.var=FALSE)
+se_rmpg_dom <- SE_lin(test_rmpg_dom,des_eusilc)
 # organize results for rmpg
 frame_rmpg<- data.frame(domain=test_rmpg_dom$db040, type= rep("rmpg",length(se_rmpg_dom)),
   value= unlist(test_rmpg_dom$statistic.value), se=unlist(se_rmpg_dom))
 
 # qsr domains
-test_qsr_dom<-svyby(~eqIncome, by=~db040, FUN=svyqsr, design = des_eusilc0, alpha=.20,
-  ncom=nrow(dataset1), comp=TRUE, incvec= dataset1$eqIncome,deff=FALSE, keep.var=FALSE)
-se_qsr_dom <- SE_lin(test_qsr_dom,des_eusilc0)
+test_qsr_dom<-svyby(~eqIncome, by=~db040, FUN=svyqsr, design = des_eusilc, alpha=.20,
+  ncom=nrow(eusilc), comp=TRUE, incvec= eusilc$eqIncome,deff=FALSE, keep.var=FALSE)
+se_qsr_dom <- SE_lin(test_qsr_dom,des_eusilc)
 # organize results for qsr
 frame_qsr<- data.frame(domain=test_qsr_dom$db040, type= rep("qsr",length(se_arpr_dom)),
   value= unlist(test_qsr_dom$statistic.value), se=unlist(se_qsr_dom))
 
 # gini domains
-test_gini_dom<-svyby(~eqIncome, by=~db040, FUN=svygini, design = des_eusilc0,
-  ncom=nrow(dataset1), comp=TRUE,deff=FALSE, keep.var=FALSE)
-se_gini_dom <- SE_lin(test_gini_dom,des_eusilc0)
+test_gini_dom<-svyby(~eqIncome, by=~db040, FUN=svygini, design = des_eusilc,
+  ncom=nrow(eusilc), comp=TRUE,deff=FALSE, keep.var=FALSE)
+se_gini_dom <- SE_lin(test_gini_dom,des_eusilc)
 # organize results for gini
 frame_gini<- data.frame(domain=test_gini_dom$db040, type= rep("gini",length(se_gini_dom)),
   value= unlist(test_gini_dom$statistic.gini_coef), se=unlist(se_gini_dom))
@@ -392,26 +412,26 @@ frame_gini<- data.frame(domain=test_gini_dom$db040, type= rep("gini",length(se_g
 # compare results from vardpoor and convey
 # arpt
 frame_arpt
-subset(res_vardpoor_se, type=="ARPT")
+subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="ARPT")
 
 # arpr
 frame_arpr
-subset(res_vardpoor_se, type=="ARPR")
+subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="ARPR")
+
 
 # rmpg
 frame_rmpg
-subset(res_vardpoor_se, type=="RMPG")
+subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="RMPG")
+
 
 # qsr
 frame_qsr
-subset(res_vardpoor_se, type=="QSR")
+subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="QSR")
 
 # gini
 frame_gini
-subset(res_vardpoor_se, type=="GINI")
+subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="GINI")
 
 
-# Note: subset(res_vardpoor_se, type=="ARPT")
-# should have been the same as the result of the second example.
 
 
