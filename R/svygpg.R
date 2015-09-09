@@ -25,6 +25,32 @@
 #' URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 #'
 #' @keywords survey
+#'
+#' @examples
+#'
+#'set.seed(1)
+#'y<- c(rchisq(10,10),rchisq(10,20))
+#'H<- rep(c("str1","str2"),c(10,10))
+#'PSU<- rep(rep(c(1,2),c(5,5)),2)
+#'weights <- rep(2,20)
+#'
+#' # create data frame
+#'testset<- data.frame(y=y,H=H,psu=PSU, w=weights)
+#'testset$sex<- rep(c(1,2),c(10,10))
+#'testset<- transform(testset, sex= factor(sex,labels=c("female","male")))
+#'testset$im<- 1*(testset$sex=="male")
+#'testset$ifm<- 1*(testset$sex=="female")
+#'testset$ym<- testset$y*(testset$sex=="male")
+#'testset$yfm<- testset$y*(testset$sex=="female")
+#'des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+#'a <-svytotal(~ym+yfm+im+ifm, des)
+# # using the function svycontrast from the library survey
+#'svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
+#' # using svygpg:
+#'lin_gpg<- svygpg(~y, des, ~sex)
+#'lin_gpg$value
+#'SE_lin(lin_gpg,des)
+#'
 #' @export
 
 
