@@ -321,6 +321,45 @@ SE_lin <- function(object, design){
 }
 
 
+# infuence function of a total: formula (34)
+itot<- function(formula, design){
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar<-df[[as.character(inc)]]
+  value<-coef(svytotal(x=formula,design=design))
+  lin<- incvar
+  list(value=value, lin=lin)
+}
+
+## derivation rules for influence functions of functionals
+## linear combination of functionals: formula (29)
+##  a, b - scalars
+#  T, S - lists with two components: value and lin
+# IF  - list with with two components
+# Fprime - real function
+
+cl_inf<-function(a, b, T, S){
+  lin<-a*T$lin+b*S$lin
+  value<- a*T$value+b*S$value
+  list(value=value, lin=lin)
+}
+
+# product of o two functionals: formula (30)
+prod_inf<-function(T, S){
+
+  value <- T$value*S$value
+  lin <-T$value*S$lin+S$value*T$lin
+  list(value=value, lin=lin)
+}
+
+# ratio of functionals: formula (31)
+
+ratio_inf<-function(T, S){
+  value <- T$value/S$value
+  lin <- (S$value*T$lin-T$value*S$lin)/((S$value)^2)
+  list(value=value, lin=lin)
+}
+
 
 
 
