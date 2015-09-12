@@ -2,9 +2,15 @@
 % Please edit documentation in R/svygini.R
 \name{svygini}
 \alias{svygini}
+\alias{svygini.survey.design}
+\alias{svygini.svyrep.design}
 \title{Gini coefficient}
 \usage{
 svygini(formula, design, ...)
+
+\method{svygini}{survey.design}(formula, design, ncom, comp = TRUE, ...)
+
+\method{svygini}{svyrep.design}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

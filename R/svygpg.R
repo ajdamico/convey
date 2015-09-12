@@ -59,9 +59,9 @@ svygpg <-function( formula , design , ... ){
   UseMethod( "svygpg" , design )
 
 }
+
+#' @rdname svygpg
 #' @export
-
-
 svygpg.survey.design<- function(x, design, sex){
   wage <- terms.formula(x)[[2]]
   df <- model.frame(design)
@@ -94,6 +94,8 @@ svygpg.survey.design<- function(x, design, sex){
   list(value=igpg$value,lin=igpg$lin )
 }
 
+
+#' @rdname svygpg
 #' @export
 svygpg.svyrep.design<- function(x, design, sex){
   ws <- weights(design, "sampling")

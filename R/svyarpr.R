@@ -49,6 +49,7 @@
 
 }
 
+#' @rdname svyarpr
 #' @export
 svyarpr.survey.design <- function(formula, design, order = .50, percent =.6, h, ARPT, ncom, ...){
   inc <- terms.formula(formula)[[2]]
@@ -67,6 +68,7 @@ svyarpr.survey.design <- function(formula, design, order = .50, percent =.6, h, 
   list(value = ARPRC, lin = lin_ARPR)
 }
 
+#' @rdname svyarpr
 #' @export
 svyarpr.svyrep.design <- function(formula, design, order = .50, percent =.6, ...){
   inc <- terms.formula(formula)[[2]]
