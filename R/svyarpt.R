@@ -45,7 +45,6 @@ svyarpt <-function( formula , design , ... ){
 
 }
 
-#' @rdname svyarpt
 #' @export
 svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, ncom, comp,...) {
   w <- weights(design)
@@ -67,7 +66,6 @@ svyarpt.survey.design <- function(formula, design, order = .50, percent =.6, h, 
 
 }
 
-#' @rdname svyarpt
 #' @export
 svyarpt.svyrep.design <- function(formula, design, order = .50, percent =.6,...) {
   inc <- terms.formula(formula)[[2]]
