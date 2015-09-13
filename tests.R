@@ -433,5 +433,280 @@ frame_gini
 subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="GINI")
 
 
+################################################
+# tests for functions in the file deriv.rules.R
+##################################################
+#Example:
+
+# Create two influence objects for totals
+set.seed(1)
+income1<- rchisq(100, 10)
+income2<- rchisq(100,20)
+weights<- rep (c(2,3), rep(50,2))
+
+X<- list(value=sum(income1*weights), lin=income1)
+Y<- list(value=sum(income2*weights), lin=income2)
+# cria lista de objects
+list.XY<- list(X=X,Y=Y)
+datalist<- lapply(list.XY, function(t)t$value)
+lixo<-contrastinf(quote(Y/X), list.XY)
+# usando ratio_inf
+lixo1<- ratio_inf(Y,X)
+
+## replicate output of function svygpg
+
+set.seed(1)
+y<- c(rchisq(10,10),rchisq(10,20))
+H<- rep(c("str1","str2"),c(10,10))
+PSU<- rep(rep(c(1,2),c(5,5)),2)
+weights <- rep(2,20)
+
+# create data frame
+testset<- data.frame(y=y,H=H,psu=PSU, w=weights)
+testset$sex<- rep(c(1,2),c(10,10))
+testset<- transform(testset, sex= factor(sex,labels=c("female","male")))
+testset$im<- 1*(testset$sex=="male")
+testset$ifm<- 1*(testset$sex=="female")
+testset$ym<- testset$y*(testset$sex=="male")
+testset$yfm<- testset$y*(testset$sex=="female")
+library(survey)
+des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+a <-svytotal(~ym+yfm+im+ifm, des)
+
+# using the function svycontrast from the library survey
+
+svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
+# using svygpg:
+library(convey)
+lin_gpg<- svygpg(~y, des, ~sex)
+lin_gpg$value
+SE_lin(lin_gpg,des)
+# use function contrastinf
+
+# create listas of linearization objects
+IM<- list(value=sum((testset$sex=="male")*testset$w), lin=1*(testset$sex=="male"))
+IFM<-list(value=sum((testset$sex=="female")*testset$w), lin=1*(testset$sex=="female"))
+YM <-list(value=sum(testset$y*(testset$sex=="male")*testset$w),
+  lin=testset$y*(testset$sex=="male"))
+YFM<-list(value=sum(testset$y*(testset$sex=="female")*testset$w),
+  lin=testset$y*(testset$sex=="female"))
+
+list_all_fun<-list(IM=IM,IFM=IFM,YM=YM,YFM=YFM)
+
+# use function contrastinf
+
+gpg_contrastinf<-contrastinf(quote((YM/IM-YFM/IFM)/(YM/IM)),list_all_fun)
+
+gpg_contrastinf$value
+SE_lin(gpg_contrastinf,des)
+
+# example 3.
+# get output of svyarpr using fun_par_inf
+
+library(vardpoor)
+data(eusilc)
+dati=data.frame(1:nrow(eusilc),eusilc)
+colnames(dati)[1] <- "IDd"
+library(survey)
+# create a design object
+des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+htot<-h_fun(eusilc$eqIncome, eusilc$rb050)
+
+# use get the poverty treshold
+arpt_eqIncome <-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot,
+  ncom=nrow(eusilc), comp=TRUE)
+
+# poor people ratio
+arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, h = htot,
+  ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
+str(arpr_eqIncome)
+
+# get the object of linearization of the poor people ratio using fun_par_inf
+arpr_eqIncome1<- fun_par_inf(arpt_eqIncome, "icdf", "densfun", formula=~eqIncome ,design= des_eusilc,
+  ncom=nrow(eusilc) ,  comp= TRUE, htot=NULL, fun="F")
+str(arpr_eqIncome1)
+
+## get the output for domains
+
+
+
+
+##############################################################
+# example 4.
+# compare ratio_inf and icdf
+#########################################################
+library(vardpoor)
+library(survey)
+data(eusilc)
+des_eusilc<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
+  data = eusilc, nest = TRUE)
+
+# create variables
+des_eusilc <- update(des_eusilc, num = (eqIncome<= 20000)*1)
+des_eusilc <- update(des_eusilc, den= rep(1,nrow(eusilc)))
+
+# get infuence function of numerator and denominator
+NUM <- itot(~num, des_eusilc)
+DEN <- itot(~den, des_eusilc)
+
+# influence function of ratio
+result<- ratio_inf(NUM,DEN)
+str(result)
+
+# directly using function icdf
+
+resul_icdf<-icdf(~eqIncome,des_eusilc, 20000, ncom=nrow(eusilc), comp=TRUE)
+str(resul_icdf)
+
+
+
+
+
+######################################################################################
+# Example 1.
+# dataset test
+##################################################3
+set.seed(1)
+y<- c(rchisq(10,10),rchisq(10,20))
+H<- rep(c("str1","str2"),c(10,10))
+PSU<- rep(rep(c(1,2),c(5,5)),2)
+weights <- rep(2,20)
+
+# create data frame
+testset<- data.frame(y=y,H=H,psu=PSU, w=weights)
+testset$sex<- rep(c(1,2),c(10,10))
+testset<- transform(testset, sex= factor(sex,labels=c("female","male")))
+
+# using svycontrast
+testset$im<- 1*(testset$sex=="male")
+testset$ifm<- 1*(testset$sex=="female")
+testset$ym<- testset$y*(testset$sex=="male")
+testset$yfm<- testset$y*(testset$sex=="female")
+
+
+des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+
+a <-svytotal(~ym+yfm+im+ifm, des)
+
+svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
+
+# using svygpg.survey.design:
+
+des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+
+lin_test_gpg<- svygpg(~y, des, ~sex)
+lin_test_gpg$value
+testset$lingpg<-lin_test_gpg$lin
+des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+SE(svytotal(~lingpg, des))
+# Note: results by svycontrast and svygpg.survey.design match
+
+
+## using bootstrap
+
+des_rep<- as.svrepdesign(des, type="bootstrap", replicates=500)
+svygpg.svyrep.design(~y, des_rep, ~sex)
+
+
+#################################################
+# Example 2.
+# dataset from library vardpoor
+#############################
+# 1 . using library vardpoor
+library(vardpoor)
+data(ses)
+str(ses)
+dati <- data.table(ID = 1:nrow(ses), ses)
+setnames(dati, "sex", "sexf")
+dati[sexf=="male", sex:=1]
+dati[sexf=="female", sex:=2]
+gpgs1 <- lingpg(Y="earningsHour", gender="sex",
+  id="ID", weight="weights", dataset=dati)
+
+# result in %
+gpgs1$value
+summary(gpgs1$lin$lin_gpg)
+# se using vardpoor
+des_ses<- update(des_ses, lingpgv=gpgs1$lin$lin_gpg)
+svytotal(~lingpgv, des_ses)
+
+# 2.  using convey with object of class survey.design
+
+des_ses<- svydesign(id=~1, weights=~weights, data=ses,variables=~weights+sex+earningsHour)
+names(des_ses$variable)
+
+
+ses_gpg<- svygpg(~earningsHour,des_ses, ~sex)
+# show results
+ses_gpg$value
+summary(100*ses_gpg$lin)
+# estimate se
+des_ses<- update(des_ses, lingpgc=ses_gpg$lin)
+svytotal(~lingpgc,des_ses)
+
+
+
+# 3. using the function svycontrast of the library survey:
+
+ses$one<-rep(1, nrow(ses))
+ses$one1<- ses$one*(ses$sex=="male")
+ses$one2<- ses$one*(ses$sex=="female")
+ses$earningsHour1<- ses$earningsHour*(ses$sex=="male")
+ses$earningsHour2<- ses$earningsHour*(ses$sex=="female")
+
+
+des_ses<- svydesign(id=~1, weights=~weights, data=ses)
+a<-svytotal(~earningsHour1+earningsHour2+one1+one2, des_ses )
+# results for svycontrast
+svycontrast(a, quote((earningsHour1/one1-earningsHour2/one2)/(earningsHour1/one1)))
+
+
+
+# 4. using convey with object of class svyrep.design type bootstrap
+library(survey)
+des_ses<- svydesign(id=~1, weights=~weights, data=ses,variables=~weights+sex+earningsHour)
+syrepdes_ses<- as.svrepdesign(des_ses, type = "bootstrap", replicates=500)
+
+# result in %
+gpg_rep<- svygpg(~earningsHour,syrepdes_ses, ~sex)
+gpg_rep
+
+# Remarks:
+# values of the indicator are the same from 1,2,3,4
+# values of se are the same from 2 and 3
+# value of se from 4 is appr. equal to values from 2 and 3
+# value of se from 1 differs from all the others. The linearized variable is different from vardpoor
+# and convey. Is it wrong???
+# verificação da vardpoor
+
+library(vardpoor)
+
+data(ses)
+
+# lin vardpoor
+Im<- 1*(ses$sex=="male")
+Xm<- sum(ses$earningsHour*Im*ses$weights)
+Nm<- sum(Im*ses$weights)
+If<- 1*(ses$sex=="female")
+Xf<- sum(ses$earningsHour*If*ses$weights)
+Nf<- sum(If*ses$weights)
+Xbarm<-Xm/Nm
+Xbarf<- Xf/Nf
+gpg<- 1-Xbarf/Xbarm
+
+x<- ses$earningsHour
+# linearization by vardpoor
+
+lingpg<- (1-gpg)* (Im/Nf-Im/Nm+x*Im/Xm -x*If/Xf )
+
+# correction
+
+lingpg1<- (1-gpg)* (If/Nf-Im/Nm+x*Im/Xm-x*If/Xf)
+
+summary(lingpg1)
+
+
+
+
 
 
