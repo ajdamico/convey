@@ -89,6 +89,21 @@ contrastinf <- function(exprlist, infunlist) {
     list(value = value, lin = IT_lin)
 }
 
+###############################################################
 
+svyarpr.survey.design1 <- function(formula, design, order = .50, percent =.6, h, ARPT, ncom, ...){
+    ARPR<-fun_par_inf(ARPT, "icdf", "densfun", formula=formula ,design= design,
+    ncom=ncom ,  comp= TRUE, htot=NULL, fun="F")
+    list(value = ARPR$value, lin = ARPR$lin)
+}
+
+
+fun_par_inf<- function(S,F,Fprime,...){
+  dots<- list(...)
+  value<- do.call(F,c(x=S$value, dots))$value
+  lin<- do.call(F,c(x=S$value,dots))$lin+
+    do.call(Fprime,c(x=S$value,dots))*S$lin
+  list(value= value, lin=lin)
+}
 
  

@@ -102,6 +102,12 @@ unlist(fun_arprd$statistic.value)*100
 # linearized arpr for Burgenland
 table(fun_arprd$statistic.lin[[1]]*100)
 
+
+
+
+
+
+
 ##################
 # RMPG
 ##################
@@ -526,9 +532,29 @@ arpr_eqIncome1<- fun_par_inf(arpt_eqIncome, "icdf", "densfun", formula=~eqIncome
   ncom=nrow(eusilc) ,  comp= TRUE, htot=NULL, fun="F")
 str(arpr_eqIncome1)
 
-## get the output for domains
+arpr_eqIncome2<-svyarpr.survey.design1(~eqIncome, design=des_eusilc, .5, .6, h = htot,ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
+str(arpr_eqIncome2)
 
+## get the output for domains.
 
+#  library convey
+# convey
+fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50, percent =.6, h= htot, ARPT=arpt_eqIncome, ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
+# show results from convey
+# arpr estimates
+unlist(fun_arprd$statistic.value)*100
+# linearized arpr for Burgenland
+table(fun_arprd$statistic.lin[[1]]*100)
+SE_lin(fun_arprd,des_eusilc)
+
+#
+fun_arprd1<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50,
+  percent =.6, h= htot, ARPT=arpt_eqIncome, ncom=nrow(des_eusilc$variables), comp=TRUE,
+  deff=FALSE, keep.var=FALSE)
+unlist(fun_arprd1$statistic.value)*100
+table(fun_arprd1$statistic.lin[[1]]*100)
+str(fun_arprd1)
+SE_lin(fun_arprd1,des_eusilc)
 
 
 ##############################################################
