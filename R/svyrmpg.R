@@ -46,63 +46,64 @@
 #'
 #' @export
 
-svyrmpg <-  function( formula , design , ... ){
-
-  UseMethod( "svyrmpg" , design )
-
+svyrmpg <- function(formula, design, ...) {
+    
+    UseMethod("svyrmpg", design)
+    
 }
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.survey.design <- function(formula, design, order =.50, percent = .60, ncom , h, comp, ARPT, ...){
-  w<-weights(design)
-  ind<-names(w)
-  N<-sum(w)
-  inc <- terms.formula(formula)[[2]]
-  df <- model.frame(design)
-  incvar<-df[[as.character(inc)]]
-  arpt <- ARPT$value
-  linarpt <- ARPT$lin
-  arpr <-sum((incvar<=arpt)*w)/N
-  dsub<- subset (design, subset= (incvar<= arpt))
-  medp <- svyquantile(x = formula, dsub, .5, method="constant")
-  medp<-as.vector(medp)
-  RMPG <- 1 - (medp/ arpt)
-  Fprimemedp <- densfun(formula = formula, design = design , medp, htot=h, fun="F")
-  Fprimearpt<-  densfun(formula = formula, design = design, arpt, htot=h, fun="F")
-  # linearize cdf of ARPT
-  ifarpr0<-(1/N)*((incvar<=arpt)-arpr)
-  names(ifarpr0)<-names(w)
-  ifarpr0<-complete(ifarpr0,ncom)
-  ifarpr <- ifarpr0+Fprimearpt*linarpt
-  # linearize cdf of medp
-  ifmedp <-(1/N)*((incvar<=medp)-0.5*arpr)
-  names(ifmedp) <- names(w)
-  ifmedp<- complete(ifmedp, ncom)
-  # linearize median of poor
-  linmedp <- (0.5*ifarpr-ifmedp)/Fprimemedp
-  # linearize RMPG
-  linrmpg <- (medp*linarpt/(arpt*arpt))-(linmedp/arpt)
-  list(value = RMPG, lin = linrmpg)
+svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, ncom, 
+    h, comp, ARPT, ...) {
+    w <- weights(design)
+    ind <- names(w)
+    N <- sum(w)
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    arpt <- ARPT$value
+    linarpt <- ARPT$lin
+    arpr <- sum((incvar <= arpt) * w)/N
+    dsub <- subset(design, subset = (incvar <= arpt))
+    medp <- svyquantile(x = formula, dsub, 0.5, method = "constant")
+    medp <- as.vector(medp)
+    RMPG <- 1 - (medp/arpt)
+    Fprimemedp <- densfun(formula = formula, design = design, medp, htot = h, fun = "F")
+    Fprimearpt <- densfun(formula = formula, design = design, arpt, htot = h, fun = "F")
+    # linearize cdf of ARPT
+    ifarpr0 <- (1/N) * ((incvar <= arpt) - arpr)
+    names(ifarpr0) <- names(w)
+    ifarpr0 <- complete(ifarpr0, ncom)
+    ifarpr <- ifarpr0 + Fprimearpt * linarpt
+    # linearize cdf of medp
+    ifmedp <- (1/N) * ((incvar <= medp) - 0.5 * arpr)
+    names(ifmedp) <- names(w)
+    ifmedp <- complete(ifmedp, ncom)
+    # linearize median of poor
+    linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
+    # linearize RMPG
+    linrmpg <- (medp * linarpt/(arpt * arpt)) - (linmedp/arpt)
+    list(value = RMPG, lin = linrmpg)
 }
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.svyrep.design <- function(formula, design, order =.50, percent = .60, ...){
-  inc <- terms.formula(formula)[[2]]
-  df <- model.frame(design)
-  incvar<-df[[as.character(inc)]]
-  ComputeRmpg <- function(x, w, order, percent) {
-   tresh <- percent*computeQuantiles(incvar, w,p = order)
-   arpr <- sum((incvar<=tresh)*w)/sum(w)
-   indpoor <- (x <= tresh)
-   medp <- computeQuantiles(x[indpoor], w[indpoor],  p = .5)
-   1- (medp/tresh)
-  }
-ws <- weights(design, "sampling")
-rval <- ComputeRmpg(incvar, ws, order = order, percent = percent )
-ww <- weights(design, "analysis")
-qq <- apply(ww, 2, function(wi)ComputeRmpg(incvar, wi, order = order, percent = percent ))
-variance <- svrVar(qq,design$scale,design$rscales, mse = design$mse, coef = rval)
-list(value = rval, se = sqrt(variance))
-}
+svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, ...) {
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    ComputeRmpg <- function(x, w, order, percent) {
+        tresh <- percent * computeQuantiles(incvar, w, p = order)
+        arpr <- sum((incvar <= tresh) * w)/sum(w)
+        indpoor <- (x <= tresh)
+        medp <- computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
+        1 - (medp/tresh)
+    }
+    ws <- weights(design, "sampling")
+    rval <- ComputeRmpg(incvar, ws, order = order, percent = percent)
+    ww <- weights(design, "analysis")
+    qq <- apply(ww, 2, function(wi) ComputeRmpg(incvar, wi, order = order, percent = percent))
+    variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    list(value = rval, se = sqrt(variance))
+} 

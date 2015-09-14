@@ -18,7 +18,7 @@ svygpg(formula, design, ...)
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}
 of the library survey}
 
-\item{sex}{formula with a factor with labels "male" and "female"}
+\item{sex}{formula with a factor with labels 'male' and 'female'}
 }
 \value{
 a list with two components: the indicator estimate \code{value}
@@ -30,18 +30,18 @@ Estimate the difference between the average gross hourly earnings of men and wom
 \examples{
 set.seed(1)
 y<- c(rchisq(10,10),rchisq(10,20))
-H<- rep(c("str1","str2"),c(10,10))
+H<- rep(c('str1','str2'),c(10,10))
 PSU<- rep(rep(c(1,2),c(5,5)),2)
 weights <- rep(2,20)
 
 # create data frame
 testset<- data.frame(y=y,H=H,psu=PSU, w=weights)
 testset$sex<- rep(c(1,2),c(10,10))
-testset<- transform(testset, sex= factor(sex,labels=c("female","male")))
-testset$im<- 1*(testset$sex=="male")
-testset$ifm<- 1*(testset$sex=="female")
-testset$ym<- testset$y*(testset$sex=="male")
-testset$yfm<- testset$y*(testset$sex=="female")
+testset<- transform(testset, sex= factor(sex,labels=c('female','male')))
+testset$im<- 1*(testset$sex=='male')
+testset$ifm<- 1*(testset$sex=='female')
+testset$ym<- testset$y*(testset$sex=='male')
+testset$yfm<- testset$y*(testset$sex=='female')
 des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
 a <-svytotal(~ym+yfm+im+ifm, des)
 svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))

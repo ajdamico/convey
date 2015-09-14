@@ -37,7 +37,7 @@ data(eusilc)
 library(survey)
 htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .80, "sup", htot,
+isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .80, 'sup', htot,
 ncom=nrow(eusilc),  eusilc$eqIncome)
 isq_eqIncome$value
 }

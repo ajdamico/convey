@@ -12,12 +12,12 @@
 #' @export
 
 
-complete<-function(x,n){
-  ind.all<-as.character(1:n)
-  x.comp<-rep(0,n)
-  names(x.comp)<-ind.all
-  x.comp[names(x)]<-x
-  x.comp
+complete <- function(x, n) {
+    ind.all <- as.character(1:n)
+    x.comp <- rep(0, n)
+    names(x.comp) <- ind.all
+    x.comp[names(x)] <- x
+    x.comp
 }
 
 #'Computes the bandwidth needed to compute the derivative of the cdf function
@@ -32,12 +32,12 @@ complete<-function(x,n){
 #' @export
 
 
-h_fun<-function(inc_var, w){
-  N<-sum(w)
-  sd_inc <- sqrt((sum(w*inc_var*inc_var)-sum(w*inc_var)*sum(w*inc_var)/N)/N)
-  h <-sd_inc/exp(0.2*log(sum(w)))
-  h
- }
+h_fun <- function(inc_var, w) {
+    N <- sum(w)
+    sd_inc <- sqrt((sum(w * inc_var * inc_var) - sum(w * inc_var) * sum(w * inc_var)/N)/N)
+    h <- sd_inc/exp(0.2 * log(sum(w)))
+    h
+}
 
 #'Estimate the derivative of the cdf function using kernel estimator
 #'
@@ -54,22 +54,24 @@ h_fun<-function(inc_var, w){
 #'@keywords survey
 #'@export
 
-densfun <- function(formula, design, x, htot=NULL, fun=c("F","S"),...){
-inc <- terms.formula(formula)[[2]]
- w<- weights(design)
- N<-sum(w)
- df <- model.frame(design)
- inc_var<-df[[as.character(inc)]]
- sd_inc <- sqrt((sum(w*inc_var*inc_var)-sum(w*inc_var)*sum(w*inc_var)/N)/N)
- h <-sd_inc/exp(0.2*log(sum(w)))
- if(!is.null(htot)) h<- htot
- u<-(x-inc_var)/h
- vectf<-exp(-(u^2)/2)/sqrt(2*pi)
- if(fun=="F") res <- sum(vectf*w)/(N*h) else {
- v <- w* inc_var
- res<- sum(vectf*v)/h
- }
- res
+densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
+    inc <- terms.formula(formula)[[2]]
+    w <- weights(design)
+    N <- sum(w)
+    df <- model.frame(design)
+    inc_var <- df[[as.character(inc)]]
+    sd_inc <- sqrt((sum(w * inc_var * inc_var) - sum(w * inc_var) * sum(w * inc_var)/N)/N)
+    h <- sd_inc/exp(0.2 * log(sum(w)))
+    if (!is.null(htot)) 
+        h <- htot
+    u <- (x - inc_var)/h
+    vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
+    if (fun == "F") 
+        res <- sum(vectf * w)/(N * h) else {
+        v <- w * inc_var
+        res <- sum(vectf * v)/h
+    }
+    res
 }
 
 #' Linearization of the cdf function of a variable
@@ -110,22 +112,23 @@ inc <- terms.formula(formula)[[2]]
 #'icdf_eqIncome$value
 #' @export
 
-icdf<-function(formula, design, x, ncom, comp, ...){
-inc <- terms.formula(formula)[[2]]
-df <- model.frame(design)
-incvar<-df[[as.character(inc)]]
-w <- weights(design)
-ind<-names(w)
-N <- sum (w)
-poor<- (incvar<=x)*1
-design <- update(design, poor = poor)
-# rate of poor
-cdf_fun <- coef(svymean(poor, design))
-inf_fun<-(1/N)* ((incvar<=x)-cdf_fun)
-names(inf_fun)<-ind
-inf_fun_comp<- complete(inf_fun,ncom)
-if(comp)lin<-inf_fun_comp else lin<-inf_fun
-list(value= cdf_fun, lin=lin)
+icdf <- function(formula, design, x, ncom, comp, ...) {
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    w <- weights(design)
+    ind <- names(w)
+    N <- sum(w)
+    poor <- (incvar <= x) * 1
+    design <- update(design, poor = poor)
+    # rate of poor
+    cdf_fun <- coef(svymean(poor, design))
+    inf_fun <- (1/N) * ((incvar <= x) - cdf_fun)
+    names(inf_fun) <- ind
+    inf_fun_comp <- complete(inf_fun, ncom)
+    if (comp) 
+        lin <- inf_fun_comp else lin <- inf_fun
+    list(value = cdf_fun, lin = lin)
 }
 
 
@@ -171,25 +174,28 @@ list(value= cdf_fun, lin=lin)
 #'iqalpha_eqIncome$value
 #' @export
 
-iqalpha<- function(formula, design, alpha, h=NULL, ncom, comp, incvec=NULL, ...){
-inc <- terms.formula(formula)[[2]]
-df <- model.frame(design)
-incvar<-df[[as.character(inc)]]
-w <- weights(design)
-ind<-names(w)
-q_alpha<- svyquantile(x =formula, design =design, quantiles= alpha,
-  method="constant")
-q_alpha<- as.vector(q_alpha)
-N <- sum (w)
-Fprime<- densfun(formula = formula, design = design, q_alpha, htot=h, fun="F")
-iq <- -(1/(N*Fprime))*((incvar<=q_alpha)-alpha)
-if(!is.null(incvec)){ iq <- -(1/(N*Fprime))*((incvec<=q_alpha)-alpha); comp<-FALSE}
-if(comp){
-names(iq)<-ind
-iq_comp<- complete(iq, ncom)
-res=iq_comp
-}else res<-iq
-list(value=q_alpha, lin=res)
+iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL, 
+    ...) {
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    w <- weights(design)
+    ind <- names(w)
+    q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
+    q_alpha <- as.vector(q_alpha)
+    N <- sum(w)
+    Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "F")
+    iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+    if (!is.null(incvec)) {
+        iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
+        comp <- FALSE
+    }
+    if (comp) {
+        names(iq) <- ind
+        iq_comp <- complete(iq, ncom)
+        res = iq_comp
+    } else res <- iq
+    list(value = q_alpha, lin = res)
 }
 
 #' Linearization of the total above a quantile or below a quantile
@@ -229,43 +235,48 @@ list(value=q_alpha, lin=res)
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .80, "sup", htot,
+#' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .80, 'sup', htot,
 #' ncom=nrow(eusilc),  eusilc$eqIncome)
 #'isq_eqIncome$value
 #' @export
 
 
-isq <- function(formula, design, alpha, type = c("inf","sup"), h=NULL, ncom, incvec,...){
-  inc <- terms.formula(formula)[[2]]
-  df <- model.frame(design)
-  incvar<-df[[as.character(inc)]]
-  w <- weights(design)
-  ind<-names(w)
-  q_alpha<- svyquantile(x =formula, design =design, quantiles = alpha, method="constant")
-  q_alpha<- as.vector(q_alpha)
-  if(type=="inf"){
-    inc_inf<-(incvar<=q_alpha)*incvar
-    tot<- sum(inc_inf*w)} else{
-    inc_sup<-(incvar>q_alpha)*incvar
-    tot<-sum(inc_sup*w)
-  }
-  Fprime<- densfun(formula = formula , design = design, q_alpha, htot= h, fun= "S")
-  iq <- iqalpha(formula = formula, design = design, alpha, h = h, ncom = ncom, comp = TRUE, incvec = incvec)$lin
-  isqalpha <- incvec*((incvec<=q_alpha))+ Fprime*iq
-  if(type=="inf")ires<- isqalpha else ires<- incvec - isqalpha
-  list(value=tot, lin=ires )
+isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, incvec, 
+    ...) {
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    w <- weights(design)
+    ind <- names(w)
+    q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
+    q_alpha <- as.vector(q_alpha)
+    if (type == "inf") {
+        inc_inf <- (incvar <= q_alpha) * incvar
+        tot <- sum(inc_inf * w)
+    } else {
+        inc_sup <- (incvar > q_alpha) * incvar
+        tot <- sum(inc_sup * w)
+    }
+    Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "S")
+    iq <- iqalpha(formula = formula, design = design, alpha, h = h, ncom = ncom, 
+        comp = TRUE, incvec = incvec)$lin
+    isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
+    if (type == "inf") 
+        ires <- isqalpha else ires <- incvec - isqalpha
+    list(value = tot, lin = ires)
 }
 
 
 
 
-computeQuantiles<-function(xx, w, p=quantiles){
-  if (any(is.na(xx))) return(NA*p)
-  oo<-order(xx)
-  cum.w<-cumsum(w[oo])/sum(w)
-  cdf<-approxfun(cum.w,xx[oo],method="constant", f=1,
-    yleft=min(xx),yright=max(xx),ties=min)
-  cdf(p)
+computeQuantiles <- function(xx, w, p = quantiles) {
+    if (any(is.na(xx))) 
+        return(NA * p)
+    oo <- order(xx)
+    cum.w <- cumsum(w[oo])/sum(w)
+    cdf <- approxfun(cum.w, xx[oo], method = "constant", f = 1, yleft = min(xx), 
+        yright = max(xx), ties = min)
+    cdf(p)
 }
 
 
@@ -298,66 +309,60 @@ computeQuantiles<-function(xx, w, p=quantiles){
 #' SE_lin(isq_eqIncome_dom, des_eusilc)
 #' @export
 
-SE_lin <- function(object, design){
-
-  if(length(object)==2){
-    t<-object$lin
-    x<- update(design,t=t)
-    res<-SE(svytotal(~t,x ))
-  }
-  else{
-  lincomp<- object$statistic.lin
-  list_se<-lapply(lincomp,
-    function(t){
-      x<- update(design,t=t)
-      SE(svytotal(~t,x ) )
+SE_lin <- function(object, design) {
+    
+    if (length(object) == 2) {
+        t <- object$lin
+        x <- update(design, t = t)
+        res <- SE(svytotal(~t, x))
+    } else {
+        lincomp <- object$statistic.lin
+        list_se <- lapply(lincomp, function(t) {
+            x <- update(design, t = t)
+            SE(svytotal(~t, x))
+        })
+        names(list_se) <- object[[1]]
+        res <- list_se
     }
-  )
-    names(list_se)<-object[[1]]
-    res<- list_se
-    }
-
-  res
+    
+    res
 }
 
 
 # infuence function of a total: formula (34)
-itot<- function(formula, design){
-  inc <- terms.formula(formula)[[2]]
-  df <- model.frame(design)
-  incvar<-df[[as.character(inc)]]
-  value<-coef(svytotal(x=formula,design=design))
-  lin<- incvar
-  list(value=value, lin=lin)
+itot <- function(formula, design) {
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    value <- coef(svytotal(x = formula, design = design))
+    lin <- incvar
+    list(value = value, lin = lin)
 }
 
-## derivation rules for influence functions of functionals
-## linear combination of functionals: formula (29)
-##  a, b - scalars
-#  T, S - lists with two components: value and lin
-# IF  - list with with two components
-# Fprime - real function
+## derivation rules for influence functions of functionals linear combination of
+## functionals: formula (29) a, b - scalars T, S - lists with two components:
+## value and lin IF - list with with two components Fprime - real function
 
-cl_inf<-function(a, b, T, S){
-  lin<-a*T$lin+b*S$lin
-  value<- a*T$value+b*S$value
-  list(value=value, lin=lin)
+cl_inf <- function(a, b, T, S) {
+    lin <- a * T$lin + b * S$lin
+    value <- a * T$value + b * S$value
+    list(value = value, lin = lin)
 }
 
 # product of o two functionals: formula (30)
-prod_inf<-function(T, S){
-
-  value <- T$value*S$value
-  lin <-T$value*S$lin+S$value*T$lin
-  list(value=value, lin=lin)
+prod_inf <- function(T, S) {
+    
+    value <- T$value * S$value
+    lin <- T$value * S$lin + S$value * T$lin
+    list(value = value, lin = lin)
 }
 
 # ratio of functionals: formula (31)
 
-ratio_inf<-function(T, S){
-  value <- T$value/S$value
-  lin <- (S$value*T$lin-T$value*S$lin)/((S$value)^2)
-  list(value=value, lin=lin)
+ratio_inf <- function(T, S) {
+    value <- T$value/S$value
+    lin <- (S$value * T$lin - T$value * S$lin)/((S$value)^2)
+    list(value = value, lin = lin)
 }
 
 
@@ -365,4 +370,4 @@ ratio_inf<-function(T, S){
 
 
 
-
+ 
