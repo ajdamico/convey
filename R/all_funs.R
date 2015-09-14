@@ -9,7 +9,6 @@
 #' @return vector with 0 in the elements outside the domain
 #' @author Djalma Pessoa and Anthony Damico
 #' @keywords survey
-#' @rdname funs
 #' @export
 
 
@@ -30,7 +29,6 @@ complete <- function(x, n) {
 #' @return value of the bandwidth
 #' @author Djalma Pessoa and Anthony Damico
 #' @keywords survey
-#' @rdname funs
 #' @export
 
 
@@ -54,7 +52,6 @@ h_fun <- function(inc_var, w) {
 #'@return the value of the derivative at \code{x}
 #'@author Djalma Pessoa and Anthony Damico
 #'@keywords survey
-#'@rdname funs
 #'@export
 
 densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
@@ -113,7 +110,6 @@ densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000, ncom=nrow(eusilc), comp=TRUE)
 #'icdf_eqIncome$value
-#' @rdname funs
 #' @export
 
 icdf <- function(formula, design, x, ncom, comp, ...) {
@@ -176,7 +172,6 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
 #' iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50, ncom=nrow(eusilc),
 #' comp=TRUE, eusilc$eqIncome )
 #'iqalpha_eqIncome$value
-#' @rdname funs
 #' @export
 
 iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL, 
@@ -243,7 +238,6 @@ iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
 #' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .80, 'sup', htot,
 #' ncom=nrow(eusilc),  eusilc$eqIncome)
 #'isq_eqIncome$value
-#' @rdname funs
 #' @export
 
 
@@ -274,8 +268,7 @@ isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, 
 
 
 
-#' @rdname funs
-#' @export
+
 computeQuantiles <- function(xx, w, p = quantiles) {
     if (any(is.na(xx))) 
         return(NA * p)
@@ -314,7 +307,6 @@ computeQuantiles <- function(xx, w, p = quantiles) {
 #' FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE,
 #' incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
 #' SE_lin(isq_eqIncome_dom, des_eusilc)
-#' @rdname funs
 #' @export
 
 SE_lin <- function(object, design) {
@@ -337,8 +329,6 @@ SE_lin <- function(object, design) {
 }
 
 
-#' @rdname funs
-#' @export
 # infuence function of a total: formula (34)
 itot <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
@@ -353,16 +343,12 @@ itot <- function(formula, design) {
 ## functionals: formula (29) a, b - scalars T, S - lists with two components:
 ## value and lin IF - list with with two components Fprime - real function
 
-#' @rdname funs
-#' @export
 cl_inf <- function(a, b, T, S) {
     lin <- a * T$lin + b * S$lin
     value <- a * T$value + b * S$value
     list(value = value, lin = lin)
 }
 
-#' @rdname funs
-#' @export
 # product of o two functionals: formula (30)
 prod_inf <- function(T, S) {
     
@@ -371,10 +357,8 @@ prod_inf <- function(T, S) {
     list(value = value, lin = lin)
 }
 
-
-#' @rdname funs
-#' @export
 # ratio of functionals: formula (31)
+
 ratio_inf <- function(T, S) {
     value <- T$value/S$value
     lin <- (S$value * T$lin - T$value * S$lin)/((S$value)^2)
