@@ -3,6 +3,8 @@
 # Auxiliary functions Implement the rules for Influence functions in Osier's
 # paper
 
+#' @rdname funs
+#' @export
 # 1. influence function of a constant: formula (28)
 iconst <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
@@ -11,6 +13,8 @@ iconst <- function(formula, design) {
     list(value = 0, lin = rep(0, length(incvar)))
 }
 
+#' @rdname funs
+#' @export
 # 1.  infuence function of a total: formula (34)
 itot <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
@@ -26,6 +30,8 @@ itot <- function(formula, design) {
 ## derivation rules for influence functions of functionals linear combination of
 ## functionals: formula (29) a, b - scalars T, S - lists with two components:
 ## value and lin IF - list with with two components Fprime - real function
+#' @rdname funs
+#' @export
 
 cl_inf <- function(a, b, T, S) {
     lin <- a * T$lin + b * S$lin
@@ -33,6 +39,8 @@ cl_inf <- function(a, b, T, S) {
     list(value = value, lin = lin)
 }
 
+#' @rdname funs
+#' @export
 # product of of two functionals: formula (30)
 prod_inf <- function(T, S) {
     
@@ -41,20 +49,25 @@ prod_inf <- function(T, S) {
     list(value = value, lin = lin)
 }
 
+#' @rdname funs
+#' @export
 # ratio of functionals: formula (31)
-
 ratio_inf <- function(T, S) {
     value <- T$value/S$value
     lin <- (S$value * T$lin - T$value * S$lin)/((S$value)^2)
     list(value = value, lin = lin)
 }
 
+#' @rdname funs
+#' @export
 # composition of two functionals: formula (32)
 comp_inf <- function(T, S) {
     itsm <- rep(S$value, length(T$lin))
     itsm * S$lin
 }
 
+#' @rdname funs
+#' @export
 # function of a functional: (33) F and Fprime are names function names
 fun_par_inf <- function(S, F, Fprime, ...) {
     dots <- list(...)
@@ -73,6 +86,8 @@ fun_par_inf <- function(S, F, Fprime, ...) {
 # functions.
 
 
+#' @rdname funs
+#' @export
 contrastinf <- function(exprlist, infunlist) {
     datalist <- lapply(infunlist, function(t) t$value)
     listlin <- lapply(infunlist, function(t) t$lin)
@@ -98,6 +113,8 @@ svyarpr.survey.design1 <- function(formula, design, order = .50, percent =.6, h,
 }
 
 
+#' @rdname funs
+#' @export
 fun_par_inf<- function(S,F,Fprime,...){
   dots<- list(...)
   value<- do.call(F,c(x=S$value, dots))$value
