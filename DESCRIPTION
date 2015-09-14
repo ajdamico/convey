@@ -6,6 +6,6 @@ Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("a
 Description: Variance estimation on indicators of income concentration and poverty using linearized or replication-based survey designs.  Wrapper around the survey package.
 Depends: R (>= 3.2.1)
 Imports: survey
-License: GPL-2
+License: GPL-3
 LazyData: true
 Suggests: testthat
