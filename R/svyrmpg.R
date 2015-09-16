@@ -47,14 +47,14 @@
 #' @export
 
 svyrmpg <- function(formula, design, ...) {
-    
+
     UseMethod("svyrmpg", design)
-    
+
 }
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, ncom, 
+svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, ncom,
     h, comp, ARPT, ...) {
     w <- weights(design)
     ind <- names(w)
@@ -65,7 +65,7 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, n
     arpt <- ARPT$value
     linarpt <- ARPT$lin
     arpr <- sum((incvar <= arpt) * w)/N
-    dsub <- survey::subset(design, subset = (incvar <= arpt))
+    dsub <- subset(design, subset = (incvar <= arpt))
     medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
     medp <- as.vector(medp)
     RMPG <- 1 - (medp/arpt)
@@ -106,18 +106,18 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     qq <- apply(ww, 2, function(wi) ComputeRmpg(incvar, wi, order = order, percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
-} 
+}
 
 
 
 #' @rdname svyrmpg
 #' @export
 svyrmpg.DBIsvydesign <-
-	function (x, design, ...) 
+	function (x, design, ...)
 	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
 			updates = design$updates, subset = design$subset)
 		NextMethod("svyrmpg", design)
 	}
 
- 
+

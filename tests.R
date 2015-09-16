@@ -31,7 +31,7 @@ table(vardpoor_arptw$lin$lin_arpt)
 # whole sample
  htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
  fun_arptw <-  svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
-  ncom=nrow(des_eusilc$variables), comp=TRUE)
+  ncom=rownames(eusilc), comp=TRUE)
 # show results from convey
   # arpt estimate
 fun_arptw$value
@@ -52,7 +52,7 @@ table(vardpoor_arptd$lin$lin_arpt__db040.Tyrol)
 
 #  library convey
 fun_arptd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpt, order = .50, percent =.6,
-  h= htot,ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE, keep.names = TRUE)
+  h= htot,ncom=rownames(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE, keep.names = TRUE)
 # show results from library convey
    # arpt estimates
 fun_arptd$statistic.value
@@ -77,7 +77,7 @@ table(vardpoor_arptw$lin$lin_arpt)
 
 # convey
 fun_arprw <-svyarpr(~eqIncome, des_eusilc, .5, .6, h=htot, ARPT=fun_arptw,
-  ncom=nrow(des_eusilc$variables))
+  ncom=rownames(eusilc))
 
 # compare results from vardpoor and convey
 vardpoor_arprw$value==fun_arprw$value*100
@@ -95,7 +95,7 @@ vardpoor_arprd$value
 table(vardpoor_arprd$lin$lin_arpr__db040.Burgenland)
 
 # convey
-fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50, percent =.6, h= htot, ARPT=fun_arptw, ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
+fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50, percent =.6, h= htot, ARPT=fun_arptw, ncom=rownames(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
 # show results from convey
  # arpr estimates
 unlist(fun_arprd$statistic.value)*100
@@ -123,7 +123,7 @@ vardpoor_rmpgw$value
 table(vardpoor_rmpgw$lin$lin_rmpg)
 
 # library convey
-fun_rmpgw<- svyrmpg(~eqIncome, des_eusilc, .5, .6, h=htot, ncom=nrow(des_eusilc$variables),
+fun_rmpgw<- svyrmpg(~eqIncome, des_eusilc, .5, .6, h=htot, ncom=rownames(eusilc),
   ARPT=fun_arptw)
 # show results from library convey
   # rmpg estimate
@@ -146,7 +146,7 @@ table(vardpoor_rmpgd$lin$lin_rmpg__db040.Tyrol)
 
 # library convey
 fun_rmpgd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyrmpg, order = .50, percent =.6,
-  h= htot, ARPT=fun_arptw,  ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
+  h= htot, ARPT=fun_arptw,  ncom=rownames(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
 
 # show results from library convey
   # rmpg estimates
@@ -170,7 +170,7 @@ vardpoor_qsrw$value
 summary(vardpoor_qsrw$lin)
 
 # library convey
-fun_qsrw<-svyqsr(~eqIncome, des_eusilc, .20, h=htot, ncom=nrow(des_eusilc$variables),
+fun_qsrw<-svyqsr(~eqIncome, des_eusilc, .20, h=htot, ncom=rownames(eusilc),
   comp=TRUE, incvec = eusilc$eqIncome)
 
 # compare results from vardpoor and convey
@@ -191,7 +191,8 @@ vardpoor_qsrd$value
 summary(vardpoor_qsrd$lin$lin_qsr__db040.Tyrol)
 
 # library convey
-fun_qsrd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE, incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
+fun_qsrd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyqsr, alpha=.20,  h= htot,
+  ncom=rownames(eusilc), comp=TRUE, incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
 # Show results from library convey
  # qsr estimate
 unlist(fun_qsrd$statistic.value)
@@ -212,7 +213,7 @@ vardpoor_giniw$value$Gini
 summary(vardpoor_giniw$lin$lin_gini)
 
 # library convey
-fun_giniw <- svygini(~eqIncome, des_eusilc, ncom = nrow(eusilc), comp=TRUE)
+fun_giniw <- svygini(~eqIncome, des_eusilc, ncom = rownames(eusilc), comp=TRUE)
 # Show the results from library convey
   # gini estimate
 fun_giniw$gini_coef
@@ -229,7 +230,7 @@ vardpoor_ginid$value
 summary(vardpoor_ginid$lin$lin_gini__db040.Tyrol)
 
 # library convey
-fun_ginid<- svyby(~eqIncome,by=~db040, design=des_eusilc, FUN=svygini, ncom = nrow(eusilc),
+fun_ginid<- svyby(~eqIncome,by=~db040, design=des_eusilc, FUN=svygini, ncom = rownames(eusilc),
   comp=TRUE, deff=FALSE, keep.var=FALSE)
 # show results from library convey
   # gini estimates
@@ -288,7 +289,7 @@ des_eusilc0<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
 # estimate bandwdth using the whole sample
 htot <- h_fun(dataset1$eqIncome, dataset1$rb050)
 
-test_arpt<-svyarpt(~eqIncome, des_eusilc0, .5, .6, h=htot, ncom=nrow(dataset1), comp=TRUE )
+test_arpt<-svyarpt(~eqIncome, des_eusilc0, .5, .6, h=htot, ncom=rownames(dataset1), comp=TRUE )
 #show results from convey
    # arpt estimate
 test_arpt$value
@@ -325,7 +326,7 @@ as.data.frame(as.data.frame(aa1$all_result))[,c("type","db040","value", "se")]
 ## convey
 
 test_arpt_dom1<-svyby(~eqIncome, by=~db040, FUN=svyarpt, design = des_eusilc0, .5, .6,
-  h=htot, ncom=nrow(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
+  h=htot, ncom=rownames(dataset1), comp=TRUE, deff=FALSE, keep.var=FALSE)
 se_arpt_dom1 <- SE_lin(test_arpt_dom1,des_eusilc0)
 
 # show resuts from convey
@@ -371,12 +372,12 @@ des_eusilc<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
   data = eusilc, fpc=~I(nh/Nh), nest = TRUE)
 htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 arptw<- svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
-  ncom=nrow(des_eusilc$variables), comp=TRUE)
+  ncom=rownames(eusilc), comp=TRUE)
 
 
 # arpt domains
 test_arpt_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpt, design = des_eusilc, order=.5,
-  percent=.6, h=htot, ncom=nrow(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
+  percent=.6, h=htot, ncom=rownames(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
 se_arpt_dom <- SE_lin(test_arpt_dom,des_eusilc)
 # organize results for arpt
 frame_arpt<- data.frame(domain=test_arpt_dom$db040, type= rep("arpt",length(se_arpt_dom)),
@@ -384,7 +385,7 @@ frame_arpt<- data.frame(domain=test_arpt_dom$db040, type= rep("arpt",length(se_a
 
 # arpr domains
 test_arpr_dom<-svyby(~eqIncome, by=~db040, FUN=svyarpr, design = des_eusilc, order=.5,
-  percent=.6,  h=htot, ARPT=arptw, ncom=nrow(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
+  percent=.6,  h=htot, ARPT=arptw, ncom=rownames(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE)
 se_arpr_dom <- SE_lin(test_arpr_dom,des_eusilc)
 # organize results for arpr
 frame_arpr<- data.frame(domain=test_arpr_dom$db040, type= rep("arpr",length(se_arpr_dom)),
@@ -392,7 +393,7 @@ frame_arpr<- data.frame(domain=test_arpr_dom$db040, type= rep("arpr",length(se_a
 
 # rmpg domains
 test_rmpg_dom<-svyby(~eqIncome, by=~db040, FUN=svyrmpg, design = des_eusilc, order=.5,
-  percent=.6, h=htot, ncom=nrow(eusilc), comp=TRUE, ARPT=test_arpt, deff=FALSE, keep.var=FALSE)
+  percent=.6, h=htot, ncom=rownames(eusilc), comp=TRUE, ARPT=test_arpt, deff=FALSE, keep.var=FALSE)
 se_rmpg_dom <- SE_lin(test_rmpg_dom,des_eusilc)
 # organize results for rmpg
 frame_rmpg<- data.frame(domain=test_rmpg_dom$db040, type= rep("rmpg",length(se_rmpg_dom)),
@@ -400,7 +401,7 @@ frame_rmpg<- data.frame(domain=test_rmpg_dom$db040, type= rep("rmpg",length(se_r
 
 # qsr domains
 test_qsr_dom<-svyby(~eqIncome, by=~db040, FUN=svyqsr, design = des_eusilc, alpha=.20,
-  ncom=nrow(eusilc), comp=TRUE, incvec= eusilc$eqIncome,deff=FALSE, keep.var=FALSE)
+  ncom=rownames(eusilc), comp=TRUE, incvec= eusilc$eqIncome,deff=FALSE, keep.var=FALSE)
 se_qsr_dom <- SE_lin(test_qsr_dom,des_eusilc)
 # organize results for qsr
 frame_qsr<- data.frame(domain=test_qsr_dom$db040, type= rep("qsr",length(se_arpr_dom)),
@@ -408,7 +409,7 @@ frame_qsr<- data.frame(domain=test_qsr_dom$db040, type= rep("qsr",length(se_arpr
 
 # gini domains
 test_gini_dom<-svyby(~eqIncome, by=~db040, FUN=svygini, design = des_eusilc,
-  ncom=nrow(eusilc), comp=TRUE,deff=FALSE, keep.var=FALSE)
+  ncom=rownames(eusilc), comp=TRUE,deff=FALSE, keep.var=FALSE)
 se_gini_dom <- SE_lin(test_gini_dom,des_eusilc)
 # organize results for gini
 frame_gini<- data.frame(domain=test_gini_dom$db040, type= rep("gini",length(se_gini_dom)),
@@ -520,28 +521,28 @@ htot<-h_fun(eusilc$eqIncome, eusilc$rb050)
 
 # use get the poverty treshold
 arpt_eqIncome <-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-  ncom=nrow(eusilc), comp=TRUE)
+  ncom=rownames(eusilc), comp=TRUE)
 
 # poor people ratio
 arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-  ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
+  ARPT = arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE)
 str(arpr_eqIncome)
 
 # get the object of linearization of the poor people ratio using fun_par_inf
 arpr_eqIncome1<- fun_par_inf(arpt_eqIncome, "icdf", "densfun", formula=~eqIncome ,design= des_eusilc,
-  ncom=nrow(eusilc) ,  comp= TRUE, htot=NULL, fun="F")
+  ncom=rownames(eusilc) ,  comp= TRUE, htot=NULL, fun="F")
 str(arpr_eqIncome1)
 
 ## using
 arpr_eqIncome2<-svyarpr.survey.design1(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-  ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
+  ARPT = arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE)
 str(arpr_eqIncome2)
 
 ## get the output for domains.
 
 #  library convey
 # convey
-fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50, percent =.6, h= htot, ARPT=arpt_eqIncome, ncom=nrow(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
+fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50, percent =.6, h= htot, ARPT=arpt_eqIncome, ncom=rownames(des_eusilc$variables), comp=TRUE, deff=FALSE, keep.var=FALSE)
 # show results from convey
 # arpr estimates
 unlist(fun_arprd$statistic.value)*100
@@ -551,7 +552,7 @@ unlist(SE_lin(fun_arprd,des_eusilc))
 
 #
 fun_arprd1<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr.survey.design1,
-  h= htot, ARPT=arpt_eqIncome, ncom=nrow(des_eusilc$variables), comp=TRUE,
+  h= htot, ARPT=arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE,
   deff=FALSE, keep.var=FALSE)
 unlist(fun_arprd1$statistic.value)*100
 table(fun_arprd1$statistic.lin[[1]]*100)
@@ -583,7 +584,7 @@ str(result)
 
 # directly using function icdf
 
-resul_icdf<-icdf(~eqIncome,des_eusilc, 20000, ncom=nrow(eusilc), comp=TRUE)
+resul_icdf<-icdf(~eqIncome,des_eusilc, 20000, ncom=rownames(eusilc), comp=TRUE)
 str(resul_icdf)
 
 
