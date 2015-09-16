@@ -62,11 +62,11 @@ densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
     inc_var <- df[[as.character(inc)]]
     sd_inc <- sqrt((sum(w * inc_var * inc_var) - sum(w * inc_var) * sum(w * inc_var)/N)/N)
     h <- sd_inc/exp(0.2 * log(sum(w)))
-    if (!is.null(htot)) 
+    if (!is.null(htot))
         h <- htot
     u <- (x - inc_var)/h
     vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
-    if (fun == "F") 
+    if (fun == "F")
         res <- sum(vectf * w)/(N * h) else {
         v <- w * inc_var
         res <- sum(vectf * v)/h
@@ -120,13 +120,13 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
     ind <- names(w)
     N <- sum(w)
     poor <- (incvar <= x) * 1
-    design <- survey::update(design, poor = poor)
+    design <- update(design, poor = poor)
     # rate of poor
     cdf_fun <- survey::coef( survey::svymean( poor , design ) )
     inf_fun <- (1/N) * ((incvar <= x) - cdf_fun)
     names(inf_fun) <- ind
     inf_fun_comp <- complete(inf_fun, ncom)
-    if (comp) 
+    if (comp)
         lin <- inf_fun_comp else lin <- inf_fun
     list(value = cdf_fun, lin = lin)
 }
@@ -174,7 +174,7 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
 #'iqalpha_eqIncome$value
 #' @export
 
-iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL, 
+iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
     ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
@@ -241,7 +241,7 @@ iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
 #' @export
 
 
-isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, incvec, 
+isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, incvec,
     ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
@@ -258,10 +258,10 @@ isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, 
         tot <- sum(inc_sup * w)
     }
     Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "S")
-    iq <- iqalpha(formula = formula, design = design, alpha, h = h, ncom = ncom, 
+    iq <- iqalpha(formula = formula, design = design, alpha, h = h, ncom = ncom,
         comp = TRUE, incvec = incvec)$lin
     isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
-    if (type == "inf") 
+    if (type == "inf")
         ires <- isqalpha else ires <- incvec - isqalpha
     list(value = tot, lin = ires)
 }
@@ -270,11 +270,11 @@ isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, 
 
 
 computeQuantiles <- function(xx, w, p = quantiles) {
-    if (any(is.na(xx))) 
+    if (any(is.na(xx)))
         return(NA * p)
     oo <- order(xx)
     cum.w <- cumsum(w[oo])/sum(w)
-    cdf <- approxfun(cum.w, xx[oo], method = "constant", f = 1, yleft = min(xx), 
+    cdf <- approxfun(cum.w, xx[oo], method = "constant", f = 1, yleft = min(xx),
         yright = max(xx), ties = min)
     cdf(p)
 }
@@ -310,21 +310,21 @@ computeQuantiles <- function(xx, w, p = quantiles) {
 #' @export
 
 SE_lin <- function(object, design) {
-    
+
     if (length(object) == 2) {
         t <- object$lin
-        x <- survey::update(design, t = t)
+        x <- update(design, t = t)
         res <- survey::SE( survey::svytotal( ~t , x ) )
     } else {
         lincomp <- object$statistic.lin
         list_se <- lapply(lincomp, function(t) {
-            x <- survey::update(design, t = t)
+            x <- update(design, t = t)
             survey::SE( survey::svytotal( ~t , x ) )
         })
         names(list_se) <- object[[1]]
         res <- list_se
     }
-    
+
     res
 }
 
@@ -351,7 +351,7 @@ cl_inf <- function(a, b, T, S) {
 
 # product of o two functionals: formula (30)
 prod_inf <- function(T, S) {
-    
+
     value <- T$value * S$value
     lin <- T$value * S$lin + S$value * T$lin
     list(value = value, lin = lin)
@@ -370,4 +370,4 @@ ratio_inf <- function(T, S) {
 
 
 
- 
+
