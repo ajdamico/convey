@@ -49,7 +49,7 @@ svyarpt <- function(formula, design, ...) {
 #' @export
 svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h, 
     ncom, comp, ...) {
-    w <- survey:::weights.survey.design(design)
+    w <- weights(design)
     ind <- names(w)
     quant_val <- survey::svyquantile(x = formula, design = design, quantiles = order, method = "constant")
     quant_val <- as.vector(quant_val)
@@ -73,11 +73,11 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- survey:::weights.svyrep.design(design, "sampling")
+    w <- weights(design, "sampling")
     quant_val <- computeQuantiles(incvar, w, p = order)
     quant_val <- as.vector(quant_val)
     rval <- percent * quant_val
-    ww <- survey:::weights.svyrep.design(design, "analysis")
+    ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) 0.6 * computeQuantiles(incvar, wi, p = order))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))

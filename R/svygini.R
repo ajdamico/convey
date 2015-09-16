@@ -48,7 +48,7 @@ svygini <- function(formula, design, ...) {
 #' @export
 svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     inc <- terms.formula(formula)[[2]]
-    w <- survey:::weights.survey.design(design)
+    w <- weights(design)
     ind <- names(w)
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
@@ -100,9 +100,9 @@ svygini.svyrep.design <- function(formula, design, ...) {
         Den <- N * T
         (Num/Den) - 1
     }
-    ws <- survey:::weights.svyrep.design(design, "sampling")
+    ws <- weights(design, "sampling")
     rval <- ComputeGini(incvar, ws)
-    ww <- survey:::weights.svyrep.design(design, "analysis")
+    ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))

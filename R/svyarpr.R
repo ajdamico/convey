@@ -56,7 +56,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- survey:::weights.survey.design(design)
+    w <- weights(design)
     ARPT_val <- ARPT$value
     lin_ARPT <- ARPT$lin
     poor <- (incvar < ARPT_val) * 1
@@ -75,13 +75,13 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    ws <- survey:::weights.svyrep.design(design, "sampling")
+    ws <- weights(design, "sampling")
     ComputeArpr <- function(x, w, order, percent) {
         tresh <- percent * computeQuantiles(x, w, p = order)
         sum((incvar < tresh) * w)/sum(w)
     }
     rval <- ComputeArpr(x = incvar, w = ws, order = order, percent = percent)
-    ww <- survey:::weights.svyrep.design(design, "analysis")
+    ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order, 
         percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
