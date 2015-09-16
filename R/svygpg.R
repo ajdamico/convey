@@ -42,12 +42,13 @@
 #'testset$ifm<- 1*(testset$sex=='female')
 #'testset$ym<- testset$y*(testset$sex=='male')
 #'testset$yfm<- testset$y*(testset$sex=='female')
-#'des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
-#'a <-svytotal(~ym+yfm+im+ifm, des)
-# # using the function svycontrast from the library survey
-#'svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
+#'des<- survey::svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+#'a <-survey::svytotal(~ym+yfm+im+ifm, des)
+#'# using the function svycontrast from the library survey
+#'survey::svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
 #' # using svygpg:
-#'lin_gpg<- svygpg(~y, des, ~sex)
+#' library(convey)
+#'lin_gpg<- svygpg(~y, des, ~sex, ncom=rownames(testset))
 #'lin_gpg$value
 #'SE_lin(lin_gpg,des)
 #'

@@ -32,14 +32,14 @@
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' gini_eqIncome <- svygini(~eqIncome, design=des_eusilc, ncom=nrow(eusilc), comp=TRUE)
+#' gini_eqIncome <- svygini(~eqIncome, design=des_eusilc, ncom=rownames(eusilc), comp=TRUE)
 #'
 #' @export
 
 svygini <- function(formula, design, ...) {
-    
+
     UseMethod("svygini", design)
-    
+
 }
 
 
@@ -68,17 +68,17 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     Gini <- (Num/Den) - 1
     # cumulative distribution function
     F <- cumsum(w)/N
-    
+
     # partial weighted function
     G <- cumsum(incvar * w)
-    
+
     # Gini coefficient linearized variable
-    lin_gini <- (2 * (T - G + incvar * w + N * (incvar * F)) - incvar - (Gini + 1) * 
+    lin_gini <- (2 * (T - G + incvar * w + N * (incvar * F)) - incvar - (Gini + 1) *
         (T + N * incvar))/(N * T)
     # original order lin_gini<- lin_gini[ind] complete 0's
     names(lin_gini) <- names(w)
     lin_gini_comp <- complete(lin_gini, ncom)
-    if (comp) 
+    if (comp)
         res <- lin_gini_comp else res <- lin_gini
     list(gini_coef = Gini, lin = res)
 }
@@ -106,7 +106,7 @@ svygini.svyrep.design <- function(formula, design, ...) {
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
-} 
+}
 
 
 
@@ -114,11 +114,10 @@ svygini.svyrep.design <- function(formula, design, ...) {
 #' @rdname svygini
 #' @export
 svygini.DBIsvydesign <-
-	function (x, design, ...) 
+	function (x, design, ...)
 	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
 			updates = design$updates, subset = design$subset)
 		NextMethod("svygini", design)
 	}
 
- 

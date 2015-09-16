@@ -37,9 +37,9 @@
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' arpt_eqIncome<-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=nrow(eusilc), comp=TRUE)
+#' arpt_eqIncome<-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=rownames(eusilc), comp=TRUE)
 #' arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-#' ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
+#' ARPT = arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE)
 #'
 #' @export
 #'
@@ -74,15 +74,15 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
         percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
-} 
+}
 
 
 #' @rdname svyarpr
 #' @export
 svyarpr.DBIsvydesign <-
-	function (x, design, ...) 
+	function (x, design, ...)
 	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
 			updates = design$updates, subset = design$subset)
 		NextMethod("svyarpr", design)
 	}

@@ -52,7 +52,7 @@ table(vardpoor_arptd$lin$lin_arpt__db040.Tyrol)
 
 #  library convey
 fun_arptd<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpt, order = .50, percent =.6,
-  h= htot,ncom=rownames(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE, keep.names = TRUE)
+  h= htot, ncom=rownames(eusilc), comp=TRUE, deff=FALSE, keep.var=FALSE, keep.names = TRUE)
 # show results from library convey
    # arpt estimates
 fun_arptd$statistic.value

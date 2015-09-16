@@ -37,20 +37,20 @@
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = nrow(eusilc),
+#' qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
 #' comp=TRUE, incvec = eusilc$eqIncome)
 #'
 #' @export
 
 svyqsr <- function(formula, design, ...) {
-    
+
     UseMethod("svyqsr", design)
-    
+
 }
 
 #' @rdname svyqsr
 #' @export
-svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incvec, 
+svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incvec,
     ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
@@ -70,19 +70,19 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incve
     S20 <- sum(poor * w)
     qsr <- S80/S20
     # Linearization of S20
-    lin_S20 <- isq(formula = formula, design = design, alpha1, type = "inf", h = NULL, 
+    lin_S20 <- isq(formula = formula, design = design, alpha1, type = "inf", h = NULL,
         ncom = ncom, comp = FALSE, incvec = incvec)$lin
     # Linearization of S80
-    lin_S80 <- isq(formula = formula, design = design, alpha2, type = "sup", h = NULL, 
+    lin_S80 <- isq(formula = formula, design = design, alpha2, type = "sup", h = NULL,
         ncom = ncom, comp = FALSE, incvec = incvec)$lin
-    
+
     # LINEARIZED VARIABLE OF THE SHARE RATIO
-    
+
     lin_qsr <- (S20 * lin_S80 - S80 * lin_S20)/(S20 * S20)
-    
+
     names(lin_qsr) <- ind
     lin_qsr_comp <- complete(lin_qsr, ncom)
-    if (comp) 
+    if (comp)
         lin <- lin_qsr_comp else lin <- lin_qsr
     list(value = qsr, lin = lin_qsr)
 }
@@ -111,18 +111,17 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
 }
- 
 
- 
- 
+
+
+
 #' @rdname svyqsr
 #' @export
 svyqsr.DBIsvydesign <-
-	function (x, design, ...) 
+	function (x, design, ...)
 	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
 			updates = design$updates, subset = design$subset)
 		NextMethod("svyqsr", design)
 	}
 
- 

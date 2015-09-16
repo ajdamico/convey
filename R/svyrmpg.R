@@ -40,9 +40,9 @@
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' arpt_eqIncome <- svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-#' ncom=nrow(eusilc), comp=TRUE)
+#' ncom=rownames(eusilc), comp=TRUE)
 #' rmpg_eqIncome <- svyrmpg(~eqIncome, design=des_eusilc, order =.50,
-#' percent = .60,  h = htot, ncom=nrow(eusilc), comp=TRUE, ARPT = arpt_eqIncome)
+#' percent = .60,  h = htot, ncom=rownames(eusilc), comp=TRUE, ARPT = arpt_eqIncome)
 #'
 #' @export
 

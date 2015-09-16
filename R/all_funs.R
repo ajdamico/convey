@@ -107,7 +107,7 @@ densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000, ncom=nrow(eusilc), comp=TRUE)
+#' icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000, ncom=rownames(eusilc), comp=TRUE)
 #'icdf_eqIncome$value
 #' @export
 
@@ -168,7 +168,7 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50, ncom=nrow(eusilc),
+#' iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50, ncom=rownnames(eusilc),
 #' comp=TRUE, eusilc$eqIncome )
 #'iqalpha_eqIncome$value
 #' @export
@@ -235,7 +235,7 @@ iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .80, 'sup', htot,
-#' ncom=nrow(eusilc),  eusilc$eqIncome)
+#' ncom=rownames(eusilc),  eusilc$eqIncome)
 #'isq_eqIncome$value
 #' @export
 
@@ -297,13 +297,13 @@ computeQuantiles <- function(xx, w, p = quantiles) {
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = nrow(eusilc),
+#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
 #' comp=TRUE, incvec = eusilc$eqIncome)
 #' # se estimate of isq_eqIncome for the whole sample
 #' SE_lin(qsr_eqIncome, des_eusilc)
 #' # se estimates for domains
 #' isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
-#' FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE,
+#' FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
 #' incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
 #' SE_lin(isq_eqIncome_dom, des_eusilc)
 #' @export
