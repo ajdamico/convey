@@ -65,8 +65,8 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, n
     arpt <- ARPT$value
     linarpt <- ARPT$lin
     arpr <- sum((incvar <= arpt) * w)/N
-    dsub <- subset(design, subset = (incvar <= arpt))
-    medp <- svyquantile(x = formula, dsub, 0.5, method = "constant")
+    dsub <- survey::subset(design, subset = (incvar <= arpt))
+    medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
     medp <- as.vector(medp)
     RMPG <- 1 - (medp/arpt)
     Fprimemedp <- densfun(formula = formula, design = design, medp, htot = h, fun = "F")

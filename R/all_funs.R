@@ -181,7 +181,7 @@ iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
     incvar <- df[[as.character(inc)]]
     w <- survey::weights(design)
     ind <- names(w)
-    q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
+    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
     q_alpha <- as.vector(q_alpha)
     N <- sum(w)
     Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "F")
@@ -248,7 +248,7 @@ isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, 
     incvar <- df[[as.character(inc)]]
     w <- survey::weights(design)
     ind <- names(w)
-    q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
+    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
     q_alpha <- as.vector(q_alpha)
     if (type == "inf") {
         inc_inf <- (incvar <= q_alpha) * incvar
