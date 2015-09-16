@@ -132,3 +132,18 @@ svygpg.svyrep.design <- function(x, design, sex) {
     list(value = rval, se = sqrt(variance))
 }
  
+
+ 
+ 
+ 
+#' @rdname svygpg
+#' @export
+svygpg.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svygpg", design)
+	}
+
+ 

@@ -112,3 +112,17 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     list(value = rval, se = sqrt(variance))
 }
  
+
+ 
+ 
+#' @rdname svyqsr
+#' @export
+svyqsr.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svyqsr", design)
+	}
+
+ 

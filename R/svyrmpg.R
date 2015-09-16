@@ -107,3 +107,17 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
 } 
+
+
+
+#' @rdname svyrmpg
+#' @export
+svyrmpg.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svyrmpg", design)
+	}
+
+ 

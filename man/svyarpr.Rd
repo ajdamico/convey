@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyarpr.R
 \name{svyarpr}
 \alias{svyarpr}
+\alias{svyarpr.DBIsvydesign}
 \alias{svyarpr.survey.design}
 \alias{svyarpr.svyrep.design}
 \title{At-risk-of-poverty rate}
@@ -13,6 +14,8 @@ svyarpr(formula, design, ...)
 
 \method{svyarpr}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   ...)
+
+\method{svyarpr}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

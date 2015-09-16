@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyqsr.R
 \name{svyqsr}
 \alias{svyqsr}
+\alias{svyqsr.DBIsvydesign}
 \alias{svyqsr.survey.design}
 \alias{svyqsr.svyrep.design}
 \title{Relative median poverty gap}
@@ -12,6 +13,8 @@ svyqsr(formula, design, ...)
   incvec, ...)
 
 \method{svyqsr}{svyrep.design}(formula, design, alpha = 0.2, ...)
+
+\method{svyqsr}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
