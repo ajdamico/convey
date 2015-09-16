@@ -141,7 +141,7 @@ svygpg.svyrep.design <- function(x, design, sex) {
 svygpg.DBIsvydesign <-
 	function (x, design, ...) 
 	{
-		design$variables <- survey::getvars(x, design$db$connection, design$db$tablename, 
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
 			updates = design$updates, subset = design$subset)
 		NextMethod("svygpg", design)
 	}
