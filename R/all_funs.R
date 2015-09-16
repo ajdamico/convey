@@ -12,12 +12,11 @@
 #' @export
 
 
-complete <- function(x, n) {
-    ind.all <- as.character(1:n)
-    x.comp <- rep(0, n)
-    names(x.comp) <- ind.all
-    x.comp[names(x)] <- x
-    x.comp
+complete <- function(x, ind.all) {
+  x.comp <- rep(0, length(ind.all))
+  names(x.comp) <- ind.all
+  x.comp[names(x)] <- x
+  x.comp
 }
 
 #'Computes the bandwidth needed to compute the derivative of the cdf function
