@@ -56,7 +56,7 @@ h_fun <- function(inc_var, w) {
 
 densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
     inc <- terms.formula(formula)[[2]]
-    w <- weights(design)
+    w <- survey::weights(design)
     N <- sum(w)
     df <- model.frame(design)
     inc_var <- df[[as.character(inc)]]
@@ -116,13 +116,13 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- weights(design)
+    w <- survey::weights(design)
     ind <- names(w)
     N <- sum(w)
     poor <- (incvar <= x) * 1
-    design <- update(design, poor = poor)
+    design <- survey::update(design, poor = poor)
     # rate of poor
-    cdf_fun <- coef(svymean(poor, design))
+    cdf_fun <- survey::coef( survey::svymean( poor , design ) )
     inf_fun <- (1/N) * ((incvar <= x) - cdf_fun)
     names(inf_fun) <- ind
     inf_fun_comp <- complete(inf_fun, ncom)
@@ -179,7 +179,7 @@ iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- weights(design)
+    w <- survey::weights(design)
     ind <- names(w)
     q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
     q_alpha <- as.vector(q_alpha)
@@ -246,7 +246,7 @@ isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, 
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- weights(design)
+    w <- survey::weights(design)
     ind <- names(w)
     q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
     q_alpha <- as.vector(q_alpha)
@@ -313,13 +313,13 @@ SE_lin <- function(object, design) {
     
     if (length(object) == 2) {
         t <- object$lin
-        x <- update(design, t = t)
-        res <- SE(svytotal(~t, x))
+        x <- survey::update(design, t = t)
+        res <- survey::SE( survey::svytotal( ~t , x ) )
     } else {
         lincomp <- object$statistic.lin
         list_se <- lapply(lincomp, function(t) {
-            x <- update(design, t = t)
-            SE(svytotal(~t, x))
+            x <- survey::update(design, t = t)
+            survey::SE( survey::svytotal( ~t , x ) )
         })
         names(list_se) <- object[[1]]
         res <- list_se
@@ -334,7 +334,7 @@ itot <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    value <- coef(svytotal(x = formula, design = design))
+    value <- survey::coef( survey::svytotal(x = formula, design = design))
     lin <- incvar
     list(value = value, lin = lin)
 }

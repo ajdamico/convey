@@ -56,7 +56,7 @@ svyrmpg <- function(formula, design, ...) {
 #' @export
 svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, ncom, 
     h, comp, ARPT, ...) {
-    w <- weights(design)
+    w <- survey::weights(design)
     ind <- names(w)
     N <- sum(w)
     inc <- terms.formula(formula)[[2]]
@@ -100,9 +100,9 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
         medp <- computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
         1 - (medp/tresh)
     }
-    ws <- weights(design, "sampling")
+    ws <- survey::weights(design, "sampling")
     rval <- ComputeRmpg(incvar, ws, order = order, percent = percent)
-    ww <- weights(design, "analysis")
+    ww <- survey::weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeRmpg(incvar, wi, order = order, percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))

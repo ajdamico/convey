@@ -55,7 +55,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incve
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- weights(design)
+    w <- survey::weights(design)
     ind <- names(w)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
@@ -104,9 +104,9 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
         S20 <- sum(poor * w)
         S80/S20
     }
-    ws <- weights(design, "sampling")
+    ws <- survey::weights(design, "sampling")
     rval <- ComputeQsr(incvar, ws, alpha = alpha)
-    ww <- weights(design, "analysis")
+    ww <- survey::weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
