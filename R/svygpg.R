@@ -98,7 +98,7 @@ svygpg.survey.design <- function(x, design, sex) {
 #' @rdname svygpg
 #' @export
 svygpg.svyrep.design <- function(x, design, sex) {
-    ws <- survey:::weights(design, "sampling")
+    ws <- survey:::weights.svyrep.design(design, "sampling")
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
@@ -126,7 +126,7 @@ svygpg.svyrep.design <- function(x, design, sex) {
         gpg
     }
     rval <- ComputeGpg(earn_hour = wage, w = ws, sex = sex)
-    ww <- survey:::weights(design, "analysis")
+    ww <- survey:::weights.svyrep.design(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGpg(wage, wi, sex = sex))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
