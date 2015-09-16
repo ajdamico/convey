@@ -56,7 +56,7 @@ h_fun <- function(inc_var, w) {
 
 densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
     inc <- terms.formula(formula)[[2]]
-    w <- survey::weights(design)
+    w <- survey:::weights(design)
     N <- sum(w)
     df <- model.frame(design)
     inc_var <- df[[as.character(inc)]]
@@ -116,7 +116,7 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- survey::weights(design)
+    w <- survey:::weights(design)
     ind <- names(w)
     N <- sum(w)
     poor <- (incvar <= x) * 1
@@ -179,7 +179,7 @@ iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- survey::weights(design)
+    w <- survey:::weights(design)
     ind <- names(w)
     q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
     q_alpha <- as.vector(q_alpha)
@@ -246,7 +246,7 @@ isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, 
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    w <- survey::weights(design)
+    w <- survey:::weights(design)
     ind <- names(w)
     q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
     q_alpha <- as.vector(q_alpha)
