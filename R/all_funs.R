@@ -122,7 +122,7 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
     poor <- (incvar <= x) * 1
     design <- update(design, poor = poor)
     # rate of poor
-    cdf_fun <- survey::coef( survey::svymean( poor , design ) )
+    cdf_fun <- coef( survey::svymean( poor , design ) )
     inf_fun <- (1/N) * ((incvar <= x) - cdf_fun)
     names(inf_fun) <- ind
     inf_fun_comp <- complete(inf_fun, ncom)
@@ -334,7 +334,7 @@ itot <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    value <- survey::coef( survey::svytotal(x = formula, design = design))
+    value <- coef( survey::svytotal(x = formula, design = design))
     lin <- incvar
     list(value = value, lin = lin)
 }

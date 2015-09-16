@@ -20,7 +20,7 @@ itot <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    value <- survey::coef( survey::svytotal(x = formula, design = design))
+    value <- coef( survey::svytotal(x = formula, design = design))
     lin <- incvar
     list(value = value, lin = lin)
 }
