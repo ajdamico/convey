@@ -94,7 +94,7 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
 svyarpr.DBIsvydesign <-
 	function (x, design, ...) 
 	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+		design$variables <- survey::getvars(x, design$db$connection, design$db$tablename, 
 			updates = design$updates, subset = design$subset)
 		NextMethod("svyarpr", design)
 	}
