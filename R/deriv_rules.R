@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 
-# Auxiliary functions Implement the rules for Influence functions in Osier's
-# paper
-=======
 ##' @name funs
 ##' @title Auxiliary functions Implement the rules for Influence functions in Osier's paper
->>>>>>> origin/master
+
 
 #' @rdname funs
 #' @export

@@ -60,13 +60,10 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h
     lin_ARPT_comp <- complete(lin_ARPT, ncom)
     if (comp)
         lin <- lin_ARPT_comp else lin <- lin_ARPT
-<<<<<<< HEAD
-=======
     # attr(ARPT, 'statistic')<- 'arpt' attr(ARPT,
     # 'var')<-survey::svyCprod(lin/design$prob,design$strata, design$cluster[[1]],
     # design$fpc, design$nPSU,design$certainty,design$postStrata)
->>>>>>> origin/master
-    list(value = ARPT, lin = lin)
+   list(value = ARPT, lin = lin)
 }
 
 #' @rdname svyarpt
