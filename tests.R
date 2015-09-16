@@ -442,7 +442,7 @@ subset(as.data.frame(aa2$all_result)[,c("type","db040","value", "se")],type=="GI
 ################################################
 # tests for functions in the file deriv.rules.R
 ##################################################
-#Example:
+#Example 1:
 
 # Create two influence objects for totals
 set.seed(1)
@@ -532,7 +532,9 @@ arpr_eqIncome1<- fun_par_inf(arpt_eqIncome, "icdf", "densfun", formula=~eqIncome
   ncom=nrow(eusilc) ,  comp= TRUE, htot=NULL, fun="F")
 str(arpr_eqIncome1)
 
-arpr_eqIncome2<-svyarpr.survey.design1(~eqIncome, design=des_eusilc, .5, .6, h = htot,ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
+## using
+arpr_eqIncome2<-svyarpr.survey.design1(~eqIncome, design=des_eusilc, .5, .6, h = htot,
+  ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
 str(arpr_eqIncome2)
 
 ## get the output for domains.
@@ -545,16 +547,16 @@ fun_arprd<-svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = 
 unlist(fun_arprd$statistic.value)*100
 # linearized arpr for Burgenland
 table(fun_arprd$statistic.lin[[1]]*100)
-SE_lin(fun_arprd,des_eusilc)
+unlist(SE_lin(fun_arprd,des_eusilc))
 
 #
-fun_arprd1<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr, order = .50,
-  percent =.6, h= htot, ARPT=arpt_eqIncome, ncom=nrow(des_eusilc$variables), comp=TRUE,
+fun_arprd1<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr.survey.design1,
+  h= htot, ARPT=arpt_eqIncome, ncom=nrow(des_eusilc$variables), comp=TRUE,
   deff=FALSE, keep.var=FALSE)
 unlist(fun_arprd1$statistic.value)*100
 table(fun_arprd1$statistic.lin[[1]]*100)
 str(fun_arprd1)
-SE_lin(fun_arprd1,des_eusilc)
+unlist(SE_lin(fun_arprd1,des_eusilc))
 
 
 ##############################################################
@@ -731,7 +733,87 @@ lingpg1<- (1-gpg)* (If/Nf-Im/Nm+x*Im/Xm-x*If/Xf)
 
 summary(lingpg1)
 
+###################################################
+iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
+  ...) {
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar <- df[[as.character(inc)]]
+  w <- weights(design)
+  ind <- names(w)
+  q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
+  q_alpha <- as.vector(q_alpha)
+  N <- sum(w)
+  Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "F")
+  iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+  if (!is.null(incvec)) {
+    iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
+    comp <- FALSE
+  }
+  if (comp) {
+    names(iq) <- ind
+    iq_comp <- complete(iq, ncom)
+    res = iq_comp
+  } else res <- iq
+  list(value = q_alpha, lin = res)
+}
 
+iqalpha1 <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
+  ...) {
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar <- df[[as.character(inc)]]
+  w <- weights(design)
+  ind <- names(w)
+  q_alpha <- svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
+  q_alpha <- as.vector(q_alpha)
+  N <- sum(w)
+  qalphalin<-list(value=q_alpha, lin=NULL)
+  objlinq <- fun_par_inf(qalphalin, "icdf", "densfun", formula=formula ,design= design,
+    ncom=ncom ,  comp= TRUE, htot=NULL, fun="F")
+  #Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "F")
+  #iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+  if (!is.null(incvec)) {
+    iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
+    comp <- FALSE
+  }
+  if (comp) {
+    names(iq) <- ind
+    iq_comp <- complete(iq, ncom)
+    res = iq_comp
+  } else res <- iq
+  list(value = q_alpha, lin = res)
+}
+
+
+######################################################################################
+
+
+
+
+
+
+icdf1 <- function(formula, design, x, ncom, comp, ...) {
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar <- df[[as.character(inc)]]
+  w <- weights(design)
+  ind <- names(w)
+  N <- sum(w)
+  poor <- (incvar <= x) * 1
+  design <- update(design, poor = poor)
+  # rate of poor
+  cdf_fun <- coef(svymean(poor, design))
+  inf_fun <- (1/N) * ((incvar <= x) - cdf_fun)
+  names(inf_fun) <- ind
+  inf_fun_comp <- complete(inf_fun, ncom)
+  if (comp)
+    lin <- inf_fun_comp else lin <- inf_fun
+  list(value = cdf_fun, lin = lin)
+}
+
+
+des_eusilc <- svydesign(ids = ~db040, weights = ~rb050, data = eusilc)
 
 
 

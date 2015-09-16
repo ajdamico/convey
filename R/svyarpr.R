@@ -44,29 +44,17 @@
 #' @export
 #'
 svyarpr <- function(formula, design, ...) {
-    
+
     UseMethod("svyarpr", design)
-    
+
 }
 
 #' @rdname svyarpr
 #' @export
-svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h, 
-    ARPT, ncom, ...) {
-    inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
-    w <- weights(design)
-    ARPT_val <- ARPT$value
-    lin_ARPT <- ARPT$lin
-    poor <- (incvar < ARPT_val) * 1
-    design <- update(design, poor = poor)
-    ARPRC <- svymean(~poor, design = design)
-    ARPRC <- coef(ARPRC)
-    lin_ARPR <- icdf(formula = formula, design = design, ARPT_val, ncom = ncom, comp = TRUE)$lin + 
-        densfun(formula = formula, design = design, ARPT_val, htot = h, fun = "F") * 
-            lin_ARPT
-    list(value = ARPRC, lin = lin_ARPR)
+svyarpr.survey.design <- function(formula, design, h, ARPT, ncom,...){
+  ARPR<-fun_par_inf(ARPT, "icdf", "densfun", formula=formula ,design= design,
+    ncom=ncom ,  comp= TRUE, htot=h, fun="F")
+  list(value = ARPR$value, lin = ARPR$lin)
 }
 
 #' @rdname svyarpr
@@ -82,8 +70,8 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     }
     rval <- ComputeArpr(x = incvar, w = ws, order = order, percent = percent)
     ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order, 
+    qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order,
         percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
-} 
+}
