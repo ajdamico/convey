@@ -59,9 +59,9 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incve
     ind <- names(w)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
-    quant_inf <- svyquantile(x = formula, design = design, quantiles = alpha1, method = "constant")
+    quant_inf <- survey::svyquantile(x = formula, design = design, quantiles = alpha1, method = "constant")
     quant_inf <- as.vector(quant_inf)
-    quant_sup <- svyquantile(x = formula, design = design, quantiles = alpha2, method = "constant")
+    quant_sup <- survey::svyquantile(x = formula, design = design, quantiles = alpha2, method = "constant")
     quant_sup <- as.vector(quant_sup)
     tot_var <- sum(incvar * w)
     rich <- (incvar > quant_sup) * incvar
@@ -111,4 +111,18 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
 }
+ 
+
+ 
+ 
+#' @rdname svyqsr
+#' @export
+svyqsr.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svyqsr", design)
+	}
+
  

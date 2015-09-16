@@ -107,3 +107,18 @@ svygini.svyrep.design <- function(formula, design, ...) {
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
 } 
+
+
+
+
+#' @rdname svygini
+#' @export
+svygini.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svygini", design)
+	}
+
+ 

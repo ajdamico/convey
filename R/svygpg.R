@@ -66,7 +66,7 @@ svygpg.survey.design <- function(x, design, sex) {
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
-    design <- update(design, one = rep(1, length(wage)))
+    design <- survey::update(design, one = rep(1, length(wage)))
     # sex factor
     mf <- model.frame(sex, design$variables, na.action = na.pass)
     xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 + 
@@ -85,7 +85,7 @@ svygpg.survey.design <- function(x, design, sex) {
     earnhf <- wage * sex[, col_female]
     indm <- sex[, col_male]
     indf <- 1 * sex[, col_female]
-    design <- update(design, earnhem = earnhem, earnhf = earnhf, indm = indm, indf = indf)
+    design <- survey::update(design, earnhem = earnhem, earnhf = earnhf, indm = indm, indf = indf)
     imean1 <- ratio_inf(itot(~earnhem, design = design), itot(~indm, design = design))
     imean2 <- ratio_inf(itot(~earnhf, design = design), itot(~indf, design = design))
     NUM <- cl_inf(1, -1, imean1, imean2)
@@ -102,7 +102,7 @@ svygpg.svyrep.design <- function(x, design, sex) {
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
-    design <- update(design, one = rep(1, length(wage)))
+    design <- survey::update(design, one = rep(1, length(wage)))
     # sex factor
     mf <- model.frame(sex, design$variables, na.action = na.pass)
     xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 + 
@@ -131,4 +131,19 @@ svygpg.svyrep.design <- function(x, design, sex) {
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
 }
+ 
+
+ 
+ 
+ 
+#' @rdname svygpg
+#' @export
+svygpg.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svygpg", design)
+	}
+
  

@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyarpt.R
 \name{svyarpt}
 \alias{svyarpt}
+\alias{svyarpt.DBIsvydesign}
 \alias{svyarpt.survey.design}
 \alias{svyarpt.svyrep.design}
 \title{At-risk-of-poverty threshold}
@@ -13,6 +14,8 @@ svyarpt(formula, design, ...)
 
 \method{svyarpt}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   ...)
+
+\method{svyarpt}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

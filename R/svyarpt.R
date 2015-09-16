@@ -51,7 +51,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h
     ncom, comp, ...) {
     w <- weights(design)
     ind <- names(w)
-    quant_val <- svyquantile(x = formula, design = design, quantiles = order, method = "constant")
+    quant_val <- survey::svyquantile(x = formula, design = design, quantiles = order, method = "constant")
     quant_val <- as.vector(quant_val)
     ARPT <- percent * quant_val
     lin_ARPT <- percent * iqalpha(formula = formula, design = design, alpha = order,
@@ -60,6 +60,12 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h
     lin_ARPT_comp <- complete(lin_ARPT, ncom)
     if (comp)
         lin <- lin_ARPT_comp else lin <- lin_ARPT
+<<<<<<< HEAD
+=======
+    # attr(ARPT, 'statistic')<- 'arpt' attr(ARPT,
+    # 'var')<-survey::svyCprod(lin/design$prob,design$strata, design$cluster[[1]],
+    # design$fpc, design$nPSU,design$certainty,design$postStrata)
+>>>>>>> origin/master
     list(value = ARPT, lin = lin)
 }
 
@@ -80,6 +86,14 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
 }
 
 
-
+#' @rdname svyarpt
+#' @export
+svyarpt.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svyarpt", design)
+	}
 
 

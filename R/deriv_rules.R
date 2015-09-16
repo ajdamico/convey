@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 
 # Auxiliary functions Implement the rules for Influence functions in Osier's
 # paper
+=======
+##' @name funs
+##' @title Auxiliary functions Implement the rules for Influence functions in Osier's paper
+>>>>>>> origin/master
 
 #' @rdname funs
 #' @export
@@ -19,7 +24,7 @@ itot <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    value <- coef(svytotal(x = formula, design = design))
+    value <- survey::coef( survey::svytotal(x = formula, design = design))
     lin <- incvar
     list(value = value, lin = lin)
 }

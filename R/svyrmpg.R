@@ -65,8 +65,8 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, n
     arpt <- ARPT$value
     linarpt <- ARPT$lin
     arpr <- sum((incvar <= arpt) * w)/N
-    dsub <- subset(design, subset = (incvar <= arpt))
-    medp <- svyquantile(x = formula, dsub, 0.5, method = "constant")
+    dsub <- survey::subset(design, subset = (incvar <= arpt))
+    medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
     medp <- as.vector(medp)
     RMPG <- 1 - (medp/arpt)
     Fprimemedp <- densfun(formula = formula, design = design, medp, htot = h, fun = "F")
@@ -107,3 +107,17 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     list(value = rval, se = sqrt(variance))
 } 
+
+
+
+#' @rdname svyrmpg
+#' @export
+svyrmpg.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svyrmpg", design)
+	}
+
+ 

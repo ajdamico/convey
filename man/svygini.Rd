@@ -2,6 +2,7 @@
 % Please edit documentation in R/svygini.R
 \name{svygini}
 \alias{svygini}
+\alias{svygini.DBIsvydesign}
 \alias{svygini.survey.design}
 \alias{svygini.svyrep.design}
 \title{Gini coefficient}
@@ -11,6 +12,8 @@ svygini(formula, design, ...)
 \method{svygini}{survey.design}(formula, design, ncom, comp = TRUE, ...)
 
 \method{svygini}{svyrep.design}(formula, design, ...)
+
+\method{svygini}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

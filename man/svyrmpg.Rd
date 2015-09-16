@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyrmpg.R
 \name{svyrmpg}
 \alias{svyrmpg}
+\alias{svyrmpg.DBIsvydesign}
 \alias{svyrmpg.survey.design}
 \alias{svyrmpg.svyrep.design}
 \title{Relative median poverty gap}
@@ -13,6 +14,8 @@ svyrmpg(formula, design, ...)
 
 \method{svyrmpg}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   ...)
+
+\method{svyrmpg}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
