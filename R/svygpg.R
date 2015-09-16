@@ -62,11 +62,12 @@ svygpg <- function(formula, design, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(x, design, sex) {
+svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE) {
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
-    design <- update(design, one = rep(1, length(wage)))
+    w<- weights(design)
+    ind<-names(w)
     # sex factor
     mf <- model.frame(sex, design$variables, na.action = na.pass)
     xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 +
@@ -75,24 +76,25 @@ svygpg.survey.design <- function(x, design, sex) {
     sex <- matrix(nrow = NROW(xx[[1]]), ncol = sum(cols))
     scols <- c(0, cumsum(cols))
     for (i in 1:length(xx)) {
-        sex[, scols[i] + 1:cols[i]] <- xx[[i]]
+      sex[, scols[i] + 1:cols[i]] <- xx[[i]]
     }
     colnames(sex) <- do.call("c", lapply(xx, colnames))
     sex <- as.matrix(sex)
     col_female <- grep("female", colnames(sex))
     col_male <- setdiff(1:2, col_female)
-    earnhem <- wage * sex[, col_male]
-    earnhf <- wage * sex[, col_female]
-    indm <- sex[, col_male]
-    indf <- 1 * sex[, col_female]
-    design <- update(design, earnhem = earnhem, earnhf = earnhf, indm = indm, indf = indf)
-    imean1 <- ratio_inf(itot(~earnhem, design = design), itot(~indm, design = design))
-    imean2 <- ratio_inf(itot(~earnhf, design = design), itot(~indf, design = design))
-    NUM <- cl_inf(1, -1, imean1, imean2)
-    DEN <- imean1
-    igpg <- ratio_inf(NUM, DEN)
-    list(value = igpg$value, lin = igpg$lin)
-}
+    # create linearization objects of totals
+    INDM <-list(value = sum(sex[, col_male]*w), lin=sex[, col_male])
+    INDF <- list(value = sum(sex[, col_female]*w), lin=sex[, col_female])
+    TM<- list(value = sum(wage*sex[, col_male]*w), lin=wage*sex[, col_male])
+    TF<- list(value = sum(wage*sex[, col_female]*w), lin=wage*sex[, col_female])
+    list_all_tot <-list(INDM=INDM,INDF=INDF,TM=TM,TF=TF)
+    IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_tot)
+    infun<-IGPG$lin
+    names(infun) <- ind
+    infuncomp <- complete(infun, ncom)
+    if (comp) lin <- infuncomp else lin <- infun
+    list(value = IGPG$value, lin = lin)
+  }
 
 
 #' @rdname svygpg

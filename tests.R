@@ -9,7 +9,7 @@ colnames(dati)[1] <- "IDd"
 library(survey)
 # create a design object
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-
+library(convey)
 
 ################
 # ARPT
@@ -534,7 +534,7 @@ arpr_eqIncome1<- fun_par_inf(arpt_eqIncome, "icdf", "densfun", formula=~eqIncome
 str(arpr_eqIncome1)
 
 ## using
-arpr_eqIncome2<-svyarpr.survey.design1(~eqIncome, design=des_eusilc, .5, .6, h = htot,
+arpr_eqIncome2<-svyarpr(~eqIncome, design=des_eusilc, .5, .6, h = htot,
   ARPT = arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE)
 str(arpr_eqIncome2)
 
@@ -551,7 +551,7 @@ table(fun_arprd$statistic.lin[[1]]*100)
 unlist(SE_lin(fun_arprd,des_eusilc))
 
 #
-fun_arprd1<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr.survey.design1,
+fun_arprd1<- svyby(~eqIncome, by= ~db040, design=des_eusilc, FUN=svyarpr,
   h= htot, ARPT=arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE,
   deff=FALSE, keep.var=FALSE)
 unlist(fun_arprd1$statistic.value)*100
@@ -634,7 +634,7 @@ SE(svytotal(~lingpg, des))
 ## using bootstrap
 
 des_rep<- as.svrepdesign(des, type="bootstrap", replicates=500)
-svygpg.svyrep.design(~y, des_rep, ~sex)
+svygpg(~y, des_rep, ~sex)
 
 
 #################################################
@@ -651,8 +651,11 @@ dati[sexf=="male", sex:=1]
 dati[sexf=="female", sex:=2]
 gpgs1 <- lingpg(Y="earningsHour", gender="sex",
   id="ID", weight="weights", dataset=dati)
+des_ses<- svydesign(id=~1, weights=~weights, data=ses,variables=~weights+sex+earningsHour+location)
+
 
 # result in %
+
 gpgs1$value
 summary(gpgs1$lin$lin_gpg)
 # se using vardpoor
@@ -788,10 +791,6 @@ iqalpha1 <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL
 
 
 ######################################################################################
-
-
-
-
 
 
 icdf1 <- function(formula, design, x, ncom, comp, ...) {
