@@ -63,7 +63,7 @@ svygpg <- function(formula, design, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE) {
+svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
@@ -100,7 +100,7 @@ svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE) {
 
 #' @rdname svygpg
 #' @export
-svygpg.svyrep.design <- function(x, design, sex) {
+svygpg.svyrep.design <- function(x, design, sex,...) {
     ws <- weights(design, "sampling")
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
