@@ -48,7 +48,7 @@ data(eusilc)
 library(survey)
 htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
+qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = nrow(eusilc),
 comp=TRUE, incvec = eusilc$eqIncome)
 }
 \author{

@@ -68,13 +68,9 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incve
     lin_qsr <- QSR$lin
     names(lin_qsr) <- ind
     lin_qsr_comp <- complete(lin_qsr, ncom)
-    if (comp) lin <- lin_qsr_comp else lin <- lin_qsr
-	
-	rval <- QSR$value
-	class(rval) <- "cvystat"
-	attr( rval , "lin" ) <- lin_qsr
-	attr( rval , "statistic" ) <- "qsr"
-	rval
+    if (comp)
+      lin <- lin_qsr_comp else lin <- lin_qsr
+    list(value =QSR$value , lin = lin_qsr)
   }
 
 #' @rdname svyqsr
@@ -99,11 +95,7 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    
-	class(rval) <- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "qsr"
-	rval
+    list(value = rval, se = sqrt(variance))
 }
 
 

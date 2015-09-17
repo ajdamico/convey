@@ -80,13 +80,7 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     lin_gini_comp <- complete(lin_gini, ncom)
     if (comp)
         res <- lin_gini_comp else res <- lin_gini
-    
-	rval <- Gini
-	class(rval) <- "cvystat"
-	attr( rval , "lin" ) <- res
-	attr( rval , "statistic" ) <- "gini"
-	rval
-	
+    list(gini_coef = Gini, lin = res)
 }
 
 #' @rdname svygini
@@ -111,12 +105,7 @@ svygini.svyrep.design <- function(formula, design, ...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-   
-
-	class(rval) <- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "gini"
-	rval
+    list(value = rval, se = sqrt(variance))
 }
 
 
