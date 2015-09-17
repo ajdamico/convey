@@ -54,37 +54,37 @@ svyrmpg <- function(formula, design, ...) {
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, ncom,
-    h, comp, ARPT, ...) {
-    w <- weights(design)
-    ind <- names(w)
-    N <- sum(w)
-    inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
-    arpt <- ARPT$value
-    linarpt <- ARPT$lin
-    arpr <- sum((incvar <= arpt) * w)/N
-    dsub <- subset(design, subset = (incvar <= arpt))
-    medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
-    medp <- as.vector(medp)
-    RMPG <- 1 - (medp/arpt)
-    Fprimemedp <- densfun(formula = formula, design = design, medp, htot = h, fun = "F")
-    Fprimearpt <- densfun(formula = formula, design = design, arpt, htot = h, fun = "F")
-    # linearize cdf of ARPT
-    ifarpr0 <- (1/N) * ((incvar <= arpt) - arpr)
-    names(ifarpr0) <- names(w)
-    ifarpr0 <- complete(ifarpr0, ncom)
-    ifarpr <- ifarpr0 + Fprimearpt * linarpt
-    # linearize cdf of medp
-    ifmedp <- (1/N) * ((incvar <= medp) - 0.5 * arpr)
-    names(ifmedp) <- names(w)
-    ifmedp <- complete(ifmedp, ncom)
-    # linearize median of poor
-    linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
-    # linearize RMPG
-    linrmpg <- (medp * linarpt/(arpt * arpt)) - (linmedp/arpt)
-    list(value = RMPG, lin = linrmpg)
+svyrmpg.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, ncom,
+  h, comp, ARPT, ...) {
+  w <- weights(design)
+  ind <- names(w)
+  N <- sum(w)
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar <- df[[as.character(inc)]]
+  arpt <- ARPT$value
+  linarpt <- ARPT$lin
+  arpr <- sum((incvar <= arpt) * w)/N
+  dsub <- subset(design, subset = (incvar <= arpt))
+  medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
+  medp <- as.vector(medp)
+  RMPG <- 1 - (medp/arpt)
+  ARPR <- svyarpr(formula=formula, design= design, h=h, ARPT=ARPT, ncom=ncom)
+  Fprimemedp <- densfun(formula = formula, design = design, medp, htot = h, fun = "F")
+  arpr<-ARPR$value
+  ifarpr<-ARPR$lin
+  # linearize cdf of medp
+  ifmedp <- (1/N) * ((incvar <= medp) - 0.5 * arpr)
+  names(ifmedp) <- names(w)
+  ifmedp <- complete(ifmedp, ncom)
+  # linearize median of poor
+  linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
+  MEDP<- list(value=medp,lin=linmedp)
+  list_all<- list(ARPT=ARPT, MEDP=MEDP)
+  # linearize RMPG
+  RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
+  #linrmpg <- (medp * linarpt/(arpt * arpt)) - (linmedp/arpt)
+  list(value = RMPG$value, lin = RMPG$lin)
 }
 
 #' @rdname svyrmpg
