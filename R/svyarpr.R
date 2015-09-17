@@ -58,7 +58,6 @@ svyarpr.survey.design <- function(formula, design, h, ARPT, ncom,...){
 	rval <- ARPR$value
 	class(rval) <- "cvystat"
 	attr( rval , "lin" ) <- ARPR$lin
-	attr( rval , "design" ) <- design
 	attr( rval , "statistic" ) <- "arpr"
 	rval
 }

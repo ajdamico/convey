@@ -367,63 +367,12 @@ ratio_inf <- function(T, S) {
 }
 
 
-
-#' Extracts the se estimate
-#'
-#' Computes the se from the linearized variable.
-#'
-#' @param object output of a linearizing indicator function
-#' @param design a survey design object of the library survey
-#' @return the estime of the indicator se
-#'
-#' @author Djalma Pessoa and Anthony Damico
-#'
-#' @keywords survey
-#'
-#' @examples
-#' library(vardpoor)
-#' data(eusilc)
-#' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
-#' comp=TRUE, incvec = eusilc$eqIncome)
-#' # se estimate of isq_eqIncome for the whole sample
-#' SE_lin(qsr_eqIncome, des_eusilc)
-#' # se estimates for domains
-#' isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
-#' FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
-#' incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
-#' SE_lin2(isq_eqIncome_dom, des_eusilc)
-#' @export
-
-SE_lin2 <- function(object, design) {
-
-    if (length(object) == 2) {
-        t <- object
-        x <- update(design, t = t)
-        res <- survey::SE( survey::svytotal( ~t , x ) )
-    } else {
-        lincomp <- object
-        list_se <- lapply(lincomp, function(t) {
-            x <- update(design, t = t)
-            survey::SE( survey::svytotal( ~t , x ) )
-        })
-        names(list_se) <- object[[1]]
-        res <- list_se
-    }
-
-    res
-}
-
-
-
 # cvystat print method
 print.cvystat <- function( x , ... ) {
     
 	if( !is.null( attr( x , "lin" ) ) ){
 	
-		m <- cbind( x , SE_lin2( attr( x , "lin" ) , attr( x , "design" ) ) )
+		m <- cbind( x , SE_lin( attr( x , "lin" ) ) )
 	
 	} else {
 	

@@ -98,7 +98,6 @@ svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
 	rval <- IGPG$value
 	class(rval) <- "cvystat"
 	attr( rval , "lin" ) <- lin
-	attr( rval , "design" ) <- design
 	attr( rval , "statistic" ) <- "gpg"
 	rval
   }

@@ -88,7 +88,6 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     
 	class(rval) <- "cvystat"
 	attr( rval , "var" ) <- variance
-	attr( rval , "design" ) <- design
 	attr( rval , "statistic" ) <- "arpt"
 	rval
 }

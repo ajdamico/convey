@@ -115,7 +115,6 @@ svygini.svyrep.design <- function(formula, design, ...) {
 
 	class(rval) <- "cvystat"
 	attr( rval , "var" ) <- variance
-	attr( rval , "design" ) <- design
 	attr( rval , "statistic" ) <- "gini"
 	rval
 }
