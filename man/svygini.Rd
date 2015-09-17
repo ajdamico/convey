@@ -39,7 +39,7 @@ data(eusilc)
 library(survey)
 htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-gini_eqIncome <- svygini(~eqIncome, design=des_eusilc, ncom=rownames(eusilc), comp=TRUE)
+gini_eqIncome <- svygini(~eqIncome, design=des_eusilc, ncom=nrow(eusilc), comp=TRUE)
 }
 \author{
 Djalma Pessoa and Anthony Damico

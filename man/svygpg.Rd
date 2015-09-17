@@ -9,9 +9,9 @@
 \usage{
 svygpg(formula, design, ...)
 
-\method{svygpg}{survey.design}(x, design, sex, ncom, comp = TRUE, ...)
+\method{svygpg}{survey.design}(x, design, sex)
 
-\method{svygpg}{svyrep.design}(x, design, sex, ...)
+\method{svygpg}{svyrep.design}(x, design, sex)
 
 \method{svygpg}{DBIsvydesign}(x, design, ...)
 }
@@ -45,13 +45,11 @@ testset$im<- 1*(testset$sex=='male')
 testset$ifm<- 1*(testset$sex=='female')
 testset$ym<- testset$y*(testset$sex=='male')
 testset$yfm<- testset$y*(testset$sex=='female')
-des<- survey::svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
-a <-survey::svytotal(~ym+yfm+im+ifm, des)
-# using the function svycontrast from the library survey
-survey::svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
+des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+a <-svytotal(~ym+yfm+im+ifm, des)
+svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
 # using svygpg:
-library(convey)
-lin_gpg<- svygpg(~y, des, ~sex, ncom=rownames(testset))
+lin_gpg<- svygpg(~y, des, ~sex)
 lin_gpg$value
 SE_lin(lin_gpg,des)
 }
