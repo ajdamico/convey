@@ -23,13 +23,13 @@ data(eusilc)
 library(survey)
 htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = nrow(eusilc),
+qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
 comp=TRUE, incvec = eusilc$eqIncome)
 # se estimate of isq_eqIncome for the whole sample
 SE_lin(qsr_eqIncome, des_eusilc)
 # se estimates for domains
 isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
-FUN=svyqsr, alpha=.20,  h= htot, ncom=nrow(des_eusilc$variables), comp=TRUE,
+FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
 incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
 SE_lin(isq_eqIncome_dom, des_eusilc)
 }

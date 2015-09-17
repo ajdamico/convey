@@ -54,7 +54,12 @@ svyarpr <- function(formula, design, ...) {
 svyarpr.survey.design <- function(formula, design, h, ARPT, ncom,...){
   ARPR<-fun_par_inf(ARPT, "icdf", "densfun", formula=formula ,design= design,
     ncom=ncom ,  comp= TRUE, htot=h, fun="F")
-  list(value = ARPR$value, lin = ARPR$lin)
+  
+	rval <- ARPR$value
+	class(rval) <- "cvystat"
+	attr( rval , "var" ) <- ( SE_lin( ARPR$lin , design ) )^2
+	attr( rval , "statistic" ) <- "arpr"
+	rval
 }
 
 #' @rdname svyarpr
@@ -73,7 +78,11 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order,
         percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    list(value = rval, se = sqrt(variance))
+
+	class(rval) <- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "arpr"
+	rval
 }
 
 
