@@ -84,7 +84,15 @@ svyrmpg.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
   # linearize RMPG
   RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
   #linrmpg <- (medp * linarpt/(arpt * arpt)) - (linmedp/arpt)
-  list(value = RMPG$value, lin = RMPG$lin)
+  rval <- RMPG$value
+  
+	class(rval) <- "cvystat"
+	
+	attr( rval , "lin" ) <- RMPG$lin
+	attr( rval , "statistic" ) <- "rmpg"
+	
+	rval
+  
 }
 
 #' @rdname svyrmpg
@@ -105,7 +113,13 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeRmpg(incvar, wi, order = order, percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    list(value = rval, se = sqrt(variance))
+    
+	class(rval) <- "cvystat"
+	
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "rmpg"
+	
+	rval
 }
 
 

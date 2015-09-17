@@ -94,7 +94,12 @@ svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
     names(infun) <- ind
     infuncomp <- complete(infun, ncom)
     if (comp) lin <- infuncomp else lin <- infun
-    list(value = IGPG$value, lin = lin)
+	
+	rval <- IGPG$value
+	class(rval) <- "cvystat"
+	attr( rval , "lin" ) <- lin
+	attr( rval , "statistic" ) <- "gpg"
+	rval
   }
 
 
@@ -132,7 +137,11 @@ svygpg.svyrep.design <- function(x, design, sex,...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGpg(wage, wi, sex = sex))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    list(value = rval, se = sqrt(variance))
+    
+	class(rval) <- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "gpg"
+	rval
 }
 
 

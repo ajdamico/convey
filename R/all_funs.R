@@ -1,3 +1,5 @@
+
+
 #'Complete the linearezed values with 0's
 #'
 #' Complete the vector of the linearized value of an indicator for a domain with
@@ -365,6 +367,32 @@ ratio_inf <- function(T, S) {
 }
 
 
+# cvystat print method
+print.cvystat <- function( x , ... ) {
+    
+	if( !is.null( attr( x , "lin" ) ) ){
+	
+		m <- cbind( x , SE_lin( attr( x , "lin" ) ) )
+	
+	} else {
+	
+		vv <- attr( x , "var" )
+		
+		if( is.matrix( vv ) ){
+			m <- cbind( x , sqrt( diag( vv ) ) ) 
+		} else {
+		
+			m <- cbind( x , sqrt( vv ) )
+			
+		}
+		
+	}
+	
+	colnames( m ) <- c( attr( x , "statistic" ) , "SE" )
+	
+	printCoefmat( m )
+		
+}
 
 
 
