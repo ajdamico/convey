@@ -389,7 +389,7 @@ ratio_inf <- function(T, S) {
 #' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
 #' comp=TRUE, incvec = eusilc$eqIncome)
 #' # se estimate of isq_eqIncome for the whole sample
-#' SE_lin2(qsr_eqIncome, des_eusilc)
+#' SE_lin(qsr_eqIncome, des_eusilc)
 #' # se estimates for domains
 #' isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
 #' FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
@@ -399,7 +399,7 @@ ratio_inf <- function(T, S) {
 
 SE_lin2 <- function(object, design) {
 
-    if (dim(object)[2] == 1) {
+    if (length(object) == 2) {
         t <- object
         x <- update(design, t = t)
         res <- survey::SE( survey::svytotal( ~t , x ) )
@@ -417,7 +417,7 @@ SE_lin2 <- function(object, design) {
 }
 
 
-#' @export
+
 # cvystat print method
 print.cvystat <- function( x , ... ) {
     
