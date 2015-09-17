@@ -26,7 +26,7 @@ des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
 comp=TRUE, incvec = eusilc$eqIncome)
 # se estimate of isq_eqIncome for the whole sample
-SE_lin(qsr_eqIncome, des_eusilc)
+SE_lin2(qsr_eqIncome, des_eusilc)
 # se estimates for domains
 isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
 FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
