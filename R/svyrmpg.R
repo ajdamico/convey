@@ -87,7 +87,7 @@ svyrmpg.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
   rval <- RMPG$value
   
 	class(rval) <- "cvystat"
-	
+	attr( rval , "design" ) <- design	
 	attr( rval , "lin" ) <- RMPG$lin
 	attr( rval , "statistic" ) <- "rmpg"
 	

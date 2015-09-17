@@ -73,6 +73,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incve
 	rval <- QSR$value
 	class(rval) <- "cvystat"
 	attr( rval , "lin" ) <- lin_qsr
+	attr( rval , "design" ) <- design
 	attr( rval , "statistic" ) <- "qsr"
 	rval
   }
