@@ -94,7 +94,21 @@ svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
     names(infun) <- ind
     infuncomp <- complete(infun, ncom)
     if (comp) lin <- infuncomp else lin <- infun
-    list(value = IGPG$value, lin = lin)
+    
+	rval <- IGPG$value
+	
+	# if the 4th function up in the stack was `svyby`..
+	if( as.character( substitute( sys.call( -4 ) ) )[ 1 ] == "svyby" ){
+		# ..then pull the full function from that design.
+		full_design <- eval( quote( design ) , envir = parent.frame() )
+	# otherwise use the design passed into the function
+	} else full_design <- design
+
+	variance <- ( SE_lin2( lin , full_design ) )^2
+ 	class(rval) <- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "gpg"
+	rval
   }
 
 
@@ -132,7 +146,11 @@ svygpg.svyrep.design <- function(x, design, sex,...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGpg(wage, wi, sex = sex))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    list(value = rval, se = sqrt(variance))
+	
+	class(rval)<- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "gqg"
+	rval
 }
 
 

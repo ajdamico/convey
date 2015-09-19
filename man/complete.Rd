@@ -4,7 +4,7 @@
 \alias{complete}
 \title{Complete the linearezed values with 0's}
 \usage{
-complete(x, n)
+complete(x, ind.all)
 }
 \arguments{
 \item{x}{vetor with linearized values for the domain}

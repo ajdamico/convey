@@ -370,3 +370,69 @@ ratio_inf <- function(T, S) {
 
 
 
+
+
+
+#' Extracts the se estimate
+#'
+#' Computes the se from the linearized variable.
+#'
+#' @param object output of a linearizing indicator function
+#' @param design a survey design object of the library survey
+#' @return the estime of the indicator se
+#'
+#' @author Djalma Pessoa and Anthony Damico
+#'
+#' @keywords survey
+#'
+#' @examples
+#' library(vardpoor)
+#' data(eusilc)
+#' library(survey)
+#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
+#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
+#' comp=TRUE, incvec = eusilc$eqIncome)
+#' # se estimate of isq_eqIncome for the whole sample
+#' SE_lin2(qsr_eqIncome, des_eusilc)
+#' # se estimates for domains
+#' isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
+#' FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
+#' incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
+#' SE_lin2(isq_eqIncome_dom, des_eusilc)
+#' @export
+
+SE_lin2 <- function(object, design) {
+	x <- update(design, t = object)
+	res <- survey::SE( survey::svytotal( ~t , x ) )
+    res
+}
+
+
+
+
+
+# cvystat print method
+#' @export
+print.cvystat <- function( x , ... ) {
+    
+	vv <- attr( x , "var" )
+	
+	if( is.matrix( vv ) ){
+		m <- cbind( x , sqrt( diag( vv ) ) ) 
+	} else {
+	
+		m <- cbind( x , sqrt( vv ) )
+		
+	}
+	
+	colnames( m ) <- c( attr( x , "statistic" ) , "SE" )
+	
+	printCoefmat( m )
+		
+}
+
+
+
+
+

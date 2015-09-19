@@ -49,9 +49,9 @@ data(eusilc)
 library(survey)
 htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-arpt_eqIncome<-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=nrow(eusilc), comp=TRUE)
+arpt_eqIncome<-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=rownames(eusilc), comp=TRUE)
 arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-ARPT = arpt_eqIncome, ncom=nrow(eusilc), comp=TRUE)
+ARPT = arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE)
 }
 \author{
 Djalma Pessoa and Anthony Damico

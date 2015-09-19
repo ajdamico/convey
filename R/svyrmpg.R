@@ -84,7 +84,21 @@ svyrmpg.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
   # linearize RMPG
   RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
   #linrmpg <- (medp * linarpt/(arpt * arpt)) - (linmedp/arpt)
-  list(value = RMPG$value, lin = RMPG$lin)
+  
+  rval <- RMPG$value
+  
+  # if the 4th function up in the stack was `svyby`..
+	if( as.character( substitute( sys.call( -4 ) ) )[ 1 ] == "svyby" ){
+		# ..then pull the full function from that design.
+		full_design <- eval( quote( design ) , envir = parent.frame() )
+	# otherwise use the design passed into the function
+	} else full_design <- design
+
+	variance <- ( SE_lin2( RMPG$lin , full_design ) )^2
+ 	class(rval) <- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "rmpg"
+	rval
 }
 
 #' @rdname svyrmpg
@@ -105,7 +119,11 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeRmpg(incvar, wi, order = order, percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    list(value = rval, se = sqrt(variance))
+    
+	class(rval)<- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "rmpg"
+	rval
 }
 
 

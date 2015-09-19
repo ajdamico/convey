@@ -78,9 +78,24 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     # original order lin_gini<- lin_gini[ind] complete 0's
     names(lin_gini) <- names(w)
     lin_gini_comp <- complete(lin_gini, ncom)
-    if (comp)
-        res <- lin_gini_comp else res <- lin_gini
-    list(gini_coef = Gini, lin = res)
+    if (comp) res <- lin_gini_comp else res <- lin_gini
+	
+	
+	rval <- Gini
+
+   	# if the 4th function up in the stack was `svyby`..
+	if( as.character( substitute( sys.call( -4 ) ) )[ 1 ] == "svyby" ){
+		# ..then pull the full function from that design.
+		full_design <- eval( quote( design ) , envir = parent.frame() )
+	# otherwise use the design passed into the function
+	} else full_design <- design
+
+	variance <- ( SE_lin2( res , full_design ) )^2
+ 	class(rval) <- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "gini"
+	rval
+	
 }
 
 #' @rdname svygini
@@ -105,7 +120,11 @@ svygini.svyrep.design <- function(formula, design, ...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    list(value = rval, se = sqrt(variance))
+	
+	class(rval)<- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr( rval , "statistic" ) <- "gini"
+	rval
 }
 
 
