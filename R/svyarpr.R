@@ -57,8 +57,8 @@ svyarpr.survey.design <- function(formula, design, h, ARPT, ncom,...){
 
 	rval <- ARPR$value
 	
-	# if the 4th function up in the stack was `svyby`..
-	if( as.character( substitute( sys.call( -4 ) ) )[ 1 ] == "svyby" ){
+	# if the 7th function up in the stack was `svyby`..
+	if( as.character( sys.call( -7 ) )[ 1 ] == "svyby" ){
 		# ..then pull the full function from that design.
 		full_design <- eval( quote( design ) , envir = parent.frame() )
 	# otherwise use the design passed into the function
