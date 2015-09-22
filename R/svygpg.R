@@ -64,6 +64,9 @@ svygpg <- function(formula, design, ...) {
 #' @rdname svygpg
 #' @export
 svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
+
+	if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
@@ -97,12 +100,7 @@ svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
     
 	rval <- IGPG$value
 	
-	# if the 7th function up in the stack was `svyby`..
-	if( as.character( sys.call( -7 ) )[ 1 ] == "svyby" ){
-		# ..then pull the full function from that design.
-		full_design <- eval( quote( design ) , envir = parent.frame() )
-	# otherwise use the design passed into the function
-	} else full_design <- design
+	full_design <- attr( design , "full_design" )
 
 	variance <- ( SE_lin2( lin , full_design ) )^2
  	class(rval) <- "cvystat"

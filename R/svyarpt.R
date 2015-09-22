@@ -49,6 +49,10 @@ svyarpt <- function(formula, design, ...) {
 #' @export
 svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h,
     ncom, comp, ...) {
+
+	if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+
+
     w <- weights(design)
     ind <- names(w)
     quant_val <- survey::svyquantile(x = formula, design = design, quantiles = order, method = "constant")
@@ -68,12 +72,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h
    
 	rval <- ARPT
 
-   	# if the 7th function up in the stack was `svyby`..
-	if( as.character( sys.call( -7 ) )[ 1 ] == "svyby" ){
-		# ..then pull the full function from that design.
-		full_design <- eval( quote( design ) , envir = parent.frame() )
-	# otherwise use the design passed into the function
-	} else full_design <- design
+	full_design <- attr( design , "full_design" )
 
 	variance <- ( SE_lin2( lin , full_design ) )^2
  	class(rval) <- "cvystat"

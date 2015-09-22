@@ -434,5 +434,33 @@ print.cvystat <- function( x , ... ) {
 
 
 
+#' prepare linearized svydesign objects for convey package
+#'
+#' stores the full survey design (needed for linearized convey functions) within the design
+#'
+#' @param design a survey design object of the library survey
+#' @return design a survey design object of the library survey
+#'
+#' @author Djalma Pessoa and Anthony Damico
+#'
+#' @keywords survey
+#'
+#' @examples
+#' library(vardpoor)
+#' data(eusilc)
+#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' des_eusilc <- convey_prep( des_eusilc )
+#' @export
+convey_prep <-
+	function( design ){
+		
 
-
+		if( !( 'survey.design' %in% class( design ) ) ) stop( "convey_prep only needs to be run on linearized designs" )
+		
+		cat( "preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() call.\n\r" )
+		
+		# store the full design within one of the attributes of the design
+		attr( design , "full_design" ) <- design
+		
+		design
+	}

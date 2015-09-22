@@ -10,6 +10,7 @@ library(survey)
 # create a design object
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 library(convey)
+des_eusilc <- convey_prep( des_eusilc )
 
 ################
 # 1. ARPT
@@ -305,6 +306,7 @@ dataset1<-merge(dataset1,f_h)
 
 des_eusilc0<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
   data = dataset1, fpc=~I(nh/Nh), nest = TRUE)
+des_eusilc0 <- convey_prep( des_eusilc0 )
 
 # estimate bandwdth using the whole sample
 htot <- h_fun(dataset1$eqIncome, dataset1$rb050)
@@ -390,6 +392,9 @@ eusilc<-merge(eusilc,f_h)
 
 des_eusilc<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
   data = eusilc, fpc=~I(nh/Nh), nest = TRUE)
+des_eusilc <- convey_prep( des_eusilc )
+
+  
 htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 arptw<- svyarpt(~eqIncome, design=des_eusilc, .5, .6, h=htot,
   ncom=rownames(eusilc), comp=TRUE)
@@ -498,6 +503,9 @@ testset$ym<- testset$y*(testset$sex=="male")
 testset$yfm<- testset$y*(testset$sex=="female")
 library(survey)
 des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+des <- convey_prep( des )
+
+
 a <-svytotal(~ym+yfm+im+ifm, des)
 
 # using the function svycontrast from the library survey
@@ -537,6 +545,9 @@ colnames(dati)[1] <- "IDd"
 library(survey)
 # create a design object
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+des_eusilc <- convey_prep( des_eusilc )
+
+
 htot<-h_fun(eusilc$eqIncome, eusilc$rb050)
 
 # use get the poverty treshold
@@ -589,6 +600,7 @@ library(survey)
 data(eusilc)
 des_eusilc<- svydesign(id=~rb030, strata = ~db040, weights = ~rb050,
   data = eusilc, nest = TRUE)
+des_eusilc <- convey_prep( des_eusilc )
 
 # create variables
 des_eusilc <- update(des_eusilc, num = (eqIncome<= 20000)*1)
@@ -634,6 +646,7 @@ testset$yfm<- testset$y*(testset$sex=="female")
 
 
 des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+des <- convey_prep( des )
 
 a <-svytotal(~ym+yfm+im+ifm, des)
 
@@ -642,6 +655,7 @@ svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
 # using svygpg.survey.design:
 
 des<- svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+des <- convey_prep( des )
 
 lin_test_gpg<- svygpg(~y, des, ~sex)
 lin_test_gpg$value
@@ -672,7 +686,7 @@ dati[sexf=="female", sex:=2]
 gpgs1 <- lingpg(Y="earningsHour", gender="sex",
   id="ID", weight="weights", dataset=dati)
 des_ses<- svydesign(id=~1, weights=~weights, data=ses,variables=~weights+sex+earningsHour+location)
-
+des_ses <- convey_prep( des_ses )
 
 # result in %
 
@@ -708,6 +722,8 @@ ses$earningsHour2<- ses$earningsHour*(ses$sex=="female")
 
 
 des_ses<- svydesign(id=~1, weights=~weights, data=ses)
+des_ses <- convey_prep( des_ses )
+
 a<-svytotal(~earningsHour1+earningsHour2+one1+one2, des_ses )
 # results for svycontrast
 svycontrast(a, quote((earningsHour1/one1-earningsHour2/one2)/(earningsHour1/one1)))
