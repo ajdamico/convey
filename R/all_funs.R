@@ -111,24 +111,41 @@ densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
 #'icdf_eqIncome$value
 #' @export
 
-icdf <- function(formula, design, x, ncom, comp, ...) {
-    inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
-    w <- weights(design)
-    ind <- names(w)
-    N <- sum(w)
-    poor <- (incvar <= x) * 1
-    design <- update(design, poor = poor)
-    # rate of poor
-    cdf_fun <- coef( survey::svymean( poor , design ) )
-    inf_fun <- (1/N) * ((incvar <= x) - cdf_fun)
-    names(inf_fun) <- ind
-    inf_fun_comp <- complete(inf_fun, ncom)
-    if (comp)
-        lin <- inf_fun_comp else lin <- inf_fun
-    list(value = cdf_fun, lin = lin)
+icdf <- function(formula, design, x, compinc=FALSE,...) {
+
+  if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar <- df[[as.character(inc)]]
+  w <- weights(design)
+  ind <- names(w)
+  poor <- (incvar <= x) * 1
+  names(poor) <- ind
+  one<- rep(1, length(w))
+  names(one) <- ind
+  full_design <- attr( design , "full_design" )
+  ncom<-names(weights(full_design))
+  df_full<-model.frame(full_design)
+  incvec <- df_full[[as.character(inc)]]
+  NUM <- list(value = sum(poor*w), lin = complete(poor,ncom))
+  DEN <- list(value = sum(one*w), lin = complete(one,ncom))
+  if(compinc){
+    NUM<- list(value = sum(poor*w),lin = (incvec<=x)*1)
+    DEN<- list(value = sum(w),lin = rep(1,length(incvec)) )
+  }
+  list_all <- list(NUM=NUM,DEN=DEN)
+  CDF <- contrastinf(quote(NUM/DEN),list_all)
+  rval<-CDF$value
+  lin <- CDF$lin
+  variance <- ( SE_lin2( lin , full_design ) )^2
+  class(rval) <- "cvystat"
+  attr(rval, "lin") <- lin
+  attr( rval , "var" ) <- variance
+  attr( rval , "statistic" ) <- "cdf"
+  rval
 }
+
 
 
 
@@ -173,28 +190,38 @@ icdf <- function(formula, design, x, ncom, comp, ...) {
 #'iqalpha_eqIncome$value
 #' @export
 
-iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
-    ...) {
-    inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
-    w <- weights(design)
-    ind <- names(w)
-    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
-    q_alpha <- as.vector(q_alpha)
-    N <- sum(w)
-    Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "F")
-    iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
-    if (!is.null(incvec)) {
-        iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
-        comp <- FALSE
-    }
-    if (comp) {
-        names(iq) <- ind
-        iq_comp <- complete(iq, ncom)
-        res = iq_comp
-    } else res <- iq
-    list(value = q_alpha, lin = res)
+iqalpha <- function(formula, design, alpha, comp=TRUE, compinc=FALSE,
+  ...) {
+
+  if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar <- df[[as.character(inc)]]
+  w <- weights(design)
+  N<- sum(w)
+  ind <- names(w)
+  q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
+  q_alpha <- as.vector(q_alpha)
+  full_design <- attr( design , "full_design" )
+  ncom <- names(weights(full_design))
+  df_full<-model.frame(full_design)
+  incvec <- df_full[[as.character(inc)]]
+  htot <- h_fun(incvec, weights(full_design))
+  Fprime <- densfun(formula = formula, design = design, q_alpha,
+    htot = htot, fun = "F")
+  iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+  rval<-q_alpha
+  if (compinc) {
+    iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
+  }
+  names(iq) <- ind
+  if (comp) iq <- complete(iq, ncom)
+  variance <- ( SE_lin2( iq , full_design ) )^2
+  class(rval) <- "cvystat"
+  attr(rval, "lin") <- iq
+  attr( rval , "var" ) <- variance
+  attr( rval , "statistic" ) <- "quantile"
+  rval
 }
 
 #' Linearization of the total above a quantile or below a quantile
@@ -240,29 +267,35 @@ iqalpha <- function(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL,
 #' @export
 
 
-isq <- function(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, incvec,
-    ...) {
-    inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
-    w <- weights(design)
-    ind <- names(w)
-    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant")
-    q_alpha <- as.vector(q_alpha)
-    if (type == "inf") {
-        inc_inf <- (incvar <= q_alpha) * incvar
-        tot <- sum(inc_inf * w)
-    } else {
-        inc_sup <- (incvar > q_alpha) * incvar
-        tot <- sum(inc_sup * w)
-    }
-    Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "S")
-    iq <- iqalpha(formula = formula, design = design, alpha, h = h, ncom = ncom,
-        comp = TRUE, incvec = incvec)$lin
-    isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
-    if (type == "inf")
-        ires <- isqalpha else ires <- incvec - isqalpha
-    list(value = tot, lin = ires)
+isq <- function(formula, design, alpha, comp=TRUE, ...) {
+  if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+  inc <- terms.formula(formula)[[2]]
+  df <- model.frame(design)
+  incvar <- df[[as.character(inc)]]
+  w <- weights(design)
+  ind <- names(w)
+  full_design <- attr( design , "full_design" )
+  ncom<- names(weights(full_design))
+  df_full <- model.frame(full_design)
+  incvec <- df_full[[as.character(inc)]]
+  h <- h_fun(incvec, weights(full_design))
+  QALPHA <- iqalpha1(formula = formula, design = design, alpha, comp=TRUE,
+    compinc=TRUE)
+  q_alpha <- QALPHA[1]
+  iq <- attr(QALPHA, "lin")
+  inc_inf <- (incvar <= q_alpha) * incvar
+  tot <- sum(inc_inf * w)
+  Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "S")
+  isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
+  # names(isqalpha)<- ind
+  # if(comp)isqalpha<-complete(isqalpha, ncom)
+  rval <- tot
+  variance <- ( SE_lin2( isqalpha , full_design ) )^2
+  class(rval) <- "cvystat"
+  attr( rval , "var" ) <- variance
+  attr( rval , "statistic" ) <- "isq"
+  attr(rval, "lin")<- isqalpha
+  rval
 }
 
 
@@ -415,21 +448,21 @@ SE_lin2 <- function(object, design) {
 # cvystat print method
 #' @export
 print.cvystat <- function( x , ... ) {
-    
+
 	vv <- attr( x , "var" )
-	
+
 	if( is.matrix( vv ) ){
-		m <- cbind( x , sqrt( diag( vv ) ) ) 
+		m <- cbind( x , sqrt( diag( vv ) ) )
 	} else {
-	
+
 		m <- cbind( x , sqrt( vv ) )
-		
+
 	}
-	
+
 	colnames( m ) <- c( attr( x , "statistic" ) , "SE" )
-	
+
 	printCoefmat( m )
-		
+
 }
 
 
@@ -453,17 +486,17 @@ print.cvystat <- function( x , ... ) {
 #' @export
 convey_prep <-
 	function( design ){
-		
+
 
 		if( !( 'survey.design' %in% class( design ) ) ) stop( "convey_prep only needs to be run on linearized designs" )
-		
+
 		cat( "preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() call.\n\r" )
-		
+
 		# store the full design within one of the attributes of the design
 		attr( design , "full_design" ) <- design
-		
+
 		# store the full_design's full_design attribute as TRUE
 		attr( attr( design , "full_design" ) , "full_design" ) <- TRUE
-		
+
 		design
 	}

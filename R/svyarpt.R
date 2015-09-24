@@ -47,40 +47,28 @@ svyarpt <- function(formula, design, ...) {
 
 #' @rdname svyarpt
 #' @export
-svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h,
-    ncom, comp, ...) {
+svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6,
+  comp=TRUE, attr_des = TRUE,...) {
+  if( is.null( attr( design , "full_design" ) )) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+  w <- weights(design)
+  ind <- names(w)
+  linqalpha <- iqalpha1(formula = formula, design = design, alpha = order,
+    comp = TRUE, compinc = FALSE)
 
-	if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+  rval<-percent*linqalpha[1]
+  lin<- percent*attr(linqalpha,"lin")
 
+  full_design <- attr( design , "full_design" )
+  ncom<-names(weights(full_design))
 
-    w <- weights(design)
-    ind <- names(w)
-    quant_val <- survey::svyquantile(x = formula, design = design, quantiles = order, method = "constant")
-    quant_val <- as.vector(quant_val)
-    ARPT <- percent * quant_val
-    lin_ARPT <- percent * iqalpha(formula = formula, design = design, alpha = order,
-        h = h, ncom = ncom, comp = FALSE, incvec = NULL)$lin
-    names(lin_ARPT) <- ind
-    lin_ARPT_comp <- complete(lin_ARPT, ncom)
-    if (comp)
-        lin <- lin_ARPT_comp else lin <- lin_ARPT
-    # attr(ARPT, 'statistic')<- 'arpt' attr(ARPT,
-    # 'var')<-survey::svyCprod(lin/design$prob,design$strata, design$cluster[[1]],
-    # design$fpc, design$nPSU,design$certainty,design$postStrata)
-
-	
-   
-	rval <- ARPT
-
-	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
-	# otherwise, pull the full_design from that attribute.
-	if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
-
-	variance <- ( SE_lin2( lin , full_design ) )^2
- 	class(rval) <- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "arpt"
-	rval
+  #names(lin) <- ind
+  #if (comp) lin <- complete(lin, ncom)
+  variance <- ( SE_lin2( lin , full_design ) )^2
+  class(rval) <- "cvystat"
+  attr( rval , "var" ) <- variance
+  attr( rval , "statistic" ) <- "arpt"
+  attr(rval, "lin")<- lin
+  rval
 }
 
 #' @rdname svyarpt
@@ -96,7 +84,7 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) 0.6 * computeQuantiles(incvar, wi, p = order))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    
+
 	class(rval)<- "cvystat"
 	attr( rval , "var" ) <- variance
 	attr( rval , "statistic" ) <- "arpt"

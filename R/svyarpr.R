@@ -51,25 +51,50 @@ svyarpr <- function(formula, design, ...) {
 
 #' @rdname svyarpr
 #' @export
-svyarpr.survey.design <- function(formula, design, h, ARPT, ncom,...){
-  ARPR<-fun_par_inf(ARPT, "icdf", "densfun", formula=formula ,design= design,
-    ncom=ncom ,  comp= TRUE, htot=h, fun="F")
+svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp=TRUE,...){
 
-	if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+  if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
 
-	
-	rval <- ARPR$value
-	
-	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
-	# otherwise, pull the full_design from that attribute.
-	if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
+  # if the class of the full_design attribute is just a TRUE, then the design is already the full design.
+  # otherwise, pull the full_design from that attribute.
+  if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
 
-	variance <- ( SE_lin2( ARPR$lin , full_design ) )^2
- 	class(rval) <- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "arpr"
-	rval
+  # domain
+  inc <- terms.formula(formula)[[2]]
+  df<- model.frame(design)
+  incvar <-df[[as.character(inc)]]
+  w <- weights(design)
+  N<- sum(w)
+  ind <- names(w)
+  # full sample
+  full_design <- attr( design , "full_design" )
+  df_full <- model.frame(full_design)
+  incvec <- df_full[[as.character(inc)]]
+  wf <- weights(full_design)
+  ncom <- names(wf)
+  htot <- h_fun(incvec, wf)
+  ARPT<- svyarpt1(formula = formula, full_design,order = 0.5, percent = 0.6)
+  arptv<-ARPT[1]
+  arptlin <- attr(ARPT,"lin")
+  # value of arpr and first term of lin
+  arpr1 <- icdf1(formula=formula, design=design, x=arptv, ncom=ncom, comp = TRUE)
+  rval<-arpr1[1]
+  arpr1lin<- attr(arpr1,"lin")
+  # use h for the whole sample
+  Fprime <- densfun(formula = formula, design = design, arptv,
+    htot = htot, fun = "F")
+  arprlin <- arpr1lin + Fprime* arptlin
+  #names(lin) <- ind
+  #if(comp)lin<- complete(lin, ncom)
+  variance <- ( SE_lin2( arprlin , full_design ) )^2
+  class(rval) <- "cvystat"
+  attr( rval , "var" ) <- variance
+  attr( rval , "statistic" ) <- "arpr"
+  attr(rval, "lin")<- arprlin
+  rval
 }
+
+
 
 #' @rdname svyarpr
 #' @export
@@ -87,7 +112,7 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order,
         percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-	
+
 	class(rval)<- "cvystat"
 	attr( rval , "var" ) <- variance
 	attr( rval , "statistic" ) <- "arpr"
