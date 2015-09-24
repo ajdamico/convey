@@ -35,11 +35,10 @@
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' arpt_eqIncome<-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot, ncom=rownames(eusilc), comp=TRUE)
-#' arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-#' ARPT = arpt_eqIncome, ncom=rownames(eusilc), comp=TRUE)
+#' library(convey)
+#' des_eusilc <- convey_prep( des_eusilc )
+#' arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, comp=TRUE)
 #'
 #' @export
 #'
@@ -51,7 +50,8 @@ svyarpr <- function(formula, design, ...) {
 
 #' @rdname svyarpr
 #' @export
-svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp=TRUE,...){
+svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6,
+  comp=TRUE,...){
 
   if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
 
