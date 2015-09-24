@@ -52,7 +52,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6,
   if( is.null( attr( design , "full_design" ) )) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
   w <- weights(design)
   ind <- names(w)
-  linqalpha <- iqalpha1(formula = formula, design = design, alpha = order,
+  linqalpha <- iqalpha(formula = formula, design = design, alpha = order,
     comp = TRUE, compinc = FALSE)
 
   rval<-percent*linqalpha[1]

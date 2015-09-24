@@ -279,7 +279,7 @@ isq <- function(formula, design, alpha, comp=TRUE, ...) {
   df_full <- model.frame(full_design)
   incvec <- df_full[[as.character(inc)]]
   h <- h_fun(incvec, weights(full_design))
-  QALPHA <- iqalpha1(formula = formula, design = design, alpha, comp=TRUE,
+  QALPHA <- iqalpha(formula = formula, design = design, alpha, comp=TRUE,
     compinc=TRUE)
   q_alpha <- QALPHA[1]
   iq <- attr(QALPHA, "lin")
@@ -287,8 +287,6 @@ isq <- function(formula, design, alpha, comp=TRUE, ...) {
   tot <- sum(inc_inf * w)
   Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "S")
   isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
-  # names(isqalpha)<- ind
-  # if(comp)isqalpha<-complete(isqalpha, ncom)
   rval <- tot
   variance <- ( SE_lin2( isqalpha , full_design ) )^2
   class(rval) <- "cvystat"

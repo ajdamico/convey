@@ -73,11 +73,11 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   wf <- weights(full_design)
   ncom <- names(wf)
   htot <- h_fun(incvec, wf)
-  ARPT<- svyarpt1(formula = formula, full_design,order = 0.5, percent = 0.6)
+  ARPT<- svyarpt(formula = formula, full_design,order = 0.5, percent = 0.6)
   arptv<-ARPT[1]
   arptlin <- attr(ARPT,"lin")
   # value of arpr and first term of lin
-  arpr1 <- icdf1(formula=formula, design=design, x=arptv, ncom=ncom, comp = TRUE)
+  arpr1 <- icdf(formula=formula, design=design, x=arptv, ncom=ncom, comp = TRUE)
   rval<-arpr1[1]
   arpr1lin<- attr(arpr1,"lin")
   # use h for the whole sample
