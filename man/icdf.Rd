@@ -4,7 +4,7 @@
 \alias{icdf}
 \title{Linearization of the cdf function of a variable}
 \usage{
-icdf(formula, design, x, ncom, comp, ...)
+icdf(formula, design, x, compinc = FALSE, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

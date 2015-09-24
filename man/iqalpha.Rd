@@ -4,7 +4,7 @@
 \alias{iqalpha}
 \title{Linearization of a variable quantile}
 \usage{
-iqalpha(formula, design, alpha, h = NULL, ncom, comp, incvec = NULL, ...)
+iqalpha(formula, design, alpha, comp = TRUE, compinc = FALSE, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -14,10 +14,10 @@ of the library survey}
 
 \item{alpha}{the order of the quantile}
 
-\item{ncom}{length of the income vector for the whole sample}
-
 \item{comp}{logical variable \code{TRUE} if the linearized variable for domains
 should be completed with zeros}
+
+\item{ncom}{length of the income vector for the whole sample}
 
 \item{invec}{vector of sample values of the variable whose quantile is to be linearized}
 }

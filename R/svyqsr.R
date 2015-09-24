@@ -37,6 +37,7 @@
 #' library(survey)
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' des_eusilc <- convey_prep( des_eusilc )
 #' qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
 #' comp=TRUE, incvec = eusilc$eqIncome)
 #'
@@ -77,7 +78,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incve
 
 	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
 	# otherwise, pull the full_design from that attribute.
-	if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
+	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
 
 	variance <- ( SE_lin2( lin , full_design ) )^2
  	class(rval) <- "cvystat"

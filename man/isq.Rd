@@ -4,8 +4,7 @@
 \alias{isq}
 \title{Linearization of the total above a quantile or below a quantile}
 \usage{
-isq(formula, design, alpha, type = c("inf", "sup"), h = NULL, ncom, incvec,
-  ...)
+isq(formula, design, alpha, comp = TRUE, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

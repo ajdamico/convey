@@ -10,7 +10,7 @@
 svyarpt(formula, design, ...)
 
 \method{svyarpt}{survey.design}(formula, design, order = 0.5, percent = 0.6,
-  h, ncom, comp, ...)
+  comp = TRUE, attr_des = TRUE, ...)
 
 \method{svyarpt}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   ...)
@@ -27,12 +27,12 @@ of the library survey}
 
 \item{percent}{fraction of the quantile, usually .60}
 
+\item{comp}{logical variable \code{TRUE} if the inearized variable for domains
+should be completed with zeros}
+
 \item{h}{bandwidth to estimate the derivative of the cdf function}
 
 \item{ncom}{length of the income vector for the whole sample}
-
-\item{comp}{logical variable \code{TRUE} if the inearized variable for domains
-should be completed with zeros}
 }
 \value{
 a list with two components: the indicator estimate \code{value}
@@ -45,10 +45,10 @@ The standard definition is to use  60\% of the median income.
 library(vardpoor)
 data(eusilc)
 library(survey)
-htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-arpt_eqIncome <-svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-ncom=rownames(eusilc), comp=TRUE)
+des_eusilc <- convey_prep( des_eusilc )
+arpt_eqIncome <-svyarpt(~eqIncome, design=des_eusilc, .5, .6,comp=TRUE)
+arpt_eqIncome
 }
 \author{
 Djalma Pessoa and Anthony Damico

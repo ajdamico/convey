@@ -43,11 +43,11 @@
 #'testset$ym<- testset$y*(testset$sex=='male')
 #'testset$yfm<- testset$y*(testset$sex=='female')
 #'des<- survey::svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
+#'des <- convey_prep( des )
 #'a <-survey::svytotal(~ym+yfm+im+ifm, des)
 #'# using the function svycontrast from the library survey
 #'survey::svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
 #' # using svygpg:
-#' library(convey)
 #'lin_gpg<- svygpg(~y, des, ~sex, ncom=rownames(testset))
 #'lin_gpg$value
 #'SE_lin(lin_gpg,des)
@@ -102,7 +102,7 @@ svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
 	
 	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
 	# otherwise, pull the full_design from that attribute.
-	if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
+	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
 
 	variance <- ( SE_lin2( lin , full_design ) )^2
  	class(rval) <- "cvystat"

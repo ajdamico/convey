@@ -34,7 +34,6 @@
 #' data(eusilc)
 #' library(survey)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' library(covey)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' arpt_eqIncome <-svyarpt(~eqIncome, design=des_eusilc, .5, .6,comp=TRUE)
 #' arpt_eqIncome
@@ -59,7 +58,8 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6,
   rval<-percent*linqalpha[1]
   lin<- percent*attr(linqalpha,"lin")
 
-  full_design <- attr( design , "full_design" )
+	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
+	
   ncom<-names(weights(full_design))
 
   #names(lin) <- ind

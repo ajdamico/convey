@@ -36,7 +36,6 @@
 #' data(eusilc)
 #' library(survey)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' library(convey)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, comp=TRUE)
 #'
@@ -57,7 +56,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6,
 
   # if the class of the full_design attribute is just a TRUE, then the design is already the full design.
   # otherwise, pull the full_design from that attribute.
-  if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
+	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
 
   # domain
   inc <- terms.formula(formula)[[2]]
