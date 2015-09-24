@@ -100,7 +100,9 @@ svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
     
 	rval <- IGPG$value
 	
-	full_design <- attr( design , "full_design" )
+	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
+	# otherwise, pull the full_design from that attribute.
+	if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
 
 	variance <- ( SE_lin2( lin , full_design ) )^2
  	class(rval) <- "cvystat"

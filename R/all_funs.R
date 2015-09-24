@@ -462,5 +462,8 @@ convey_prep <-
 		# store the full design within one of the attributes of the design
 		attr( design , "full_design" ) <- design
 		
+		# store the full_design's full_design attribute as TRUE
+		attr( attr( design , "full_design" ) , "full_design" ) <- TRUE
+		
 		design
 	}

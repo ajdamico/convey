@@ -72,7 +72,9 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, h
    
 	rval <- ARPT
 
-	full_design <- attr( design , "full_design" )
+	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
+	# otherwise, pull the full_design from that attribute.
+	if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
 
 	variance <- ( SE_lin2( lin , full_design ) )^2
  	class(rval) <- "cvystat"

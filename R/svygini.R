@@ -87,7 +87,9 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
 	
 	rval <- Gini
 
-   	full_design <- attr( design , "full_design" )
+	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
+	# otherwise, pull the full_design from that attribute.
+	if( class( attr( design , "full_design" ) ) == 'logical' ) full_design <- design else full_design <- attr( design , "full_design" )
 
 	variance <- ( SE_lin2( res , full_design ) )^2
  	class(rval) <- "cvystat"
