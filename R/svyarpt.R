@@ -39,33 +39,33 @@
 #' arpt_eqIncome
 #' @export
 svyarpt <- function(formula, design, ...) {
-    
+
     UseMethod("svyarpt", design)
-    
+
 }
 
 #' @rdname svyarpt
 #' @export
-svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, 
+svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,
     ...) {
-    if (is.null(attr(design, "full_design"))) 
+    if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
+    df_full <- model.frame(full_design)
+    incvec <- df_full[[as.character(inc)]]
+    wf <- weights(full_design)
+    htot <- h_fun(incvec, wf)
     w <- weights(design)
     ind <- names(w)
-    linqalpha <- iqalpha(formula = formula, design = design, alpha = order, comp = TRUE, 
+    linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
+      comp = TRUE,
         compinc = FALSE)
-    
     rval <- percent * linqalpha[1]
     lin <- percent * attr(linqalpha, "lin")
-    
-    # if the class of the full_design attribute is just a TRUE, then the design is
-    # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) 
-        full_design <- design else full_design <- attr(design, "full_design")
-    
     ncom <- names(weights(full_design))
-    
     # names(lin) <- ind if (comp) lin <- complete(lin, ncom)
     variance <- (SE_lin2(lin, full_design))^2
     class(rval) <- "cvystat"
@@ -88,7 +88,7 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) 0.6 * computeQuantiles(incvar, wi, p = order))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    
+
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpt"
@@ -99,9 +99,9 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
 #' @rdname svyarpt
 #' @export
 svyarpt.DBIsvydesign <- function(x, design, ...) {
-    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
         updates = design$updates, subset = design$subset)
     NextMethod("svyarpt", design)
 }
 
- 
+
