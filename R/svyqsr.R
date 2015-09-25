@@ -38,57 +38,53 @@
 #' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
-#' qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
-#' comp=TRUE, incvec = eusilc$eqIncome)
+#' qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
 #'
 #' @export
 
 svyqsr <- function(formula, design, ...) {
-    
+
     UseMethod("svyqsr", design)
-    
+
 }
 
 #' @rdname svyqsr
 #' @export
-svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incvec, 
-    ...) {
-    
-    if (is.null(attr(design, "full_design"))) 
-        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    
+svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,...) {
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
+    inc <- terms.formula(formula)[[2]]
+    ncom<- names(weights(full_design))
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
     w <- weights(design)
     ind <- names(w)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
-    S20 <- isq(formula = formula, design = design, alpha1, type = "inf", h = NULL, 
-        ncom = ncom, comp = FALSE, incvec = incvec)
+    S20 <- isq(formula = formula, design = design, alpha1)
+    S20 <- list(value= S20[1], lin=attr(S20,"lin"))
     # Linearization of S80
-    S80 <- isq(formula = formula, design = design, alpha2, type = "sup", h = NULL, 
-        ncom = ncom, comp = FALSE, incvec = incvec)
+    S80 <- isq(formula = formula, design = design, alpha2)
+    S80 <- list(value= S80[1], lin=attr(S80,"lin"))
+    names(incvar)<-ind
+    TOT<- list(value=sum(incvar*w), lin=complete(incvar,ncom))
     # LINEARIZED VARIABLE OF THE SHARE RATIO
-    list_all <- list(S20 = S20, S80 = S80)
-    QSR <- contrastinf(quote(S80/S20), list_all)
-    lin_qsr <- QSR$lin
-    names(lin_qsr) <- ind
-    lin_qsr_comp <- complete(lin_qsr, ncom)
-    if (comp) 
-        lin <- lin_qsr_comp else lin <- lin_qsr
-    
+
+    list_all<- list(TOT=TOT, S20 = S20, S80 = S80)
+    QSR <- contrastinf( quote((TOT-S80)/S20), list_all)
     rval <- QSR$value
-    
-    # if the class of the full_design attribute is just a TRUE, then the design is
-    # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) 
-        full_design <- design else full_design <- attr(design, "full_design")
-    
+    lin<- as.vector(QSR$lin)
     variance <- (SE_lin2(lin, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"
     rval
-    
 }
 
 #' @rdname svyqsr
@@ -113,7 +109,7 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    
+
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"
@@ -126,8 +122,8 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
 #' @rdname svyqsr
 #' @export
 svyqsr.DBIsvydesign <- function(x, design, ...) {
-    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
         updates = design$updates, subset = design$subset)
     NextMethod("svyqsr", design)
 }
- 
+
