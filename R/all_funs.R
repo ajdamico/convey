@@ -53,16 +53,13 @@ h_fun <- function(inc_var, w) {
 #'@keywords survey
 #'@export
 
-densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
+densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
     inc <- terms.formula(formula)[[2]]
     w <- weights(design)
     N <- sum(w)
     df <- model.frame(design)
     inc_var <- df[[as.character(inc)]]
-    sd_inc <- sqrt((sum(w * inc_var * inc_var) - sum(w * inc_var) * sum(w * inc_var)/N)/N)
-    h <- sd_inc/exp(0.2 * log(sum(w)))
-    if (!is.null(htot))
-        h <- htot
+    if(is.null(h)) h <- h_fun(inc_var,w)
     u <- (x - inc_var)/h
     vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
     if (fun == "F")
@@ -195,7 +192,7 @@ icdf <- function(formula, design, x, compinc = FALSE, ...) {
 #'
 #' @export
 
-iqalpha <- function(formula, design, alpha, comp = TRUE, compinc = FALSE, ...) {
+iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE, ...) {
 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -218,7 +215,7 @@ iqalpha <- function(formula, design, alpha, comp = TRUE, compinc = FALSE, ...) {
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
     htot <- h_fun(incvec, weights(full_design))
-    Fprime <- densfun(formula = formula, design = design, q_alpha, htot = htot, fun = "F")
+    Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F")
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
     rval <- q_alpha
     if (compinc) {
@@ -300,7 +297,7 @@ isq <- function(formula, design, alpha, comp = TRUE, ...) {
     iq <- attr(QALPHA, "lin")
     inc_inf <- (incvar <= q_alpha) * incvar
     tot <- sum(inc_inf * w)
-    Fprime <- densfun(formula = formula, design = design, q_alpha, htot = h, fun = "S")
+    Fprime <- densfun(formula = formula, design = design, q_alpha, fun = "S")
     isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
     rval <- tot
     variance <- (SE_lin2(isqalpha, full_design))^2
