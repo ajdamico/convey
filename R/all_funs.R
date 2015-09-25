@@ -61,11 +61,11 @@ densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
     inc_var <- df[[as.character(inc)]]
     sd_inc <- sqrt((sum(w * inc_var * inc_var) - sum(w * inc_var) * sum(w * inc_var)/N)/N)
     h <- sd_inc/exp(0.2 * log(sum(w)))
-    if (!is.null(htot)) 
+    if (!is.null(htot))
         h <- htot
     u <- (x - inc_var)/h
     vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
-    if (fun == "F") 
+    if (fun == "F")
         res <- sum(vectf * w)/(N * h) else {
         v <- w * inc_var
         res <- sum(vectf * v)/h
@@ -105,17 +105,17 @@ densfun <- function(formula, design, x, htot = NULL, fun = c("F", "S"), ...) {
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000, ncom=rownames(eusilc), comp=TRUE)
-#'icdf_eqIncome$value
+#' des_eusilc <- convey_prep( des_eusilc )
+#' icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000)
+#'
 #' @export
 
 icdf <- function(formula, design, x, compinc = FALSE, ...) {
-    
-    if (is.null(attr(design, "full_design"))) 
+
+    if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    
+
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
@@ -125,12 +125,12 @@ icdf <- function(formula, design, x, compinc = FALSE, ...) {
     names(poor) <- ind
     one <- rep(1, length(w))
     names(one) <- ind
-    
+
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) 
+    if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
-    
+
     ncom <- names(weights(full_design))
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
@@ -189,16 +189,15 @@ icdf <- function(formula, design, x, compinc = FALSE, ...) {
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50, ncom=rownnames(eusilc),
-#' comp=TRUE, eusilc$eqIncome )
-#'iqalpha_eqIncome$value
+#' des_eusilc <- convey_prep( des_eusilc )
+#' iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50 )
+#'
 #' @export
 
 iqalpha <- function(formula, design, alpha, comp = TRUE, compinc = FALSE, ...) {
-    
-    if (is.null(attr(design, "full_design"))) 
+
+    if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
@@ -206,15 +205,15 @@ iqalpha <- function(formula, design, alpha, comp = TRUE, compinc = FALSE, ...) {
     w <- weights(design)
     N <- sum(w)
     ind <- names(w)
-    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, 
+    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha,
         method = "constant")
     q_alpha <- as.vector(q_alpha)
-    
+
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) 
+    if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
-    
+
     ncom <- names(weights(full_design))
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
@@ -226,7 +225,7 @@ iqalpha <- function(formula, design, alpha, comp = TRUE, compinc = FALSE, ...) {
         iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
     }
     names(iq) <- ind
-    if (comp) 
+    if (comp)
         iq <- complete(iq, ncom)
     variance <- (SE_lin2(iq, full_design))^2
     class(rval) <- "cvystat"
@@ -271,28 +270,27 @@ iqalpha <- function(formula, design, alpha, comp = TRUE, compinc = FALSE, ...) {
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .80, 'sup', htot,
-#' ncom=rownames(eusilc),  eusilc$eqIncome)
-#'isq_eqIncome$value
+#' des_eusilc <- convey_prep( des_eusilc )
+#' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .20)
+#'
 #' @export
 
 
 isq <- function(formula, design, alpha, comp = TRUE, ...) {
-    if (is.null(attr(design, "full_design"))) 
+    if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
     w <- weights(design)
     ind <- names(w)
-    
+
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) 
+    if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
-    
+
     ncom <- names(weights(full_design))
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
@@ -317,11 +315,11 @@ isq <- function(formula, design, alpha, comp = TRUE, ...) {
 
 
 computeQuantiles <- function(xx, w, p = quantiles) {
-    if (any(is.na(xx))) 
+    if (any(is.na(xx)))
         return(NA * p)
     oo <- order(xx)
     cum.w <- cumsum(w[oo])/sum(w)
-    cdf <- approxfun(cum.w, xx[oo], method = "constant", f = 1, yleft = min(xx), 
+    cdf <- approxfun(cum.w, xx[oo], method = "constant", f = 1, yleft = min(xx),
         yright = max(xx), ties = min)
     cdf(p)
 }
@@ -357,7 +355,7 @@ computeQuantiles <- function(xx, w, p = quantiles) {
 #' @export
 
 SE_lin <- function(object, design) {
-    
+
     if (length(object) == 2) {
         t <- object$lin
         x <- update(design, t = t)
@@ -371,7 +369,7 @@ SE_lin <- function(object, design) {
         names(list_se) <- object[[1]]
         res <- list_se
     }
-    
+
     res
 }
 
@@ -398,7 +396,7 @@ cl_inf <- function(a, b, T, S) {
 
 # product of o two functionals: formula (30)
 prod_inf <- function(T, S) {
-    
+
     value <- T$value * S$value
     lin <- T$value * S$lin + S$value * T$lin
     list(value = value, lin = lin)
@@ -463,21 +461,21 @@ SE_lin2 <- function(object, design) {
 # cvystat print method
 #' @export
 print.cvystat <- function(x, ...) {
-    
+
     vv <- attr(x, "var")
-    
+
     if (is.matrix(vv)) {
         m <- cbind(x, sqrt(diag(vv)))
     } else {
-        
+
         m <- cbind(x, sqrt(vv))
-        
+
     }
-    
+
     colnames(m) <- c(attr(x, "statistic"), "SE")
-    
+
     printCoefmat(m)
-    
+
 }
 
 
@@ -500,21 +498,21 @@ print.cvystat <- function(x, ...) {
 #' des_eusilc <- convey_prep( des_eusilc )
 #' @export
 convey_prep <- function(design) {
-    
-    
-    if (!("survey.design" %in% class(design))) 
+
+
+    if (!("survey.design" %in% class(design)))
         stop("convey_prep only needs to be run on linearized designs")
-    
-    if (!is.null(attr(design, "full_design"))) 
+
+    if (!is.null(attr(design, "full_design")))
         stop("convey_prep has already been run on this design")
-    
+
     cat("preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() call.\n\r")
-    
+
     # store the full design within one of the attributes of the design
     attr(design, "full_design") <- design
-    
+
     # store the full_design's full_design attribute as TRUE
     attr(attr(design, "full_design"), "full_design") <- TRUE
-    
+
     design
-} 
+}
