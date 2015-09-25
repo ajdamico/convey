@@ -37,71 +37,70 @@
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
-#' arpt_eqIncome <- svyarpt(~eqIncome, design=des_eusilc, .5, .6, h = htot,
-#' ncom=rownames(eusilc), comp=TRUE)
 #' rmpg_eqIncome <- svyrmpg(~eqIncome, design=des_eusilc, order =.50,
-#' percent = .60,  h = htot, ncom=rownames(eusilc), comp=TRUE, ARPT = arpt_eqIncome)
+#' percent = .60)
 #'
 #' @export
 
 svyrmpg <- function(formula, design, ...) {
-    
+
     UseMethod("svyrmpg", design)
-    
+
 }
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, ncom, 
-    h, comp, ARPT, ...) {
-    
-    if (is.null(attr(design, "full_design"))) 
-        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    
-    
+svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp, ...) {
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
+    ncom = names(weights(full_design))
     w <- weights(design)
     ind <- names(w)
     N <- sum(w)
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    arpt <- ARPT$value
-    linarpt <- ARPT$lin
+    df_full<- model.frame(full_design)
+    incvec <- df_full[[as.character(inc)]]
+    wf<- weights(full_design)
+    ncom <- names(wf)
+    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
+    arpt <- ARPT[1]
+    linarpt <- attr(ARPT, "lin")
     arpr <- sum((incvar <= arpt) * w)/N
     dsub <- subset(design, subset = (incvar <= arpt))
     medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
     medp <- as.vector(medp)
-    RMPG <- 1 - (medp/arpt)
-    ARPR <- svyarpr(formula = formula, design = design, h = h, ARPT = ARPT, ncom = ncom)
+    #RMPG <- 1 - (medp/arpt)
+    h <- h_fun(incvec,wf)
+    ARPR <- svyarpr(formula=formula, design= design, order, percent)
     Fprimemedp <- densfun(formula = formula, design = design, medp, htot = h, fun = "F")
-    arpr <- ARPR$value
-    ifarpr <- ARPR$lin
+    arpr<-ARPR[1]
+    ifarpr<-attr(ARPR, "lin")
     # linearize cdf of medp
     ifmedp <- (1/N) * ((incvar <= medp) - 0.5 * arpr)
     names(ifmedp) <- names(w)
     ifmedp <- complete(ifmedp, ncom)
     # linearize median of poor
     linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
-    MEDP <- list(value = medp, lin = linmedp)
-    list_all <- list(ARPT = ARPT, MEDP = MEDP)
+    MEDP<- list(value=medp,lin=linmedp)
+    ARPT<- list(value = arpt, lin= linarpt)
+    list_all<- list(ARPT=ARPT, MEDP=MEDP)
     # linearize RMPG
-    RMPG <- contrastinf(quote((ARPT - MEDP)/ARPT), list_all)
-    # linrmpg <- (medp * linarpt/(arpt * arpt)) - (linmedp/arpt)
-    
+    RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
     rval <- RMPG$value
-    
-    # if the class of the full_design attribute is just a TRUE, then the design is
-    # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) 
-        full_design <- design else full_design <- attr(design, "full_design")
-    
-    variance <- (SE_lin2(RMPG$lin, full_design))^2
+    infun <- unlist( RMPG$lin)
+    variance <- ( SE_lin2( infun , full_design ) )^2
     class(rval) <- "cvystat"
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "rmpg"
+    attr( rval , "var" ) <- variance
+    attr(rval, "lin") <- infun
+    attr( rval , "statistic" ) <- "rmpg"
     rval
 }
 
@@ -123,7 +122,7 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeRmpg(incvar, wi, order = order, percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-    
+
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "rmpg"
@@ -135,9 +134,9 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
 #' @rdname svyrmpg
 #' @export
 svyrmpg.DBIsvydesign <- function(x, design, ...) {
-    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
         updates = design$updates, subset = design$subset)
     NextMethod("svyrmpg", design)
 }
 
- 
+
