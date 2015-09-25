@@ -42,55 +42,60 @@
 #' @export
 #'
 svyarpr <- function(formula, design, ...) {
-
+    
     UseMethod("svyarpr", design)
-
+    
 }
 
 #' @rdname svyarpr
 #' @export
-svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6,
-  comp=TRUE,...){
-
-  if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
-
-  # if the class of the full_design attribute is just a TRUE, then the design is already the full design.
-  # otherwise, pull the full_design from that attribute.
-	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
-
-  # domain
-  inc <- terms.formula(formula)[[2]]
-  df<- model.frame(design)
-  incvar <-df[[as.character(inc)]]
-  w <- weights(design)
-  N<- sum(w)
-  ind <- names(w)
-  # full sample
-  full_design <- attr( design , "full_design" )
-  df_full <- model.frame(full_design)
-  incvec <- df_full[[as.character(inc)]]
-  wf <- weights(full_design)
-  ncom <- names(wf)
-  htot <- h_fun(incvec, wf)
-  ARPT<- svyarpt(formula = formula, full_design,order = 0.5, percent = 0.6)
-  arptv<-ARPT[1]
-  arptlin <- attr(ARPT,"lin")
-  # value of arpr and first term of lin
-  arpr1 <- icdf(formula=formula, design=design, x=arptv, ncom=ncom, comp = TRUE)
-  rval<-arpr1[1]
-  arpr1lin<- attr(arpr1,"lin")
-  # use h for the whole sample
-  Fprime <- densfun(formula = formula, design = design, arptv,
-    htot = htot, fun = "F")
-  arprlin <- arpr1lin + Fprime* arptlin
-  #names(lin) <- ind
-  #if(comp)lin<- complete(lin, ncom)
-  variance <- ( SE_lin2( arprlin , full_design ) )^2
-  class(rval) <- "cvystat"
-  attr( rval , "var" ) <- variance
-  attr( rval , "statistic" ) <- "arpr"
-  attr(rval, "lin")<- arprlin
-  rval
+svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, 
+    ...) {
+    
+    if (is.null(attr(design, "full_design"))) 
+        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) 
+        full_design <- design else full_design <- attr(design, "full_design")
+    
+    # domain
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    w <- weights(design)
+    N <- sum(w)
+    ind <- names(w)
+    
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) 
+        full_design <- design else full_design <- attr(design, "full_design")
+    
+    
+    df_full <- model.frame(full_design)
+    incvec <- df_full[[as.character(inc)]]
+    wf <- weights(full_design)
+    ncom <- names(wf)
+    htot <- h_fun(incvec, wf)
+    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
+    arptv <- ARPT[1]
+    arptlin <- attr(ARPT, "lin")
+    # value of arpr and first term of lin
+    arpr1 <- icdf(formula = formula, design = design, x = arptv, ncom = ncom, comp = TRUE)
+    rval <- arpr1[1]
+    arpr1lin <- attr(arpr1, "lin")
+    # use h for the whole sample
+    Fprime <- densfun(formula = formula, design = design, arptv, htot = htot, fun = "F")
+    arprlin <- arpr1lin + Fprime * arptlin
+    # names(lin) <- ind if(comp)lin<- complete(lin, ncom)
+    variance <- (SE_lin2(arprlin, full_design))^2
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "arpr"
+    attr(rval, "lin") <- arprlin
+    rval
 }
 
 
@@ -108,24 +113,22 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     }
     rval <- ComputeArpr(x = incvar, w = ws, order = order, percent = percent)
     ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order,
+    qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order, 
         percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-
-	class(rval)<- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "arpr"
-	rval
+    
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "arpr"
+    rval
 }
 
 
 #' @rdname svyarpr
 #' @export
-svyarpr.DBIsvydesign <-
-	function (x, design, ...)
-	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
-			updates = design$updates, subset = design$subset)
-		NextMethod("svyarpr", design)
-	}
-
+svyarpr.DBIsvydesign <- function(x, design, ...) {
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+        updates = design$updates, subset = design$subset)
+    NextMethod("svyarpr", design)
+}
+ 

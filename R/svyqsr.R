@@ -44,49 +44,52 @@
 #' @export
 
 svyqsr <- function(formula, design, ...) {
-
+    
     UseMethod("svyqsr", design)
-
+    
 }
 
 #' @rdname svyqsr
 #' @export
-svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incvec,
+svyqsr.survey.design <- function(formula, design, alpha = 0.2, ncom, comp, incvec, 
     ...) {
-
-	if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
-
+    
+    if (is.null(attr(design, "full_design"))) 
+        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    
     w <- weights(design)
     ind <- names(w)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
-    S20 <- isq(formula = formula, design = design, alpha1, type = "inf", h = NULL,
-      ncom = ncom, comp = FALSE, incvec = incvec)
+    S20 <- isq(formula = formula, design = design, alpha1, type = "inf", h = NULL, 
+        ncom = ncom, comp = FALSE, incvec = incvec)
     # Linearization of S80
-    S80 <- isq(formula = formula, design = design, alpha2, type = "sup", h = NULL,
-      ncom = ncom, comp = FALSE, incvec = incvec)
+    S80 <- isq(formula = formula, design = design, alpha2, type = "sup", h = NULL, 
+        ncom = ncom, comp = FALSE, incvec = incvec)
     # LINEARIZED VARIABLE OF THE SHARE RATIO
-    list_all<- list(S20 = S20, S80 = S80)
-    QSR <- contrastinf( quote(S80/S20), list_all)
+    list_all <- list(S20 = S20, S80 = S80)
+    QSR <- contrastinf(quote(S80/S20), list_all)
     lin_qsr <- QSR$lin
     names(lin_qsr) <- ind
     lin_qsr_comp <- complete(lin_qsr, ncom)
-    if (comp) lin <- lin_qsr_comp else lin <- lin_qsr
-	
-	rval <- QSR$value
-
-	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
-	# otherwise, pull the full_design from that attribute.
-	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
-
-	variance <- ( SE_lin2( lin , full_design ) )^2
- 	class(rval) <- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "qsr"
-	rval
-	
-  }
+    if (comp) 
+        lin <- lin_qsr_comp else lin <- lin_qsr
+    
+    rval <- QSR$value
+    
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) 
+        full_design <- design else full_design <- attr(design, "full_design")
+    
+    variance <- (SE_lin2(lin, full_design))^2
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "qsr"
+    rval
+    
+}
 
 #' @rdname svyqsr
 #' @export
@@ -110,11 +113,11 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-
-	class(rval)<- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "qsr"
-	rval
+    
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "qsr"
+    rval
 }
 
 
@@ -122,11 +125,9 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
 
 #' @rdname svyqsr
 #' @export
-svyqsr.DBIsvydesign <-
-	function (x, design, ...)
-	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
-			updates = design$updates, subset = design$subset)
-		NextMethod("svyqsr", design)
-	}
-
+svyqsr.DBIsvydesign <- function(x, design, ...) {
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+        updates = design$updates, subset = design$subset)
+    NextMethod("svyqsr", design)
+}
+ 

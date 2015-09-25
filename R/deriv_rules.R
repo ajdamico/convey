@@ -20,7 +20,7 @@ itot <- function(formula, design) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    value <- coef( survey::svytotal(x = formula, design = design))
+    value <- coef(survey::svytotal(x = formula, design = design))
     lin <- incvar
     list(value = value, lin = lin)
 }
@@ -43,7 +43,7 @@ cl_inf <- function(a, b, T, S) {
 #' @export
 # product of of two functionals: formula (30)
 prod_inf <- function(T, S) {
-
+    
     value <- T$value * S$value
     lin <- T$value * S$lin + S$value * T$lin
     list(value = value, lin = lin)
@@ -71,14 +71,14 @@ comp_inf <- function(T, S) {
 # function of a functional: (33) F and Fprime are function names
 fun_par_inf <- function(S, F, Fprime, ...) {
     dots <- list(...)
-    if(is.null(S$lin)){
-      value<-S$value
-      lin <- -(do.call(F, c(x = S$value, dots))$lin)/(do.call(Fprime, c(x = S$value,
-        dots)))
-  }else{
-    value <- do.call(F, c(x = S$value, dots))$value
-    lin <- do.call(F, c(x = S$value, dots))$lin + do.call(Fprime, c(x = S$value,
-        dots)) * S$lin
+    if (is.null(S$lin)) {
+        value <- S$value
+        lin <- -(do.call(F, c(x = S$value, dots))$lin)/(do.call(Fprime, c(x = S$value, 
+            dots)))
+    } else {
+        value <- do.call(F, c(x = S$value, dots))$value
+        lin <- do.call(F, c(x = S$value, dots))$lin + do.call(Fprime, c(x = S$value, 
+            dots)) * S$lin
     }
     list(value = value, lin = lin)
 }
@@ -97,11 +97,11 @@ fun_par_inf <- function(S, F, Fprime, ...) {
 contrastinf <- function(exprlist, infunlist) {
     datalist <- lapply(infunlist, function(t) t$value)
     listlin <- lapply(infunlist, function(t) t$lin)
-    if (!is.list(exprlist))
+    if (!is.list(exprlist)) 
         exprlist <- list(contrast = exprlist)
     dexprlist <- lapply(exprlist, function(expr) deriv(expr, names(datalist))[[1]])
     value <- eval(exprlist$contrast, datalist)
-    values_deriv <- lapply(dexprlist, function(dexpr) eval(do.call(substitute, list(dexpr,
+    values_deriv <- lapply(dexprlist, function(dexpr) eval(do.call(substitute, list(dexpr, 
         datalist))))
     matval <- attr(values_deriv$contrast, "gradient")
     matlin <- matrix(NA, length(infunlist[[1]]$lin), ncol(matval))
@@ -114,15 +114,18 @@ contrastinf <- function(exprlist, infunlist) {
 
 #' @rdname funs
 #' @export
-fun_par_inf<- function(S,F,Fprime,...){
-  dots<- list(...)
-  if(is.null(S$lin)){
-  value<- S$value
-  lin<- -do.call(F,c(x=S$value,dots))$lin/do.call(Fprime,c(x=S$value,dots))
-  }else {value<- do.call(F,c(x=S$value, dots))$value
-  lin<- do.call(F,c(x=S$value,dots))$lin+
-    do.call(Fprime,c(x=S$value,dots))*S$lin}
-  list(value= value, lin=lin)
+fun_par_inf <- function(S, F, Fprime, ...) {
+    dots <- list(...)
+    if (is.null(S$lin)) {
+        value <- S$value
+        lin <- -do.call(F, c(x = S$value, dots))$lin/do.call(Fprime, c(x = S$value, 
+            dots))
+    } else {
+        value <- do.call(F, c(x = S$value, dots))$value
+        lin <- do.call(F, c(x = S$value, dots))$lin + do.call(Fprime, c(x = S$value, 
+            dots)) * S$lin
+    }
+    list(value = value, lin = lin)
 }
 
-
+ 

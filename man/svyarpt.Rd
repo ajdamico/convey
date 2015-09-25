@@ -10,7 +10,7 @@
 svyarpt(formula, design, ...)
 
 \method{svyarpt}{survey.design}(formula, design, order = 0.5, percent = 0.6,
-  comp = TRUE, attr_des = TRUE, ...)
+  comp = TRUE, ...)
 
 \method{svyarpt}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   ...)

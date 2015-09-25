@@ -56,65 +56,68 @@
 
 
 svygpg <- function(formula, design, ...) {
-
+    
     UseMethod("svygpg", design)
-
+    
 }
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(x, design, sex, ncom, comp=TRUE,...) {
-
-	if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
-
+svygpg.survey.design <- function(x, design, sex, ncom, comp = TRUE, ...) {
+    
+    if (is.null(attr(design, "full_design"))) 
+        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
-    w<- weights(design)
-    ind<-names(w)
+    w <- weights(design)
+    ind <- names(w)
     # sex factor
     mf <- model.frame(sex, design$variables, na.action = na.pass)
-    xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 +
+    xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 + 
         .(tt))), mf))
     cols <- sapply(xx, NCOL)
     sex <- matrix(nrow = NROW(xx[[1]]), ncol = sum(cols))
     scols <- c(0, cumsum(cols))
     for (i in 1:length(xx)) {
-      sex[, scols[i] + 1:cols[i]] <- xx[[i]]
+        sex[, scols[i] + 1:cols[i]] <- xx[[i]]
     }
     colnames(sex) <- do.call("c", lapply(xx, colnames))
     sex <- as.matrix(sex)
     col_female <- grep("female", colnames(sex))
     col_male <- setdiff(1:2, col_female)
     # create linearization objects of totals
-    INDM <-list(value = sum(sex[, col_male]*w), lin=sex[, col_male])
-    INDF <- list(value = sum(sex[, col_female]*w), lin=sex[, col_female])
-    TM<- list(value = sum(wage*sex[, col_male]*w), lin=wage*sex[, col_male])
-    TF<- list(value = sum(wage*sex[, col_female]*w), lin=wage*sex[, col_female])
-    list_all_tot <-list(INDM=INDM,INDF=INDF,TM=TM,TF=TF)
-    IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_tot)
-    infun<-IGPG$lin
+    INDM <- list(value = sum(sex[, col_male] * w), lin = sex[, col_male])
+    INDF <- list(value = sum(sex[, col_female] * w), lin = sex[, col_female])
+    TM <- list(value = sum(wage * sex[, col_male] * w), lin = wage * sex[, col_male])
+    TF <- list(value = sum(wage * sex[, col_female] * w), lin = wage * sex[, col_female])
+    list_all_tot <- list(INDM = INDM, INDF = INDF, TM = TM, TF = TF)
+    IGPG <- contrastinf(quote((TM/INDM - TF/INDF)/(TM/INDM)), list_all_tot)
+    infun <- IGPG$lin
     names(infun) <- ind
     infuncomp <- complete(infun, ncom)
-    if (comp) lin <- infuncomp else lin <- infun
+    if (comp) 
+        lin <- infuncomp else lin <- infun
     
-	rval <- IGPG$value
-	
-	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
-	# otherwise, pull the full_design from that attribute.
-	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
-
-	variance <- ( SE_lin2( lin , full_design ) )^2
- 	class(rval) <- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "gpg"
-	rval
-  }
+    rval <- IGPG$value
+    
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) 
+        full_design <- design else full_design <- attr(design, "full_design")
+    
+    variance <- (SE_lin2(lin, full_design))^2
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "gpg"
+    rval
+}
 
 
 #' @rdname svygpg
 #' @export
-svygpg.svyrep.design <- function(x, design, sex,...) {
+svygpg.svyrep.design <- function(x, design, sex, ...) {
     ws <- weights(design, "sampling")
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
@@ -122,7 +125,7 @@ svygpg.svyrep.design <- function(x, design, sex,...) {
     design <- update(design, one = rep(1, length(wage)))
     # sex factor
     mf <- model.frame(sex, design$variables, na.action = na.pass)
-    xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 +
+    xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 + 
         .(tt))), mf))
     cols <- sapply(xx, NCOL)
     sex <- matrix(nrow = NROW(xx[[1]]), ncol = sum(cols))
@@ -146,11 +149,11 @@ svygpg.svyrep.design <- function(x, design, sex,...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGpg(wage, wi, sex = sex))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-	
-	class(rval)<- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "gqg"
-	rval
+    
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "gqg"
+    rval
 }
 
 
@@ -159,11 +162,9 @@ svygpg.svyrep.design <- function(x, design, sex,...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.DBIsvydesign <-
-	function (x, design, ...)
-	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
-			updates = design$updates, subset = design$subset)
-		NextMethod("svygpg", design)
-	}
-
+svygpg.DBIsvydesign <- function(x, design, ...) {
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+        updates = design$updates, subset = design$subset)
+    NextMethod("svygpg", design)
+}
+ 

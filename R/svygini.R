@@ -38,9 +38,9 @@
 #' @export
 
 svygini <- function(formula, design, ...) {
-
+    
     UseMethod("svygini", design)
-
+    
 }
 
 
@@ -48,10 +48,11 @@ svygini <- function(formula, design, ...) {
 #' @rdname svygini
 #' @export
 svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
-
-	if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
-
-
+    
+    if (is.null(attr(design, "full_design"))) 
+        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    
+    
     inc <- terms.formula(formula)[[2]]
     w <- weights(design)
     ind <- names(w)
@@ -73,31 +74,33 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     Gini <- (Num/Den) - 1
     # cumulative distribution function
     F <- cumsum(w)/N
-
+    
     # partial weighted function
     G <- cumsum(incvar * w)
-
+    
     # Gini coefficient linearized variable
-    lin_gini <- (2 * (T - G + incvar * w + N * (incvar * F)) - incvar - (Gini + 1) *
+    lin_gini <- (2 * (T - G + incvar * w + N * (incvar * F)) - incvar - (Gini + 1) * 
         (T + N * incvar))/(N * T)
     # original order lin_gini<- lin_gini[ind] complete 0's
     names(lin_gini) <- names(w)
     lin_gini_comp <- complete(lin_gini, ncom)
-    if (comp) res <- lin_gini_comp else res <- lin_gini
-	
-	
-	rval <- Gini
-
-	# if the class of the full_design attribute is just a TRUE, then the design is already the full design.
-	# otherwise, pull the full_design from that attribute.
-	if( 'logical' %in% class( attr( design , "full_design" ) ) ) full_design <- design else full_design <- attr( design , "full_design" )
-
-	variance <- ( SE_lin2( res , full_design ) )^2
- 	class(rval) <- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "gini"
-	rval
-	
+    if (comp) 
+        res <- lin_gini_comp else res <- lin_gini
+    
+    
+    rval <- Gini
+    
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) 
+        full_design <- design else full_design <- attr(design, "full_design")
+    
+    variance <- (SE_lin2(res, full_design))^2
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "gini"
+    rval
+    
 }
 
 #' @rdname svygini
@@ -122,11 +125,11 @@ svygini.svyrep.design <- function(formula, design, ...) {
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-	
-	class(rval)<- "cvystat"
-	attr( rval , "var" ) <- variance
-	attr( rval , "statistic" ) <- "gini"
-	rval
+    
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "gini"
+    rval
 }
 
 
@@ -134,11 +137,9 @@ svygini.svyrep.design <- function(formula, design, ...) {
 
 #' @rdname svygini
 #' @export
-svygini.DBIsvydesign <-
-	function (x, design, ...)
-	{
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
-			updates = design$updates, subset = design$subset)
-		NextMethod("svygini", design)
-	}
-
+svygini.DBIsvydesign <- function(x, design, ...) {
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+        updates = design$updates, subset = design$subset)
+    NextMethod("svygini", design)
+}
+ 
