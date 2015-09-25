@@ -274,7 +274,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #' @export
 
 
-isq <- function(formula, design, alpha, comp = TRUE, ...) {
+isq <- function(formula, design, alpha, comp = TRUE,...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
     inc <- terms.formula(formula)[[2]]
@@ -292,7 +292,7 @@ isq <- function(formula, design, alpha, comp = TRUE, ...) {
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
     h <- h_fun(incvec, weights(full_design))
-    QALPHA <- iqalpha(formula = formula, design = design, alpha, comp = TRUE, compinc = TRUE)
+    QALPHA <- iqalpha(formula = formula, design = design, alpha, comp = TRUE)
     q_alpha <- QALPHA[1]
     iq <- attr(QALPHA, "lin")
     inc_inf <- (incvar <= q_alpha) * incvar
