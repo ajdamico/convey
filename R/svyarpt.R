@@ -55,6 +55,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
     df_full <- model.frame(full_design)
+    inc <- terms.formula(formula)[[2]]
     incvec <- df_full[[as.character(inc)]]
     wf <- weights(full_design)
     htot <- h_fun(incvec, wf)
