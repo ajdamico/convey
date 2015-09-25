@@ -35,7 +35,6 @@
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
