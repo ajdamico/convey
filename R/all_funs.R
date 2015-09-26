@@ -478,13 +478,23 @@ print.cvystat <- function(x, ...) {
 
 # cvystat coef method
 #' @export
-coef.cvystat <- function(x, ...) {
+coef.cvystat <- function(object, ...) {
     attr(object, "statistic") <- NULL
     attr(object, "deff") <- NULL
     attr(object, "var") <- NULL
 	attr(object, "lin") <- NULL
     unclass(object)
 }
+
+# cvystat SE method
+#' @export
+SE.cvystat <- function(object, ...) {
+    v <- survey::vcov.svystat(object)
+    if (!is.matrix(v) || NCOL(v) == 1) 
+        sqrt(v)
+    else sqrt(diag(v))
+}
+
 
 
 #' prepare linearized svydesign objects for convey package
