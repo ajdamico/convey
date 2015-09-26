@@ -494,14 +494,6 @@ coef.cvystat <- function(object, ...) {
     unclass(object)
 }
 
-# cvystat SE method
-#' @export
-SE.cvystat <- function(object, ...) {
-    v <- vcov(object)
-    if (!is.matrix(v) || NCOL(v) == 1) 
-        sqrt(v)
-    else sqrt(diag(v))
-}
 
 #' prepare linearized svydesign objects for convey package
 #'
