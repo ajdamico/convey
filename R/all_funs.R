@@ -476,6 +476,14 @@ print.cvystat <- function(x, ...) {
 }
 
 
+# cvystat vcov method
+#' @export
+vcov.cvystat <- function (object, ...) 
+{
+    as.matrix(attr(object, "var"))
+}
+
+
 # cvystat coef method
 #' @export
 coef.cvystat <- function(object, ...) {
@@ -494,14 +502,6 @@ SE.cvystat <- function(object, ...) {
         sqrt(v)
     else sqrt(diag(v))
 }
-
-# cvystat vcov method
-#' @export
-vcov.cvystat <- function (object, ...) 
-{
-    as.matrix(attr(object, "var"))
-}
-
 
 #' prepare linearized svydesign objects for convey package
 #'
