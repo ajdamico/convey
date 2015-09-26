@@ -91,7 +91,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     arprlin <- arpr1lin + Fprime * arptlin
     # names(lin) <- ind if(comp)lin<- complete(lin, ncom)
     variance <- (SE_lin2(arprlin, full_design))^2
-	names( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance

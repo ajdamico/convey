@@ -97,7 +97,7 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     rval <- RMPG$value
     infun <- unlist( RMPG$lin)
     variance <- ( SE_lin2( infun , full_design ) )^2
-	names( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance

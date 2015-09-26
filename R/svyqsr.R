@@ -80,7 +80,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,...) {
     rval <- QSR$value
     lin<- as.vector(QSR$lin)
     variance <- (SE_lin2(lin, full_design))^2
-	names( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
