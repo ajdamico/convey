@@ -109,7 +109,8 @@ svygpg.survey.design <- function(x, design, sex, comp=TRUE,...) {
   variance <- ( SE_lin2( infun , full_design ) )^2
   colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
-  class(rval) <- "cvystat"
+	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	class(rval) <- "cvystat"
   attr( rval , "var" ) <- variance
   attr(rval, "lin") <- infun
   attr( rval , "statistic" ) <- "gpg"
@@ -152,7 +153,8 @@ svygpg.svyrep.design <- function(x, design, sex, ...) {
     qq <- apply(ww, 2, function(wi) ComputeGpg(wage, wi, sex = sex))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-    class(rval) <- "cvystat"
+   	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gqg"
     rval

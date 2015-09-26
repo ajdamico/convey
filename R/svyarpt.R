@@ -71,6 +71,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     variance <- (SE_lin2(lin, full_design))^2
 	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
+	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpt"
@@ -92,6 +93,7 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     qq <- apply(ww, 2, function(wi) 0.6 * computeQuantiles(incvar, wi, p = order))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
+	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpt"
