@@ -165,12 +165,10 @@ SE_lin(vardpoor_giniwl, des_eusilc)
 
 
 # library convey whole sample
-htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
-fun_giniw <- svygini(~eqIncome, des_eusilc, ncom = rownames(eusilc), comp = TRUE)
+
+fun_giniw <- svygini1(~eqIncome, des_eusilc)
 # show results from convey 1.2.1.1 point estimate
-fun_giniw$gini_coef
-# 1.2.1.2 se estimate
-SE_lin(fun_giniw, des_eusilc)
+fun_giniw
 
 
 # domains library vardpoor
@@ -185,8 +183,8 @@ unlist(vardpoor_ginidl$value)
 unlist(SE_lin(vardpoor_ginidl, des_eusilc))
 
 # library convey
-fun_ginid <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svygini, ncom = rownames(eusilc),
-    comp = TRUE, deff = FALSE, keep.var = FALSE)
+fun_ginid <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svygini1, deff = FALSE, keep.var = FALSE)
+
 # show results from library convey 1.2.2.1 point estimates
 unlist(fun_ginid$statistic.gini_coef)
 # 1.2.2.2 se estimates
