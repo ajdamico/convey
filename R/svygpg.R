@@ -64,6 +64,9 @@ svygpg <- function(formula, design, ...) {
 svygpg.survey.design <- function(x, design, sex, comp=TRUE,...) {
 
   if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
+
+	if( length( attr( terms.formula( x ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
   wage <- terms.formula(x)[[2]]
   df <- model.frame(design)
   wage <- df[[as.character(wage)]]
@@ -121,6 +124,10 @@ svygpg.survey.design <- function(x, design, sex, comp=TRUE,...) {
 #' @rdname svygpg
 #' @export
 svygpg.svyrep.design <- function(x, design, sex, ...) {
+
+	if( length( attr( terms.formula( x ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+
     ws <- weights(design, "sampling")
     wage <- terms.formula(x)[[2]]
     df <- model.frame(design)
