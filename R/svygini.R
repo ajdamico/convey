@@ -85,7 +85,9 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     rval <- GINI$value
 
     variance <- (SE_lin2(lingini, full_design))^2
-    class(rval) <- "cvystat"
+	names( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+
+	class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gini"
     attr(rval,"lin")<- lingini

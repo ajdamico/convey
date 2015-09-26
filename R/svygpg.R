@@ -107,6 +107,8 @@ svygpg.survey.design <- function(x, design, sex, comp=TRUE,...) {
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
   variance <- ( SE_lin2( infun , full_design ) )^2
+  names( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+
   class(rval) <- "cvystat"
   attr( rval , "var" ) <- variance
   attr(rval, "lin") <- infun
