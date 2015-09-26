@@ -61,13 +61,13 @@ svygpg <- function(formula, design, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(x, design, sex, comp=TRUE,...) {
+svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
 
   if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
 
-	if( length( attr( terms.formula( x ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-  wage <- terms.formula(x)[[2]]
+  wage <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   wage <- df[[as.character(wage)]]
   w<- weights(design)
@@ -123,13 +123,13 @@ svygpg.survey.design <- function(x, design, sex, comp=TRUE,...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.svyrep.design <- function(x, design, sex, ...) {
+svygpg.svyrep.design <- function(formula, design, sex, ...) {
 
-	if( length( attr( terms.formula( x ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 
     ws <- weights(design, "sampling")
-    wage <- terms.formula(x)[[2]]
+    wage <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
     design <- update(design, one = rep(1, length(wage)))
@@ -173,8 +173,8 @@ svygpg.svyrep.design <- function(x, design, sex, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.DBIsvydesign <- function(x, design, ...) {
-    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+svygpg.DBIsvydesign <- function(formula, design, ...) {
+    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
         updates = design$updates, subset = design$subset)
     NextMethod("svygpg", design)
 }

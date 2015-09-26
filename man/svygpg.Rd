@@ -9,11 +9,11 @@
 \usage{
 svygpg(formula, design, ...)
 
-\method{svygpg}{survey.design}(x, design, sex, comp = TRUE, ...)
+\method{svygpg}{survey.design}(formula, design, sex, comp = TRUE, ...)
 
-\method{svygpg}{svyrep.design}(x, design, sex, ...)
+\method{svygpg}{svyrep.design}(formula, design, sex, ...)
 
-\method{svygpg}{DBIsvydesign}(x, design, ...)
+\method{svygpg}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the gross hourly earnings variable}
