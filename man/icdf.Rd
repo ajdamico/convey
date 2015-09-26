@@ -28,10 +28,9 @@ Computes the linearized variable of the cdf function in a point.
 library(vardpoor)
 data(eusilc)
 library(survey)
-htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000, ncom=rownames(eusilc), comp=TRUE)
-icdf_eqIncome$value
+des_eusilc <- convey_prep( des_eusilc )
+icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000)
 }
 \author{
 Djalma Pessoa and Anthony Damico

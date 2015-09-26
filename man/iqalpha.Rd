@@ -4,7 +4,8 @@
 \alias{iqalpha}
 \title{Linearization of a variable quantile}
 \usage{
-iqalpha(formula, design, alpha, comp = TRUE, compinc = FALSE, ...)
+iqalpha(formula, design, alpha, h = NULL, comp = TRUE, compinc = FALSE,
+  ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -32,11 +33,9 @@ Computes the linearized variable of a quantile of variable.
 library(vardpoor)
 data(eusilc)
 library(survey)
-htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50, ncom=rownnames(eusilc),
-comp=TRUE, eusilc$eqIncome )
-iqalpha_eqIncome$value
+des_eusilc <- convey_prep( des_eusilc )
+iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50 )
 }
 \author{
 Djalma Pessoa and Anthony Damico

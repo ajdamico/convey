@@ -9,7 +9,7 @@
 \usage{
 svygpg(formula, design, ...)
 
-\method{svygpg}{survey.design}(x, design, sex, ncom, comp = TRUE, ...)
+\method{svygpg}{survey.design}(x, design, sex, comp = TRUE, ...)
 
 \method{svygpg}{svyrep.design}(x, design, sex, ...)
 
@@ -51,9 +51,7 @@ a <-survey::svytotal(~ym+yfm+im+ifm, des)
 # using the function svycontrast from the library survey
 survey::svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
 # using svygpg:
-lin_gpg<- svygpg(~y, des, ~sex, ncom=rownames(testset))
-lin_gpg$value
-SE_lin(lin_gpg,des)
+lin_gpg<- svygpg(~y, des, ~sex)
 }
 \author{
 Djalma Pessoa and Anthony Damico
