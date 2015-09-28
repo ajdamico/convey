@@ -55,8 +55,8 @@ svyrmpg <- function(formula, design, ...) {
 svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-	
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
   # if the class of the full_design attribute is just a TRUE, then the design is
   # already the full design.  otherwise, pull the full_design from that attribute.
@@ -76,14 +76,14 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
     arpt <- ARPT[1]
     linarpt <- attr(ARPT, "lin")
-    arpr <- sum((incvar <= arpt) * w)/N
     dsub <- subset(design, subset = (incvar <= arpt))
     medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
     medp <- as.vector(medp)
     #RMPG <- 1 - (medp/arpt)
-    h <- h_fun(incvec,wf)
+    htot <- h_fun(incvec,wf)
     ARPR <- svyarpr(formula=formula, design= design, order, percent)
-    Fprimemedp <- densfun(formula = formula, design = design, medp, htot = h, fun = "F")
+    Fprimemedp <- densfun(formula = formula, design = design, medp,
+      h = htot, fun = "F")
     arpr<-ARPR[1]
     ifarpr<-attr(ARPR, "lin")
     # linearize cdf of medp
@@ -100,9 +100,9 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     rval <- RMPG$value
     infun <- unlist( RMPG$lin)
     variance <- ( SE_lin2( infun , full_design ) )^2
-	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
-	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
     attr(rval, "lin") <- infun
