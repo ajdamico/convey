@@ -50,18 +50,18 @@ svyarpr <- function(formula, design, ...) {
 #' @rdname svyarpr
 #' @export
 svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,
-    ...) {
+  ...) {
 
-    if (is.null(attr(design, "full_design")))
-        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 
-    # if the class of the full_design attribute is just a TRUE, then the design is
-    # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design")))
-        full_design <- design else full_design <- attr(design, "full_design")
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
 
     # domain
     inc <- terms.formula(formula)[[2]]
@@ -74,7 +74,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
-        full_design <- design else full_design <- attr(design, "full_design")
+      full_design <- design else full_design <- attr(design, "full_design")
 
 
     df_full <- model.frame(full_design)
@@ -86,18 +86,19 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     arptv <- ARPT[1]
     arptlin <- attr(ARPT, "lin")
     # value of arpr and first term of lin
-    arpr1 <- icdf(formula = formula, design = design, x = arptv, ncom = ncom, comp = TRUE)
-    rval <- arpr1[1]
-    arpr1lin <- attr(arpr1, "lin")
+    poor<- incvar<=arptv
+    rval <- sum(poor*w)/N
+    arpr1lin <- (1/N)*((incvar<=arptv)-rval)
+    names(arpr1lin)<- ind
+    arpr1lin<- complete(arpr1lin,ncom )
     # use h for the whole sample
-    Fprime <- densfun(formula = formula, design = design, arptv, fun = "F")
+    Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F")
     arprlin <- arpr1lin + Fprime * arptlin
-    # names(lin) <- ind if(comp)lin<- complete(lin, ncom)
     variance <- (SE_lin2(arprlin, full_design))^2
-	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-	class(rval) <- "cvystat"
+    class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpr"
     attr(rval, "lin") <- arprlin
