@@ -217,13 +217,13 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     htot <- h_fun(incvec, weights(full_design))
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F")
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
-    rval <- q_alpha
+    names(iq) <- ind
+    if (comp)
+      iq <- complete(iq, ncom)
+        rval <- q_alpha
     if (compinc) {
         iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
     }
-    names(iq) <- ind
-    if (comp)
-        iq <- complete(iq, ncom)
     variance <- (SE_lin2(iq, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "lin") <- iq
