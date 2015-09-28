@@ -28,7 +28,7 @@ SE_lin(vardpoor_arptwl, des_eusilc)
 fun_arptw <- svyarpt(~eqIncome, design = des_eusilc, 0.5, 0.6)
 fun_arptw
 # show results from convey 1.2.1.1 point estimate
-fun_arptw$value
+fun_arptw
 
 # domains library vardpoor
 vardpoor_arptd <- linarpt(Y = "eqIncome", id = "IDd", weight = "rb050", Dom = "db040",
@@ -42,9 +42,9 @@ unlist(vardpoor_arptdl$value)
 unlist(SE_lin(vardpoor_arptdl, des_eusilc))
 
 # library convey
-fun_arptd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpt, order = 0.5, percent = 0.6, deff = FALSE, keep.var = FALSE, keep.names = TRUE)
+fun_arptd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpt, order = 0.5, percent = 0.6, deff = FALSE, keep.names = TRUE)
 # show results from library convey 1.2.2.1 point estimates
-fun_arptd # check point estimates
+fun_arptd
 
 ####################### 2. ARPR
 
@@ -64,6 +64,9 @@ fun_arprw <- svyarpr(~eqIncome, des_eusilc, 0.5, 0.6)
 # show results from convey 2.2.1.1 point estimate
 fun_arprw
 
+fun_arprw_Tyrol <- svyarpr(~eqIncome, subset(des_eusilc,db040=='Tyrol') , 0.5, 0.6)
+
+
 
 # domains library vardpoor
 vardpoor_arprd <- linarpr(Y = "eqIncome", id = "IDd", weight = "rb050", Dom = "db040",
@@ -77,7 +80,7 @@ unlist(vardpoor_arprdl$value)
 unlist(SE_lin(vardpoor_arprdl, des_eusilc))
 
 # library convey
-fun_arprd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE, keep.var = FALSE)
+fun_arprd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 fun_arprd
 
 
@@ -112,7 +115,7 @@ unlist(vardpoor_rmpgdl$value)
 unlist(SE_lin(vardpoor_rmpgdl, des_eusilc))
 
 # library convey
-fun_rmpgd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyrmpg, order = 0.5, percent = 0.6, deff = FALSE, keep.var = FALSE, keep.names = TRUE)
+fun_rmpgd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyrmpg, order = 0.5, percent = 0.6, deff = FALSE, keep.names = TRUE)
 # show results from library convey 3.2.2.1 point estimates
 fun_rmpgd
 
@@ -147,7 +150,7 @@ unlist(SE_lin(vardpoor_qsrdl, des_eusilc))
 
 # library convey
 fun_qsrd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyqsr,
-  alpha = 0.2, deff = FALSE,keep.var = FALSE)
+  alpha = 0.2, deff = FALSE)
 # show results from library convey 4.2.2.1 qsr estimates
 fun_qsrd
 
@@ -183,7 +186,7 @@ unlist(vardpoor_ginidl$value)
 unlist(SE_lin(vardpoor_ginidl, des_eusilc))
 
 # library convey
-fun_ginid <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svygini, deff = FALSE, keep.var = FALSE)
+fun_ginid <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svygini, deff = FALSE)
 
 fun_ginid
 

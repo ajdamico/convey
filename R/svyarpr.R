@@ -90,7 +90,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     rval <- arpr1[1]
     arpr1lin <- attr(arpr1, "lin")
     # use h for the whole sample
-    Fprime <- densfun(formula = formula, design = design, arptv, h = htot, fun = "F")
+    Fprime <- densfun(formula = formula, design = design, arptv, fun = "F")
     arprlin <- arpr1lin + Fprime * arptlin
     # names(lin) <- ind if(comp)lin<- complete(lin, ncom)
     variance <- (SE_lin2(arprlin, full_design))^2
