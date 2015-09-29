@@ -24,7 +24,7 @@ of the library survey}
 \item{sex}{formula with a factor with labels 'male' and 'female'}
 }
 \value{
-Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
 the statistic.
 }
 \description{

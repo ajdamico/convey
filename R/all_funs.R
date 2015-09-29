@@ -78,7 +78,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
 #' @param design a design object of class \code{survey.design} or class
 #' \code{svyrep.design}  of the library survey
 #'
-#'@return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
 #'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -155,7 +155,7 @@ icdf <- function(formula, design, x, ...) {
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains
 #' should be completed with zeros
 #' @param compinc logical variable \code{TRUE} if should use the vector of sample #'values of the variable whose quantile is to be linearized
-#' @return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
 #'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -225,7 +225,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 
 #' Linearization of the total above a quantile or below a quantile
 #'
-#' Computes the linearized variable of the total in the lower or upper tail of
+#' Computes the linearized variable of the total in the lower tail of
 #' the distribution of a variable.
 #'
 #' @param formula a formula specifying the income variable
@@ -233,7 +233,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #' of the library survey
 #' @param alpha the order of the quantile
 #' @param compinc logical variable \code{TRUE} if should use the vector of sample #'values of the variable whose quantile is to be linearized
-#' @return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
 #'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico

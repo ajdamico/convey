@@ -8,11 +8,11 @@
 #' of the library survey
 #' @param order  income quantile order, usually .5
 #' @param percent fraction of the quantile, usually .60
-#' @param comp logical variable \code{TRUE} if the inearized variable for domains
+#' @param comp logical variable \code{TRUE} if the linearized variable for domains
 #' should be completed with zeros
 #'
-#' @return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
-#'the statistic.
+#' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the
+#'statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #' #' @seealso \code{\link{arpt}}

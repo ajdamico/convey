@@ -27,12 +27,12 @@ of the library survey}
 
 \item{percent}{fraction of the quantile, usually .60}
 
-\item{comp}{logical variable \code{TRUE} if the inearized variable for domains
+\item{comp}{logical variable \code{TRUE} if the linearized variable for domains
 should be completed with zeros}
 }
 \value{
-Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
-the statistic.
+Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the
+statistic.
 }
 \description{
 Estimate the proportion of persons with income below the

@@ -8,7 +8,7 @@
 #' of the library survey
 #'@param sex formula with a factor with labels 'male' and 'female'
 #'
-#'@return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
 #'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico

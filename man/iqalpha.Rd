@@ -21,7 +21,7 @@ should be completed with zeros}
 \item{compinc}{logical variable \code{TRUE} if should use the vector of sample #'values of the variable whose quantile is to be linearized}
 }
 \value{
-Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
 the statistic.
 }
 \description{
