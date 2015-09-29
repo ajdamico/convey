@@ -31,7 +31,7 @@ of the library survey}
 should be completed with zeros}
 }
 \value{
-Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
+Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
 Estimate the difference between the poverty threshold \code{arpt} and the median of  incomes less than the \code{arpt} relative to the \code{arpt}.
