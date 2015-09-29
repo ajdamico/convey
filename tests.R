@@ -28,7 +28,8 @@ SE_lin(vardpoor_arptwl, des_eusilc)
 fun_arptw <- svyarpt(~eqIncome, design = des_eusilc, 0.5, 0.6)
 fun_arptw
 # show results from convey 1.2.1.1 point estimate
-fun_arptw
+
+
 
 # domains library vardpoor
 vardpoor_arptd <- linarpt(Y = "eqIncome", id = "IDd", weight = "rb050", Dom = "db040",
@@ -64,7 +65,7 @@ fun_arprw <- svyarpr(~eqIncome, des_eusilc, 0.5, 0.6)
 # show results from convey 2.2.1.1 point estimate
 fun_arprw
 
-fun_arprw_Tyrol <- svyarpr(~eqIncome, subset(des_eusilc,db040=='Tyrol') , 0.5, 0.6)
+
 
 
 
@@ -149,7 +150,7 @@ unlist(vardpoor_qsrdl$value)
 unlist(SE_lin(vardpoor_qsrdl, des_eusilc))
 
 # library convey
-fun_qsrd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyqsr,
+fun_qsrd <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyqsr1,
   alpha = 0.2, deff = FALSE)
 # show results from library convey 4.2.2.1 qsr estimates
 fun_qsrd
@@ -189,5 +190,12 @@ unlist(SE_lin(vardpoor_ginidl, des_eusilc))
 fun_ginid <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svygini, deff = FALSE)
 
 fun_ginid
+#########################################################
+## densfun
+
+densfun(~eqIncome, subset(des_eusilc, db040=="Tyrol"), 20000, h=NULL,fun="F" )
+htot<- h_fun(eusilc$eqIncome,eusilc$rb050)
+densfun(~eqIncome, subset(des_eusilc, db040=="Tyrol"), 20000, h=htot,fun="F" )
+
 
 

@@ -63,18 +63,20 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,...) {
     ncom<- names(weights(full_design))
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    df_full<-model.frame(full_design)
+    incvec<-df_full[[as.character(inc)]]
     w <- weights(design)
     ind <- names(w)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
-    S20 <- isq(formula = formula, design = design, alpha1)
+    S20 <- isq(formula = formula, design = design, alpha1,compinc=TRUE)
     S20 <- list(value= S20[1], lin=attr(S20,"lin"))
     # Linearization of S80
-    S80 <- isq(formula = formula, design = design, alpha2)
+    S80 <- isq(formula = formula, design = design, alpha2,compinc = TRUE)
     S80 <- list(value= S80[1], lin=attr(S80,"lin"))
     names(incvar)<-ind
-    TOT<- list(value=sum(incvar*w), lin=complete(incvar,ncom))
+    TOT<- list(value=sum(incvar*w), lin=incvec)
     # LINEARIZED VARIABLE OF THE SHARE RATIO
 
     list_all<- list(TOT=TOT, S20 = S20, S80 = S80)

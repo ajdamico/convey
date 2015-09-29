@@ -108,7 +108,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
 #'
 #' @export
 
-icdf <- function(formula, design, x, compinc = FALSE, ...) {
+icdf <- function(formula, design, x, ...) {
 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -118,10 +118,9 @@ icdf <- function(formula, design, x, compinc = FALSE, ...) {
     incvar <- df[[as.character(inc)]]
     w <- weights(design)
     ind <- names(w)
+    N<- sum(w)
     poor <- (incvar <= x) * 1
     names(poor) <- ind
-    one <- rep(1, length(w))
-    names(one) <- ind
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
@@ -131,16 +130,13 @@ icdf <- function(formula, design, x, compinc = FALSE, ...) {
     ncom <- names(weights(full_design))
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
-    NUM <- list(value = sum(poor * w), lin = complete(poor, ncom))
-    DEN <- list(value = sum(one * w), lin = complete(one, ncom))
-    if (compinc) {
-        NUM <- list(value = sum(poor * w), lin = (incvec <= x) * 1)
-        DEN <- list(value = sum(w), lin = rep(1, length(incvec)))
-    }
-    list_all <- list(NUM = NUM, DEN = DEN)
-    CDF <- contrastinf(quote(NUM/DEN), list_all)
-    rval <- CDF$value
-    lin <- CDF$lin
+    wf<- weights(full_design)
+    Nf<- sum(wf)
+    value<- sum(poor*w)/N
+    lin<-(1/N)*((incvar<=x)-value)
+    names(lin)<- ind
+    lin<-complete(lin,ncom)
+    rval<- value
     variance <- (SE_lin2(lin, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "lin") <- lin
