@@ -3,13 +3,14 @@
 #' Estimate the Gini coefficient which is a measure of inequalty
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
+#' @param design a design object of class \code{survey.design} or class
+#' \code{svyrep.design}
 #' of the library survey
-#' @param ncom length of the income vector for the whole sample
 #' @param comp logical variable \code{TRUE} if the inearized variable for domains
 #' should be completed with zeros
-#' @return a list with two components: the indicator estimate \code{value}
-#' and the linearized variable \code{lin}.
+#'
+#' @return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
@@ -49,10 +50,10 @@ svygini <- function(formula, design, ...) {
 svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-  
+
   	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-  
+
   # if the class of the full_design attribute is just a TRUE, then the design is
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))

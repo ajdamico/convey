@@ -45,7 +45,7 @@ h_fun <- function(inc_var, w) {
 #'@param formula a formula specifying the income variable
 #'@param design a design object of class \code{survey.design} of the library survey
 #'@param x the point where the derivative is calculated
-#'@param htot value of the bandwidth based on the whole sample
+#'@param h value of the bandwidth based on the whole sample
 #'@param if \code{F} estimates the derivative of the cdf function; if \code{S} estimates
 #'the derivative of total in the tails of the distribution
 #'@return the value of the derivative at \code{x}
@@ -75,13 +75,11 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
 #' Computes the linearized variable of the cdf function in a point.
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
-#' of the library survey
-#' @param ncom length of the income vector for the whole sample
-#' @param comp logical variable \code{TRUE} if the linearized variable for domains
-#' should be completed with zeros
-#' @return a list with two components: the cdf estimate \code{value}
-#' and the linearized cdf variable \code{lin}.
+#' @param design a design object of class \code{survey.design} or class
+#' \code{svyrep.design}  of the library survey
+#'
+#'@return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
@@ -146,8 +144,6 @@ icdf <- function(formula, design, x, ...) {
 }
 
 
-
-
 #' Linearization of a variable quantile
 #'
 #' Computes the linearized variable of a quantile of variable.
@@ -156,12 +152,11 @@ icdf <- function(formula, design, x, ...) {
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
 #' of the library survey
 #' @param alpha the order of the quantile
-#' @param ncom length of the income vector for the whole sample
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains
 #' should be completed with zeros
-#' @param invec vector of sample values of the variable whose quantile is to be linearized
-#' @return a list with two components: the quantile estimate \code{value}
-#' and the linearized quantile variable \code{lin}.
+#' @param compinc logical variable \code{TRUE} if should use the vector of sample #'values of the variable whose quantile is to be linearized
+#' @return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
@@ -237,12 +232,9 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
 #' of the library survey
 #' @param alpha the order of the quantile
-#' @param type  \code{inf} for the lower tail and \code{sup} for the upper tail
-#' @param h  bandwidth to estimate the derivative of the total in the tails
-#' @param ncom length of the income vector for the whole sample
-#' @param invec vector of sample values of the variable whose quantile is to be linearized
-#' @return a list with two components: the tail total estimate \code{value}
-#' and the linearized of the tail total \code{lin}.
+#' @param compinc logical variable \code{TRUE} if should use the vector of sample #'values of the variable whose quantile is to be linearized
+#' @return Object of class "\code{cvystat}", which are vectors with a "var" attribute #'giving the variance and a "\code{statistic}" attribute giving the name of
+#'the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
@@ -306,8 +298,6 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,...) {
 }
 
 
-
-
 computeQuantiles <- function(xx, w, p = quantiles) {
     if (any(is.na(xx)))
         return(NA * p)
@@ -318,54 +308,6 @@ computeQuantiles <- function(xx, w, p = quantiles) {
     cdf(p)
 }
 
-
-#' Extracts the se estimate
-#'
-#' Computes the se from the linearized variable.
-#'
-#' @param object output of a linearizing indicator function
-#' @param design a survey design object of the library survey
-#' @return the estime of the indicator se
-#'
-#' @author Djalma Pessoa and Anthony Damico
-#'
-#' @keywords survey
-#'
-#' @examples
-#' library(vardpoor)
-#' data(eusilc)
-#' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
-#' comp=TRUE, incvec = eusilc$eqIncome)
-#' # se estimate of isq_eqIncome for the whole sample
-#' SE_lin(qsr_eqIncome, des_eusilc)
-#' # se estimates for domains
-#' isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
-#' FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
-#' incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
-#' SE_lin(isq_eqIncome_dom, des_eusilc)
-#' @export
-
-SE_lin <- function(object, design) {
-
-    if (length(object) == 2) {
-        t <- object$lin
-        x <- update(design, t = t)
-        res <- survey::SE(survey::svytotal(~t, x))
-    } else {
-        lincomp <- object$statistic.lin
-        list_se <- lapply(lincomp, function(t) {
-            x <- update(design, t = t)
-            survey::SE(survey::svytotal(~t, x))
-        })
-        names(list_se) <- object[[1]]
-        res <- list_se
-    }
-
-    res
-}
 
 
 # infuence function of a total: formula (34)
@@ -406,13 +348,6 @@ ratio_inf <- function(T, S) {
 
 
 
-
-
-
-
-
-
-
 #' Extracts the se estimate
 #'
 #' Computes the se from the linearized variable.
@@ -429,17 +364,10 @@ ratio_inf <- function(T, S) {
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' htot <- h_fun(eusilc$eqIncome, eusilc$rb050)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20, ncom = rownames(eusilc),
-#' comp=TRUE, incvec = eusilc$eqIncome)
+#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
 #' # se estimate of isq_eqIncome for the whole sample
-#' SE_lin2(qsr_eqIncome, des_eusilc)
-#' # se estimates for domains
-#' isq_eqIncome_dom <-  svyby(~eqIncome, by= ~db040, design=des_eusilc,
-#' FUN=svyqsr, alpha=.20,  h= htot, ncom=rownames(eusilc), comp=TRUE,
-#' incvec= eusilc$eqIncome, deff=FALSE, keep.var=FALSE)
-#' SE_lin2(isq_eqIncome_dom, des_eusilc)
+#' SE_lin2(attr(qsr_eqIncome,"lin"), des_eusilc)
 #' @export
 
 SE_lin2 <- function(object, design) {
@@ -447,8 +375,6 @@ SE_lin2 <- function(object, design) {
     res <- survey::SE(survey::svytotal(~t, x))
     res
 }
-
-
 
 
 
