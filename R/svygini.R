@@ -9,8 +9,7 @@
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains
 #' should be completed with zeros
 #'
-#' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
-#'the statistic.
+#' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
@@ -92,7 +91,7 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     variance <- (SE_lin2(lingini, full_design))^2
 	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
-	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gini"
@@ -126,7 +125,7 @@ svygini.svyrep.design <- function(formula, design, ...) {
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gini"

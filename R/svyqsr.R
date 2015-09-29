@@ -11,8 +11,7 @@
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains
 #' should be completed with zeros
 #'
-#'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
-#'the statistic.
+#'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #' @seealso \code{\link{arpt}}
@@ -83,7 +82,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,...) {
     variance <- (SE_lin2(lin, full_design))^2
 	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
-	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"
@@ -116,7 +115,7 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-	names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"
