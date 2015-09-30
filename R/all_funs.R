@@ -96,8 +96,6 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
 #'
 #' @keywords survey
 #'
-#' @examples
-#'
 #'
 #' @export
 
