@@ -65,7 +65,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     incvar <- df[[as.character(inc)]]
     w <- weights(design)
     N <- sum(w)
-    ind <- names(w)
+    ind <- row.names(df)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
@@ -76,7 +76,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
     wf <- weights(full_design)
-    ncom <- names(wf)
+    ncom <- row.names(df_full)
     htot <- h_fun(incvec, wf)
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
     arptv <- ARPT[1]

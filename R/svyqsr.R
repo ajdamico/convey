@@ -56,13 +56,13 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,...) {
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
     inc <- terms.formula(formula)[[2]]
-    ncom<- names(weights(full_design))
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
     df_full<-model.frame(full_design)
+    ncom<- row.names(df_full)
     incvec<-df_full[[as.character(inc)]]
     w <- weights(design)
-    ind <- names(w)
+    ind <- row.names(df)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20

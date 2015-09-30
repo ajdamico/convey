@@ -57,17 +57,17 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    ncom = names(weights(full_design))
+    df_full <- model.frame(full_design)
+    ncom = row.names(df_full)
     w <- weights(design)
-    ind <- names(w)
     N <- sum(w)
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
+    ind <- row.names(df)
     incvar <- df[[as.character(inc)]]
     df_full<- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
     wf<- weights(full_design)
-    ncom <- names(wf)
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
     arpt <- ARPT[1]
     linarpt <- attr(ARPT, "lin")
@@ -83,7 +83,7 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     ifarpr<-attr(ARPR, "lin")
     # linearize cdf of medp
     ifmedp <- (1/N) * ((incvar <= medp) - 0.5 * arpr)
-    names(ifmedp) <- names(w)
+    names(ifmedp) <- ind
     ifmedp <- complete(ifmedp, ncom)
     # linearize median of poor
     linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp

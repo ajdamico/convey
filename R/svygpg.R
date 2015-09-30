@@ -70,9 +70,10 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
   df <- model.frame(design)
   wage <- df[[as.character(wage)]]
   w<- weights(design)
-  ind<-names(w)
+  ind<-row.names(df)
   full_design <- attr( design , "full_design" )
-  ncom<-names(weights(full_design))
+  df_full <- model.frame(full_design)
+  ncom<-row.names(df_full)
 
   # sex factor
   mf <- model.frame(sex, design$variables, na.action = na.pass)
@@ -100,10 +101,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
   })
   IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_totc)
   infun<-IGPG$lin
-  #names(infun) <- ind
-  #infuncomp <- complete(infun, ncom)
-  # if (comp) lin <- infuncomp else lin <- infun
-  rval <- IGPG$value
+    rval <- IGPG$value
   # if the class of the full_design attribute is just a TRUE, then the design is
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))

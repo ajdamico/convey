@@ -57,11 +57,12 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    ncom <- names(weights(full_design))
+    df_full<-model.frame(full_design)
+    ncom <- row.names(df_full)
     inc <- terms.formula(formula)[[2]]
     w <- weights(design)
-    ind <- names(w)
     df <- model.frame(design)
+    ind <- row.names(df)
     incvar <- df[[as.character(inc)]]
     w <- w[order(incvar)]
     incvar <- incvar[order(incvar)]
@@ -83,7 +84,7 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     GINI<- contrastinf(quote((2*T1-T2)/(T2*T3)-1), list_all)
     lingini <- as.vector(GINI$lin)
     # complete with 0
-    names(lingini) <- names(w)
+    names(lingini) <- ind
     if (comp) lingini<-complete(lingini, ncom)
 
     rval <- GINI$value

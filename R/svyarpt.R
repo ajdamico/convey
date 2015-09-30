@@ -61,14 +61,15 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     incvec <- df_full[[as.character(inc)]]
     wf <- weights(full_design)
     htot <- h_fun(incvec, wf)
+    df <- model.frame(design)
     w <- weights(design)
-    ind <- names(w)
+    ind <- row.names(df)
     linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
       comp = TRUE,
         compinc = FALSE)
     rval <- percent * linqalpha[1]
     lin <- percent * attr(linqalpha, "lin")
-    ncom <- names(weights(full_design))
+    ncom <- row.names(df_full)
     # names(lin) <- ind if (comp) lin <- complete(lin, ncom)
     variance <- (SE_lin2(lin, full_design))^2
 	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

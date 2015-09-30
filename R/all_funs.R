@@ -1,4 +1,4 @@
-#'Complete the linearezed values with 0's
+#'Complete the linearized values with 0's
 #'
 #' Complete the vector of the linearized value of an indicator for a domain with
 #' 0 values coresponding to the other domains
@@ -97,12 +97,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
 #' @keywords survey
 #'
 #' @examples
-#' library(vardpoor)
-#' data(eusilc)
-#' library(survey)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
-#' des_eusilc <- convey_prep( des_eusilc )
-#' icdf_eqIncome <-icdf(~eqIncome, design=des_eusilc, 20000)
+#'
 #'
 #' @export
 
@@ -115,7 +110,7 @@ icdf <- function(formula, design, x, ...) {
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
     w <- weights(design)
-    ind <- names(w)
+    ind <- row.names(df)
     N<- sum(w)
     poor <- (incvar <= x) * 1
     names(poor) <- ind
@@ -124,9 +119,9 @@ icdf <- function(formula, design, x, ...) {
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
-
-    ncom <- names(weights(full_design))
     df_full <- model.frame(full_design)
+    ncom <- row.names(df_full)
+
     incvec <- df_full[[as.character(inc)]]
     wf<- weights(full_design)
     Nf<- sum(wf)
@@ -192,7 +187,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     incvar <- df[[as.character(inc)]]
     w <- weights(design)
     N <- sum(w)
-    ind <- names(w)
+    ind <- row.names(df)
     q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha,
         method = "constant")
     q_alpha <- as.vector(q_alpha)
@@ -201,9 +196,8 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
-
-    ncom <- names(weights(full_design))
     df_full <- model.frame(full_design)
+    ncom <- row.names(df_full)
     incvec <- df_full[[as.character(inc)]]
     htot <- h_fun(incvec, weights(full_design))
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F")
@@ -269,15 +263,15 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,...) {
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
     w <- weights(design)
-    ind <- names(w)
+    ind <- row.names(df)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
 
-    ncom <- names(weights(full_design))
     df_full <- model.frame(full_design)
+    ncom <- row.names(df_full)
     incvec <- df_full[[as.character(inc)]]
     h <- h_fun(incvec, weights(full_design))
     QALPHA <- iqalpha(formula = formula, design = design, alpha,comp = TRUE,
