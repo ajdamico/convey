@@ -64,8 +64,10 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
     df <- model.frame(design)
     ind <- row.names(df)
     incvar <- df[[as.character(inc)]]
-    w <- w[order(incvar)]
-    incvar <- incvar[order(incvar)]
+    ordincvar<-order(incvar)
+    w <- w[ordincvar]
+    incvar <- incvar[ordincvar]
+    ind <- ind[ordincvar]
     # population size
     N <- sum(w)
     # total income
