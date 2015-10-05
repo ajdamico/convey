@@ -63,7 +63,7 @@ img {
 <div id="header">
 <h1 class="title">tests.R</h1>
 <h4 class="author"><em>owner</em></h4>
-<h4 class="date"><em>Tue Sep 29 12:13:11 2015</em></h4>
+<h4 class="date"><em>Wed Sep 30 16:07:43 2015</em></h4>
 </div>
 
 
@@ -140,16 +140,16 @@ sapply(data.frame(vardpoor_arptd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))<
 <pre class="r"><code>fun_arptd &lt;- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpt, order = 0.5, percent = 0.6, deff = FALSE, keep.names = TRUE)
 # show results from library convey 1.2.2.1 point estimates
 fun_arptd</code></pre>
-<pre><code>##                       db040  eqIncome        se
-## Burgenland       Burgenland 10808.288 37.842725
-## Carinthia         Carinthia 10420.896  3.580723
-## Lower Austria Lower Austria 11044.100  3.369825
-## Salzburg           Salzburg 11066.202  8.807149
-## Styria               Styria 10705.394  2.905715
-## Tyrol                 Tyrol  9803.528 13.901628
-## Upper Austria Upper Austria 10970.585  8.485713
-## Vienna               Vienna 11322.100  0.697709
-## Vorarlberg       Vorarlberg 10795.306 21.963851</code></pre>
+<pre><code>##                       db040  eqIncome se.eqIncome
+## Burgenland       Burgenland 10808.288   37.842725
+## Carinthia         Carinthia 10420.896    3.580723
+## Lower Austria Lower Austria 11044.100    3.369825
+## Salzburg           Salzburg 11066.202    8.807149
+## Styria               Styria 10705.394    2.905715
+## Tyrol                 Tyrol  9803.528   13.901628
+## Upper Austria Upper Austria 10970.585    8.485713
+## Vienna               Vienna 11322.100    0.697709
+## Vorarlberg       Vorarlberg 10795.306   21.963851</code></pre>
 <pre><code>            2. ARPR</code></pre>
 <p>Whole sample</p>
 <p>library vardpoor</p>
@@ -194,7 +194,7 @@ sapply(data.frame(vardpoor_arprd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))<
 <p>library convey</p>
 <pre class="r"><code>fun_arprd &lt;- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 fun_arprd</code></pre>
-<pre><code>##                       db040  eqIncome          se
+<pre><code>##                       db040  eqIncome se.eqIncome
 ## Burgenland       Burgenland 0.1953984 0.006970353
 ## Carinthia         Carinthia 0.1308627 0.006970135
 ## Lower Austria Lower Austria 0.1384362 0.005589129
@@ -251,7 +251,7 @@ sapply(data.frame(vardpoor_rmpgd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))<
 <pre class="r"><code>fun_rmpgd &lt;- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyrmpg, order = 0.5, percent = 0.6, deff = FALSE, keep.names = TRUE)
 # show results from library convey 3.2.2.1 point estimates
 fun_rmpgd</code></pre>
-<pre><code>##                       db040  eqIncome          se
+<pre><code>##                       db040  eqIncome se.eqIncome
 ## Burgenland       Burgenland 0.1232438 0.017249992
 ## Carinthia         Carinthia 0.1312787 0.003605193
 ## Lower Austria Lower Austria 0.1748023 0.004258856
@@ -306,16 +306,16 @@ sapply(data.frame(vardpoor_qsrd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))</
 <pre class="r"><code>fun_qsrd &lt;- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyqsr,
   alpha = 0.2, deff = FALSE)
 fun_qsrd</code></pre>
-<pre><code>##                       db040 eqIncome        se
-## Burgenland       Burgenland 5.008486 7.8319238
-## Carinthia         Carinthia 3.562404 2.6222791
-## Lower Austria Lower Austria 3.824539 0.9765931
-## Salzburg           Salzburg 3.768393 3.1565939
-## Styria               Styria 3.464305 1.5663685
-## Tyrol                 Tyrol 3.586046 2.6089090
-## Upper Austria Upper Austria 3.668289 1.1497775
-## Vienna               Vienna 4.654743 1.1822192
-## Vorarlberg       Vorarlberg 4.366511 4.1641727</code></pre>
+<pre><code>##                       db040 eqIncome se.eqIncome
+## Burgenland       Burgenland 5.008486   7.8319238
+## Carinthia         Carinthia 3.562404   2.6222791
+## Lower Austria Lower Austria 3.824539   0.9765931
+## Salzburg           Salzburg 3.768393   3.1565939
+## Styria               Styria 3.464305   1.5663685
+## Tyrol                 Tyrol 3.586046   2.6089090
+## Upper Austria Upper Austria 3.668289   1.1497775
+## Vienna               Vienna 4.654743   1.1822192
+## Vorarlberg       Vorarlberg 4.366511   4.1641727</code></pre>
 <pre><code>            5. GINI</code></pre>
 <p>Whole sample</p>
 <p>library vardpoor</p>
@@ -361,7 +361,7 @@ sapply(data.frame(vardpoor_ginid$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))<
 <pre class="r"><code>fun_ginid &lt;- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svygini, deff = FALSE)
 
 fun_ginid</code></pre>
-<pre><code>##                       db040  eqIncome           se
+<pre><code>##                       db040  eqIncome  se.eqIncome
 ## Burgenland       Burgenland 0.3223759 3.837829e-06
 ## Carinthia         Carinthia 0.2558785 1.774157e-06
 ## Lower Austria Lower Austria 0.2597308 6.427937e-07

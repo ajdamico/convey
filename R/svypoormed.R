@@ -1,6 +1,6 @@
 #' Relative median poverty gap
 #'
-#' Estimate the difference between the poverty threshold \code{arpt} and the median of  incomes less than the \code{arpt} relative to the \code{arpt}.
+#' Estimate the median of  incomes less than the \code{arpt}.
 #'
 #'
 #' @param formula a formula specifying the income variable
@@ -34,20 +34,20 @@
 #' library(survey)
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
-#' rmpg_eqIncome <- svyrmpg(~eqIncome, design=des_eusilc, order =.50,
+#' rmpg_eqIncome <- svypoormed (~eqIncome, design=des_eusilc, order =.50,
 #' percent = .60)
 #'
 #' @export
 
-svyrmpg <- function(formula, design, ...) {
+svypoormed <- function(formula, design, ...) {
 
-    UseMethod("svyrmpg", design)
+    UseMethod("svypoormed", design)
 
 }
 
-#' @rdname svyrmpg
+#' @rdname svypoormed
 #' @export
-svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp, ...) {
+svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp=TRUE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -57,66 +57,83 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
+    df_full <- model.frame(full_design)
+    ncom = row.names(df_full)
+    w <- weights(design)
+    N <- sum(w)
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    ind <- row.names(df)
+    incvar <- df[[as.character(inc)]]
+    df_full<- model.frame(full_design)
+    incvec <- df_full[[as.character(inc)]]
+    wf<- weights(full_design)
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
-    arpt <- coef(ARPT)
+    arpt <- ARPT[1]
     linarpt <- attr(ARPT, "lin")
-    POORMED <- svypoormed(formula = formula, design = design, order = order, percent = percent)
-    medp <- coef(POORMED)
-    linmedp <- attr(POORMED, "lin")
-    MEDP<- list(value=medp,lin=linmedp)
-    ARPT<- list(value = arpt, lin= linarpt)
-    list_all<- list(ARPT=ARPT, MEDP=MEDP)
-    # linearize RMPG
-    RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
-    rval <- RMPG$value
-    infun <- unlist( RMPG$lin)
-    variance <- ( SE_lin2( infun , full_design ) )^2
+    dsub <- subset(design, subset = (incvar <= arpt))
+    medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
+    medp <- as.vector(medp)
+    htot <- h_fun(incvec,wf)
+    ARPR <- svyarpr(formula=formula, design= design, order, percent)
+    Fprimemedp <- densfun(formula = formula, design = design, medp,
+      h = htot, fun = "F")
+    arpr<-ARPR[1]
+    ifarpr<-attr(ARPR, "lin")
+    # linearize cdf of medp
+    ifmedp <- (1/N) * ((incvar <= medp) - 0.5 * arpr)
+    names(ifmedp) <- ind
+    ifmedp <- complete(ifmedp, ncom)
+    # linearize median of poor
+    linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
+    rval <-medp
+    variance <- ( SE_lin2( linmedp , full_design ) )^2
     colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-
     rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
-    attr(rval, "lin") <- infun
-    attr( rval , "statistic" ) <- "rmpg"
+    attr(rval, "lin") <- linmedp
+    attr( rval , "statistic" ) <- "poormed"
     rval
 }
-#' @rdname svyrmpg
+
+#' @rdname svypoormed
 #' @export
-svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, ...) {
+svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, ...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    ComputeRmpg <- function(x, w, order, percent) {
+    ComputePoormed <- function(x, w, order, percent) {
         tresh <- percent * computeQuantiles(incvar, w, p = order)
         arpr <- sum((incvar <= tresh) * w)/sum(w)
         indpoor <- (x <= tresh)
         medp <- computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
-        1 - (medp/tresh)
+        medp
     }
     ws <- weights(design, "sampling")
-    rval <- ComputeRmpg(incvar, ws, order = order, percent = percent)
+    rval <- ComputePoormed(incvar, ws, order = order, percent = percent)
     ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) ComputeRmpg(incvar, wi, order = order, percent = percent))
+    qq <- apply(ww, 2, function(wi) ComputePoormed(incvar, wi, order = order, percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "rmpg"
+    attr(rval, "statistic") <- "poormed"
     rval
 }
 
 
 
-#' @rdname svyrmpg
+#' @rdname svypoormed
 #' @export
-svyrmpg.DBIsvydesign <- function(x, design, ...) {
+svypoormed.DBIsvydesign <- function(x, design, ...) {
     design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
         updates = design$updates, subset = design$subset)
-    NextMethod("svyrmpg", design)
+    NextMethod("svypoormed", design)
 }
 
 
