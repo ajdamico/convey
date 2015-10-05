@@ -1,3 +1,4 @@
+context("gpg output")
 library(vardpoor)
 data(ses)
 dati <- data.table(ID = 1:nrow(ses), ses)
