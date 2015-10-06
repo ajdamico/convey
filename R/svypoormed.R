@@ -119,6 +119,8 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
     qq <- apply(ww, 2, function(wi) ComputePoormed(incvar, wi, order = order, percent = percent))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
+	variance <- as.matrix( variance )
+
 	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance

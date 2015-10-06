@@ -117,7 +117,9 @@ qq <- apply(ww, 2, function(wi) 0.6 * ComputeRmir(incvar, wi, order = order,
   age= agevar, agelim = agelim))
 variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	variance <- as.matrix( variance )
+
+	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 class(rval) <- "cvystat"
 attr(rval, "var") <- variance
 attr(rval, "statistic") <- "rmir"

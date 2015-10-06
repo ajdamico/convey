@@ -128,6 +128,8 @@ svygini.svyrep.design <- function(formula, design, ...) {
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
+	variance <- as.matrix( variance )
+
 	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance

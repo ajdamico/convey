@@ -115,6 +115,8 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, ...) {
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
+	variance <- as.matrix( variance )
+
 	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
