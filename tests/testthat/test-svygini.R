@@ -29,10 +29,11 @@ vardestd<-unlist(vardpoor_ginid$value$Gini)
 varsed<-sapply(data.frame(vardpoor_ginid$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_ginid <- svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svygini,deff = FALSE)
+fun_ginid <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc,
+  FUN = svygini,deff = FALSE)
 convestd<- coef(fun_ginid)
 attributes(convestd) <- NULL
-convsed<- SE(fun_ginid)
+convsed<- survey:::SE(fun_ginid)
 
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest[1],100*convest)
