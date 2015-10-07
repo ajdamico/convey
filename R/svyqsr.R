@@ -34,6 +34,8 @@
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' qsr_eqIncome<- svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
+#' des_eusilc_rep<- as.svrepdesign(des_eusilc, type="bootstrap")
+#' svyqsr(~eqIncome, design=des_eusilc_rep, alpha= .20)
 #'
 #' @export
 

@@ -33,7 +33,8 @@
 #' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' rmir_eusilc<- svyrmir(~eqIncome, des_eusilc, age=~age, agelim = 65, order=.50 )
-#'
+#' des_eusilc_rep<- as.svrepdesign(des_eusilc, type="bootstrap")
+#' svyrmir(~eqIncome, des_eusilc_rep, age=~age, agelim = 65, order=.50 )
 #' @export
 #'
 
