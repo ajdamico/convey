@@ -1,4 +1,4 @@
-#' Quintile Share Ration
+#' Quintile Share Ratio
 #'
 #' Estimate ration of the total income received by the top 20%  to the total income received by bottom 20%.
 #'

@@ -8,23 +8,43 @@ vignette: >
   \VignetteEngine{knitr::rmarkdown}
   \VignetteEncoding{UTF-8}
 ---
-Library convey
---------------------------------------------
+# Library convey
+
 The library convey aims at estimating measures of poverty and income concentration. There are already at least two libraries covering this subject: vardpoor and Laeken.
 The main difference between the convey library and these two is that convey strongly hinges on the survey library.
 
 Some of these measures are defined by non-differentiable functions so that it is not possible to use Taylor linearization to estimate variances. An alternative is to use influence functions as described in Deville (1999) and Osier (2009). The library convey implements this methodology to work with survey.design objects and also with svyrep.design objects.
 
-Some exemplos of these measures are:
+Some exemples of these measures are:
 
 - At-risk-of-poverty threshold:
-$$Tresh=.60q_{.50}$$ where $q_{.50}$ is the income median
-- At-risk-of-poverty rate
-- Relative median poverty gap
-- Gini coefficient
+\[
+arpt=.60q_{.50}
+\]
+where $q_{.50}$ is the income median;
 
-Influence function
-==============================================
+- At-risk-of-poverty rate
+\[
+ arpr=\frac{\sum_U 1(y_i \leq arpt)}{N}.100
+\]
+
+- Quintile share ratio
+     
+\[
+qsr=\frac{\sum_U 1(y_i>q_{.80})}{\sum_U 1(y_i\leq q_{.20})}
+\]
+
+- Gini coefficient
+\[
+1+G=\frac{2\sum_U (r_i-1)y_i}{N\sum_Uy_i}
+\]
+where $r_i$ is the rank of $y_i$.
+
+Note that it is not possible to use Taylor linearization for those measures because they depend on quantiles and the Gini is define as a function of ranks. This could be done using the approach proposed by Deville (1999) based upon influence functions. 
+
+
+## Influence function
+
 
 Let $U$ be a population of size $N$ and $M$ a measure that alocates mass one to the set composed by one unit $i\in U$.
 
@@ -42,50 +62,169 @@ Examples of such parameters are
 
 - Total: 
 $$Y=\sum_Uy_i=\sum_U y_iM_i=\int ydM=T(M)$$
+
 - Ratio of two totals:
 $$R=\frac{Y}{X}=\frac{\int y dM}{\int x dM}=T(M)$$
+
 - Cumulative distribution function:
-$$F(x)=\frac{\sum_U\bold{1}(y_i\leq x)}{N}=\frac{\int \bold{1}(y\leq x)dM}{\int{dM}}=T(M)$$
+$$F(x)=\frac{\sum_U 1(y_i\leq x)}{N}=\frac{\int 1(y\leq x)dM}{\int{dM}}=T(M)$$
 
 
-## Vignette Info
+To estimate these parameters from the sample, we replace the measure $M$ by the estimated measure $\hat{M}$:
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+$$\hat{\theta}=T(\hat{M})$$
 
-## Styles
+The estimated measure $\hat{M}$ alocates the weight $w_i$ to the unit $i\in s$ and $0$ otherwise: 
+\[
+\hat{M}(i)=\hat{M}_i=\begin{cases}w_i, & i\in s \\
+0, & i \notin s\end{cases}
+\]
 
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+The estimators of the population parameters can be expressed as functionals of the measure  $\hat{M}$}. 
 
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
+-  Total:
+$$\hat{Y}=T(\hat{M})=\int yd\hat{M}=\sum_s w_iy_i$$
 
-## Figures
+- Ratio of totals:
+$$\hat{R}=T(\hat{M})=\frac{\int y d\hat{M}}{\int x d\hat{M}}=\frac{\sum_s w_iy_i}{\sum_s w_ix_i}$$
 
-The figure sizes have been customised so that you can easily put two images side-by-side. 
+- Cumulative distribution function:
+$$\hat{F}(x)=T(\hat{M})=\frac{\int 1(y\leq x)d\hat{M}}{\int{d\hat{M}}}=\frac{\sum_s w_i 1(y_i\leq x)}{\sum_s w_i}$$
 
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
+## The variance estimator
+
+
+The variance of the estimator $T(\hat{M})$ can approximated by:
+
+$$ 
+Var\left[T(\hat{M})\right]\cong var\left[\sum_s w_i z_i\right]
+$$
+
+The  ``linearized`` variable v $z$  is given by the derivative of the functional:
+
+$$
+z_k=lim_{t\rightarrow0}\frac{T(M+t\delta_k)-T(M)}{t}=IT_k(M)
+$$
+where, $\delta_k$ is the Dirac measure in $k$: $\delta_k(i)=1$ if and only if $i=k$.
+
+This **derivative** is called  **Influence Function** and was introduced in area of Robust Statistics.
+
+
+## Influence functions - Examples
+
+
+- Total:
+$$
+\begin{align}
+IT_k(M)&=&lim_{t\rightarrow 0}\frac{T(M+t\delta_k)-T(M)}{t}\\
+&=&lim_{t\rightarrow 0}\frac{\int y.d(M+t\delta)-\int y.dM}{t}\\
+&=&lim_{t\rightarrow 0}\frac{\int yd(t\delta_k)}{t}=y_k	
+\end{align}
+$$
+
+
+- Razão de dois totais:
+$$
+\begin{align}
+IR_k(M)&=&I\left(\frac{U}{V}\right)_k(M)=\frac{V(M)\times IU_k(M)-U(M)\times IV_k(M)}{V(M)^2}\\
+&=&\frac{X y_k-Y x_k}{X^2}=\frac{1}{X}(y_k-Rx_k)
+\end{align}
+$$
+
+## Linearization by influence function -Examples
+
+
+- At-risk-of-poverty rate:
+}
+
+\[
+ arpr=\frac{\sum_U I(y_i \leq arpt)}{\sum_U w_i}.100
+\]
+\[
+z_k=\frac{1}{N}.I(y_k\leq t)-{0.6}{N}.\frac{f(t)}{f(m)}\left[I(y_k\leq m)-0.5\right]
+\]
+
+where:
+
+$N$ - population size; 
+
+$t$ - at-risk-of-poverty threshold;
+
+$y_k$ - income of person $k$;
+
+$m$ - median income;
+
+$f$ - income density function;
+
+## Examples of use of the library convey
+
+
+In the following examples we will use the data set eusilc contained in the libraries vardpoor and Laeken.
+
+```{r}
+library(vardpoor)
+data(eusilc)
+```
+Next, we create an object of class survey.design using the function svydesign of the library survey:
+
+```{r}
+library(survey)
+des_eusilc <- svydesign(ids = ~db040, weights = ~rb050, data = eusilc )
+```
+Right after the creation of the design object ```des_eusilc```, we should use the function convey_prep that adds an attribute to the survey design which saves information on the design object based upon the whole sample,  needed to work with subset designs.
+
+```{r}
+library(convey)
+des_eusilc <- convey_prep( des_eusilc )
+```
+To estimate the `at-risk-of-poverty rate` we use the function `svyarpt`:
+
+```{r}
+svyarpr(~eqIncome, design=des_eusilc, .5, .6)
+```
+To estimate the `at-risk-of-poverty rate` for domains defined by the variable `db040` we use
+
+```{r}
+svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, 
+  percent = 0.6,deff = FALSE)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
 
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
+Using the same data set, we estimate the `quantile share ratio`: 
 
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+```{r}
+# for the whole population
+svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
 
-## More Examples
+# for domains
+svyby(~eqIncome, by = ~db040, design = des_eusilc,
+  FUN = svyqsr,deff = FALSE)
 
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
 ```
 
-Also a quote using `>`:
+These functions can be use as S3 method for the class `survey.design` and the class `svyrep.design`.
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+Lets create a design object of class `svyrep.design`
+
+```{r}
+des_eusilc_rep <- as.svrepdesign(des_eusilc, type = "bootstrap")
+```
+
+and then use the function `svyarpr`:
+
+```{r}
+svyarpr(~eqIncome, design=des_eusilc_rep, .5, .6)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
