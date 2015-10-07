@@ -133,15 +133,23 @@ $$
 
 ## Linearization by influence function -Examples
 
+- At-risk-of-poverty threshold:
+$$
+arpt = 0.6\times m
+$$
+
+$$
+z_k= -\frac{0.6}{f(m)}\times\frac{1}{N}\times\left[I(y_k\leq m-0.5) \right]
+$$
+
 
 - At-risk-of-poverty rate:
-}
 
 \[
- arpr=\frac{\sum_U I(y_i \leq arpt)}{\sum_U w_i}.100
+ arpr=\frac{\sum_U I(y_i \leq t)}{\sum_U w_i}.100
 \]
 \[
-z_k=\frac{1}{N}.I(y_k\leq t)-{0.6}{N}.\frac{f(t)}{f(m)}\left[I(y_k\leq m)-0.5\right]
+z_k=\frac{1}{N}\left[I(y_k\leq t)-t\right]-\frac{0.6}{N}\times\frac{f(t)}{f(m)}\left[I(y_k\leq m)-0.5\right]
 \]
 
 where:
