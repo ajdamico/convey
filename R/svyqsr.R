@@ -1,13 +1,12 @@
-#' Relative median poverty gap
+#' Quintile Share Ration
 #'
-#' Estimate the difference between the poverty threshold (arpt) and the median of  incomes less than the \code{arpt} relative to the \code{arpt}.
+#' Estimate ration of the total income received by the top 20%  to the total income received by bottom 20%.
 #'
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
 #' of the library survey
-#' @param order  income quantile order, usually .5
-#' @param percent fraction of the quantile, usually .60
+#' @param alpha order of the quintile ratio
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains
 #' should be completed with zeros
 #'

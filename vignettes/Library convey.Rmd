@@ -1,0 +1,91 @@
+---
+title: "Library convey"
+author: "Djalma Pessoa"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  \VignetteIndexEntry{Library convey}
+  \VignetteEngine{knitr::rmarkdown}
+  \VignetteEncoding{UTF-8}
+---
+Library convey
+--------------------------------------------
+The library convey aims at estimating measures of poverty and income concentration. There are already at least two libraries covering this subject: vardpoor and Laeken.
+The main difference between the convey library and these two is that convey strongly hinges on the survey library.
+
+Some of these measures are defined by non-differentiable functions so that it is not possible to use Taylor linearization to estimate variances. An alternative is to use influence functions as described in Deville (1999) and Osier (2009). The library convey implements this methodology to work with survey.design objects and also with svyrep.design objects.
+
+Some exemplos of these measures are:
+
+- At-risk-of-poverty threshold:
+$$Tresh=.60q_{.50}$$ where $q_{.50}$ is the income median
+- At-risk-of-poverty rate
+- Relative median poverty gap
+- Gini coefficient
+
+Influence function
+==============================================
+
+Let $U$ be a population of size $N$ and $M$ a measure that alocates mass one to the set composed by one unit $i\in U$.
+
+$$
+M(i)=M_i=\begin{cases}1, & i\in U \\
+0, & i \notin U\end{cases}
+$$
+
+A population parameter $\theta$ can expressed as a functional of $M$
+\[
+\theta=T(M)
+\]
+
+Examples of such parameters are
+
+- Total: 
+$$Y=\sum_Uy_i=\sum_U y_iM_i=\int ydM=T(M)$$
+- Ratio of two totals:
+$$R=\frac{Y}{X}=\frac{\int y dM}{\int x dM}=T(M)$$
+- Cumulative distribution function:
+$$F(x)=\frac{\sum_U\bold{1}(y_i\leq x)}{N}=\frac{\int \bold{1}(y\leq x)dM}{\int{dM}}=T(M)$$
+
+
+## Vignette Info
+
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+
+## Styles
+
+The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
+
+    output: 
+      rmarkdown::html_vignette:
+        css: mystyles.css
+
+## Figures
+
+The figure sizes have been customised so that you can easily put two images side-by-side. 
+
+```{r, fig.show='hold'}
+plot(1:10)
+plot(10:1)
+```
+
+You can enable figure captions by `fig_caption: yes` in YAML:
+
+    output:
+      rmarkdown::html_vignette:
+        fig_caption: yes
+
+Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
+
+## More Examples
+
+You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(head(mtcars, 10))
+```
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

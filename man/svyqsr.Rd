@@ -5,7 +5,7 @@
 \alias{svyqsr.DBIsvydesign}
 \alias{svyqsr.survey.design}
 \alias{svyqsr.svyrep.design}
-\title{Relative median poverty gap}
+\title{Quintile Share Ration}
 \usage{
 svyqsr(formula, design, ...)
 
@@ -22,18 +22,16 @@ svyqsr(formula, design, ...)
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}
 of the library survey}
 
+\item{alpha}{order of the quintile ratio}
+
 \item{comp}{logical variable \code{TRUE} if the linearized variable for domains
 should be completed with zeros}
-
-\item{order}{income quantile order, usually .5}
-
-\item{percent}{fraction of the quantile, usually .60}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
-Estimate the difference between the poverty threshold (arpt) and the median of  incomes less than the \code{arpt} relative to the \code{arpt}.
+Estimate ration of the total income received by the top 20%  to the total income received by bottom 20%.
 }
 \examples{
 library(vardpoor)

@@ -8,4 +8,7 @@ Depends: R (>= 3.2.1)
 Imports: survey
 License: GPL-3
 LazyData: true
-Suggests: testthat
+Suggests: testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
