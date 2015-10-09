@@ -443,12 +443,7 @@ convey_prep <- function(design) {
     cat("preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.\n\r")
 
     # store the full design within one of the attributes of the design
-    temp_design <- design
-	
-	# do not store the replicate weights along with the design
-	temp_design$repweights <- NULL
-	
-	attr(design, "full_design") <- temp_design
+    attr(design, "full_design") <- design
 
     # store the full_design's full_design attribute as TRUE
     attr(attr(design, "full_design"), "full_design") <- TRUE
