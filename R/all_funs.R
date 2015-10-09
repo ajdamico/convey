@@ -293,6 +293,9 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,...) {
 computeQuantiles <- function(xx, w, p = quantiles) {
     if (any(is.na(xx)))
         return(NA * p)
+	
+	if( sum( w ) == 0 ) return( NA )
+	
     oo <- order(xx)
     cum.w <- cumsum(w[oo])/sum(w)
     cdf <- approxfun(cum.w, xx[oo], method = "constant", f = 1, yleft = min(xx),
