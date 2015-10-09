@@ -39,7 +39,7 @@ median income of people with age below 65.
 library(vardpoor)
 data(eusilc)
 library(survey)
-des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep( des_eusilc )
 rmir_eusilc<- svyrmir(~eqIncome, des_eusilc, age=~age, agelim = 65, order=.50 )
 des_eusilc_rep<- as.svrepdesign(des_eusilc, type="bootstrap")

@@ -21,7 +21,7 @@ Computes the se from the linearized variable.
 library(vardpoor)
 data(eusilc)
 library(survey)
-des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
 # se estimate of isq_eqIncome for the whole sample
 SE_lin2(attr(qsr_eqIncome,"lin"), des_eusilc)

@@ -18,7 +18,7 @@ stores the full survey design (needed for linearized convey functions) within th
 \examples{
 library(vardpoor)
 data(eusilc)
-des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep( des_eusilc )
 }
 \author{
