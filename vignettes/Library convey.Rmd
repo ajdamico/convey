@@ -164,6 +164,10 @@ $m$ - median income;
 
 $f$ - income density function;
 
+
+
+
+
 ## Examples of use of the library convey
 
 
