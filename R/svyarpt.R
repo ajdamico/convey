@@ -31,7 +31,7 @@
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' arpt_eqIncome <-svyarpt(~eqIncome, design=des_eusilc, .5, .6,comp=TRUE)
 #' arpt_eqIncome

@@ -170,7 +170,7 @@ icdf <- function(formula, design, x, ...) {
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' iqalpha_eqIncome <-iqalpha(~eqIncome, design=des_eusilc, .50 )
 #'
@@ -247,7 +247,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .20)
 #'
@@ -359,7 +359,7 @@ ratio_inf <- function(T, S) {
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
 #' # se estimate of isq_eqIncome for the whole sample
 #' SE_lin2(attr(qsr_eqIncome,"lin"), des_eusilc)
@@ -427,7 +427,7 @@ coef.cvystat <- function(object, ...) {
 #' @examples
 #' library(vardpoor)
 #' data(eusilc)
-#' des_eusilc <- svydesign(ids=~db040, weights=~rb050, data=eusilc)
+#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
 #' @export
 convey_prep <- function(design) {
