@@ -438,12 +438,7 @@ coef.cvystat <- function(object, ...) {
 #' @export
 convey_prep <- function(design) {
 
-    if (!is.null(attr(design, "full_design"))){
-		if( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ){
-			cat( "this design object had a full_design attribute stored from a linearized design\n\rbut this is a replicate-weighted design, so the old design will be removed and replaced with a linearized one\n\r" )
-			attr( design , "full_design" ) <- NULL
-		} else stop("convey_prep has already been run on this design")
-	}
+    if (!is.null(attr(design, "full_design")))stop("convey_prep has already been run on this design")
 
     cat("preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.\n\r")
 
