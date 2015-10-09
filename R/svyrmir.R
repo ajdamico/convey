@@ -1,14 +1,14 @@
 #' Relative median income ratio
 #'
-#' Estimates the ratio between the median income of people with age above 65 and the
-#' median income of people with age below 65.
+#' Estimates the ratio between the median income of people with age above 65 and the median income of people with age below 65.
+#'
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
-#' of the library survey
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
 #' @param age formula defining the variable age
 #' @param agelim the age cutpoint, the default is 65
-#' @param order  income quantile order, usually .5
+#' @param order income quantile order, usually .5
+#' @param na.rm Should cases with missing values be dropped?
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -41,6 +41,14 @@
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyrmir( ~eqIncome , design = des_eusilc_rep )
+#'
+#' # linearized design using a variable with missings
+#' svyrmir( ~ py010n , design = des_eusilc )
+#' svyrmir( ~ py010n , design = des_eusilc , na.rm = TRUE )
+#' # replicate-weighted design using a variable with missings
+#' svyrmir( ~ py010n , design = des_eusilc_rep )
+#' svyrmir( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#'
 #' @export
 #'
 
@@ -56,7 +64,7 @@ svyrmir <- function(formula, design, ...) {
 #' @export
 
 
-svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5){
+svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm=FALSE){
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -101,7 +109,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5){
 #' @rdname svyrmir
 #' @export
 #'
-svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim, ...) {
+svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim,na.rm=FALSE,...) {
 
 	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
 

@@ -9,31 +9,32 @@
 \usage{
 svyrmir(formula, design, ...)
 
-\method{svyrmir}{survey.design}(formula, design, age, agelim, order = 0.5)
+\method{svyrmir}{survey.design}(formula, design, age, agelim, order = 0.5,
+  na.rm = FALSE)
 
 \method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
-  ...)
+  na.rm = FALSE, ...)
 
 \method{svyrmir}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}
-of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
 
 \item{age}{formula defining the variable age}
 
 \item{agelim}{the age cutpoint, the default is 65}
 
 \item{order}{income quantile order, usually .5}
+
+\item{na.rm}{Should cases with missing values be dropped?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
-Estimates the ratio between the median income of people with age above 65 and the
-median income of people with age below 65.
+Estimates the ratio between the median income of people with age above 65 and the median income of people with age below 65.
 }
 \examples{
 library(survey)
@@ -50,6 +51,13 @@ svyrmir( ~eqIncome , design = des_eusilc , age = ~age , agelim = 65 )
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 svyrmir( ~eqIncome , design = des_eusilc_rep )
+
+# linearized design using a variable with missings
+svyrmir( ~ py010n , design = des_eusilc )
+svyrmir( ~ py010n , design = des_eusilc , na.rm = TRUE )
+# replicate-weighted design using a variable with missings
+svyrmir( ~ py010n , design = des_eusilc_rep )
+svyrmir( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 }
 \author{
 Djalma Pessoa and Anthony Damico

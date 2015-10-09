@@ -3,11 +3,9 @@
 #' Estimate the Gini coefficient which is a measure of inequalty
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class
-#' \code{svyrep.design}
-#' of the library survey
-#' @param comp logical variable \code{TRUE} if the linearized variable for domains
-#' should be completed with zeros
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
+#' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
+#' @param na.rm Should cases with missing values be dropped?
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -41,6 +39,14 @@
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svygini( ~eqIncome , design = des_eusilc_rep )
+#'
+#' # linearized design using a variable with missings
+#' svygini( ~ py010n , design = des_eusilc )
+#' svygini( ~ py010n , design = des_eusilc , na.rm = TRUE )
+#' # replicate-weighted design using a variable with missings
+#' svygini( ~ py010n , design = des_eusilc_rep )
+#' svygini( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#'
 #' @export
 #'
 
@@ -55,7 +61,7 @@ svygini <- function(formula, design, ...) {
 
 #' @rdname svygini
 #' @export
-svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
+svygini.survey.design <- function(formula, design, ncom, comp = TRUE,na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -113,7 +119,7 @@ svygini.survey.design <- function(formula, design, ncom, comp = TRUE, ...) {
 
 #' @rdname svygini
 #' @export
-svygini.svyrep.design <- function(formula, design, ...) {
+svygini.svyrep.design <- function(formula, design,na.rm=FALSE, ...) {
 
 	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
 

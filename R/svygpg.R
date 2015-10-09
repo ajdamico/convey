@@ -4,9 +4,9 @@
 #'
 #'
 #' @param formula a formula specifying the gross hourly earnings variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
-#' of the library survey
-#'@param sex formula with a factor with labels 'male' and 'female'
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
+#' @param sex formula with a factor with labels 'male' and 'female'
+#' @param na.rm Should cases with missing values be dropped?
 #'
 #'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -60,7 +60,7 @@ svygpg <- function(formula, design, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
+svygpg.survey.design <- function(formula, design, sex, comp=TRUE,na.rm=FALSE,...) {
 
   if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
 
@@ -123,7 +123,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.svyrep.design <- function(formula, design, sex, ...) {
+svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
 
 	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
 

@@ -4,16 +4,16 @@
 #' at-risk-of-poverty threshold.
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
-#' of the library survey
-#' @param order  income quantile order, usually .5
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
+#' @param order income quantile order, usually .5
 #' @param percent fraction of the quantile, usually .60
-#' @param comp logical variable \code{TRUE} if the linearized variable for domains
-#' should be completed with zeros
+#' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
+#' @param na.rm Should cases with missing values be dropped?
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
+#'
 #' @seealso \code{\link{arpt}}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
@@ -42,6 +42,14 @@
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyarpr( ~eqIncome , design = des_eusilc_rep )
+#'
+#' # linearized design using a variable with missings
+#' svyarpr( ~ py010n , design = des_eusilc )
+#' svyarpr( ~ py010n , design = des_eusilc , na.rm = TRUE )
+#' # replicate-weighted design using a variable with missings
+#' svyarpr( ~ py010n , design = des_eusilc_rep )
+#' svyarpr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#'
 #' @export
 #'
 svyarpr <- function(formula, design, ...) {
@@ -52,8 +60,7 @@ svyarpr <- function(formula, design, ...) {
 
 #' @rdname svyarpr
 #' @export
-svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,
-  ...) {
+svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,na.rm=FALSE,...) {
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -112,7 +119,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
 
 #' @rdname svyarpr
 #' @export
-svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, ...) {
+svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na.rm=FALSE, ...) {
 
 	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
 

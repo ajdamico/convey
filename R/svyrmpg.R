@@ -6,10 +6,10 @@
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
 #' of the library survey
-#' @param order  income quantile order, usually .5
+#' @param order income quantile order, usually .5
 #' @param percent fraction of the quantile, usually .60
-#' @param comp logical variable \code{TRUE} if the inearized variable for domains
-#' should be completed with zeros
+#' @param comp logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros
+#' @param na.rm Should cases with missing values be dropped?
 #'
 #'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -43,6 +43,16 @@
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyrmpg( ~eqIncome , design = des_eusilc_rep )
+#'
+#'
+#' # linearized design using a variable with missings
+#' svyrmpg( ~ py010n , design = des_eusilc )
+#' svyrmpg( ~ py010n , design = des_eusilc , na.rm = TRUE )
+#' # replicate-weighted design using a variable with missings
+#' svyrmpg( ~ py010n , design = des_eusilc_rep )
+#' svyrmpg( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#'
+#'
 #' @export
 
 svyrmpg <- function(formula, design, ...) {
@@ -53,7 +63,7 @@ svyrmpg <- function(formula, design, ...) {
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp, ...) {
+svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp,na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -88,7 +98,7 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
 }
 #' @rdname svyrmpg
 #' @export
-svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, ...) {
+svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na.rm=FALSE, ...) {
 
 	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
 

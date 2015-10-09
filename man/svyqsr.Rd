@@ -10,22 +10,23 @@
 svyqsr(formula, design, ...)
 
 \method{svyqsr}{survey.design}(formula, design, alpha = 0.2, comp = TRUE,
-  ...)
+  na.rm = FALSE, ...)
 
-\method{svyqsr}{svyrep.design}(formula, design, alpha = 0.2, ...)
+\method{svyqsr}{svyrep.design}(formula, design, alpha = 0.2, na.rm = FALSE,
+  ...)
 
 \method{svyqsr}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}
-of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
 
 \item{alpha}{order of the quintile ratio}
 
-\item{comp}{logical variable \code{TRUE} if the linearized variable for domains
-should be completed with zeros}
+\item{comp}{logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros}
+
+\item{na.rm}{Should cases with missing values be dropped?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -48,6 +49,13 @@ svyqsr( ~eqIncome , design = des_eusilc )
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 svyqsr( ~eqIncome , design = des_eusilc_rep )
+
+# linearized design using a variable with missings
+svyqsr( ~ py010n , design = des_eusilc )
+svyqsr( ~ py010n , design = des_eusilc , na.rm = TRUE )
+# replicate-weighted design using a variable with missings
+svyqsr( ~ py010n , design = des_eusilc_rep )
+svyqsr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 }
 \author{
 Djalma Pessoa and Anthony Damico

@@ -9,19 +9,21 @@
 \usage{
 svygpg(formula, design, ...)
 
-\method{svygpg}{survey.design}(formula, design, sex, comp = TRUE, ...)
+\method{svygpg}{survey.design}(formula, design, sex, comp = TRUE,
+  na.rm = FALSE, ...)
 
-\method{svygpg}{svyrep.design}(formula, design, sex, ...)
+\method{svygpg}{svyrep.design}(formula, design, sex, na.rm = FALSE, ...)
 
 \method{svygpg}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the gross hourly earnings variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}
-of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
 
 \item{sex}{formula with a factor with labels 'male' and 'female'}
+
+\item{na.rm}{Should cases with missing values be dropped?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
