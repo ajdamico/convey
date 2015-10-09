@@ -13,7 +13,7 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
-#' #' @seealso \code{\link{arpt}}
+#' @seealso \code{\link{arpt}}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
 #'of poverty and inequality. \emph{Journal of the European Survey Research
