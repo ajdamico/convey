@@ -27,14 +27,20 @@
 #' @keywords survey
 #'
 #' @examples
+#' library(survey)
 #' library(vardpoor)
 #' data(eusilc)
-#' library(survey)
-#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+#'
+#' # linearized design
+#' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
-#' rmir_eusilc<- svyrmir(~eqIncome, des_eusilc, age=~age, agelim = 65, order=.50 )
-#' des_eusilc_rep<- as.svrepdesign(des_eusilc, type="bootstrap")
-#' svyrmir(~eqIncome, des_eusilc_rep, age=~age, agelim = 65, order=.50 )
+#'
+#' svyrmir( ~eqIncome , design = des_eusilc , age = ~age , agelim = 65 )
+#'
+#' # replicate-weighted design
+#' des_eusilc_rep <- as.svrepdesign( des_eusilc )
+#' des_eusilc_rep <- convey_prep( des_eusilc_rep )
+#' svyrmir( ~eqIncome , design = des_eusilc_rep )
 #' @export
 #'
 
@@ -50,7 +56,7 @@ svyrmir <- function(formula, design, ...) {
 #' @export
 
 
-svyrmir.survey.design  <- function(formula, design, age, agelim, order){
+svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5){
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -97,7 +103,17 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order){
 #'
 svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim, ...) {
 
-if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
+
+  if (convey_prep_needs_to_be_run)
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() or as.svrepdesign() functions.")
+
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
 
 inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)

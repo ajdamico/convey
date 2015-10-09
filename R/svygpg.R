@@ -66,6 +66,12 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
+
+	
   wage <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   wage <- df[[as.character(wage)]]
@@ -102,10 +108,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
   IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_totc)
   infun<-IGPG$lin
     rval <- IGPG$value
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
+
   variance <- ( SE_lin2( infun , full_design ) )^2
   colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
@@ -122,7 +125,17 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,...) {
 #' @export
 svygpg.svyrep.design <- function(formula, design, sex, ...) {
 
+	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
+
+  if (convey_prep_needs_to_be_run)
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() or as.svrepdesign() functions.")
+
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
 
 
     ws <- weights(design, "sampling")

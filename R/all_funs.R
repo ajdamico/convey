@@ -413,9 +413,9 @@ coef.cvystat <- function(object, ...) {
 }
 
 
-#' prepare linearized svydesign objects for convey package
+#' prepare svydesign and svyrep.design objects for convey package
 #'
-#' stores the full survey design (needed for linearized convey functions) within the design
+#' stores the full survey design (needed for convey functions) within the design
 #'
 #' @param design a survey design object of the library survey
 #' @return design a survey design object of the library survey
@@ -427,19 +427,25 @@ coef.cvystat <- function(object, ...) {
 #' @examples
 #' library(vardpoor)
 #' data(eusilc)
-#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+#'
+#' # linearized design: convey_prep must be run as soon as the linearized design has been created
+#' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
+#'
+#' # replicate-weighted design: convey_prep must also be run as soon as the replication design has been created.
+#' des_eusilc_rep <- as.svrepdesign( des_eusilc )
+#' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' @export
 convey_prep <- function(design) {
 
+    if (!is.null(attr(design, "full_design"))){
+		if( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ){
+			cat( "this design object had a full_design attribute stored from a linearized design\n\rbut this is a replicate-weighted design, so the old design will be removed and replaced with a linearized one\n\r" )
+			attr( design , "full_design" ) <- NULL
+		} else stop("convey_prep has already been run on this design")
+	}
 
-    if (!("survey.design" %in% class(design)))
-        stop("convey_prep only needs to be run on linearized designs")
-
-    if (!is.null(attr(design, "full_design")))
-        stop("convey_prep has already been run on this design")
-
-    cat("preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() call.\n\r")
+    cat("preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.\n\r")
 
     # store the full design within one of the attributes of the design
     attr(design, "full_design") <- design
