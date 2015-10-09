@@ -33,6 +33,7 @@
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
+
 #' arpr_eqIncome<- svyarpr(~eqIncome, design=des_eusilc, .5, .6, comp=TRUE)
 #' des_eusilc_rep<- as.svrepdesign(des_eusilc, type="bootstrap")
 #' svyarpr(~eqIncome, des_eusilc_rep, 0.5, 0.6)
@@ -118,7 +119,7 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6, .
     ws <- weights(design, "sampling")
     ComputeArpr <- function(x, w, order, percent) {
         tresh <- percent * computeQuantiles(x, w, p = order)
-        sum((incvar < tresh) * w)/sum(w)
+        sum((incvar <= tresh) * w)/sum(w)
     }
     rval <- ComputeArpr(x = incvar, w = ws, order = order, percent = percent)
     ww <- weights(design, "analysis")
