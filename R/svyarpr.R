@@ -121,7 +121,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
 #' @export
 svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na.rm=FALSE, ...) {
 
-	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
+  convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
 
   if (convey_prep_needs_to_be_run)
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() or as.svrepdesign() functions.")
@@ -138,19 +138,26 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
     ws <- weights(design, "sampling")
-    ComputeArpr <- function(x, w, order, percent) {
-        tresh <- percent * computeQuantiles(x, w, p = order)
-        sum((incvar <= tresh) * w)/sum(w)
+    wsf<- weights(full_design,"sampling")
+    df_full<- model.frame(full_design)
+    incvec <-  df_full[[as.character(inc)]]
+    names(incvec)<-names(wsf)<- row.names(df_full)
+    ind<- row.names(df)
+    ComputeArpr <- function(xf, wf, ind, order, percent) {
+      tresh <- percent * convey:::computeQuantiles(xf, wf, p = order)
+      sum((xf[ind] <= tresh) * wf[ind])/sum(wf[ind])
     }
-    rval <- ComputeArpr(x = incvar, w = ws, order = order, percent = percent)
-    ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) 0.6 * ComputeArpr(incvar, wi, order = order,
-        percent = percent))
+    rval <- ComputeArpr(xf = incvec, wf=wsf, ind= ind, order = order, percent = percent)
+    wwf <- weights(full_design, "analysis")
+    qq <- apply(wwf, 2, function(wi){
+      names(wi)<- row.names(df_full)
+      ComputeArpr(incvec, wi, ind=ind, order = order,percent = percent)}
+    )
     variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-	variance <- as.matrix( variance )
+    variance <- as.matrix( variance )
 
-	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpr"
