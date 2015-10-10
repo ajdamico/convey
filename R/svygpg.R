@@ -26,29 +26,14 @@
 #' @keywords survey
 #'
 #' @examples
+#'library(vardpoor)
+#'data(ses)
+#'des_ses<- svydesign(id=~1, weights=~weights, data=ses,
+#'variables=~weights+sex+earningsHour+location)
+#'des_ses <- convey_prep( des_ses )
+#'svygpg(~earningsHour, des_ses, ~sex, ncom =rownames(ses), comp=FALSE)
 #'
-#'set.seed(1)
-#'y<- c(rchisq(10,10),rchisq(10,20))
-#'H<- rep(c('str1','str2'),c(10,10))
-#'PSU<- rep(rep(c(1,2),c(5,5)),2)
-#'weights <- rep(2,20)
-#'
-#' # create data frame
-#'testset<- data.frame(y=y,H=H,psu=PSU, w=weights)
-#'testset$sex<- rep(c(1,2),c(10,10))
-#'testset<- transform(testset, sex= factor(sex,labels=c('female','male')))
-#'testset$im<- 1*(testset$sex=='male')
-#'testset$ifm<- 1*(testset$sex=='female')
-#'testset$ym<- testset$y*(testset$sex=='male')
-#'testset$yfm<- testset$y*(testset$sex=='female')
-#'des<- survey::svydesign(id=~psu, strata =~H, weights =~w, data=testset, nest = TRUE )
-#'des <- convey_prep( des )
-#'a <-survey::svytotal(~ym+yfm+im+ifm, des)
-#'# using the function svycontrast from the library survey
-#'survey::svycontrast(a, quote((ym/im-yfm/im)/(ym/im)))
-#' # using svygpg:
-#'lin_gpg<- svygpg(~y, des, ~sex)
-#'
+
 #' @export
 
 
@@ -71,7 +56,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,na.rm=FALSE,...
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-	
+
   wage <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   wage <- df[[as.character(wage)]]
