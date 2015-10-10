@@ -110,10 +110,8 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,na.rm=FALSE,...
 #' @export
 svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
 
-	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
-
-  if (convey_prep_needs_to_be_run)
-    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() or as.svrepdesign() functions.")
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() function.")
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 

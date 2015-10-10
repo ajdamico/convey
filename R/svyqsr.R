@@ -1,6 +1,6 @@
 #' Quintile Share Ratio
 #'
-#' Estimate ration of the total income received by the top 20%  to the total income received by bottom 20%.
+#' Estimate ratio of the total income received by the highest earners to the total income received by lowest earners, defaulting to 20%.
 #'
 #'
 #' @param formula a formula specifying the income variable
@@ -69,7 +69,11 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    inc <- terms.formula(formula)[[2]]
+  
+
+  if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
+
+  inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
     df_full<-model.frame(full_design)
@@ -107,10 +111,8 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
 #' @export
 svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) {
 
-	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
-
-  if (convey_prep_needs_to_be_run)
-    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() or as.svrepdesign() functions.")
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() function.")
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
@@ -119,6 +121,8 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
+  if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
+  
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]

@@ -75,11 +75,9 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
 #' Computes the linearized variable of the cdf function in a point.
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class
-#' \code{svyrep.design}  of the library survey
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}  of the library survey
 #'
-#'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
-#'the statistic.
+#'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
@@ -413,7 +411,7 @@ coef.cvystat <- function(object, ...) {
 }
 
 
-#' prepare svydesign and svyrep.design objects for convey package
+#' prepare svydesign and svyrep.design objects for the convey package
 #'
 #' stores the full survey design (needed for convey functions) within the design
 #'
@@ -431,10 +429,13 @@ coef.cvystat <- function(object, ...) {
 #' # linearized design: convey_prep must be run as soon as the linearized design has been created
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
+#' # now this linearized design object is ready for analysis!
 #'
 #' # replicate-weighted design: convey_prep must also be run as soon as the replication design has been created.
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
+#' # now this replicate-weighted design object is ready for analysis!
+#'
 #' @export
 convey_prep <- function(design) {
 

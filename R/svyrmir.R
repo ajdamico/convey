@@ -1,6 +1,6 @@
 #' Relative median income ratio
 #'
-#' Estimates the ratio between the median income of people with age above 65 and the median income of people with age below 65.
+#' Estimate the ratio between the median income of people with age above 65 and the median income of people with age below 65.
 #'
 #'
 #' @param formula a formula specifying the income variable
@@ -111,10 +111,8 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm
 #'
 svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim,na.rm=FALSE,...) {
 
-	convey_prep_needs_to_be_run <- ( "svyrep.design" %in% class( design ) & "survey.design" %in% class( attr( design , "full_design" ) ) ) | is.null(attr(design, "full_design"))
-
-  if (convey_prep_needs_to_be_run)
-    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() or as.svrepdesign() functions.")
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() function.")
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
