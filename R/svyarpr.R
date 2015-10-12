@@ -104,9 +104,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F")
     arprlin <- arpr1lin + Fprime * arptlin
     variance <- (SE_lin2(arprlin, full_design))^2
-    colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-
-    rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpr"
@@ -154,7 +152,7 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
 
     variance <- as.matrix( variance )
 
-    rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpr"

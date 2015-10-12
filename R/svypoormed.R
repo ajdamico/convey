@@ -102,8 +102,7 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
     rval <-medp
     variance <- ( SE_lin2( linmedp , full_design ) )^2
-    colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
     attr(rval, "lin") <- linmedp
@@ -152,7 +151,7 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
 
 	variance <- as.matrix( variance )
 
-	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "poormed"

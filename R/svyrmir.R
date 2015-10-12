@@ -97,8 +97,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm
     rval <- as.vector(RMED$value)
     lin <- RMED$lin
     variance <- ( SE_lin2( lin , full_design ) )^2
-    colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
     attr(rval, "lin") <- lin
@@ -142,7 +141,7 @@ variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rv
 
 	variance <- as.matrix( variance )
 
-	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 class(rval) <- "cvystat"
 attr(rval, "var") <- variance
 attr(rval, "statistic") <- "rmir"

@@ -86,9 +86,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     ncom <- row.names(df_full)
     # names(lin) <- ind if (comp) lin <- complete(lin, ncom)
     variance <- (SE_lin2(lin, full_design))^2
-	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-
-	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpt"
@@ -124,7 +122,7 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
 
 	variance <- as.matrix( variance )
 	
-	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpt"

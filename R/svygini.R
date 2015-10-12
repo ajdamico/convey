@@ -107,9 +107,7 @@ svygini.survey.design <- function(formula, design, comp = TRUE,na.rm=FALSE, ...)
     rval <- GINI$value
 
     variance <- (SE_lin2(lingini, full_design))^2
-	colnames( variance ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-
-	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gini"
@@ -154,7 +152,7 @@ svygini.svyrep.design <- function(formula, design,na.rm=FALSE, ...) {
 
 	variance <- as.matrix( variance )
 
-	rownames( variance ) <- names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gini"
