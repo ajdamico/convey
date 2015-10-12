@@ -140,13 +140,15 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
       w<- wf[ind]
       indpoor <- (x <= tresh)
       medp <- convey:::computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
-      medp)
+      medp
     }
     ws <- weights(design, "sampling")
-    rval <- ComputePoormed(incvar, ws, order = order, percent = percent)
-    ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) ComputePoormed(incvar, wi, order = order, percent = percent))
-    variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    rval <- ComputePoormed(xf = incvec, wf=wsf, ind= ind, order = order, percent = percent)
+    wwf <- weights(full_design, "analysis")
+    qq <- apply(wwf, 2, function(wi){
+      names(wi)<- row.names(df_full)
+      ComputePoormed(incvec, wi, ind=ind, order = order,percent = percent)
+    })
 
 	variance <- as.matrix( variance )
 
