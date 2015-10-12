@@ -128,12 +128,19 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    ComputePoormed <- function(x, w, order, percent) {
-        tresh <- percent * computeQuantiles(incvar, w, p = order)
-        arpr <- sum((incvar <= tresh) * w)/sum(w)
-        indpoor <- (x <= tresh)
-        medp <- computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
-        medp
+    ws <- weights(design, "sampling")
+    wsf<- weights(full_design,"sampling")
+    df_full<- model.frame(full_design)
+    incvec <-  df_full[[as.character(inc)]]
+    names(incvec)<-names(wsf)<- row.names(df_full)
+    ind<- row.names(df)
+    ComputePoormed <- function(xf, wf, ind, order, percent) {
+      tresh <- percent * convey:::computeQuantiles(xf, wf, p = order)
+      x<-xf[ind]
+      w<- wf[ind]
+      indpoor <- (x <= tresh)
+      medp <- convey:::computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
+      medp)
     }
     ws <- weights(design, "sampling")
     rval <- ComputePoormed(incvar, ws, order = order, percent = percent)
