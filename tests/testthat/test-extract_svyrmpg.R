@@ -1,4 +1,4 @@
-context("arpr output survey.design and svyrep.design")
+context("rmpg output survey.design and svyrep.design")
 library(vardpoor)
 data(eusilc)
 
@@ -7,12 +7,12 @@ des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-a1 <- svyarpr(~eqIncome, design = des_eusilc, 0.5, 0.6)
-a2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+a1 <- svyrmpg(~eqIncome, design = des_eusilc)
+a2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyrmpg, deff = FALSE)
 
-b1 <- svyarpr(~eqIncome, design = des_eusilc_rep, 0.5, 0.6)
+b1 <- svyrmpg(~eqIncome, design = des_eusilc_rep)
 
-b2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+b2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svyrmpg,deff = FALSE)
 
 
 test_that("output svyarpr",{

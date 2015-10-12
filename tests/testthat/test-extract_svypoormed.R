@@ -1,4 +1,4 @@
-context("arpr output survey.design and svyrep.design")
+context("poormed output survey.design and svyrep.design")
 library(vardpoor)
 data(eusilc)
 
@@ -7,15 +7,15 @@ des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-a1 <- svyarpr(~eqIncome, design = des_eusilc, 0.5, 0.6)
-a2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+a1 <- svypoormed(~eqIncome, design = des_eusilc)
+a2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svypoormed, deff = FALSE)
 
-b1 <- svyarpr(~eqIncome, design = des_eusilc_rep, 0.5, 0.6)
+b1 <- svypoormed(~eqIncome, design = des_eusilc_rep)
 
-b2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+b2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svypoormed,deff = FALSE)
 
 
-test_that("output svyarpr",{
+test_that("output svypoomed",{
   expect_is(coef(a1),"numeric")
   expect_is(coef(a2), "numeric")
   expect_is(coef(b1),"numeric")
