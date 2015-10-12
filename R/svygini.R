@@ -61,7 +61,7 @@ svygini <- function(formula, design, ...) {
 
 #' @rdname svygini
 #' @export
-svygini.survey.design <- function(formula, design, ncom, comp = TRUE,na.rm=FALSE, ...) {
+svygini.survey.design <- function(formula, design, comp = TRUE,na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
