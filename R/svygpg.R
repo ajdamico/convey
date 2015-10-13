@@ -7,7 +7,7 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
 #' @param sex formula with a factor with labels 'male' and 'female'
 #' @param na.rm Should cases with missing values be dropped?
-#'
+#' @details you must run the \code{convey_prep} function on your linearized survey design object immediately after creating it with the \code{svydesign} function.
 #'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -149,7 +149,7 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
     rval <- ComputeGpg(earn_hour = wage, w = ws, sex = sex)
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGpg(wage, wi, sex = sex))
-    variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 

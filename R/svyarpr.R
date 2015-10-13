@@ -8,7 +8,7 @@
 #' @param percent fraction of the quantile, usually .60
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
-#'
+#' @details you must run the \code{convey_prep} function on your linearized survey design object immediately after creating it with the \code{svydesign} function.
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -148,7 +148,7 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
       names(wi)<- row.names(df_full)
       ComputeArpr(incvec, wi, ind=ind, order = order,percent = percent)}
     )
-    variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
     variance <- as.matrix( variance )
 

@@ -9,6 +9,7 @@
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
 #'
+#'@details you must run the \code{convey_prep} function on your linearized survey design object immediately after creating it with the \code{svydesign} function.
 #'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -69,7 +70,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-  
+
 
   if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
 
@@ -120,7 +121,7 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
     full_design <- design else full_design <- attr(design, "full_design")
 
   if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
-  
+
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
@@ -139,7 +140,7 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
     rval <- ComputeQsr(incvar, ws, alpha = alpha)
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
-    variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 

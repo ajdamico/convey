@@ -10,6 +10,7 @@
 #' @param order income quantile order, usually .5
 #' @param na.rm Should cases with missing values be dropped?
 #'
+#'@details you must run the \code{convey_prep} function on your linearized survey design object immediately after creating it with the \code{svydesign} function.
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -137,7 +138,7 @@ rval <- ComputeRmir(x = incvar, w = ws, order = order, age= agevar, agelim = age
 ww <- weights(design, "analysis")
 qq <- apply(ww, 2, function(wi) 0.6 * ComputeRmir(incvar, wi, order = order,
   age= agevar, agelim = agelim))
-variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 

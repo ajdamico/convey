@@ -7,6 +7,7 @@
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
 #'
+#'@details you must run the \code{convey_prep} function on your linearized survey design object immediately after creating it with the \code{svydesign} function.
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -148,7 +149,7 @@ svygini.svyrep.design <- function(formula, design,na.rm=FALSE, ...) {
     rval <- ComputeGini(incvar, ws)
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
-    variance <- svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 
