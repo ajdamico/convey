@@ -9,7 +9,8 @@
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
 #'
-#'@details you must run the \code{convey_prep} function on your linearized survey design object immediately after creating it with the \code{svydesign} function.
+#'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+#'
 #'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -111,7 +112,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
 svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) {
 
   if (is.null(attr(design, "full_design")))
-    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svrepdesign() function.")
+    stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
