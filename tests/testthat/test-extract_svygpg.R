@@ -4,7 +4,7 @@ data(ses)
 des_ses <- survey:::svydesign(id=~1, weights=~weights, data=ses,
   variables=~weights+sex+earningsHour+education)
 des_ses <- convey_prep(des_ses)
-des_ses_rep <- as.svrepdesign(des_ses, type = "bootstrap")
+des_ses_rep <- survey:::as.svrepdesign(des_ses, type = "bootstrap")
 des_ses_rep <- convey_prep(des_ses_rep)
 
 a1 <- svygpg(~earningsHour, des_ses, ~sex)

@@ -1,3 +1,4 @@
+
 context("arpr output")
 library(vardpoor)
 data(eusilc)
@@ -10,7 +11,6 @@ des_eusilc_rep <- survey:::as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
 vardpoor_arprw <- linarpr(Y = "eqIncome", id = "IDd", weight = "rb050", Dom = NULL, dataset = dati, percentage = 60, order_quant = 50)
-
 vardest<- vardpoor_arprw$value
 attributes(vardest)<- NULL
 vardest<- unlist(vardest)
