@@ -38,7 +38,7 @@
 #' svyarpr( ~eqIncome , design = des_eusilc )
 #'
 #' # replicate-weighted design
-#' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyarpr( ~eqIncome , design = des_eusilc_rep )
 #'

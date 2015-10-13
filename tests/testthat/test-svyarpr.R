@@ -6,7 +6,8 @@ colnames(dati)[1] <- "IDd"
 
 des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <- survey:::as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <- convey_prep(des_eusilc_rep)
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
 vardpoor_arprw <- linarpr(Y = "eqIncome", id = "IDd", weight = "rb050", Dom = NULL, dataset = dati, percentage = 60, order_quant = 50)
 

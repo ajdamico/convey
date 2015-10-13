@@ -432,7 +432,7 @@ coef.cvystat <- function(object, ...) {
 #' # now this linearized design object is ready for analysis!
 #'
 #' # replicate-weighted design: convey_prep must also be run as soon as the replication design has been created.
-#' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' # now this replicate-weighted design object is ready for analysis!
 #'
