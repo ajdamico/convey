@@ -4,7 +4,7 @@ data(eusilc)
 
 des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <- survey:::as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 a1 <- svygini(~eqIncome, design = des_eusilc)
