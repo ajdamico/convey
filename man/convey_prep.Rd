@@ -19,25 +19,28 @@ stores the full survey design (needed for convey functions) within the design
 library(survey)
 library(vardpoor)
 data(eusilc)
+
 # linearized design: convey_prep must be run as soon as the linearized design has been created
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep( des_eusilc )
 # now this linearized design object is ready for analysis!
+
 # # # CORRECT usage example # # #
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep( des_eusilc )
 sub_eusilc <- subset( des_eusilc , age > 20 )
 # since convey_prep() was run immediately after creating the design
-# this will calculate the correct variance
-svygini( ~ eqIncome , sub_euslic )
+# this will calculate the variance accurately
+SE( svyarpt( ~ eqIncome , sub_eusilc ) )
 # # # end of CORRECT usage example # # #
+
 # # # INCORRECT usage example # # #
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 sub_eusilc <- subset( des_eusilc , age > 20 )
 sub_eusilc <- convey_prep( sub_eusilc )
 # since convey_prep() was not run immediately after creating the design
-# this will calculate the incorrect variance
-svygini( ~ eqIncome , sub_euslic )
+# this will make the variance wrong
+SE( svyarpt( ~ eqIncome , sub_eusilc ) )
 # # # end of INCORRECT usage example # # #
 }
 \author{
