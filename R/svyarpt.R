@@ -34,6 +34,7 @@
 #' data(eusilc)
 #'
 #' # linearized design
+#'
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
 #'
