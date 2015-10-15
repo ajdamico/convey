@@ -109,6 +109,8 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha, ...) {
         FGT<- contrastinf(quote((T1-T2)/T3), list_all)
         rval <- FGT$value
         fgtlin<- FGT$lin
+        names(fgtlin)<- ind
+        fgtlin <- complete(fgtlin, ncom)
       }
     }
     else{
