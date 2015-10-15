@@ -363,6 +363,14 @@ ratio_inf <- function(T, S) {
 #' SE_lin2(attr(qsr_eqIncome,"lin"), des_eusilc)
 #' @export
 
+
+
+SE_lin2 <- function(formula, design, ...) {
+
+  UseMethod("SE_lin2", design)
+
+}
+
 SE_lin2.default <- function(object, design) {
     x <- update(design, t = object)
     res <- survey::SE(survey::svytotal(~t, x))
