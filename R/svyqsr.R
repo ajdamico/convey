@@ -157,8 +157,8 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
 
 #' @rdname svyqsr
 #' @export
-svyqsr.DBIsvydesign <- function(x, design, ...) {
-    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+svyqsr.DBIsvydesign <- function(formula, design, ...) {
+    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
         updates = design$updates, subset = design$subset)
     NextMethod("svyqsr", design)
 }

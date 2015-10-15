@@ -153,8 +153,8 @@ rval
 
 #' @rdname svyrmir
 #' @export
-svyrmir.DBIsvydesign <- function(x, design, ...) {
-  design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+svyrmir.DBIsvydesign <- function(formula, design, ...) {
+  design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
     updates = design$updates, subset = design$subset)
   NextMethod("svyrmir", design)
 }

@@ -166,8 +166,8 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
 
 #' @rdname svypoormed
 #' @export
-svypoormed.DBIsvydesign <- function(x, design, ...) {
-    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+svypoormed.DBIsvydesign <- function(formula, design, ...) {
+    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
         updates = design$updates, subset = design$subset)
     NextMethod("svypoormed", design)
 }
