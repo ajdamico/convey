@@ -66,7 +66,7 @@ svyrmir <- function(formula, design, ...) {
 #' @export
 
 
-svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm=FALSE){
+svyrmir.survey.design2 <- svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm=FALSE){
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 

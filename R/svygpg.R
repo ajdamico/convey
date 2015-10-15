@@ -47,7 +47,7 @@ svygpg <- function(formula, design, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(formula, design, sex, comp=TRUE,na.rm=FALSE,...) {
+svygpg.survey.design2 <- svygpg.survey.design <- function(formula, design, sex, comp=TRUE,na.rm=FALSE,...) {
 
   if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
 

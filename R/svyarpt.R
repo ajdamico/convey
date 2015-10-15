@@ -62,7 +62,7 @@ svyarpt <- function(formula, design, ...) {
 
 #' @rdname svyarpt
 #' @export
-svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,na.rm=FALSE,...) {
+svyarpt.survey.design2 <- svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,na.rm=FALSE,...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
