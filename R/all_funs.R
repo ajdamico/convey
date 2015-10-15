@@ -363,9 +363,22 @@ ratio_inf <- function(T, S) {
 #' SE_lin2(attr(qsr_eqIncome,"lin"), des_eusilc)
 #' @export
 
-SE_lin2 <- function(object, design) {
+SE_lin2.default <- function(object, design) {
     x <- update(design, t = object)
     res <- survey::SE(survey::svytotal(~t, x))
+    res
+}
+
+SE_lin2.DBIsvydesign <- function(object, design) {
+
+	# extract only the columns necessary to run the single svytotal line.
+	design <- survey:::getvars(design, design$db$connection, design$db$tablename,  updates = design$updates, subset = design$subset)$variables
+	
+	class( design ) <- c( 'survey.design2' , 'survey.design' )
+
+    x <- update(design, t = object)
+	
+    res <- survey::SE( survey::svytotal( ~t , x ) )
     res
 }
 
