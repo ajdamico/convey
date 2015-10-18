@@ -78,10 +78,23 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm
     full_design <- design else full_design <- attr(design, "full_design")
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    ind <- row.names(df)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+    ind <- row.names(df)
     df_full<- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+
     wf<- weights(full_design)
     htot<- h_fun(incvec,wf)
     age <-terms.formula(age)[[2]]
@@ -125,6 +138,12 @@ svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim,na.r
 inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)
 incvar <- df[[as.character(inc)]]
+if(na.rm){
+  nas<-is.na(incvar)
+  design<-design[!nas,]
+  df <- model.frame(design)
+  incvar <- incvar[!nas]
+}
 age <- terms.formula(age)[[2]]
 agevar<- df[[as.character(age)]]
 ws <- weights(design, "sampling")

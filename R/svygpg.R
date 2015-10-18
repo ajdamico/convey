@@ -47,7 +47,7 @@ svygpg <- function(formula, design, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(formula, design, sex, comp=TRUE,na.rm=FALSE,...) {
+svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,...) {
 
   if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
 
@@ -58,14 +58,29 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE,na.rm=FALSE,...
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-
   wage <- terms.formula(formula)[[2]]
   df <- model.frame(design)
   wage <- df[[as.character(wage)]]
+  if(na.rm){
+    nas<-is.na(wage)
+    design<-design[!nas,]
+    df <- model.frame(design)
+    wage <- wage[!nas]
+  }
+
   w<- weights(design)
   ind<-row.names(df)
   full_design <- attr( design , "full_design" )
   df_full <- model.frame(full_design)
+  wagef <- df[[as.character(wage)]]
+
+  if(na.rm){
+    nas<-is.na(wagef)
+    full_design<-full_design[!nas,]
+    df_full <- model.frame(full_design)
+    wagef <- wagef[!nas]
+  }
+
   ncom<-row.names(df_full)
 
   # sex factor
@@ -125,6 +140,13 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
     wage <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
+
+    if(na.rm){
+      nas<-is.na(wage)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      wage <- wage[!nas]
+    }
     design <- update(design, one = rep(1, length(wage)))
     # sex factor
     mf <- model.frame(sex, design$variables, na.action = na.pass)

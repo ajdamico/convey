@@ -65,7 +65,7 @@ svyrmpg <- function(formula, design, ...) {
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp,na.rm=FALSE, ...) {
+svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp, na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -75,10 +75,11 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
+
+    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm )
     arpt <- coef(ARPT)
     linarpt <- attr(ARPT, "lin")
-    POORMED <- svypoormed(formula = formula, design = design, order = order, percent = percent)
+    POORMED <- svypoormed(formula = formula, design = design, order = order, percent = percent, na.rm=na.rm)
     medp <- coef(POORMED)
     linmedp <- attr(POORMED, "lin")
     MEDP<- list(value=medp,lin=linmedp)
@@ -109,14 +110,25 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-
-
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
-    wsf<- weights(full_design,"sampling")
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
     df_full<- model.frame(full_design)
     incvec <-  df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    wsf<- weights(full_design,"sampling")
     names(incvec)<-names(wsf)<- row.names(df_full)
     ind<- row.names(df)
     ComputeRmpg <- function(xf, wf, ind, order, percent) {

@@ -63,7 +63,7 @@ svygini <- function(formula, design, ...) {
 
 #' @rdname svygini
 #' @export
-svygini.survey.design <- function(formula, design, comp = TRUE,na.rm=FALSE, ...) {
+svygini.survey.design <- function(formula, design, comp = TRUE, na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -74,13 +74,26 @@ svygini.survey.design <- function(formula, design, comp = TRUE,na.rm=FALSE, ...)
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    df_full<-model.frame(full_design)
-    ncom <- row.names(df_full)
     inc <- terms.formula(formula)[[2]]
-    w <- weights(design)
-    df <- model.frame(design)
-    ind <- row.names(df)
+     df_full<-model.frame(full_design)
+    incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    ncom <- row.names(df_full)
+    df<-model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+    w <- weights(design)
+    ind <- row.names(df)
     ordincvar<-order(incvar)
     w <- w[ordincvar]
     incvar <- incvar[ordincvar]
@@ -135,6 +148,14 @@ svygini.svyrep.design <- function(formula, design,na.rm=FALSE, ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
+
     ComputeGini <- function(x, w) {
         w <- w[order(x)]
         x <- x[order(x)]

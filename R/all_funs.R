@@ -53,12 +53,20 @@ h_fun <- function(inc_var, w) {
 #'@keywords survey
 #'@export
 
-densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
-    inc <- terms.formula(formula)[[2]]
-    w <- weights(design)
-    N <- sum(w)
+densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
+
+  inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     inc_var <- df[[as.character(inc)]]
+
+    if(na.rm){
+      nas<-is.na(inc_var)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      inc_var <- inc_var[!nas]
+    }
+    w <- weights(design)
+    N <- sum(w)
     if(is.null(h)) h <- h_fun(inc_var,w)
     u <- (x - inc_var)/h
     vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
@@ -97,7 +105,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), ...) {
 #'
 #' @export
 
-icdf <- function(formula, design, x, ...) {
+icdf <- function(formula, design, x, na.rm = FALSE, ...) {
 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -105,6 +113,13 @@ icdf <- function(formula, design, x, ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+     nas<-is.na(incvar)
+     design<-design[!nas,]
+     df <- model.frame(design)
+     incvar <- incvar[!nas]
+     }
+
     w <- weights(design)
     ind <- row.names(df)
     N<- sum(w)
@@ -116,9 +131,14 @@ icdf <- function(formula, design, x, ...) {
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
     df_full <- model.frame(full_design)
-    ncom <- row.names(df_full)
-
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    ncom <- row.names(df_full)
     wf<- weights(full_design)
     Nf<- sum(wf)
     value<- sum(poor*w)/N
@@ -174,13 +194,19 @@ icdf <- function(formula, design, x, ...) {
 #'
 #' @export
 
-iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE, ...) {
+iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE, na.rm=FALSE, ...) {
 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
     w <- weights(design)
     N <- sum(w)
     ind <- row.names(df)
@@ -193,8 +219,14 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
     df_full <- model.frame(full_design)
-    ncom <- row.names(df_full)
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    ncom <- row.names(df_full)
     htot <- h_fun(incvec, weights(full_design))
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F")
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
@@ -252,12 +284,18 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #' @export
 
 
-isq <- function(formula, design, alpha, comp = TRUE, compinc,...) {
+isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
     w <- weights(design)
     ind <- row.names(df)
 
@@ -267,8 +305,15 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,...) {
         full_design <- design else full_design <- attr(design, "full_design")
 
     df_full <- model.frame(full_design)
-    ncom <- row.names(df_full)
+
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    ncom <- row.names(df_full)
     h <- h_fun(incvec, weights(full_design))
     QALPHA <- iqalpha(formula = formula, design = design, alpha,comp = TRUE,
       compinc = compinc)
@@ -291,9 +336,9 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,...) {
 computeQuantiles <- function(xx, w, p = quantiles) {
     if (any(is.na(xx)))
         return(NA * p)
-	
+
 	if( sum( w ) == 0 ) return( NA )
-	
+
     oo <- order(xx)
     cum.w <- cumsum(w[oo])/sum(w)
     cdf <- approxfun(cum.w, xx[oo], method = "constant", f = 1, yleft = min(xx),
@@ -381,13 +426,13 @@ SE_lin2.DBIsvydesign <- function(object, design) {
 
 	# extract only the columns necessary to run the single svytotal line.
 	design$variables <- survey:::getvars(names(design$cluster), design$db$connection, design$db$tablename,  updates = design$updates, subset = design$subset)
-	
+
 	class( design ) <- c( 'survey.design2' , 'survey.design' )
 
     design <- update(design, t = object)
-	
+
     res <- survey::SE( survey::svytotal( ~t , design ) )
-	
+
     res
 }
 

@@ -61,7 +61,7 @@ svyfgt <- function(formula, design, ...) {
 
 #' @rdname svyfgt
 #' @export
-svyfgt.survey.design <-  function(formula, design, t=NULL, alpha, ...) {
+svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ...) {
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -78,6 +78,12 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha, ...) {
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
     w <- weights(design)
     N <- sum(w)
     ind <- row.names(df)
@@ -90,6 +96,13 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha, ...) {
 
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+
     wf <- weights(full_design)
     ncom <- row.names(df_full)
     htot <- h_fun(incvec, wf)
@@ -168,10 +181,24 @@ svyfgt.svyrep.design <- function(formula, design, t = NULL, alpha, na.rm=FALSE, 
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
     ws <- weights(design, "sampling")
-    wsf<- weights(full_design,"sampling")
+
     df_full<- model.frame(full_design)
     incvec <-  df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+
+    wsf<- weights(full_design,"sampling")
     names(incvec)<-names(wsf)<- row.names(df_full)
     ind<- row.names(df)
 

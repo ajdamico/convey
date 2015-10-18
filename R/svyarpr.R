@@ -61,7 +61,7 @@ svyarpr <- function(formula, design, ...) {
 
 #' @rdname svyarpr
 #' @export
-svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,na.rm=FALSE,...) {
+svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, na.rm=FALSE,...) {
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -78,6 +78,13 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
     w <- weights(design)
     N <- sum(w)
     ind <- row.names(df)
@@ -87,13 +94,18 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     if ("logical" %in% class(attr(design, "full_design")))
       full_design <- design else full_design <- attr(design, "full_design")
 
-
     df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
     wf <- weights(full_design)
     ncom <- row.names(df_full)
     htot <- h_fun(incvec, wf)
-    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
+    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
     arptv <- ARPT[1]
     arptlin <- attr(ARPT, "lin")
     # value of arpr and first term of lin
@@ -134,10 +146,23 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
     ws <- weights(design, "sampling")
-    wsf<- weights(full_design,"sampling")
+
     df_full<- model.frame(full_design)
     incvec <-  df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    wsf<- weights(full_design,"sampling")
     names(incvec)<-names(wsf)<- row.names(df_full)
     ind<- row.names(df)
     ComputeArpr <- function(xf, wf, ind, order, percent) {

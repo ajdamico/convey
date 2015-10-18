@@ -78,18 +78,31 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
   inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
     df_full<-model.frame(full_design)
-    ncom<- row.names(df_full)
     incvec<-df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    ncom<- row.names(df_full)
     w <- weights(design)
     ind <- row.names(df)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
-    S20 <- isq(formula = formula, design = design, alpha1,compinc=TRUE)
+    S20 <- isq(formula = formula, design = design, alpha1,compinc=TRUE, na.rm=na.rm)
     S20 <- list(value= S20[1], lin=attr(S20,"lin"))
     # Linearization of S80
-    S80 <- isq(formula = formula, design = design, alpha2,compinc = TRUE)
+    S80 <- isq(formula = formula, design = design, alpha2,compinc = TRUE, na.rm=na.rm)
     S80 <- list(value= S80[1], lin=attr(S80,"lin"))
     names(incvar)<-ind
     TOT<- list(value=sum(incvar*w), lin=incvec)
@@ -126,6 +139,15 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
+
     ComputeQsr <- function(x, w, alpha) {
         alpha1 <- alpha
         alpha2 <- 1 - alpha

@@ -62,7 +62,7 @@ svyarpt <- function(formula, design, ...) {
 
 #' @rdname svyarpt
 #' @export
-svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE,na.rm=FALSE,...) {
+svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, na.rm = FALSE,...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -73,22 +73,38 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    df_full <- model.frame(full_design)
+
     inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
+    df_full <- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+
     wf <- weights(full_design)
     htot <- h_fun(incvec, wf)
     df <- model.frame(design)
     w <- weights(design)
     ind <- row.names(df)
     linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
-      comp = TRUE,
-        compinc = FALSE)
-    rval <- percent * linqalpha[1]
+      comp = TRUE,  compinc = FALSE, na.rm = na.rm)
+    rval <- percent * coef(linqalpha)
     lin <- percent * attr(linqalpha, "lin")
     ncom <- row.names(df_full)
     # names(lin) <- ind if (comp) lin <- complete(lin, ncom)
-    variance <- (SE_lin2(lin, full_design))^2
+    variance <- (SE_lin2.default(lin, full_design))^2
 	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
@@ -115,6 +131,13 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
     w <- weights(design, "sampling")
     quant_val <- computeQuantiles(incvar, w, p = order)
     quant_val <- as.vector(quant_val)

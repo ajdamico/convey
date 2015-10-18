@@ -63,7 +63,7 @@ svypoormed <- function(formula, design, ...) {
 
 #' @rdname svypoormed
 #' @export
-svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp=TRUE,na.rm=FALSE, ...) {
+svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp=TRUE, na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -73,27 +73,40 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    df_full <- model.frame(full_design)
-    ncom = row.names(df_full)
-    w <- weights(design)
-    N <- sum(w)
+
+
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    ind <- row.names(df)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+    w <- weights(design)
+    N <- sum(w)
+    ind <- row.names(df)
     df_full<- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    ncom = row.names(df_full)
     wf<- weights(full_design)
-    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6)
+    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
     arpt <- ARPT[1]
     linarpt <- attr(ARPT, "lin")
     dsub <- subset(design, subset = (incvar <= arpt))
-    medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant")
+    medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm)
     medp <- as.vector(medp)
     htot <- h_fun(incvec,wf)
-    ARPR <- svyarpr(formula=formula, design= design, order, percent)
+    ARPR <- svyarpr(formula=formula, design= design, order, percent, na.rm = na.rm)
     Fprimemedp <- densfun(formula = formula, design = design, medp,
-      h = htot, fun = "F")
+      h = htot, fun = "F", na.rm = na.rm)
     arpr<-ARPR[1]
     ifarpr<-attr(ARPR, "lin")
     # linearize cdf of medp
@@ -129,11 +142,25 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
     ws <- weights(design, "sampling")
-    wsf<- weights(full_design,"sampling")
+
     df_full<- model.frame(full_design)
     incvec <-  df_full[[as.character(inc)]]
-    names(incvec)<-names(wsf)<- row.names(df_full)
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+    wsf<- weights(full_design,"sampling")
+     names(incvec)<-names(wsf)<- row.names(df_full)
     ind<- row.names(df)
     ComputePoormed <- function(xf, wf, ind, order, percent) {
       tresh <- percent * convey:::computeQuantiles(xf, wf, p = order)
