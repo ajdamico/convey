@@ -42,7 +42,7 @@
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
-#' svyrmir( ~eqIncome , design = des_eusilc_rep )
+#' svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
 #'
 #' # linearized design using a variable with missings
 #' svyrmir( ~ py010n , design = des_eusilc )

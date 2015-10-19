@@ -33,7 +33,7 @@
 #'des_ses<- svydesign(id=~1, weights=~weights, data=ses,
 #'variables=~weights+sex+earningsHour+location)
 #'des_ses <- convey_prep( des_ses )
-#'svygpg(~earningsHour, des_ses, ~sex, ncom =rownames(ses), comp=FALSE)
+#'svygpg(~earningsHour, des_ses, ~sex)
 #'
 
 #' @export
@@ -60,25 +60,25 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
 
   wage <- terms.formula(formula)[[2]]
   df <- model.frame(design)
-  wage <- df[[as.character(wage)]]
+  wagevar <- df[[as.character(wage)]]
   if(na.rm){
-    nas<-is.na(wage)
+    nas<-is.na(wagevar)
     design<-design[!nas,]
     df <- model.frame(design)
-    wage <- wage[!nas]
+    wagevar <- wagevar[!nas]
   }
 
   w<- weights(design)
   ind<-row.names(df)
   full_design <- attr( design , "full_design" )
   df_full <- model.frame(full_design)
-  wagef <- df[[as.character(wage)]]
+  wagevarf <- df_full[[as.character(wage)]]
 
   if(na.rm){
-    nas<-is.na(wagef)
+    nas<-is.na(wagevarf)
     full_design<-full_design[!nas,]
     df_full <- model.frame(full_design)
-    wagef <- wagef[!nas]
+    wagevarf <- wagevarf[!nas]
   }
 
   ncom<-row.names(df_full)
@@ -100,8 +100,8 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   # create linearization objects of totals
   INDM <-list(value = sum(sex[, col_male]*w), lin=sex[, col_male])
   INDF <- list(value = sum(sex[, col_female]*w), lin=sex[, col_female])
-  TM<- list(value = sum(wage*sex[, col_male]*w), lin=wage*sex[, col_male])
-  TF<- list(value = sum(wage*sex[, col_female]*w), lin=wage*sex[, col_female])
+  TM<- list(value = sum(wagevar*sex[, col_male]*w), lin=wagevar*sex[, col_male])
+  TF<- list(value = sum(wagevar*sex[, col_female]*w), lin=wagevar*sex[, col_female])
   list_all_tot <-list(INDM=INDM,INDF=INDF,TM=TM,TF=TF)
   list_all_totc<-lapply(list_all_tot, function(t){
     names(t$lin)<-ind
@@ -111,7 +111,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   infun<-IGPG$lin
     rval <- IGPG$value
 
-  variance <- ( SE_lin2( infun , full_design ) )^2
+  variance <- ( convey:::SE_lin2.default( infun , full_design ) )^2
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"
   attr( rval , "var" ) <- variance
