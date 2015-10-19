@@ -410,7 +410,7 @@ ratio_inf <- function(T, S) {
 
 
 
-SE_lin2 <- function(formula, design, ...) {
+SE_lin2 <- function(object, design, ...) {
 
   UseMethod("SE_lin2", design)
 

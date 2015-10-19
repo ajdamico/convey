@@ -111,7 +111,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     RMED <- contrastinf(quote(MED2/MED1),list_all)
     rval <- as.vector(RMED$value)
     lin <- RMED$lin
-    variance <- (convey:::SE_lin2.default( lin , full_design ) )^2
+    variance <- (SE_lin2( lin , full_design ) )^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance

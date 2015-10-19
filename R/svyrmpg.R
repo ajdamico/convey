@@ -109,7 +109,7 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
     rval <- RMPG$value
     infun <- unlist( RMPG$lin)
-    variance <- ( convey:::SE_lin2.default( infun , full_design ) )^2
+    variance <- ( SE_lin2( infun , full_design ) )^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance

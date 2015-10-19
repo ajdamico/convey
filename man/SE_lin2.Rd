@@ -4,12 +4,12 @@
 \alias{SE_lin2}
 \title{Extracts the se estimate}
 \usage{
-SE_lin2(formula, design, ...)
+SE_lin2(object, design, ...)
 }
 \arguments{
-\item{design}{a survey design object of the library survey}
-
 \item{object}{output of a linearizing indicator function}
+
+\item{design}{a survey design object of the library survey}
 }
 \value{
 the estime of the indicator se

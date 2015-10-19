@@ -9,7 +9,8 @@
 \usage{
 svyfgt(formula, design, ...)
 
-\method{svyfgt}{survey.design}(formula, design, t = NULL, alpha, ...)
+\method{svyfgt}{survey.design}(formula, design, t = NULL, alpha,
+  na.rm = FALSE, ...)
 
 \method{svyfgt}{svyrep.design}(formula, design, t = NULL, alpha,
   na.rm = FALSE, ...)
