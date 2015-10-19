@@ -10,7 +10,7 @@
 svyrmir(formula, design, ...)
 
 \method{svyrmir}{survey.design}(formula, design, age, agelim, order = 0.5,
-  na.rm = FALSE)
+  na.rm = FALSE, ...)
 
 \method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
   na.rm = FALSE, ...)
