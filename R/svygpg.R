@@ -135,8 +135,6 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-
-    ws <- weights(design, "sampling")
     wage <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     wage <- df[[as.character(wage)]]
@@ -147,6 +145,7 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
       df <- model.frame(design)
       wage <- wage[!nas]
     }
+    ws <- weights(design, "sampling")
     design <- update(design, one = rep(1, length(wage)))
     # sex factor
     mf <- model.frame(sex, design$variables, na.action = na.pass)

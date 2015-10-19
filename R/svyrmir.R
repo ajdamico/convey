@@ -44,12 +44,6 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
 #'
-#' # linearized design using a variable with missings
-#' svyrmir( ~ py010n , design = des_eusilc )
-#' svyrmir( ~ py010n , design = des_eusilc , na.rm = TRUE )
-#' # replicate-weighted design using a variable with missings
-#' svyrmir( ~ py010n , design = des_eusilc_rep )
-#' svyrmir( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 #'
 #' @export
 #'
