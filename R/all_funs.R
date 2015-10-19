@@ -316,7 +316,7 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) 
     ncom <- row.names(df_full)
     h <- h_fun(incvec, weights(full_design))
     QALPHA <- iqalpha(formula = formula, design = design, alpha,comp = TRUE,
-      compinc = compinc)
+      compinc = compinc, na.rm = na.rm)
     q_alpha <- QALPHA[1]
     iq <- attr(QALPHA, "lin")
     inc_inf <- (incvar <= q_alpha) * incvar
