@@ -98,7 +98,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     wf<- weights(full_design)
     htot<- h_fun(incvec,wf)
     age <-terms.formula(age)[[2]]
-    agevar <- df[[as.character(inc)]]
+    agevar <- df[[as.character(age)]]
     dsub1 <- subset(design, age < agelim )
     iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot, na.rm = na.rm )
     dsub2 <- subset(design, age >= agelim )

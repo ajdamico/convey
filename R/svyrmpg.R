@@ -95,7 +95,6 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
       incvec <- incvec[!nas]
     }
 
-
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm )
     arpt <- coef(ARPT)
     linarpt <- attr(ARPT, "lin")
