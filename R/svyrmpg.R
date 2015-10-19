@@ -75,11 +75,31 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
+    inc <- terms.formula(formula)[[2]]
+    df <- model.frame(design)
+    incvar <- df[[as.character(inc)]]
+
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
+
+    df_full <- model.frame(full_design)
+    incvec <- df_full[[as.character(inc)]]
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
+
 
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm )
     arpt <- coef(ARPT)
     linarpt <- attr(ARPT, "lin")
-    POORMED <- svypoormed(formula = formula, design = design, order = order, percent = percent, na.rm=na.rm)
+    POORMED <- svypoormed(formula = formula, design = design, order = order, percent = percent, na.rm = na.rm)
     medp <- coef(POORMED)
     linmedp <- attr(POORMED, "lin")
     MEDP<- list(value=medp,lin=linmedp)
@@ -89,7 +109,7 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
     rval <- RMPG$value
     infun <- unlist( RMPG$lin)
-    variance <- ( SE_lin2( infun , full_design ) )^2
+    variance <- ( convey:::SE_lin2.default( infun , full_design ) )^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance

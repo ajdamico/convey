@@ -66,7 +66,7 @@ svyrmir <- function(formula, design, ...) {
 #' @export
 
 
-svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm=FALSE){
+svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.rm=FALSE){
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -100,9 +100,9 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm
     age <-terms.formula(age)[[2]]
     agevar <- df[[as.character(inc)]]
     dsub1 <- subset(design, age < agelim )
-    iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot )
+    iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot, na.rm = na.rm )
     dsub2 <- subset(design, age >= agelim )
-    iquant2<- iqalpha(formula = formula, design = dsub2, order, h=htot )
+    iquant2<- iqalpha(formula = formula, design = dsub2, order, h=htot, na.rm = na.rm )
     # linearize ratio of medians
 
     MED1 <- list(value =coef(iquant1) , lin=attr(iquant1, "lin") )
@@ -111,7 +111,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5,na.rm
     RMED <- contrastinf(quote(MED2/MED1),list_all)
     rval <- as.vector(RMED$value)
     lin <- RMED$lin
-    variance <- ( SE_lin2( lin , full_design ) )^2
+    variance <- (convey:::SE_lin2.default( lin , full_design ) )^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
