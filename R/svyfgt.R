@@ -129,7 +129,7 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
     else{
       ## threshold is arpt
       if(alpha==0) {
-        FGT <- svyarpr(formula = formula, full_design)
+        FGT <- svyarpr(formula = formula, design=design)
         rval<- coef(FGT)
         fgtlin <- attr(FGT, "lin")
       }
