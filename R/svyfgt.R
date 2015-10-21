@@ -137,8 +137,9 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
         ARPT <- svyarpt(formula = formula, full_design)
         arpt <-coef(ARPT)
         arptlin<- attr(ARPT, "lin")
-        ARPR <- svyarpr(formula = formula, full_design)
-        T1<- list(value=coef(ARPR), lin=attr(ARPR, "lin"))
+        ARPR <- svyarpr(formula = formula, design)
+        arprlin <-attr(ARPR, "lin")
+        T1<- list(value=coef(ARPR), lin=arprlin)
         # total below arpt
         Fprime <- densfun(formula = formula, design = design, arpt, h= htot, fun = "S")
         isqalpha <- incvec * ((incvec <= arpt)) + Fprime * arptlin
