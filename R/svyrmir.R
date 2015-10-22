@@ -73,26 +73,25 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
     incvar <- df[[as.character(inc)]]
+    age <-terms.formula(age)[[2]]
+    agevar <- df[[as.character(age)]]
+    x <- cbind(incvar,agevar)
     if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      df <- model.frame(design)
-      incvar <- incvar[!nas]
-    }
+      nas<-rowSums(is.na(x))
+      design<-design[nas==0,]
+      }
     ind <- row.names(df)
     df_full<- model.frame(full_design)
     incvec <- df_full[[as.character(inc)]]
+    agevarf<-df_full[[as.character(age)]]
+    xf <- cbind(incvec,agevarf)
     if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
-      df_full <- model.frame(full_design)
-      incvec <- incvec[!nas]
-    }
+      nas<-rowSums(is.na(xf))
+      full_design<-full_design[nas==0,]
+      }
 
     wf<- weights(full_design)
     htot<- h_fun(incvec,wf)
-    age <-terms.formula(age)[[2]]
-    agevar <- df[[as.character(age)]]
     dsub1 <- subset(design, age < agelim )
     iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot, na.rm = na.rm )
     dsub2 <- subset(design, age >= agelim )
@@ -105,7 +104,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     RMED <- contrastinf(quote(MED2/MED1),list_all)
     rval <- as.vector(RMED$value)
     lin <- RMED$lin
-    variance <- (SE_lin2( lin , full_design ) )^2
+    variance <- (convey:::SE_lin2.default( lin , full_design ) )^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
