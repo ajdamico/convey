@@ -138,15 +138,17 @@ svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim,na.r
 inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)
 incvar <- df[[as.character(inc)]]
-if(na.rm){
-  nas<-is.na(incvar)
-  design<-design[!nas,]
-  df <- model.frame(design)
-  incvar <- incvar[!nas]
-}
 age <- terms.formula(age)[[2]]
-agevar<- df[[as.character(age)]]
-ws <- weights(design, "sampling")
+agevar <- df[[as.character(age)]]
+x <- cbind(incvar,agevar)
+if(na.rm){
+  nas<-rowSums(is.na(x))
+  design<-design[nas==0,]
+  df <- model.frame(design)
+  incvar <- incvar[nas==0]
+  agevar<- agevar[nas==0]
+}
+
 ComputeRmir <- function(x, w, order, age, agelim) {
   indb <- age < agelim
   quant_below <- computeQuantiles(x[indb], w[indb], p = order)
@@ -154,9 +156,10 @@ ComputeRmir <- function(x, w, order, age, agelim) {
   quant_above <- computeQuantiles(x[inda], w[inda], p = order)
   quant_above/quant_below
 }
+ws <- weights(design, "sampling")
 rval <- ComputeRmir(x = incvar, w = ws, order = order, age= agevar, agelim = agelim)
 ww <- weights(design, "analysis")
-qq <- apply(ww, 2, function(wi) 0.6 * ComputeRmir(incvar, wi, order = order,
+qq <- apply(ww, 2, function(wi) ComputeRmir(incvar, wi, order = order,
   age= agevar, agelim = agelim))
 variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
