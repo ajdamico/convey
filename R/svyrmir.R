@@ -79,6 +79,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     if(na.rm){
       nas<-rowSums(is.na(x))
       design<-design[nas==0,]
+      df <- model.frame(design)
       }
     ind <- row.names(df)
     df_full<- model.frame(full_design)
@@ -88,19 +89,24 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     if(na.rm){
       nas<-rowSums(is.na(xf))
       full_design<-full_design[nas==0,]
+      df_full<- model.frame(full_design)
       incvec<-incvec[nas==0]
       }
-
     wf<- weights(full_design)
     htot<- h_fun(incvec,wf)
+    ncom <- row.names(df_full)
     dsub1 <- subset(design, age < agelim )
     iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot, na.rm = na.rm )
+    linquant1<-attr(iquant1, "lin")
+    linquant1<- linquant1[ncom]
     dsub2 <- subset(design, age >= agelim )
     iquant2<- iqalpha(formula = formula, design = dsub2, order, h=htot, na.rm = na.rm )
+    linquant2<-attr(iquant2, "lin")
+    linquant2<- linquant2[ncom]
     # linearize ratio of medians
 
-    MED1 <- list(value =coef(iquant1) , lin=attr(iquant1, "lin") )
-    MED2 <- list(value = coef(iquant2), lin=attr(iquant2, "lin") )
+    MED1 <- list(value =coef(iquant1) , lin=linquant1 )
+    MED2 <- list(value = coef(iquant2), lin=linquant2 )
     list_all<- list(MED1=MED1, MED2=MED2)
     RMED <- contrastinf(quote(MED2/MED1),list_all)
     rval <- as.vector(RMED$value)
