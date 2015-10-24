@@ -8,14 +8,17 @@ vignette: >
   \VignetteEngine{knitr::rmarkdown}
   \VignetteEncoding{UTF-8}
 ---
-# Library convey
+
+
+### Library convey
+
 
 The library convey aims at estimating measures of poverty and income concentration. There are already at least two libraries covering this subject: vardpoor and Laeken.
-The main difference between the convey library and these two is that convey strongly hinges on the survey library.
+The main difference between the library convey and these two is that the convey strongly hinges on the survey library.
 
-Some of these measures are defined by non-differentiable functions so that it is not possible to use Taylor linearization to estimate variances. An alternative is to use influence functions as described in Deville (1999) and Osier (2009). The library convey implements this methodology to work with survey.design objects and also with svyrep.design objects.
+Some measures of poverty and income concentration are defined by non-differentiable functions so that it is not possible to use Taylor linearization to estimate their variances. An alternative is to use influence functions as described in Deville (1999) and Osier (2009). The library convey implements this methodology to work with `survey.design` objects and also with `svyrep.design` objects.
 
-Some exemples of these measures are:
+Some examples of these measures are:
 
 - At-risk-of-poverty threshold:
 \[
@@ -40,25 +43,25 @@ qsr=\frac{\sum_U 1(y_i>q_{.80})}{\sum_U 1(y_i\leq q_{.20})}
 \]
 where $r_i$ is the rank of $y_i$.
 
-Note that it is not possible to use Taylor linearization for those measures because they depend on quantiles and the Gini is define as a function of ranks. This could be done using the approach proposed by Deville (1999) based upon influence functions. 
+Note that it is not possible to use Taylor linearization for those measures because they depend on quantiles and the Gini is defined as a function of ranks. This could be done using the approach proposed by Deville (1999) based upon influence functions. 
 
 
-## Influence function
+### Influence function
 
 
-Let $U$ be a population of size $N$ and $M$ a measure that alocates mass one to the set composed by one unit $i\in U$.
+Let $U$ be a population of size $N$ and $M$ a measure that allocates mass one to the set composed by one unit $i\in U$.
 
 $$
 M(i)=M_i=\begin{cases}1, & i\in U \\
 0, & i \notin U\end{cases}
 $$
 
-A population parameter $\theta$ can expressed as a functional of $M$
+A population parameter $\theta$ can be expressed as a functional of $M$
 \[
 \theta=T(M)
 \]
 
-Examples of such parameters are
+Examples of such parameters are:
 
 - Total: 
 $$Y=\sum_Uy_i=\sum_U y_iM_i=\int ydM=T(M)$$
@@ -74,13 +77,13 @@ To estimate these parameters from the sample, we replace the measure $M$ by the 
 
 $$\hat{\theta}=T(\hat{M})$$
 
-The estimated measure $\hat{M}$ alocates the weight $w_i$ to the unit $i\in s$ and $0$ otherwise: 
+The estimated measure $\hat{M}$ allocate the weight $w_i$ to the unit $i\in s$ and $0$ otherwise: 
 \[
 \hat{M}(i)=\hat{M}_i=\begin{cases}w_i, & i\in s \\
 0, & i \notin s\end{cases}
 \]
 
-The estimators of the population parameters can be expressed as functionals of the measure  $\hat{M}$}. 
+The estimators of the population parameters can be expressed as functional of the measure  $\hat{M}$. 
 
 -  Total:
 $$\hat{Y}=T(\hat{M})=\int yd\hat{M}=\sum_s w_iy_i$$
@@ -100,17 +103,17 @@ $$
 Var\left[T(\hat{M})\right]\cong var\left[\sum_s w_i z_i\right]
 $$
 
-The  ``linearized`` variable v $z$  is given by the derivative of the functional:
+The  ``linearized`` variable $z$  is given by the derivative of the functional:
 
 $$
 z_k=lim_{t\rightarrow0}\frac{T(M+t\delta_k)-T(M)}{t}=IT_k(M)
 $$
 where, $\delta_k$ is the Dirac measure in $k$: $\delta_k(i)=1$ if and only if $i=k$.
 
-This **derivative** is called  **Influence Function** and was introduced in area of Robust Statistics.
+This **derivative** is called  **Influence Function** and was introduced in the area of **Robust Statistics**.
 
 
-## Influence functions - Examples
+### Influence functions - Examples
 
 
 - Total:
@@ -123,7 +126,7 @@ IT_k(M)&=&lim_{t\rightarrow 0}\frac{T(M+t\delta_k)-T(M)}{t}\\
 $$
 
 
-- Razão de dois totais:
+- Ratio of two totals:
 $$
 \begin{align}
 IR_k(M)&=&I\left(\frac{U}{V}\right)_k(M)=\frac{V(M)\times IU_k(M)-U(M)\times IV_k(M)}{V(M)^2}\\
@@ -131,12 +134,13 @@ IR_k(M)&=&I\left(\frac{U}{V}\right)_k(M)=\frac{V(M)\times IU_k(M)-U(M)\times IV_
 \end{align}
 $$
 
-## Linearization by influence function -Examples
+### Linearization by influence function - Examples
 
 - At-risk-of-poverty threshold:
 $$
 arpt = 0.6\times m
 $$
+where $m$ is the median income.
 
 $$
 z_k= -\frac{0.6}{f(m)}\times\frac{1}{N}\times\left[I(y_k\leq m-0.5) \right]
@@ -164,26 +168,51 @@ $m$ - median income;
 
 $f$ - income density function;
 
+### Structure of the library
+
+In the library convey, there some basic functions that produces the linearized variables of some estimates that often enter in the definition of measures of concentration and poverty. One example, is the `quantile` which is linearized by the function `iqalpha`. Other example is the function `isq` that linearizes the total below a quantile of the variable.
+
+From the linearized variables of these basic estimates it is possible by using rules of composition, valid for influence functions, to derive the influence function of more complex estimates. By definition the influence function is a Gateaux derivative and the rules rules of composition valid for Gateaux derivatives hold for Influence Functions.
+
+The following property of Gateaux derivatives was often used in the library convey. Let $g$ be a differentible function of $m$ variables. Suppose we want to compute the influence function of the estimator $g(T_1, T_2,\ldots, T_m)$, knowing the Influence function of the estimators $T_i, i=1,\ldots, m$. Then the following holds:
+
+$$
+I(g(T_1, T_2,\ldots, T_m)) = \sum_{i=1}^m \frac{\partial g}{\partial T_i}I(T_i)
+$$
+
+In the library convey this rule is implemented by the function `contrastinf` which uses the function `deriv` to compute the formal partial derivatives $\frac{\partial g}{\partial T_i}$. 
+
+For example, suppose we want to linearize the `Relative median poverty gap`(rmpg), defined as the difference between the at-risk-of-poverty threshold (`arpt`) and the median of incomes less than the `arpt` relative to the `arprt`: 
+
+$$
+rmpg= \frac{arpt-medpoor} {arpt}
+$$
+
+where `medpoor` is the median of incomes less than `arpt`.
+
+Suppose we know how to linearize `arpt` and `medpoor`, then by applying the function `contrastinf` with 
+$$
+g(T_1,T_2)= \frac{(T_1 - T_2)}{T_1}
+$$
+we linearize the `rmpg`.
 
 
+### Examples of use of the library convey
 
 
-## Examples of use of the library convey
+In the following examples we will use the data set eusilc contained in the libraries `vardpoor` and `Laeken`.
 
-
-In the following examples we will use the data set eusilc contained in the libraries vardpoor and Laeken.
-
-```{r}
+```{r results='hide', message=FALSE, warning=FALSE}
 library(vardpoor)
 data(eusilc)
 ```
-Next, we create an object of class survey.design using the function svydesign of the library survey:
+Next, we create an object of class `survey.design` using the function `svydesign` of the library survey:
 
-```{r}
+```{r results='hide', message=FALSE, warning=FALSE}
 library(survey)
-des_eusilc <- svydesign(ids = ~db040, weights = ~rb050, data = eusilc )
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 ```
-Right after the creation of the design object ```des_eusilc```, we should use the function convey_prep that adds an attribute to the survey design which saves information on the design object based upon the whole sample,  needed to work with subset designs.
+Right after the creation of the design object `des_eusilc`, we should use the function `convey_prep` that adds an attribute to the survey design which saves information on the design object based upon the whole sample, needed to work with subset designs.
 
 ```{r}
 library(convey)
@@ -191,12 +220,12 @@ des_eusilc <- convey_prep( des_eusilc )
 ```
 To estimate the `at-risk-of-poverty rate` we use the function `svyarpt`:
 
-```{r}
+```{r comment=NA}
 svyarpr(~eqIncome, design=des_eusilc, .5, .6)
 ```
 To estimate the `at-risk-of-poverty rate` for domains defined by the variable `db040` we use
 
-```{r}
+```{r comment=NA}
 svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, 
   percent = 0.6,deff = FALSE)
 ```
@@ -204,7 +233,7 @@ svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5,
 
 Using the same data set, we estimate the `quantile share ratio`: 
 
-```{r}
+```{r comment=NA}
 # for the whole population
 svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
 
@@ -216,16 +245,29 @@ svyby(~eqIncome, by = ~db040, design = des_eusilc,
 
 These functions can be use as S3 method for the class `survey.design` and the class `svyrep.design`.
 
-Lets create a design object of class `svyrep.design`
+Let's create a design object of class `svyrep.design` and run the function `convey_prep` on it:
 
 ```{r}
 des_eusilc_rep <- as.svrepdesign(des_eusilc, type = "bootstrap")
+des_eusilc_rep <- convey_prep(des_eusilc_rep) 
 ```
 
 and then use the function `svyarpr`:
 
-```{r}
+```{r comment=NA}
 svyarpr(~eqIncome, design=des_eusilc_rep, .5, .6)
+svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, deff = FALSE)
+```
+The functions of the library convey are called in a similar way  to the functions in library survey.
+It is also possible to deal with missing values by using the argument `na.rm`.
+
+```{r comment=NA}
+# survey.design using a variable with missings
+svygini( ~ py010n , design = des_eusilc )
+svygini( ~ py010n , design = des_eusilc , na.rm = TRUE )
+# svyrep.design using a variable with missings
+# svygini( ~ py010n , design = des_eusilc_rep ) get error
+svygini( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 ```
 
 
