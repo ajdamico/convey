@@ -90,7 +90,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
       full_design<-full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
-    }
+    } else nas <- FALSE
 
     wf <- weights(full_design)
     htot <- h_fun(incvec, wf)
@@ -98,7 +98,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     w <- weights(design)
     ind <- row.names(df)
     linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
-      comp = TRUE,  compinc = FALSE, na.rm = na.rm)
+      comp = TRUE,  compinc = FALSE, na.rm = na.rm,nas=nas)
     rval <- percent * coef(linqalpha)
     lin <- percent * attr(linqalpha, "lin")
     ncom <- row.names(df_full)

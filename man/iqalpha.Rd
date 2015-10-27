@@ -5,7 +5,7 @@
 \title{Linearization of a variable quantile}
 \usage{
 iqalpha(formula, design, alpha, h = NULL, comp = TRUE, compinc = FALSE,
-  na.rm = FALSE, ...)
+  na.rm = FALSE, nas = FALSE, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

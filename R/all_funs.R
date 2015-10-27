@@ -190,7 +190,7 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
 #'
 #' @export
 
-iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE, na.rm=FALSE, ...) {
+iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE, na.rm=FALSE,nas=FALSE, ...) {
 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -234,7 +234,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     if (compinc) {
         iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
     }
-    variance <- (SE_lin2(iq, full_design))^2
+    variance <- (SE_lin2(iq, full_design,na.rm=na.rm,nas=nas))^2
     class(rval) <- "cvystat"
     attr(rval, "lin") <- iq
     attr(rval, "var") <- variance
@@ -415,7 +415,7 @@ SE_lin2.default <- function(object, design) {
     res
 }
 
-SE_lin2.DBIsvydesign <- function(object, design,na.rm=FALSE,nas=NULL) {
+SE_lin2.DBIsvydesign <- function(object, design,na.rm=FALSE,nas=FALSE) {
 
 	# extract only the columns necessary to run the single svytotal line.
 	design$variables <- survey:::getvars(names(design$cluster), design$db$connection, design$db$tablename,  updates = design$updates, subset = design$subset)
