@@ -200,6 +200,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
       nas<-is.na(incvar)
       design<-design[!nas,]
       df <- model.frame(design)
+	  df <- df[!nas,,drop=F]
       incvar <- incvar[!nas]
     }
     w <- weights(design)
@@ -219,6 +220,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       df_full <- model.frame(full_design)
+	  df_full <- df_full[!nas,,drop=F]
       incvec <- incvec[!nas]
     }
     ncom <- row.names(df_full)
