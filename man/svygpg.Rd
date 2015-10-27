@@ -40,7 +40,7 @@ data(ses)
 des_ses<- svydesign(id=~1, weights=~weights, data=ses,
 variables=~weights+sex+earningsHour+location)
 des_ses <- convey_prep( des_ses )
-svygpg(~earningsHour, des_ses, ~sex, ncom =rownames(ses), comp=FALSE)
+svygpg(~earningsHour, des_ses, ~sex)
 }
 \author{
 Djalma Pessoa and Anthony Damico

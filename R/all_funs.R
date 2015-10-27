@@ -415,13 +415,15 @@ SE_lin2.default <- function(object, design) {
     res
 }
 
-SE_lin2.DBIsvydesign <- function(object, design) {
+SE_lin2.DBIsvydesign <- function(object, design,na.rm=FALSE,nas=NULL) {
 
 	# extract only the columns necessary to run the single svytotal line.
 	design$variables <- survey:::getvars(names(design$cluster), design$db$connection, design$db$tablename,  updates = design$updates, subset = design$subset)
 
 	class( design ) <- c( 'survey.design2' , 'survey.design' )
 
+	if( na.rm ) design <- design[!nas,]
+		
     design <- update(design, t = object)
 
     res <- survey::SE( survey::svytotal( ~t , design ) )

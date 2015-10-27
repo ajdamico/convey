@@ -53,14 +53,7 @@ svyrmir( ~eqIncome , design = des_eusilc , age = ~age , agelim = 65 )
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
-svyrmir( ~eqIncome , design = des_eusilc_rep )
-
-# linearized design using a variable with missings
-svyrmir( ~ py010n , design = des_eusilc )
-svyrmir( ~ py010n , design = des_eusilc , na.rm = TRUE )
-# replicate-weighted design using a variable with missings
-svyrmir( ~ py010n , design = des_eusilc_rep )
-svyrmir( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
 }
 \author{
 Djalma Pessoa and Anthony Damico
