@@ -422,7 +422,10 @@ SE_lin2.DBIsvydesign <- function(object, design,na.rm=FALSE,nas=FALSE) {
 
 	class( design ) <- c( 'survey.design2' , 'survey.design' )
 
-	if( na.rm ) design <- design[!nas,]
+	if( na.rm ){
+		design$variables<-design$variables[!nas,,drop=F]
+		object <- object[ !nas ]
+	}
 		
     design <- update(design, t = object)
 
