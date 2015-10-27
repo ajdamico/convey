@@ -234,7 +234,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     if (compinc) {
         iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
     }
-    variance <- (SE_lin2(iq, full_design,na.rm=na.rm,nas=nas))^2
+    variance <- (SE_lin2(iq, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "lin") <- iq
     attr(rval, "var") <- variance
@@ -415,17 +415,13 @@ SE_lin2.default <- function(object, design) {
     res
 }
 
-SE_lin2.DBIsvydesign <- function(object, design,na.rm=FALSE,nas=FALSE) {
+SE_lin2.DBIsvydesign <- function(object, design) {
 
 	# extract only the columns necessary to run the single svytotal line.
-	design$variables <- survey:::getvars(names(design$cluster), design$db$connection, design$db$tablename,  updates = design$updates, subset = design$subset)
-
+	# design$variables <- survey:::getvars(names(design$cluster), design$db$connection, design$db$tablename,  updates = design$updates, subset = design$subset)
+	design$variables$one <- seq( nrow( design ) )
+	
 	class( design ) <- c( 'survey.design2' , 'survey.design' )
-
-	if( na.rm ){
-		design$variables<-design$variables[!nas,,drop=F]
-		object <- object[ !nas ]
-	}
 		
     design <- update(design, t = object)
 
