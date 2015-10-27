@@ -74,9 +74,8 @@ svygini.survey.design <- function(formula, design, comp = TRUE, na.rm=FALSE, ...
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    inc <- terms.formula(formula)[[2]]
-     df_full<-model.frame(full_design)
-    incvec <- df_full[[as.character(inc)]]
+    df_full<-model.frame(full_design)
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
@@ -85,7 +84,7 @@ svygini.survey.design <- function(formula, design, comp = TRUE, na.rm=FALSE, ...
     }
     ncom <- row.names(df_full)
     df<-model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -145,9 +144,8 @@ svygini.svyrep.design <- function(formula, design,na.rm=FALSE, ...) {
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]

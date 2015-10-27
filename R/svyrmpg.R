@@ -75,10 +75,9 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
 
+    df <- model.frame(design)
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -87,7 +86,7 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     }
 
     df_full <- model.frame(full_design)
-    incvec <- df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
@@ -129,9 +128,9 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    inc <- terms.formula(formula)[[2]]
+
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -140,7 +139,7 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     }
 
     df_full<- model.frame(full_design)
-    incvec <-  df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]

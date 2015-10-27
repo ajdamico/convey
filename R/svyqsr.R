@@ -75,9 +75,8 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
 
   if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
 
-  inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -86,7 +85,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     }
 
     df_full<-model.frame(full_design)
-    incvec<-df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
@@ -136,9 +135,8 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
 
   if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
 
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
     if(na.rm){
       nas<-is.na(incvar)

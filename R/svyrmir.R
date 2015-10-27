@@ -70,11 +70,11 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-    inc <- terms.formula(formula)[[2]]
+
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     age <-terms.formula(age)[[2]]
-    agevar <- df[[as.character(age)]]
+    agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
     x <- cbind(incvar,agevar)
     if(na.rm){
       nas<-rowSums(is.na(x))
@@ -83,8 +83,8 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
       }
     ind <- row.names(df)
     df_full<- model.frame(full_design)
-    incvec <- df_full[[as.character(inc)]]
-    agevarf<-df_full[[as.character(age)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    agevarf <- model.frame(age, full_design$variables, na.action = na.pass)[[1]]
     xf <- cbind(incvec,agevarf)
     if(na.rm){
       nas<-rowSums(is.na(xf))
@@ -135,11 +135,9 @@ svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim,na.r
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-inc <- terms.formula(formula)[[2]]
 df <- model.frame(design)
-incvar <- df[[as.character(inc)]]
-age <- terms.formula(age)[[2]]
-agevar <- df[[as.character(age)]]
+incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
 x <- cbind(incvar,agevar)
 if(na.rm){
   nas<-rowSums(is.na(x))

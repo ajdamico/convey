@@ -10,7 +10,7 @@ vignette: >
 ---
 
 
-### Library convey
+# Library convey
 
 
 The library convey aims at estimating measures of poverty and income concentration. There are already at least two libraries covering this subject: vardpoor and Laeken.
@@ -119,9 +119,9 @@ This **derivative** is called  **Influence Function** and was introduced in the 
 - Total:
 $$
 \begin{align}
-IT_k(M)&=&lim_{t\rightarrow 0}\frac{T(M+t\delta_k)-T(M)}{t}\\
-&=&lim_{t\rightarrow 0}\frac{\int y.d(M+t\delta)-\int y.dM}{t}\\
-&=&lim_{t\rightarrow 0}\frac{\int yd(t\delta_k)}{t}=y_k	
+IT_k(M)&=lim_{t\rightarrow 0}\frac{T(M+t\delta_k)-T(M)}{t}\\
+&=lim_{t\rightarrow 0}\frac{\int y.d(M+t\delta_k)-\int y.dM}{t}\\
+&=lim_{t\rightarrow 0}\frac{\int yd(t\delta_k)}{t}=y_k	
 \end{align}
 $$
 
@@ -129,8 +129,8 @@ $$
 - Ratio of two totals:
 $$
 \begin{align}
-IR_k(M)&=&I\left(\frac{U}{V}\right)_k(M)=\frac{V(M)\times IU_k(M)-U(M)\times IV_k(M)}{V(M)^2}\\
-&=&\frac{X y_k-Y x_k}{X^2}=\frac{1}{X}(y_k-Rx_k)
+IR_k(M)&=I\left(\frac{U}{V}\right)_k(M)=\frac{V(M)\times IU_k(M)-U(M)\times IV_k(M)}{V(M)^2}\\
+&=\frac{X y_k-Y x_k}{X^2}=\frac{1}{X}(y_k-Rx_k)
 \end{align}
 $$
 

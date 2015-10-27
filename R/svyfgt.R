@@ -75,9 +75,8 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
     full_design <- design else full_design <- attr(design, "full_design")
 
     # domain
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -95,7 +94,7 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
 
 
     df_full <- model.frame(full_design)
-    incvec <- df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
@@ -179,9 +178,9 @@ svyfgt.svyrep.design <- function(formula, design, t = NULL, alpha, na.rm=FALSE, 
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-    inc <- terms.formula(formula)[[2]]
+
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -191,7 +190,7 @@ svyfgt.svyrep.design <- function(formula, design, t = NULL, alpha, na.rm=FALSE, 
     ws <- weights(design, "sampling")
 
     df_full<- model.frame(full_design)
-    incvec <-  df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]

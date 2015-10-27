@@ -55,14 +55,11 @@ h_fun <- function(inc_var, w) {
 
 densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
 
-  inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    inc_var <- df[[as.character(inc)]]
-
+    mf <- model.frame(formula, design$variables, na.action = na.pass)
+    inc_var <- (mf[[1]])
     if(na.rm){
       nas<-is.na(inc_var)
       design<-design[!nas,]
-      df <- model.frame(design)
       inc_var <- inc_var[!nas]
     }
     w <- weights(design)
@@ -110,9 +107,8 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
      nas<-is.na(incvar)
      design<-design[!nas,]
@@ -131,8 +127,8 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
     df_full <- model.frame(full_design)
-    incvec <- df_full[[as.character(inc)]]
-    if(na.rm){
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       df_full <- model.frame(full_design)
@@ -145,7 +141,7 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
     lin<-(1/N)*((incvar<=x)-value)
     names(lin)<- ind
     lin<-complete(lin,ncom)
-    rval<- value
+    rval <- value
     variance <- (SE_lin2(lin, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "lin") <- lin
@@ -198,9 +194,8 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -219,7 +214,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
     df_full <- model.frame(full_design)
-    incvec <- df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
@@ -287,9 +282,8 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -305,8 +299,7 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) 
         full_design <- design else full_design <- attr(design, "full_design")
 
     df_full <- model.frame(full_design)
-
-    incvec <- df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
@@ -350,9 +343,7 @@ computeQuantiles <- function(xx, w, p = quantiles) {
 
 # infuence function of a total: formula (34)
 itot <- function(formula, design) {
-    inc <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     value <- coef(survey::svytotal(x = formula, design = design))
     lin <- incvar
     list(value = value, lin = lin)

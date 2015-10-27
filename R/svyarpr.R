@@ -75,9 +75,8 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     full_design <- design else full_design <- attr(design, "full_design")
 
     # domain
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -95,8 +94,8 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
       full_design <- design else full_design <- attr(design, "full_design")
 
     df_full <- model.frame(full_design)
-    incvec <- df_full[[as.character(inc)]]
-    if(na.rm){
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       df_full <- model.frame(full_design)
@@ -143,9 +142,8 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-    inc <- terms.formula(formula)[[2]]
     df <- model.frame(design)
-    incvar <- df[[as.character(inc)]]
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -155,7 +153,7 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     ws <- weights(design, "sampling")
 
     df_full<- model.frame(full_design)
-    incvec <-  df_full[[as.character(inc)]]
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
