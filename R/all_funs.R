@@ -23,7 +23,7 @@ complete <- function(x, ind.all) {
 #'
 #'Using the whole sample, computes the bandwith used to get the linearized variable
 #'
-#' @param inc_var income variable used in the estimation of the indicators
+#' @param incvar income variable used in the estimation of the indicators
 #' @param w vector of design weights
 #' @return value of the bandwidth
 #' @author Djalma Pessoa and Anthony Damico
@@ -31,9 +31,9 @@ complete <- function(x, ind.all) {
 #' @export
 
 
-h_fun <- function(inc_var, w) {
+h_fun <- function(incvar, w) {
     N <- sum(w)
-    sd_inc <- sqrt((sum(w * inc_var * inc_var) - sum(w * inc_var) * sum(w * inc_var)/N)/N)
+    sd_inc <- sqrt((sum(w * incvar * incvar) - sum(w * incvar) * sum(w * incvar)/N)/N)
     h <- sd_inc/exp(0.2 * log(sum(w)))
     h
 }
@@ -57,19 +57,19 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
-      nas<-is.na(inc_var)
+      nas<-is.na(incvar)
       design<-design[!nas,]
-      inc_var <- inc_var[!nas]
+      incvar <- incvar[!nas]
       w <- weights(design)[!nas]
     }
 
     N <- sum(w)
-    if(is.null(h)) h <- h_fun(inc_var,w)
-    u <- (x - inc_var)/h
+    if(is.null(h)) h <- h_fun(incvar,w)
+    u <- (x - incvar)/h
     vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
     if (fun == "F")
         res <- sum(vectf * w)/(N * h) else {
-        v <- w * inc_var
+        v <- w * incvar
         res <- sum(vectf * v)/h
     }
     res
