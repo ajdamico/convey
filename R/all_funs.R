@@ -56,11 +56,11 @@ h_fun <- function(incvar, w) {
 densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+  w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
-      design<-design[!nas,]
       incvar <- incvar[!nas]
-      w <- weights(design)[!nas]
+      w <- w[!nas]
     }
 
     N <- sum(w)
