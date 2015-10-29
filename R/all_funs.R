@@ -220,7 +220,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
       ncom <- names(full_design$prob)[!nas]
     }
 
-    htot <- h_fun(incvec, weights(full_design))
+    htot <- h_fun(incvec, wf)
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F")
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
     names(iq) <- ind
