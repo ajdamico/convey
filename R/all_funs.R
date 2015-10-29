@@ -55,14 +55,14 @@ h_fun <- function(inc_var, w) {
 
 densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
 
-    mf <- model.frame(formula, design$variables, na.action = na.pass)
-    inc_var <- (mf[[1]])
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(inc_var)
       design<-design[!nas,]
       inc_var <- inc_var[!nas]
+      w <- weights(design)[!nas]
     }
-    w <- weights(design)
+
     N <- sum(w)
     if(is.null(h)) h <- h_fun(inc_var,w)
     u <- (x - inc_var)/h
@@ -107,7 +107,6 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-    df <- model.frame(design)
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
      nas<-is.na(incvar)
