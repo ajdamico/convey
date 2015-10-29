@@ -71,9 +71,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
 
-    df <- model.frame(design)
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    age <-terms.formula(age)[[2]]
     agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
     x <- cbind(incvar,agevar)
     if(na.rm){
@@ -81,20 +79,18 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
       design<-design[nas==0,]
       df <- model.frame(design)
       }
-    ind <- row.names(df)
-    df_full<- model.frame(full_design)
+    ind <- names(design$prob)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     agevarf <- model.frame(age, full_design$variables, na.action = na.pass)[[1]]
     xf <- cbind(incvec,agevarf)
     if(na.rm){
       nas<-rowSums(is.na(xf))
       full_design<-full_design[nas==0,]
-      df_full<- model.frame(full_design)
       incvec<-incvec[nas==0]
       }
     wf<- weights(full_design)
     htot<- h_fun(incvec,wf)
-    ncom <- row.names(df_full)
+    ncom <- names(full_design$prob)
     dsub1 <- subset(design, age < agelim )
     iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot, na.rm = na.rm )
     linquant1<-attr(iquant1, "lin")

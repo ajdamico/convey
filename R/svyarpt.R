@@ -29,6 +29,7 @@
 #' @keywords survey
 #'
 #' @examples
+#'
 #' library(survey)
 #' library(vardpoor)
 #' data(eusilc)
@@ -79,16 +80,13 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      df <- model.frame(design)
       incvar <- incvar[!nas]
     }
 
-    df_full <- model.frame(full_design)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
 
@@ -96,12 +94,12 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     htot <- h_fun(incvec, wf)
     df <- model.frame(design)
     w <- weights(design)
-    ind <- row.names(df)
+    ind<- names(design$prob)
     linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
       comp = TRUE,  compinc = FALSE, na.rm = na.rm,nas=nas)
     rval <- percent * coef(linqalpha)
     lin <- percent * attr(linqalpha, "lin")
-    ncom <- row.names(df_full)
+     ncom<- names(full_design$probs)
     # names(lin) <- ind if (comp) lin <- complete(lin, ncom)
     variance <- (SE_lin2(lin, full_design))^2
 	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

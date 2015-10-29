@@ -75,17 +75,15 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
     full_design <- design else full_design <- attr(design, "full_design")
 
     # domain
-    df <- model.frame(design)
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      df <- model.frame(design)
       incvar <- incvar[!nas]
     }
     w <- weights(design)
     N <- sum(w)
-    ind <- row.names(df)
+    ind <- names(design$prob)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
@@ -93,17 +91,15 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
       full_design <- design else full_design <- attr(design, "full_design")
 
 
-    df_full <- model.frame(full_design)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
 
     wf <- weights(full_design)
-    ncom <- row.names(df_full)
+    ncom <- names(full_design$prob)
     htot <- h_fun(incvec, wf)
 
     if(!is.null(t)){
