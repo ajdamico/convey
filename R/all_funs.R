@@ -194,34 +194,32 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    df <- model.frame(design)
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
+      w <- weights(design)[!nas]
+      ind<-names(design$prob)[!nas]
     }
-    w <- weights(design)
     N <- sum(w)
-    ind<- names(design$prob)
     q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha,
-        method = "constant")
+        method = "constant", na.rm = na.rm)
     q_alpha <- as.vector(q_alpha)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
-    df_full <- model.frame(full_design)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      #df_full <- model.frame(full_design)
-	  #df_full <- df_full[!nas,,drop=F]
       incvec <- incvec[!nas]
+      wf <-weights(full_design)[!nas]
+      ncom <- names(full_design$prob)[!nas]
     }
-    ncom <- names(full_design$prob)
+
     htot <- h_fun(incvec, weights(full_design))
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F")
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
