@@ -74,32 +74,31 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-
-    df <- model.frame(design)
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
+      w <- w[!nas]
     }
-
+    ind<- names(w)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    wf <- 1/full_design$prob
+    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       incvec <- incvec[!nas]
+      wf <- wf[!nas]
     }
 
-    wf <- weights(full_design)
     htot <- h_fun(incvec, wf)
-    df <- model.frame(design)
-    w <- weights(design)
-    ind<- names(design$prob)
     linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
       comp = TRUE,  compinc = FALSE, na.rm = na.rm,nas=nas)
     rval <- percent * coef(linqalpha)
     lin <- percent * attr(linqalpha, "lin")
-     ncom<- names(full_design$probs)
+
     # names(lin) <- ind if (comp) lin <- complete(lin, ncom)
     variance <- (SE_lin2(lin, full_design))^2
 	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
