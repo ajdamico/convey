@@ -224,6 +224,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha,
         method = "constant", na.rm = na.rm)
     q_alpha <- as.vector(q_alpha)
+    rval <- q_alpha
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
@@ -242,13 +243,12 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
     htot <- h_fun(incvec, wf)
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+    if (compinc) {
+      iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
+    }
     names(iq) <- ind
     if (comp && (nrow(full_design)>length(ind)))
       iq <- complete(iq, ncom)
-        rval <- q_alpha
-    if (compinc) {
-        iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
-    }
     variance <- (SE_lin2(iq, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "lin") <- iq
