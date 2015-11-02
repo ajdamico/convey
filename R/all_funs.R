@@ -51,6 +51,16 @@ h_fun <- function(incvar, w) {
 #'@return the value of the derivative at \code{x}
 #'@author Djalma Pessoa and Anthony Damico
 #'@keywords survey
+#' @examples
+#' library(vardpoor)
+#' data(eusilc)
+#' library(survey)
+#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+#' des_eusilc <- convey_prep( des_eusilc )
+#' densfun (~eqIncome, design=des_eusilc, 10000, fun="F" )
+#' # linearized design using a variable with missings
+#' densfun ( ~ py010n , design = des_eusilc, 10000, fun="F" )
+#' densfun ( ~ py010n , design = des_eusilc , 10000,fun="F", na.rm = TRUE )
 #'@export
 
 densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
@@ -98,8 +108,16 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE
 #' URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 #'
 #' @keywords survey
-#'
-#'
+#' @examples
+#' library(vardpoor)
+#' data(eusilc)
+#' library(survey)
+#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+#' des_eusilc <- convey_prep( des_eusilc )
+#' icdf(~eqIncome, design=des_eusilc, 10000 )
+#' # linearized design using a variable with missings
+#' icdf( ~ py010n , design = des_eusilc, 10000 )
+#' icdf( ~ py010n , design = des_eusilc , 10000, na.rm = TRUE )
 #' @export
 
 icdf <- function(formula, design, x, na.rm = FALSE, ...) {
@@ -107,36 +125,36 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    if(na.rm){
-     nas<-is.na(incvar)
-     design<-design[!nas,]
-     incvar <- incvar[!nas]
-     }
-
-    w <- weights(design)
-    ind <- names(design$prob)
-    N<- sum(w)
-    poor <- (incvar <= x) * 1
-    names(poor) <- ind
+incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+  w <- 1/design$prob
+  if(na.rm){
+    nas<-is.na(incvar)
+    design<-design[!nas,]
+    incvar <- incvar[!nas]
+    w <- w[!nas]
+  }
+  ind<- names(w)
+  N <- sum(w)
+  poor <- (incvar <= x) * 1
+  names(poor) <- ind
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
         full_design <- design else full_design <- attr(design, "full_design")
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-     if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
-     }
-    ncom <- names(full_design$prob)
-    wf<- weights(full_design)
-    Nf<- sum(wf)
+  incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+  wf <-1/full_design$prob
+  ncom <- names(wf)
+  if(na.rm){
+    nas<-is.na(incvec)
+    full_design<-full_design[!nas,]
+    incvec <- incvec[!nas]
+    wf <-wf[!nas]
+  }
     value<- sum(poor*w)/N
     lin<-(1/N)*((incvar<=x)-value)
     names(lin)<- ind
-    lin<-complete(lin,ncom)
+    if(nrow(full_design)>length(ind))lin<-complete(lin,ncom)
     rval <- value
     variance <- (SE_lin2(lin, full_design))^2
     class(rval) <- "cvystat"
@@ -199,7 +217,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
-      w <- weights(design)[!nas]
+      w <- w[!nas]
     }
     ind<- names(w)
     N <- sum(w)
@@ -219,14 +237,13 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
       full_design<-full_design[!nas,]
       incvec <- incvec[!nas]
       wf <-wf[!nas]
-
     }
-
+    if(nrow(full_design)<length(incvec))ncom<-ncom[!nas]
     htot <- h_fun(incvec, wf)
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
     names(iq) <- ind
-    if (comp)
+    if (comp && (nrow(full_design)>length(ind)))
       iq <- complete(iq, ncom)
         rval <- q_alpha
     if (compinc) {
@@ -274,8 +291,10 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
-#' isq_eqIncome <-isq(~eqIncome, design=des_eusilc, .20)
-#'
+#' isq(~eqIncome, design=des_eusilc,compinc=TRUE, .20)
+#'# linearized design using a variable with missings
+#' isq( ~ py010n , design = des_eusilc, compinc=TRUE, .20 )
+#' isq( ~ py010n , design = des_eusilc ,compinc=TRUE, .20, na.rm = TRUE )
 #' @export
 
 
@@ -283,12 +302,14 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) 
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
+      w <- w[!nas]
     }
-    w <- weights(design)
+
     ind <- names(design$prob)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
@@ -297,13 +318,16 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) 
         full_design <- design else full_design <- attr(design, "full_design")
 
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    wf <- 1/full_design$prob
+    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       incvec <- incvec[!nas]
+      wf <- wf[!nas]
     }
-    ncom <- names(full_design$prob)
-    h <- h_fun(incvec, weights(full_design))
+
+    h <- h_fun(incvec, wf)
     QALPHA <- iqalpha(formula = formula, design = design, alpha,comp = TRUE,
       compinc = compinc, na.rm = na.rm)
     q_alpha <- QALPHA[1]

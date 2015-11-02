@@ -36,8 +36,6 @@
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
 #'
-#' svyarpr( ~eqIncome , design = des_eusilc )
-#'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
@@ -50,7 +48,15 @@
 #' svyfgt(~eqIncome, des_eusilc,  t=NULL, alpha=0)
 #' # poverty gap index, poverty threshold equal to arpt
 #' svyfgt(~eqIncome, des_eusilc,  t=NULL, alpha=1 )
-#'
+#' #
+#' # headcount ratio, poverty threshold fixed
+#' svyfgt(~eqIncome, des_eusilc_rep, t=10000, alpha=0)
+#' # poverty gap index, poverty threshold fixed
+#' svyfgt(~eqIncome, des_eusilc_rep, t=10000, alpha=1)
+#' # headcount ratio, poverty threshold equal to arpt
+#' svyfgt(~eqIncome, des_eusilc_rep,  t=NULL, alpha=0)
+#' # poverty gap index, poverty threshold equal to arpt
+#' svyfgt(~eqIncome,des_eusilc_rep,  t=NULL, alpha=1 )
 #' @export
 #'
 svyfgt <- function(formula, design, ...) {
@@ -76,30 +82,31 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
 
     # domain
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
+      w <- w[!nas]
     }
-    w <- weights(design)
+    ind<- names(w)
     N <- sum(w)
-    ind <- names(design$prob)
-
-    # if the class of the full_design attribute is just a TRUE, then the design is
+        # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
       full_design <- design else full_design <- attr(design, "full_design")
 
 
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    wf <- 1/full_design$prob
+    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       incvec <- incvec[!nas]
+      wf <- wf[!nas]
     }
 
-    wf <- weights(full_design)
-    ncom <- names(full_design$prob)
     htot <- h_fun(incvec, wf)
 
     if(!is.null(t)){
@@ -118,7 +125,7 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
         rval <- FGT$value
         fgtlin<- FGT$lin
         names(fgtlin)<- ind
-        fgtlin <- complete(fgtlin, ncom)
+        if(nrow(full_design)>length(ind))fgtlin <- complete(fgtlin, ncom)
       }
     }
     else{

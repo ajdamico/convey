@@ -57,31 +57,25 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-
-  wage <- terms.formula(formula)[[2]]
-  df <- model.frame(design)
-  wagevar <- df[[as.character(wage)]]
-  if(na.rm){
-    nas<-is.na(wagevar)
-    design<-design[!nas,]
-    df <- model.frame(design)
-    wagevar <- wagevar[!nas]
-  }
-
-  w<- weights(design)
-  ind<-row.names(df)
+    wagevar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1/design$prob
+    if(na.rm){
+      nas<-is.na(wagevar)
+      design<-design[!nas,]
+      wagevar <- wagevar[!nas]
+      w <- w[!nas]
+    }
+    ind<- names(w)
   full_design <- attr( design , "full_design" )
-  df_full <- model.frame(full_design)
-  wagevarf <- df_full[[as.character(wage)]]
-
+  wagevarf <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+  wf <- 1/full_design$prob
+  ncom<- names(wf)
   if(na.rm){
     nas<-is.na(wagevarf)
     full_design<-full_design[!nas,]
-    df_full <- model.frame(full_design)
     wagevarf <- wagevarf[!nas]
+    wf <- wf[!nas]
   }
-
-  ncom<-row.names(df_full)
 
   # sex factor
   mf <- model.frame(sex, design$variables, na.action = na.pass)
@@ -95,6 +89,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   }
   colnames(sex) <- do.call("c", lapply(xx, colnames))
   sex <- as.matrix(sex)
+  if(na.rm)sex<-sex[!nas,]
   col_female <- grep("female", colnames(sex))
   col_male <- setdiff(1:2, col_female)
   # create linearization objects of totals
@@ -103,11 +98,13 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   TM<- list(value = sum(wagevar*sex[, col_male]*w), lin=wagevar*sex[, col_male])
   TF<- list(value = sum(wagevar*sex[, col_female]*w), lin=wagevar*sex[, col_female])
   list_all_tot <-list(INDM=INDM,INDF=INDF,TM=TM,TF=TF)
-  list_all_totc<-lapply(list_all_tot, function(t){
+  if(nrow(full_design)>length(ind)){
+  list_all_tot<-lapply(list_all_tot, function(t){
     names(t$lin)<-ind
     list(value=t$value,lin=complete(t$lin,ncom))
   })
-  IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_totc)
+  }
+  IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_tot)
   infun<-IGPG$lin
     rval <- IGPG$value
 

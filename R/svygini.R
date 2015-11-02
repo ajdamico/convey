@@ -75,24 +75,28 @@ svygini.survey.design <- function(formula, design, comp = TRUE, na.rm=FALSE, ...
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    wf <- 1/full_design$prob
+    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       incvec <- incvec[!nas]
+      wf <- wf[!nas]
     }
-    ncom <- names(full_design)
+
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
+      w <- w[!nas]
     }
-    w <- weights(design)
-    ind <- names(design)
+
     ordincvar<-order(incvar)
     w <- w[ordincvar]
     incvar <- incvar[ordincvar]
-    ind <- ind[ordincvar]
+    ind<- names(w)
     # population size
     N <- sum(w)
     # total income
@@ -112,7 +116,7 @@ svygini.survey.design <- function(formula, design, comp = TRUE, na.rm=FALSE, ...
     lingini <- as.vector(GINI$lin)
     # complete with 0
     names(lingini) <- ind
-    if (comp) lingini<-complete(lingini, ncom)
+    if (comp && (nrow(full_design)>length(ind))) lingini<-complete(lingini, ncom)
 
     rval <- GINI$value
 

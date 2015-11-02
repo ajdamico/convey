@@ -44,6 +44,12 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
 #'
+#' # linearized design using a variable with missings
+#' svyrmir( ~ py010n , design = des_eusilc,age= ~age, agelim = 65)
+#' svyrmir( ~ py010n , design = des_eusilc , age= ~age, agelim = 65, na.rm = TRUE )
+#' # replicate-weighted design using a variable with missings
+#' svyrmir( ~ py010n , design = des_eusilc_rep,age= ~age, agelim = 65 )
+#' svyrmir( ~ py010n , design = des_eusilc_rep ,age= ~age, agelim = 65, na.rm = TRUE )
 #'
 #' @export
 #'
@@ -74,31 +80,38 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
     x <- cbind(incvar,agevar)
+    w <- 1/design$prob
     if(na.rm){
       nas<-rowSums(is.na(x))
       design<-design[nas==0,]
-      df <- model.frame(design)
+      incvar <- incvar[nas==0]
+      agevar <- agevar[nas==0]
+      w <- w[nas==0]
       }
-    ind <- names(design$prob)
+    ind<- names(w)
+
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     agevarf <- model.frame(age, full_design$variables, na.action = na.pass)[[1]]
+    wf <- 1/full_design$prob
+    ncom<- names(wf)
     xf <- cbind(incvec,agevarf)
     if(na.rm){
       nas<-rowSums(is.na(xf))
       full_design<-full_design[nas==0,]
       incvec<-incvec[nas==0]
-      }
-    wf<- weights(full_design)
+      agevarf <- agevarf[nas==0]
+      wf <- wf[nas==0]
+    }
+
     htot<- h_fun(incvec,wf)
-    ncom <- names(full_design$prob)
     dsub1 <- subset(design, age < agelim )
     iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot, na.rm = na.rm )
     linquant1<-attr(iquant1, "lin")
-    linquant1<- linquant1[ncom]
+    if(nrow(full_design)>length(ind))linquant1<- linquant1[ncom]
     dsub2 <- subset(design, age >= agelim )
     iquant2<- iqalpha(formula = formula, design = dsub2, order, h=htot, na.rm = na.rm )
     linquant2<-attr(iquant2, "lin")
-    linquant2<- linquant2[ncom]
+    if(nrow(full_design)>length(ind))linquant2<- linquant2[ncom]
     # linearize ratio of medians
 
     MED1 <- list(value =coef(iquant1) , lin=linquant1 )

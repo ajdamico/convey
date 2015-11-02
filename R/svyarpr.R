@@ -76,39 +76,41 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
 
     # domain
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
+      w <- w[!nas]
     }
 
-    w <- weights(design)
+    ind<- names(w)
     N <- sum(w)
-    ind <- names(design$prob)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
       full_design <- design else full_design <- attr(design, "full_design")
 
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-     if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
+  incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    wf <- 1/full_design$prob
+    ncom<- names(wf)
+    if(na.rm){
+    nas<-is.na(incvec)
+    full_design<-full_design[!nas,]
+    incvec <- incvec[!nas]
+    wf <- wf[!nas]
     }
-    wf <- weights(full_design)
-    ncom <- names(full_design$prob)
     htot <- h_fun(incvec, wf)
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
-    arptv <- ARPT[1]
+    arptv <- coef(ARPT)
     arptlin <- attr(ARPT, "lin")
     # value of arpr and first term of lin
     poor<- incvar<=arptv
     rval <- sum(poor*w)/N
     arpr1lin <- (1/N)*((incvar<=arptv)-rval)
     names(arpr1lin)<- ind
-    arpr1lin<- complete(arpr1lin,ncom )
+    if(nrow(full_design)>length(ind)) arpr1lin<- complete(arpr1lin,ncom )
     # use h for the whole sample
     Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F")
     arprlin <- arpr1lin + Fprime * arptlin

@@ -99,7 +99,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     rval <- percent * coef(linqalpha)
     lin <- percent * attr(linqalpha, "lin")
 
-    # names(lin) <- ind if (comp) lin <- complete(lin, ncom)
+    # names(lin) <- ind; if (comp) lin <- complete(lin, ncom)
     variance <- (SE_lin2(lin, full_design))^2
 	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"

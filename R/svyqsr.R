@@ -76,21 +76,24 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
   if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
       incvar <- incvar[!nas]
+      w <- w[!nas]
     }
 
+    ind<- names(w)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    wf <- 1/full_design$prob
+    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
       incvec <- incvec[!nas]
+      wf <- wf[!nas]
     }
-    ncom<- names(full_design$prob)
-    w <- weights(design)
-    ind <- row.names(df)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
