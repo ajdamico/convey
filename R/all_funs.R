@@ -326,18 +326,20 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc, na.rm = FALSE,...)
       incvec <- incvec[!nas]
       wf <- wf[!nas]
     }
-
     h <- h_fun(incvec, wf)
     QALPHA <- iqalpha(formula = formula, design = design, alpha,comp = TRUE,
       compinc = compinc, na.rm = na.rm)
-    q_alpha <- QALPHA[1]
+    q_alpha <- coef(QALPHA)
     iq <- attr(QALPHA, "lin")
-    inc_inf <- (incvar <= q_alpha) * incvar
-    tot <- sum(inc_inf * w)
+    rval <- sum((incvar<=q_alpha)*incvar * w)
     Fprime <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
-    isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
-    rval <- tot
-    variance <- (SE_lin2(isqalpha, full_design))^2
+    isqalpha1<- incvec * ((incvec <= q_alpha))
+    if(length(isqalpha1)< length(iq)){
+     names(isqalpha1)<- ncom[!nas]
+     isqalpha1<- complete(isqalpha1, ncom)
+      }
+    isqalpha <- isqalpha1 + Fprime * iq
+    variance <- (convey:::SE_lin2.default(isqalpha, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "isq"
