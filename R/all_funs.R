@@ -298,7 +298,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #' @export
 
 
-isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) {
+isq <- function(formula, design, alpha, comp = TRUE, compinc, na.rm = FALSE,...) {
     if (is.null(attr(design, "full_design")))
         stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -334,7 +334,7 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc,na.rm = FALSE,...) 
     iq <- attr(QALPHA, "lin")
     inc_inf <- (incvar <= q_alpha) * incvar
     tot <- sum(inc_inf * w)
-    Fprime <- densfun(formula = formula, design = design, q_alpha, fun = "S")
+    Fprime <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
     isqalpha <- incvec * ((incvec <= q_alpha)) + Fprime * iq
     rval <- tot
     variance <- (SE_lin2(isqalpha, full_design))^2
