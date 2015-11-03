@@ -97,11 +97,11 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
-    S20 <- isq(formula = formula, design = design, alpha1,compinc=TRUE, na.rm=na.rm)
-    S20 <- list(value= S20[1], lin=attr(S20,"lin"))
+    S20 <- isq(formula = formula, design = design, alpha1, compinc=TRUE, na.rm=na.rm)
+    S20 <- list(value= coef(S20), lin=attr(S20,"lin"))
     # Linearization of S80
-    S80 <- isq(formula = formula, design = design, alpha2,compinc = TRUE, na.rm=na.rm)
-    S80 <- list(value= S80[1], lin=attr(S80,"lin"))
+    S80 <- isq(formula = formula, design = design, alpha2, compinc = TRUE, na.rm=na.rm)
+    S80 <- list(value= coef(S80), lin=attr(S80,"lin"))
     names(incvar)<-ind
     TOT<- list(value=sum(incvar*w), lin=incvec)
     # LINEARIZED VARIABLE OF THE SHARE RATIO
