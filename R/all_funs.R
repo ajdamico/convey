@@ -239,16 +239,19 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
       incvec <- incvec[!nas]
       wf <-wf[!nas]
     }
-    if(nrow(full_design)<length(incvec))ncom<-ncom[!nas]
+    if(nrow(full_design$variables)<length(incvec))ncom<-ncom[!nas]
     htot <- h_fun(incvec, wf)
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
     iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+
+    if (comp && (nrow(full_design$variables)>length(ind))){
+      names(iq) <- ind
+      iq <- complete(iq, ncom)
+    }
     if (compinc) {
       iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
     }
-    names(iq) <- ind
-    if (comp && (nrow(full_design)>length(ind)))
-      iq <- complete(iq, ncom)
+
     variance <- (SE_lin2(iq, full_design))^2
     class(rval) <- "cvystat"
     attr(rval, "lin") <- iq
