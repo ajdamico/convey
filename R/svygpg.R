@@ -29,6 +29,7 @@
 #'
 #' @examples
 #'library(vardpoor)
+#'library(survey)
 #'data(ses)
 #'des_ses<- svydesign(id=~1, weights=~weights, data=ses,
 #'variables=~weights+sex+earningsHour+location)
