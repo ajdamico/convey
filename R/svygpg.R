@@ -98,7 +98,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   TM<- list(value = sum(wagevar*sex[, col_male]*w), lin=wagevar*sex[, col_male])
   TF<- list(value = sum(wagevar*sex[, col_female]*w), lin=wagevar*sex[, col_female])
   list_all_tot <-list(INDM=INDM,INDF=INDF,TM=TM,TF=TF)
-  if(nrow(full_design)>length(ind)){
+  if(nrow(full_design$variables)>length(ind)){
   list_all_tot<-lapply(list_all_tot, function(t){
     names(t$lin)<-ind
     list(value=t$value,lin=complete(t$lin,ncom))
