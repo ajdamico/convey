@@ -53,8 +53,11 @@ Note that it is not possible to use Taylor linearization for those measures beca
 Let $U$ be a population of size $N$ and $M$ a measure that allocates mass one to the set composed by one unit $i\in U$.
 
 $$
-M(i)=M_i=\begin{cases}1, & i\in U \\
-0, & i \notin U\end{cases}
+M(i)=M_i=
+\begin{cases}
+1,  i\in U \\
+0, i\notin U
+\end{cases}
 $$
 
 A population parameter $\theta$ can be expressed as a functional of $M$
@@ -292,12 +295,12 @@ being $\theta$ the poverty threshold; $\delta$ the indicator function that assig
 value 1 if the condition $\{y_{k}\leq \theta \}$ is satisfied and 0 otherwise, and $\gamma$ a non-negative constant. When $\gamma =0$, $p$ can be interpreted as the ratio of poor people, and for   $\gamma \geq 1$, the weight of poor people increases with the value $\gamma$, (Foster and all, 1984).
 
 The poverty measure FGT is implemented in the library convey by the function `svyfgt`.
-The argument `thresh_type` of this functions defines the type of poverty threshold adopted.
+The argument `thresh_type` of this function defines the type of poverty threshold adopted.
 There are three possible choices:
 
 1. `abs` -- fixed and given by the argument thresh_value
-2. `relq` -- a proportion of a quantile, where the proportion is fixed the argument `proportion` and the quantile is defined by the argument `order`.
-3. `relm` -- a proportion of the mean. the proportion is fixed the argument `proportion`
+2. `relq` -- a proportion of a quantile fixed by the argument `proportion` and the quantile is defined by the argument `order`.
+3. `relm` -- a proportion of the mean fixed the argument `proportion`
 
 The quantile and the mean envolved in the definition of the threshold are estimmated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator `arpr` computed by
 the function  `svyarpr`. 
@@ -316,7 +319,7 @@ The poverty gap (FGT1) ($\gamma=1$) index for the poverty threshold fixed at the
 svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 ```
 
-To estimate the FGT0 with the poverty threshold fixed at $0.6* MED$ we fix the argument `type_thresh="relq" and use the default values for `percent` and `order`:
+To estimate the FGT0 with the poverty threshold fixed at $0.6* MED$ we fix the argument `type_thresh="relq" and use the default values for  `percent`  and  `order`:
 
 ```{r comment=NA}
 svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
