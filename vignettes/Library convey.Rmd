@@ -270,6 +270,69 @@ svygini( ~ py010n , design = des_eusilc , na.rm = TRUE )
 svygini( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 ```
 
+### FGT indicator
+
+Foster and all(1984) proposed a family of indicators to mesure poverty.
+
+The class of $FGT$ measures, can be defined as
+
+\[
+p=\frac{1}{N}\sum_{k\in U}h(y_{k},\theta ), 
+\]
+
+where
+
+\[
+h(y_{k},\theta )=\left[ \frac{(\theta -y_{k})}{\theta }\right] ^{\gamma
+}\delta \left\{ y_{k}\leq \theta \right\} , 
+\]
+
+being $\theta$ the poverty threshold; $\delta$ the indicator function that assigns 
+value 1 if the condition $\{y_{k}\leq \theta \}$ is satisfied and 0 otherwise, and $\gamma$ a non-negative constant. When $\gamma =0$, $p$ can be interpreted as the ratio of poor people, and for   $\gamma \geq 1$, the weight of poor people increases with the value $\gamma$, (Foster and all, 1984).
+
+The poverty measure FGT is implemented in the library convey by the function `svyfgt`.
+The argument `thresh_type` of this functions defines the type of poverty threshold adopted.
+There are three possible choices:
+
+1. `abs`-- fixed and given by the argument thresh_value
+2. `relq`-- a proportion of a quantile, where the proportion is fixed the argument `proportion`and the quantile is defined by the argument `order`.
+3. `relm`-- a proportion of the mean. the proportion is fixed the argument `proportion`
+
+The quantile and the mean envolved in the definition of the threshold are estimmated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator àrpr` computed by
+the function `svyarpr`. 
+
+In the following we give some examples of the function `svyfgt` to estimate the values of the FGT poverty index.
+
+Consider first the poverty threshold fixed in the value $10000$. The headcount ratio is
+
+```{r}
+svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+```
+
+
+
+
+
+
+### References
+
+Berger, Y.G. e C.J. Skinner (to be published) - Variance
+Estimation for a Low-Income Proportion.
+
+Foster, K., J. Greer e E. Thornbecke (1984) - A Class of
+Decomposable Poverty Measure. Econometrica, 52, 761-766.
+
+Guillaume Osier (2009). Variance estimation for complex indicators
+of poverty and inequality. \emph{Journal of the European Survey Research
+Association}, Vol.3, No.3, pp. 167-195,
+ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+
+Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
+linearization and residual techniques. Survey Methodology, 25, 193-203,
+URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
+
+
+
 
 
 

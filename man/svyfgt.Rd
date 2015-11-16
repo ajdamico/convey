@@ -9,11 +9,11 @@
 \usage{
 svyfgt(formula, design, ...)
 
-\method{svyfgt}{survey.design}(formula, design, t = NULL, alpha,
-  na.rm = FALSE, ...)
+\method{svyfgt}{survey.design}(formula, design, g, type_thresh, abs_thresh,
+  percent = 0.6, order = 0.5, na.rm = FALSE, ...)
 
-\method{svyfgt}{svyrep.design}(formula, design, t = NULL, alpha,
-  na.rm = FALSE, ...)
+\method{svyfgt}{svyrep.design}(formula, design, g, type_thresh, abs_thresh,
+  percent = 0.6, order = 0.5, na.rm = FALSE, ...)
 
 \method{svyfgt}{DBIsvydesign}(formula, design, ...)
 }
@@ -22,9 +22,14 @@ svyfgt(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
 
-\item{t}{poverty threshold. If NULL uses the \code{arpt}}
+\item{g}{If 0 estimates the headcount ratio and if 1 the poverty gap index}
 
-\item{alpha}{If 0 estimates the headcount ratio and if 1 the poverty gap index}
+\item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
+of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.}
+
+\item{percent}{the multiple of the the quantile or mean used in the poverty threshold definition}
+
+\item{order}{the quantile order used used in the poverty threshold definition}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 }
@@ -43,6 +48,7 @@ library(vardpoor)
 data(eusilc)
 
 # linearized design
+
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep( des_eusilc )
 
@@ -51,22 +57,31 @@ des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 # headcount ratio, poverty threshold fixed
-svyfgt(~eqIncome, des_eusilc, t=10000, alpha=0)
+svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 # poverty gap index, poverty threshold fixed
-svyfgt(~eqIncome, des_eusilc, t=10000, alpha=1)
+svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
-svyfgt(~eqIncome, des_eusilc,  t=NULL, alpha=0)
+svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
 # poverty gap index, poverty threshold equal to arpt
-svyfgt(~eqIncome, des_eusilc,  t=NULL, alpha=1 )
-#
+svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+# headcount ratio, poverty threshold equal to .6 times the mean
+svyfgtnova(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
+# poverty gap index, poverty threshold equal to 0.6 times the mean
+svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
+
+#  using svrep.design:
 # headcount ratio, poverty threshold fixed
-svyfgt(~eqIncome, des_eusilc_rep, t=10000, alpha=0)
+svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
 # poverty gap index, poverty threshold fixed
-svyfgt(~eqIncome, des_eusilc_rep, t=10000, alpha=1)
+svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
-svyfgt(~eqIncome, des_eusilc_rep,  t=NULL, alpha=0)
+svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relq")
 # poverty gap index, poverty threshold equal to arpt
-svyfgt(~eqIncome,des_eusilc_rep,  t=NULL, alpha=1 )
+svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+# headcount ratio, poverty threshold equal to .6 times the mean
+svyfgtnova(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relm")
+# poverty gap index, poverty threshold equal to 0.6 times the mean
+svyfgtnova(~eqIncome, des_eusilc_rep, g=1, type_thresh= "relm")
 }
 \author{
 Djalma Pessoa and Anthony Damico

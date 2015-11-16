@@ -4,8 +4,11 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
-#' @param t poverty threshold. If NULL uses the \code{arpt}
-#' @param alpha If 0 estimates the headcount ratio and if 1 the poverty gap index
+#' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
+#' of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.
+#' @param g If 0 estimates the headcount ratio and if 1 the poverty gap index
+#' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
+#' @param order the quantile order used used in the poverty threshold definition
 #' @param na.rm Should cases with missing values be dropped?
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
@@ -33,6 +36,7 @@
 #' data(eusilc)
 #'
 #' # linearized design
+#'
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
 #'
@@ -41,22 +45,34 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, t=10000, alpha=0)
+#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, t=10000, alpha=1)
+#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc,  t=NULL, alpha=0)
+#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc,  t=NULL, alpha=1 )
-#' #
+#' svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+#' # headcount ratio, poverty threshold equal to .6 times the mean
+#' svyfgtnova(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
+#' # poverty gap index, poverty threshold equal to 0.6 times the mean
+#' svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
+#'
+#' #  using svrep.design:
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc_rep, t=10000, alpha=0)
+#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc_rep, t=10000, alpha=1)
+#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc_rep,  t=NULL, alpha=0)
+#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relq")
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome,des_eusilc_rep,  t=NULL, alpha=1 )
+#' svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+#' # headcount ratio, poverty threshold equal to .6 times the mean
+#' svyfgtnova(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relm")
+#' # poverty gap index, poverty threshold equal to 0.6 times the mean
+#' svyfgtnova(~eqIncome, des_eusilc_rep, g=1, type_thresh= "relm")
+#'
+#'
+#'
 #' @export
 #'
 svyfgt <- function(formula, design, ...) {
@@ -67,13 +83,14 @@ svyfgt <- function(formula, design, ...) {
 
 #' @rdname svyfgt
 #' @export
-svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ...) {
+svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
+  percent= .60, order =.50, na.rm=FALSE,...){
+
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
 
   # if the class of the full_design attribute is just a TRUE, then the design is
   # already the full design.  otherwise, pull the full_design from that attribute.
@@ -91,11 +108,10 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
     }
     ind<- names(w)
     N <- sum(w)
-        # if the class of the full_design attribute is just a TRUE, then the design is
+    # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
       full_design <- design else full_design <- attr(design, "full_design")
-
 
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     wf <- 1/full_design$prob
@@ -109,51 +125,49 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
 
     htot <- h_fun(incvec, wf)
 
-    if(!is.null(t)){
-      if(alpha==0){
-        FGT <-icdf(formula=formula, design=design, t)
-        rval <- coef(FGT)
-        fgtlin <-attr(FGT,"lin")
-      }
-      else{
-        poor <- (incvar<=t)
-        T1 <-  list(value = t*sum(poor*w), lin= t*poor)
-        T2 <- list(value= sum(incvar*poor*w), lin= incvar*poor)
-        T3<- list(value= t*sum(w) , lin=rep(t, length(incvar)))
-        list_all <- list(T1 = T1, T2 = T2,T3 = T3)
-        FGT<- contrastinf(quote((T1-T2)/T3), list_all)
-        rval <- FGT$value
-        fgtlin<- FGT$lin
-        names(fgtlin)<- ind
-        if(nrow(full_design)>length(ind))fgtlin <- complete(fgtlin, ncom)
-      }
+    #  h function
+    h <- function(y,t,g){
+      (((t-y)/t)^g)*(y<=t)
     }
-    else{
-      ## threshold is arpt
-      if(alpha==0) {
-        FGT <- svyarpr(formula = formula, design=design)
-        rval<- coef(FGT)
-        fgtlin <- attr(FGT, "lin")
-      }
-      else{
-        ARPT <- svyarpt(formula = formula, full_design, na.rm=na.rm)
-        arpt <-coef(ARPT)
-        arptlin<- attr(ARPT, "lin")
-        ARPR <- svyarpr(formula = formula, design, na.rm=na.rm)
-        arprlin <-attr(ARPR, "lin")
-        T1<- list(value=coef(ARPR), lin=arprlin)
-        # total below arpt
-        Fprime <- densfun(formula = formula, design = full_design, arpt, h= htot, fun = "S", na.rm=na.rm)
-        isqalpha <- incvec * ((incvec <= arpt)) + Fprime * arptlin
-        T2 = list(value= sum(incvar*(incvar<=arpt)*w), lin= isqalpha)
-        T3= list(value= arpt, lin= arptlin)
-        T4 = list(value=N, lin=rep(1,length(incvec) ) )
-        list_all=list(T1=T1, T2=T2, T3=T3, T4=T4)
-        FGT<- contrastinf(quote(T1-T2/(T3*T4)), list_all)
-        rval<- FGT$value
-        fgtlin<- FGT$lin
-      }
+
+    # ht function
+    ht <- function(y,t,g){
+      (g*(((t-y)/t)^(g-1))*(y/(t^2)))*(y<=t)
     }
+
+    # linearization
+    N <- sum(w)
+    if(type_thresh=='relq'){
+      ARPT <- svyarpt(formula = formula, full_design, order=order, percent=percent,  na.rm=na.rm)
+      arpt <-coef(ARPT)
+      arptlin<- attr(ARPT, "lin")
+      rval <- sum(w*h(incvar,arpt,g))/N
+      ahat <- sum(w*ht(incvar,arpt,g))/N
+      if(g==0){
+        ARPR <- svyarpr(formula = formula, full_design, order=order, percent=percent,  na.rm=na.rm)
+        fgtlin <- attr(ARPR,"lin")
+      } else
+        fgtlin <-(h(incvar,arpt,g)-rval)/N+(ahat*arptlin)
+    }
+    if(type_thresh=='relm'){
+      # thresh for the whole population
+      t <- percent*sum(incvec*wf)/sum(wf)
+      rval <- sum(w*h(incvar,t,g))/N
+      ahat <- sum(w*ht(incvar,t,g))/N
+      if(g==0){
+        Fprime<- densfun(formula=formula, design = design, x= t, fun = "F", na.rm = na.rm )
+        fgtlin<- (h(incvar,t,g)-rval + Fprime*(incvar-t))/N
+      }else
+        fgtlin <-(h(incvar,t,g)-rval+((percent*incvar)-t)*ahat)/N
+    }
+    if(type_thresh=='abs'){
+      t<-abs_thresh
+      rval <- sum(w*h(incvar,t,g))/N
+      fgtlin <- (h(incvar,t,g)-rval)/N
+    }
+
+    names(fgtlin)<- ind
+    fgtlin <- complete(fgtlin, ncom)
 
     variance <- (SE_lin2(fgtlin, full_design))^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -168,7 +182,8 @@ svyfgt.survey.design <-  function(formula, design, t=NULL, alpha,na.rm=FALSE, ..
 
 #' @rdname svyfgt
 #' @export
-svyfgt.svyrep.design <- function(formula, design, t = NULL, alpha, na.rm=FALSE, ...) {
+svyfgt.svyrep.design <-  function(formula, design, g, type_thresh, abs_thresh,
+  percent= .60, order =.50, na.rm=FALSE,...) {
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
@@ -204,23 +219,26 @@ svyfgt.svyrep.design <- function(formula, design, t = NULL, alpha, na.rm=FALSE, 
     wsf<- weights(full_design,"sampling")
     names(incvec)<-names(wsf)<- row.names(df_full)
     ind<- row.names(df)
-
-    ComputeFGT<- function(y, w, t, alpha){
+    # poverty threshold
+    if(type_thresh=='relq') t <- percent* convey:::computeQuantiles(incvec, wsf, p = order)
+    if(type_thresh=='relm') t <- percent*sum(incvec*wsf)/sum(wsf) else
+    if(type_thresh=='abs') t <- abs_thresh
+    ComputeFGT<- function(y, w, t, g){
+      #  h function
+      h <- function(y,t,g){
+        (((t-y)/t)^g)*(y<=t)
+      }
       N <-sum(w)
-      poor <- (y <= t)
-      fac1 <-((t-y)/t)^alpha
-      sum(fac1* poor*w)/N
+      sum(w*h(incvar,t,g))/N
     }
-    # threshold arpt
-    if(is.null(t)) t <- .60 * convey:::computeQuantiles(incvec, wsf, p = .50)
-    rval <- ComputeFGT(incvar, ws, t=t, alpha=alpha)
+
+    rval <- ComputeFGT(incvar, ws, g = g, t)
     wwf <- weights(full_design, "analysis")
     qq <- apply(wwf, 2, function(wi){
-      if(is.null(t)) t<- .60 * convey:::computeQuantiles(incvec, wi, p = .50)
       names(wi)<- row.names(df_full)
       wd<-wi[ind]
       incd <- incvec[ind]
-      ComputeFGT(incd,wd, t=t, alpha = alpha)}
+      ComputeFGT(incd, wd, g = g, t)}
     )
     variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
