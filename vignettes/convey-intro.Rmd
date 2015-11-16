@@ -1,13 +1,14 @@
 ---
-title: "Library convey"
+title: "Introduction to convey"
 author: "Djalma Pessoa"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  \VignetteIndexEntry{Library convey}
-  \VignetteEngine{knitr::rmarkdown}
-  \VignetteEncoding{UTF-8}
+ %\VignetteIndexEntry{Introduction to convey}
+ %\VignetteEngine{knitr::knitr}
+ \usepackage[utf8]{inputenc}
 ---
+
 
 
 # Library convey
