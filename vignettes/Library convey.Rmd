@@ -294,21 +294,38 @@ The poverty measure FGT is implemented in the library convey by the function `sv
 The argument `thresh_type` of this functions defines the type of poverty threshold adopted.
 There are three possible choices:
 
-1. `abs`-- fixed and given by the argument thresh_value
-2. `relq`-- a proportion of a quantile, where the proportion is fixed the argument `proportion`and the quantile is defined by the argument `order`.
-3. `relm`-- a proportion of the mean. the proportion is fixed the argument `proportion`
+1. `abs` -- fixed and given by the argument thresh_value
+2. `relq` -- a proportion of a quantile, where the proportion is fixed the argument `proportion` and the quantile is defined by the argument `order`.
+3. `relm` -- a proportion of the mean. the proportion is fixed the argument `proportion`
 
-The quantile and the mean envolved in the definition of the threshold are estimmated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator àrpr` computed by
-the function `svyarpr`. 
+The quantile and the mean envolved in the definition of the threshold are estimmated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator `arpr` computed by
+the function  `svyarpr`. 
 
 In the following we give some examples of the function `svyfgt` to estimate the values of the FGT poverty index.
 
-Consider first the poverty threshold fixed in the value $10000$. The headcount ratio is
+Consider first the poverty threshold fixed ($\gamma=0$) in the value $10000$. The headcount ratio (FGT0) is
 
-```{r}
+```{r comment=NA}
 svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 ```
 
+The poverty gap (FGT1) ($\gamma=1$) index for the poverty threshold fixed at the same value is
+
+```{r comment=NA}
+svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+```
+
+To estimate the FGT0 with the poverty threshold fixed at $0.6* MED$ we fix the argument `type_thresh="relq" and use the default values for `percent` and `order`:
+
+```{r comment=NA}
+svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
+```
+To estimate the poverty gap(FGT1) with the poverty threshold equal to $0.6*MEAN$
+we use:
+
+```{r comment=NA}
+svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
+```
 
 
 

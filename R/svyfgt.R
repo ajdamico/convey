@@ -51,11 +51,11 @@
 #' # headcount ratio, poverty threshold equal to arpt
 #' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svyfgtnova(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
+#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
+#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
 #'
 #' #  using svrep.design:
 #' # headcount ratio, poverty threshold fixed
