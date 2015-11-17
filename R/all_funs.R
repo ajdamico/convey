@@ -342,7 +342,7 @@ isq <- function(formula, design, alpha, comp = TRUE, compinc, na.rm = FALSE,...)
      isqalpha1<- complete(isqalpha1, ncom)
       }
     isqalpha <- isqalpha1 + Fprime * iq
-    variance <- (convey:::SE_lin2.default(isqalpha, full_design))^2
+    variance <- SE_lin2(isqalpha, full_design)^2
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "isq"

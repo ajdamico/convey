@@ -109,7 +109,7 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   infun<-IGPG$lin
     rval <- IGPG$value
 
-  variance <- ( convey:::SE_lin2.default( infun , full_design ) )^2
+  variance <- SE_lin2( infun , full_design )^2
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"
   attr( rval , "var" ) <- variance
