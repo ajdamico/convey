@@ -5,7 +5,7 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
-#' of the library survey
+#' of the library survey.  database-backed designs not supported
 #' @param order income quantile order, usually .5
 #' @param percent fraction of the quantile, usually .60
 #' @param comp logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros
@@ -170,15 +170,3 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     attr(rval, "statistic") <- "rmpg"
     rval
 }
-
-
-
-#' @rdname svyrmpg
-#' @export
-svyrmpg.DBIsvydesign <- function(x, design, ...) {
-    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
-        updates = design$updates, subset = design$subset)
-    NextMethod("svyrmpg", design)
-}
-
-

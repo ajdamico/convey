@@ -4,7 +4,7 @@
 #'
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported
 #' @param alpha order of the quintile ratio
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
@@ -170,15 +170,3 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
     attr(rval, "statistic") <- "qsr"
     rval
 }
-
-
-
-
-#' @rdname svyqsr
-#' @export
-svyqsr.DBIsvydesign <- function(formula, design, ...) {
-    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
-        updates = design$updates, subset = design$subset)
-    NextMethod("svyqsr", design)
-}
-

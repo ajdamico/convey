@@ -43,7 +43,7 @@ h_fun <- function(incvar, w) {
 #'computes the derivative of a function in a point using kernel estimation
 #'
 #'@param formula a formula specifying the income variable
-#'@param design a design object of class \code{survey.design} of the library survey
+#'@param design a design object of class \code{survey.design} of the library survey.  database-backed designs not supported
 #'@param x the point where the derivative is calculated
 #'@param h value of the bandwidth based on the whole sample
 #'@param if \code{F} estimates the derivative of the cdf function; if \code{S} estimates
@@ -90,7 +90,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE
 #' Computes the linearized variable of the cdf function in a point.
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}  of the library survey
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}  of the library survey.  database-backed designs not supported
 #'
 #'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -171,7 +171,7 @@ incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
-#' of the library survey
+#' of the library survey.  database-backed designs not supported
 #' @param alpha the order of the quantile
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains
 #' should be completed with zeros
@@ -267,7 +267,7 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design}
-#' of the library survey
+#' of the library survey.  database-backed designs not supported
 #' @param alpha the order of the quantile
 #' @param compinc logical variable \code{TRUE} if should use the vector of sample #'values of the variable whose quantile is to be linearized
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
@@ -407,7 +407,7 @@ ratio_inf <- function(T, S) {
 #' Computes the se from the linearized variable.
 #'
 #' @param object output of a linearizing indicator function
-#' @param design a survey design object of the library survey
+#' @param design a survey design object of the library survey.  database-backed designs not supported
 #' @return the estime of the indicator se
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -424,30 +424,9 @@ ratio_inf <- function(T, S) {
 #' SE_lin2(attr(qsr_eqIncome,"lin"), des_eusilc)
 #' @export
 
-
-
-SE_lin2 <- function(object, design, ...) {
-
-  UseMethod("SE_lin2", design)
-
-}
-
-SE_lin2.default <- function(object, design) {
+SE_lin2 <- function(object, design) {
     x <- update(design, t = object)
     res <- survey::SE(survey::svytotal(~t, x))
-    res
-}
-
-SE_lin2.DBIsvydesign <- function(object, design) {
-
-	design$variables$one <- seq( nrow( design$variables ) )
-
-	class( design ) <- c( 'survey.design2' , 'survey.design' )
-
-    design <- update(design, t = object)
-
-    res <- survey::SE( survey::svytotal( ~t , design ) )
-
     res
 }
 
@@ -497,8 +476,8 @@ coef.cvystat <- function(object, ...) {
 #'
 #' stores the full survey design (needed for convey functions) within the design
 #'
-#' @param design a survey design object of the library survey
-#' @return design a survey design object of the library survey
+#' @param design a survey design object of the library survey.  database-backed designs not supported
+#' @return design the same survey object, preparred for all convey package functions.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
@@ -535,6 +514,8 @@ coef.cvystat <- function(object, ...) {
 #'
 #' @export
 convey_prep <- function(design) {
+
+	if( ( "DBIsvydesign" %in% class( design ) ) | ( "DBIrepdesign" %in% class( design ) ) ) stop( "the `convey` package does not support database-backed survey designs.\r\nyou must create your design within memory" )
 
     if (!is.null(attr(design, "full_design")))stop("convey_prep has already been run on this design")
 

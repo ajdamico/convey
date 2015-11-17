@@ -4,7 +4,7 @@
 #'
 #'
 #' @param formula a formula specifying the gross hourly earnings variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported
 #' @param sex formula with a factor with labels 'male' and 'female'
 #' @param na.rm Should cases with missing values be dropped?
 #'
@@ -180,16 +180,3 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
     attr(rval, "statistic") <- "gqg"
     rval
 }
-
-
-
-
-
-#' @rdname svygpg
-#' @export
-svygpg.DBIsvydesign <- function(formula, design, ...) {
-    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
-        updates = design$updates, subset = design$subset)
-    NextMethod("svygpg", design)
-}
-

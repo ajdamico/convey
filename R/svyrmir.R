@@ -4,7 +4,7 @@
 #'
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported
 #' @param age formula defining the variable age
 #' @param agelim the age cutpoint, the default is 65
 #' @param order income quantile order, usually .5
@@ -177,13 +177,4 @@ class(rval) <- "cvystat"
 attr(rval, "var") <- variance
 attr(rval, "statistic") <- "rmir"
 rval
-}
-
-
-#' @rdname svyrmir
-#' @export
-svyrmir.DBIsvydesign <- function(formula, design, ...) {
-  design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
-    updates = design$updates, subset = design$subset)
-  NextMethod("svyrmir", design)
 }
