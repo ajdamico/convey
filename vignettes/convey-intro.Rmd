@@ -17,7 +17,7 @@ vignette: >
 The library convey aims at estimating measures of poverty and income concentration. There are already at least two libraries covering this subject: vardpoor and Laeken.
 The main difference between the library convey and these two is that the convey strongly hinges on the survey library.
 
-Some measures of poverty and income concentration are defined by non-differentiable functions so that it is not possible to use Taylor linearization to estimate their variances. An alternative is to use influence functions as described in Deville (1999) and Osier (2009). The library convey implements this methodology to work with `survey.design` objects and also with `svyrep.design` objects.
+Some measures of poverty and income concentration are defined by non-differentiable functions so that it is not possible to use Taylor linearization to estimate their variances. An alternative is to use **Influence functions** as described in Deville (1999) and Osier (2009). The library convey implements this methodology to work with `survey.design` objects and also with `svyrep.design` objects.
 
 Some examples of these measures are:
 
@@ -44,7 +44,7 @@ qsr=\frac{\sum_U 1(y_i>q_{.80})}{\sum_U 1(y_i\leq q_{.20})}
 \]
 where $r_i$ is the rank of $y_i$.
 
-Note that it is not possible to use Taylor linearization for those measures because they depend on quantiles and the Gini is defined as a function of ranks. This could be done using the approach proposed by Deville (1999) based upon influence functions. 
+Note that it is not possible to use Taylor linearization for these measures because they depend on quantiles and the Gini is defined as a function of ranks. This could be done using the approach proposed by Deville (1999) based upon influence functions. 
 
 
 ### Influence function
@@ -69,13 +69,9 @@ $$R=\frac{Y}{X}=\frac{\int y dM}{\int x dM}=T(M)$$
 $$F(x)=\frac{\sum_U 1(y_i\leq x)}{N}=\frac{\int 1(y\leq x)dM}{\int{dM}}=T(M)$$
 
 
-To estimate these parameters from the sample, we replace the measure $M$ by the estimated measure $\hat{M}$:
+To estimate these parameters from the sample, we replace the measure $M$ by the estimated measure $\hat{M}$ defined by: $\hat{M}(i)=\hat{M}_i= w_i$ if $i\in s$ and $\hat{M}(i)=0$ if $i\notin s$. 
 
-$$\hat{\theta}=T(\hat{M})$$
-
-The estimated measure $\hat{M}$ is defined by: $\hat{M}(i)=\hat{M}_i= w_i$ if $i\in s$ and $\hat{M}(i)=0$ if $i\notin s$. 
-
-The estimators of the population parameters can be expressed as functional of the measure  $\hat{M}$. 
+The estimators of the population parameters can then be expressed as functional of the measure  $\hat{M}$. 
 
 -  Total:
 $$\hat{Y}=T(\hat{M})=\int yd\hat{M}=\sum_s w_iy_i$$
@@ -87,7 +83,6 @@ $$\hat{R}=T(\hat{M})=\frac{\int y d\hat{M}}{\int x d\hat{M}}=\frac{\sum_s w_iy_i
 $$\hat{F}(x)=T(\hat{M})=\frac{\int 1(y\leq x)d\hat{M}}{\int{d\hat{M}}}=\frac{\sum_s w_i 1(y_i\leq x)}{\sum_s w_i}$$
 
 ## The variance estimator
-
 
 The variance of the estimator $T(\hat{M})$ can approximated by:
 
@@ -162,9 +157,9 @@ $f$ - income density function;
 
 ### Structure of the library
 
-In the library convey, there some basic functions that produces the linearized variables of some estimates that often enter in the definition of measures of concentration and poverty. One example, is the `quantile` which is linearized by the function `iqalpha`. Other example is the function `isq` that linearizes the total below a quantile of the variable.
+In the library convey, there are some basic functions that produces the linearized variables of some estimates that often enter in the definition of measures of concentration and poverty. For example the `quantile` which is linearized by the function `iqalpha`. Other example is the function `isq` that linearizes the total below a quantile of the variable.
 
-From the linearized variables of these basic estimates it is possible by using rules of composition, valid for influence functions, to derive the influence function of more complex estimates. By definition the influence function is a Gateaux derivative and the rules rules of composition valid for Gateaux derivatives hold for Influence Functions.
+From the linearized variables of these basic estimates it is possible by using rules of composition, valid for influence functions, to derive the influence function of more complex estimates. By definition the influence function is a Gateaux derivative and the rules rules of composition valid for Gateaux derivatives also hold for Influence Functions.
 
 The following property of Gateaux derivatives was often used in the library convey. Let $g$ be a differentible function of $m$ variables. Suppose we want to compute the influence function of the estimator $g(T_1, T_2,\ldots, T_m)$, knowing the Influence function of the estimators $T_i, i=1,\ldots, m$. Then the following holds:
 
@@ -172,7 +167,7 @@ $$
 I(g(T_1, T_2,\ldots, T_m)) = \sum_{i=1}^m \frac{\partial g}{\partial T_i}I(T_i)
 $$
 
-In the library convey this rule is implemented by the function `contrastinf` which uses the function `deriv` to compute the formal partial derivatives $\frac{\partial g}{\partial T_i}$. 
+In the library convey this rule is implemented by the function `contrastinf` which uses the R function `deriv` to compute the formal partial derivatives $\frac{\partial g}{\partial T_i}$. 
 
 For example, suppose we want to linearize the `Relative median poverty gap`(rmpg), defined as the difference between the at-risk-of-poverty threshold (`arpt`) and the median of incomes less than the `arpt` relative to the `arprt`: 
 

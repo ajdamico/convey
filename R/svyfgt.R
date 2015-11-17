@@ -173,7 +173,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "fgt"
+    attr(rval, "statistic") <- paste0("fgt",g)
     attr(rval, "lin") <- fgtlin
     rval
 }
@@ -247,6 +247,6 @@ svyfgt.svyrep.design <-  function(formula, design, g, type_thresh, abs_thresh,
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "fgt"
+    attr(rval, "statistic") <- paste0("fgt",g)
     rval
 }
