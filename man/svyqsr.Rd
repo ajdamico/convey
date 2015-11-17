@@ -2,7 +2,6 @@
 % Please edit documentation in R/svyqsr.R
 \name{svyqsr}
 \alias{svyqsr}
-\alias{svyqsr.DBIsvydesign}
 \alias{svyqsr.survey.design}
 \alias{svyqsr.svyrep.design}
 \title{Quintile Share Ratio}
@@ -14,13 +13,11 @@ svyqsr(formula, design, ...)
 
 \method{svyqsr}{svyrep.design}(formula, design, alpha = 0.2, na.rm = FALSE,
   ...)
-
-\method{svyqsr}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
 \item{alpha}{order of the quintile ratio}
 

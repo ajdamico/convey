@@ -2,7 +2,6 @@
 % Please edit documentation in R/svypoormed.R
 \name{svypoormed}
 \alias{svypoormed}
-\alias{svypoormed.DBIsvydesign}
 \alias{svypoormed.survey.design}
 \alias{svypoormed.svyrep.design}
 \title{Relative median poverty gap}
@@ -14,13 +13,11 @@ svypoormed(formula, design, ...)
 
 \method{svypoormed}{svyrep.design}(formula, design, order = 0.5,
   percent = 0.6, na.rm = FALSE, ...)
-
-\method{svypoormed}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
 \item{order}{income quantile order, usually .5}
 

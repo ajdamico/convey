@@ -10,7 +10,7 @@ isq(formula, design, alpha, comp = TRUE, compinc, na.rm = FALSE, ...)
 \item{formula}{a formula specifying the income variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}
-of the library survey}
+of the library survey.  database-backed designs not supported}
 
 \item{alpha}{the order of the quantile}
 

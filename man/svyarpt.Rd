@@ -2,7 +2,6 @@
 % Please edit documentation in R/svyarpt.R
 \name{svyarpt}
 \alias{svyarpt}
-\alias{svyarpt.DBIsvydesign}
 \alias{svyarpt.survey.design}
 \alias{svyarpt.svyrep.design}
 \title{At-risk-of-poverty threshold}
@@ -14,13 +13,11 @@ svyarpt(formula, design, ...)
 
 \method{svyarpt}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   na.rm = FALSE, ...)
-
-\method{svyarpt}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
 \item{order}{income quantile order, usually .50 (median)}
 

@@ -2,7 +2,6 @@
 % Please edit documentation in R/svygpg.R
 \name{svygpg}
 \alias{svygpg}
-\alias{svygpg.DBIsvydesign}
 \alias{svygpg.survey.design}
 \alias{svygpg.svyrep.design}
 \title{Linearization of the gender pay (wage) gap}
@@ -13,13 +12,11 @@ svygpg(formula, design, ...)
   na.rm = FALSE, ...)
 
 \method{svygpg}{svyrep.design}(formula, design, sex, na.rm = FALSE, ...)
-
-\method{svygpg}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the gross hourly earnings variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
 \item{sex}{formula with a factor with labels 'male' and 'female'}
 

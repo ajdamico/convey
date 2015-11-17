@@ -2,7 +2,6 @@
 % Please edit documentation in R/svyrmpg.R
 \name{svyrmpg}
 \alias{svyrmpg}
-\alias{svyrmpg.DBIsvydesign}
 \alias{svyrmpg.survey.design}
 \alias{svyrmpg.svyrep.design}
 \title{Relative median poverty gap}
@@ -14,14 +13,12 @@ svyrmpg(formula, design, ...)
 
 \method{svyrmpg}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   na.rm = FALSE, ...)
-
-\method{svyrmpg}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}
-of the library survey}
+of the library survey.  database-backed designs not supported}
 
 \item{order}{income quantile order, usually .5}
 

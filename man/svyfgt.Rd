@@ -2,7 +2,6 @@
 % Please edit documentation in R/svyfgt.R
 \name{svyfgt}
 \alias{svyfgt}
-\alias{svyfgt.DBIsvydesign}
 \alias{svyfgt.survey.design}
 \alias{svyfgt.svyrep.design}
 \title{FGT measure of poverty}
@@ -14,13 +13,11 @@ svyfgt(formula, design, ...)
 
 \method{svyfgt}{svyrep.design}(formula, design, g, type_thresh, abs_thresh,
   percent = 0.6, order = 0.5, na.rm = FALSE, ...)
-
-\method{svyfgt}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
 \item{g}{If 0 estimates the headcount ratio and if 1 the poverty gap index}
 
@@ -63,11 +60,11 @@ svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
 svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
 # poverty gap index, poverty threshold equal to arpt
-svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
 # headcount ratio, poverty threshold equal to .6 times the mean
-svyfgtnova(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
+svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
 # poverty gap index, poverty threshold equal to 0.6 times the mean
-svyfgtnova(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
+svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
 
 #  using svrep.design:
 # headcount ratio, poverty threshold fixed

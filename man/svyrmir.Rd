@@ -2,7 +2,6 @@
 % Please edit documentation in R/svyrmir.R
 \name{svyrmir}
 \alias{svyrmir}
-\alias{svyrmir.DBIsvydesign}
 \alias{svyrmir.survey.design}
 \alias{svyrmir.svyrep.design}
 \title{Relative median income ratio}
@@ -14,13 +13,11 @@ svyrmir(formula, design, ...)
 
 \method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
   na.rm = FALSE, ...)
-
-\method{svyrmir}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
 \item{age}{formula defining the variable age}
 

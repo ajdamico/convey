@@ -2,7 +2,6 @@
 % Please edit documentation in R/svygini.R
 \name{svygini}
 \alias{svygini}
-\alias{svygini.DBIsvydesign}
 \alias{svygini.survey.design}
 \alias{svygini.svyrep.design}
 \title{Gini coefficient}
@@ -13,13 +12,11 @@ svygini(formula, design, ...)
   ...)
 
 \method{svygini}{svyrep.design}(formula, design, na.rm = FALSE, ...)
-
-\method{svygini}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
 \item{comp}{logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros}
 

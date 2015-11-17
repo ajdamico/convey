@@ -10,7 +10,7 @@ densfun(formula, design, x, h = NULL, fun = c("F", "S"), na.rm = FALSE,
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} of the library survey}
+\item{design}{a design object of class \code{survey.design} of the library survey.  database-backed designs not supported}
 
 \item{x}{the point where the derivative is calculated}
 
