@@ -8,8 +8,7 @@
 \usage{
 svygini(formula, design, ...)
 
-\method{svygini}{survey.design}(formula, design, comp = TRUE, na.rm = FALSE,
-  ...)
+\method{svygini}{survey.design}(formula, design, na.rm = FALSE, ...)
 
 \method{svygini}{svyrep.design}(formula, design, na.rm = FALSE, ...)
 }
@@ -18,9 +17,9 @@ svygini(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
 
-\item{comp}{logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros}
-
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{comp}{logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -38,13 +37,11 @@ data(eusilc)
 
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-des_eusilc <- convey_prep( des_eusilc )
 
 svygini( ~eqIncome , design = des_eusilc )
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-des_eusilc_rep <- convey_prep( des_eusilc_rep )
 svygini( ~eqIncome , design = des_eusilc_rep )
 
 # linearized design using a variable with missings

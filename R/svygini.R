@@ -33,13 +33,11 @@
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-#' des_eusilc <- convey_prep( des_eusilc )
 #'
 #' svygini( ~eqIncome , design = des_eusilc )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svygini( ~eqIncome , design = des_eusilc_rep )
 #'
 #' # linearized design using a variable with missings
@@ -63,87 +61,54 @@ svygini <- function(formula, design, ...) {
 
 #' @rdname svygini
 #' @export
-svygini.survey.design <- function(formula, design, comp = TRUE, na.rm=FALSE, ...) {
-  if (is.null(attr(design, "full_design")))
-    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+svygini.survey.design <-  function(formula, design, na.rm=FALSE, ...) {
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+  w <- 1/design$prob
+  ncom<- names(w)
+  if(na.rm){
+    nas<-is.na(incvar)
+    design<-design[!nas,]
+    incvar <- incvar[!nas]
+    w <- w[!nas]
+  }
 
-  	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    wf <- 1/full_design$prob
-    ncom<- names(wf)
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
-      wf <- wf[!nas]
-    }
-
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      incvar <- incvar[!nas]
-      w <- w[!nas]
-    }
-
-    ordincvar<-order(incvar)
-    w <- w[ordincvar]
-    incvar <- incvar[ordincvar]
-    ind<- names(w)
-    # population size
-    N <- sum(w)
-    # total income
-    Y <- sum(incvar * w)
-    # cumulative weight
-    r <- cumsum(w)
-    # partial weighted function
-    G <- cumsum(incvar * w)
-    T2<- list(value=sum(incvar*w), lin=incvar)
-    T3<- list(value= sum(w), lin=rep(1, length(incvar)))
-    # get T1
-    T1val<- sum(r*incvar*w)
-    T1lin<-  Y - G + incvar * w + r* incvar
-    T1<- list(value=T1val, lin=T1lin)
-    list_all<- list(T1 = T1, T2 = T2, T3 = T3)
-    GINI<- contrastinf(quote((2*T1-T2)/(T2*T3)-1), list_all)
-    lingini <- as.vector(GINI$lin)
-    # complete with 0
-    names(lingini) <- ind
-    if (comp && (nrow(full_design)>length(ind))) lingini<-complete(lingini, ncom)
-
-    rval <- GINI$value
-
-    variance <- (SE_lin2(lingini, full_design))^2
-	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-	class(rval) <- "cvystat"
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "gini"
-    attr(rval,"lin")<- lingini
-    rval
+  ordincvar<-order(incvar)
+  w <- w[ordincvar]
+  incvar <- incvar[ordincvar]
+  ind<- names(w)
+  # population size
+  N <- sum(w)
+  # total income
+  Y <- sum(incvar * w)
+  # cumulative weight
+  r <- cumsum(w)
+  # partial weighted function
+  G <- cumsum(incvar * w)
+  T2<- list(value=sum(incvar*w), lin=incvar)
+  T3<- list(value= sum(w), lin=rep(1, length(incvar)))
+  # get T1
+  T1val<- sum(r*incvar*w)
+  T1lin<-  Y - G + incvar * w + r* incvar
+  T1<- list(value=T1val, lin=T1lin)
+  list_all<- list(T1 = T1, T2 = T2, T3 = T3)
+  GINI<- contrastinf(quote((2*T1-T2)/(T2*T3)-1), list_all)
+  lingini <- as.vector(GINI$lin)
+  # complete with 0
+  names(lingini) <- ind
+  if (nrow(design)>length(ind)) lingini<-complete(lingini, ncom)
+  rval <- GINI$value
+  variance <- (SE_lin2(lingini, design))^2
+  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+  class(rval) <- "cvystat"
+  attr(rval, "var") <- variance
+  attr(rval, "statistic") <- "gini"
+  attr(rval,"lin")<- lingini
+  rval
 }
 
 #' @rdname svygini
 #' @export
 svygini.svyrep.design <- function(formula, design,na.rm=FALSE, ...) {
-
-  if (is.null(attr(design, "full_design")))
-    stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
-  	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
-
     df <- model.frame(design)
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
