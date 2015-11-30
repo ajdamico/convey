@@ -86,7 +86,6 @@ svyfgt <- function(formula, design, ...) {
 svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
   percent= .60, order =.50, na.rm=FALSE,...){
 
-
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -99,14 +98,16 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
 
     # domain
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
+
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      incvar <- incvar[!nas]
-      w <- w[!nas]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else incvar[nas] <- 0
     }
-    ind<- names(w)
+    w <- 1/design$prob
+    ind<- names(design$prob)
     N <- sum(w)
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
@@ -114,17 +115,16 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
       full_design <- design else full_design <- attr(design, "full_design")
 
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    wf <- 1/full_design$prob
-    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
-      wf <- wf[!nas]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else incvec[nas] <- 0
     }
-
+    wf <- 1/full_design$prob
+    ncom<- names(full_design$prob)
     htot <- h_fun(incvec, wf)
-
     #  h function
     h <- function(y,t,g){
       (((t-y)/t)^g)*(y<=t)
