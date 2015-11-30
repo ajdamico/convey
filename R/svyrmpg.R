@@ -75,21 +75,23 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
-
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      incvar <- incvar[!nas]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else incvar[nas] <- 0
     }
 
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else incvec[nas] <- 0
     }
-
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm )
     arpt <- coef(ARPT)
     linarpt <- attr(ARPT, "lin")

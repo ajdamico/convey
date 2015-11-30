@@ -63,36 +63,39 @@ svyarpt <- function(formula, design, ...) {
 
 #' @rdname svyarpt
 #' @export
-svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, na.rm = FALSE,...) {
-    if (is.null(attr(design, "full_design")))
-        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, na.rm = FALSE,...) {
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 
-		# if the class of the full_design attribute is just a TRUE, then the design is
+  # if the class of the full_design attribute is just a TRUE, then the design is
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
+
+
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      incvar <- incvar[!nas]
-      w <- w[!nas]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else incvar[nas] <- 0
     }
-    ind<- names(w)
+    ind<- names(design$prob)
+    w <- 1/design$prob
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    wf <- 1/full_design$prob
-    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
-      wf <- wf[!nas]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else incvec[nas] <- 0
     }
-
+    ncom<- names(full_design$prob)
+    wf <- 1/full_design$prob
     htot <- h_fun(incvec, wf)
     linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
       comp = TRUE,  compinc = FALSE, na.rm = na.rm,nas=nas)
@@ -101,7 +104,7 @@ svyarpt.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
 
     # names(lin) <- ind; if (comp) lin <- complete(lin, ncom)
     variance <- (SE_lin2(lin, full_design))^2
-	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "arpt"

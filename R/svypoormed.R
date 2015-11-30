@@ -74,24 +74,30 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
+
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      incvar <- incvar[!nas]
-      w <- w[!nas]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else incvar[nas] <- 0
     }
-    ind<- names(w)
+    w <- 1/design$prob
+    ind<- names(design$prob)
     N <- sum(w)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    wf <- 1/full_design$prob
-    ncom<- names(wf)
+
+
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
-      wf <- wf[!nas]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else incvec[nas] <- 0
     }
+
+    wf <- 1/full_design$prob
+    ncom<- names(full_design$prob)
     htot <- h_fun(incvec, wf)
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
     arpt <- coef(ARPT)
@@ -119,6 +125,7 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     attr( rval , "statistic" ) <- "poormed"
     rval
 }
+
 
 #' @rdname svypoormed
 #' @export

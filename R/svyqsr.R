@@ -65,7 +65,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
   # if the class of the full_design attribute is just a TRUE, then the design is
   # already the full design.  otherwise, pull the full_design from that attribute.
@@ -73,27 +73,28 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     full_design <- design else full_design <- attr(design, "full_design")
 
 
-  if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
+    if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      incvar <- incvar[!nas]
-      w <- w[!nas]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else incvar[nas] <- 0
     }
-
-    ind<- names(w)
+    w <- 1/design$prob
+    ind<- names(design$prob)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    wf <- 1/full_design$prob
-    ncom<- names(wf)
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]
-      incvec <- incvec[!nas]
-      wf <- wf[!nas]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else incvec[nas] <- 0
     }
+    wf <- 1/full_design$prob
+    ncom<- names(full_design$prob)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
@@ -111,7 +112,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     rval <- QSR$value
     lin<- as.vector(QSR$lin)
     variance <- (SE_lin2(lin, full_design))^2
-	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"

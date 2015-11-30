@@ -66,23 +66,24 @@ h_fun <- function(incvar, w) {
 densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  w <- 1/design$prob
-    if(na.rm){
-      nas<-is.na(incvar)
+  if(na.rm){
+    nas<-is.na(incvar)
+    design<-design[!nas,]
+    if (length(nas) > length(design$prob))
       incvar <- incvar[!nas]
-      w <- w[!nas]
+    else incvar[nas] <- 0
+  }
+  w <- 1/design$prob
+  N <- sum(w)
+  if(is.null(h)) h <- h_fun(incvar,w)
+  u <- (x - incvar)/h
+  vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
+  if (fun == "F")
+    res <- sum(vectf * w)/(N * h) else {
+      v <- w * incvar
+      res <- sum(vectf * v)/h
     }
-
-    N <- sum(w)
-    if(is.null(h)) h <- h_fun(incvar,w)
-    u <- (x - incvar)/h
-    vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
-    if (fun == "F")
-        res <- sum(vectf * w)/(N * h) else {
-        v <- w * incvar
-        res <- sum(vectf * v)/h
-    }
-    res
+  res
 }
 
 #' Linearization of the cdf function of a variable
@@ -122,46 +123,31 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE
 
 icdf <- function(formula, design, x, na.rm = FALSE, ...) {
 
-    if (is.null(attr(design, "full_design")))
-        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  w <- 1/design$prob
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+  ncom<- names(design$prob)
   if(na.rm){
     nas<-is.na(incvar)
     design<-design[!nas,]
-    incvar <- incvar[!nas]
-    w <- w[!nas]
+    if (length(nas) > length(design$prob))
+      incvar <- incvar[!nas]
+    else incvar[nas] <- 0
   }
+  w <- 1/design$prob
   ind<- names(w)
   N <- sum(w)
   poor <- (incvar <= x) * 1
   names(poor) <- ind
-
-    # if the class of the full_design attribute is just a TRUE, then the design is
-    # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design")))
-        full_design <- design else full_design <- attr(design, "full_design")
-  incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-  wf <-1/full_design$prob
-  ncom <- names(wf)
-  if(na.rm){
-    nas<-is.na(incvec)
-    full_design<-full_design[!nas,]
-    incvec <- incvec[!nas]
-    wf <-wf[!nas]
-  }
-    value<- sum(poor*w)/N
-    lin<-(1/N)*((incvar<=x)-value)
-    names(lin)<- ind
-    if(nrow(full_design)>length(ind))lin<-complete(lin,ncom)
-    rval <- value
-    variance <- (SE_lin2(lin, full_design))^2
-    class(rval) <- "cvystat"
-    attr(rval, "lin") <- lin
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "cdf"
-    rval
+  value<- sum(poor*w)/N
+  lin<-(1/N)*((incvar<=x)-value)
+  names(lin)<- ind
+  if(nrow(design$variables)>length(ind))lin<-complete(lin,ncom)
+  rval <- value
+  variance <- (SE_lin2(lin, design))^2
+  class(rval) <- "cvystat"
+  attr(rval, "lin") <- lin
+  attr(rval, "var") <- variance
+  attr(rval, "statistic") <- "cdf"
+  rval
 }
 
 
@@ -207,57 +193,61 @@ incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 #'
 #' @export
 
-iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE, na.rm=FALSE,nas=FALSE, ...) {
+iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE, na.rm=FALSE, ...) {
 
-    if (is.null(attr(design, "full_design")))
-        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+  if(na.rm){
+    nas<-is.na(incvar)
+    design<-design[!nas,]
+    if (length(nas) > length(design$prob))
       incvar <- incvar[!nas]
-      w <- w[!nas]
-    }
-    ind<- names(w)
-    N <- sum(w)
-    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha,
-        method = "constant", na.rm = na.rm)
-    q_alpha <- as.vector(q_alpha)
-    rval <- q_alpha
+    else incvar[nas] <- 0
+  }
+  ind<- names(design$prob)
+  w <- 1/design$prob
+  N <- sum(w)
+  q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha,
+    method = "constant", na.rm = na.rm)
+  q_alpha <- as.vector(q_alpha)
+  rval <- q_alpha
 
-    # if the class of the full_design attribute is just a TRUE, then the design is
-    # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design")))
-        full_design <- design else full_design <- attr(design, "full_design")
-   incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    wf <-1/full_design$prob
-    ncom <- names(wf)
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
+  incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+
+  if(na.rm){
+    nas<-is.na(incvec)
+    full_design<-full_design[!nas,]
+    if (length(nas) > length(full_design$prob))
       incvec <- incvec[!nas]
-      wf <-wf[!nas]
-    }
-    if(nrow(full_design$variables)<length(incvec))ncom<-ncom[!nas]
-    htot <- h_fun(incvec, wf)
-    Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
-    iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+    else incvec[nas] <- 0
+  }
+  ncom <- names(full_design$prob)
+  wf <-1/full_design$prob
+  if(nrow(full_design$variables)<length(incvec))ncom<-ncom[!nas]
+  htot <- h_fun(incvec, wf)
+  Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
+  iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
 
-    if (comp && (nrow(full_design$variables)>length(ind))){
-      names(iq) <- ind
-      iq <- complete(iq, ncom)
-    }
-    if (compinc) {
-      iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
-    }
+  if (comp && (nrow(full_design$variables)>length(ind))){
+    names(iq) <- ind
+    iq <- complete(iq, ncom)
+  }
+  if (compinc) {
+    iq <- -(1/(N * Fprime)) * ((incvec <= q_alpha) - alpha)
+  }
 
-    variance <- (SE_lin2(iq, full_design))^2
-    class(rval) <- "cvystat"
-    attr(rval, "lin") <- iq
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "quantile"
-    rval
+  variance <- (SE_lin2(iq, full_design))^2
+  class(rval) <- "cvystat"
+  attr(rval, "lin") <- iq
+  attr(rval, "var") <- variance
+  attr(rval, "statistic") <- "quantile"
+  rval
 }
 
 #' Linearization of the total above a quantile or below a quantile
@@ -302,52 +292,54 @@ iqalpha <- function(formula, design, alpha, h=NULL, comp = TRUE, compinc = FALSE
 
 
 isq <- function(formula, design, alpha, comp = TRUE, compinc, na.rm = FALSE,...) {
-    if (is.null(attr(design, "full_design")))
-        stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
+  if (is.null(attr(design, "full_design")))
+    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+  if(na.rm){
+    nas<-is.na(incvar)
+    design<-design[!nas,]
+    if (length(nas) > length(design$prob))
       incvar <- incvar[!nas]
-      w <- w[!nas]
-    }
+    else incvar[nas] <- 0
+  }
+  ind <- names(design$prob)
+  w <- 1/design$prob
+  # if the class of the full_design attribute is just a TRUE, then the design is
+  # already the full design.  otherwise, pull the full_design from that attribute.
+  if ("logical" %in% class(attr(design, "full_design")))
+    full_design <- design else full_design <- attr(design, "full_design")
 
-    ind <- names(design$prob)
+  incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    # if the class of the full_design attribute is just a TRUE, then the design is
-    # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design")))
-        full_design <- design else full_design <- attr(design, "full_design")
-
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    wf <- 1/full_design$prob
-    ncom<- names(wf)
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
+  if(na.rm){
+    nas<-is.na(incvec)
+    full_design<-full_design[!nas,]
+    if (length(nas) > length(full_design$prob))
       incvec <- incvec[!nas]
-      wf <- wf[!nas]
-    }
-    h <- h_fun(incvec, wf)
-    QALPHA <- iqalpha(formula = formula, design = design, alpha,comp = TRUE,
-      compinc = compinc, na.rm = na.rm)
-    q_alpha <- coef(QALPHA)
-    iq <- attr(QALPHA, "lin")
-    rval <- sum((incvar<=q_alpha)*incvar * w)
-    Fprime <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
-    isqalpha1<- incvec * ((incvec <= q_alpha))
-    if(length(isqalpha1)< length(iq)){
-     names(isqalpha1)<- ncom[!nas]
-     isqalpha1<- complete(isqalpha1, ncom)
-      }
-    isqalpha <- isqalpha1 + Fprime * iq
-    variance <- SE_lin2(isqalpha, full_design)^2
-    class(rval) <- "cvystat"
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "isq"
-    attr(rval, "lin") <- isqalpha
-    rval
+    else incvec[nas] <- 0
+  }
+  ncom<- names(full_design$prob)
+  wf <- 1/full_design$prob
+  h <- h_fun(incvec, wf)
+  QALPHA <- iqalpha(formula = formula, design = design, alpha,comp = TRUE,
+    compinc = compinc, na.rm = na.rm)
+  q_alpha <- coef(QALPHA)
+  iq <- attr(QALPHA, "lin")
+  rval <- sum((incvar<=q_alpha)*incvar * w)
+  Fprime <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
+  isqalpha1<- incvec * ((incvec <= q_alpha))
+  if(length(isqalpha1)< length(iq)){
+    names(isqalpha1)<- ncom[!nas]
+    isqalpha1<- complete(isqalpha1, ncom)
+  }
+  isqalpha <- isqalpha1 + Fprime * iq
+  variance <- SE_lin2(isqalpha, full_design)^2
+  class(rval) <- "cvystat"
+  attr(rval, "var") <- variance
+  attr(rval, "statistic") <- "isq"
+  attr(rval, "lin") <- isqalpha
+  rval
 }
 
 
