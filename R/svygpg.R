@@ -32,7 +32,7 @@
 #'library(survey)
 #'data(ses)
 #'des_ses<- svydesign(id=~1, weights=~weights, data=ses,
-#'variables=~weights+sex+earningsHour+location)
+#'variables=~weights+sex+earningsHour+education)
 #'des_ses <- convey_prep( des_ses )
 #'svygpg(~earningsHour, des_ses, ~sex)
 #'
@@ -59,25 +59,28 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
     wagevar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    w <- 1/design$prob
     if(na.rm){
       nas<-is.na(wagevar)
       design<-design[!nas,]
-      wagevar <- wagevar[!nas]
-      w <- w[!nas]
+      if (length(nas) > length(design$prob))
+        wagevar <- wagevar[!nas]
+      else wagevar[nas] <- 0
     }
-    ind<- names(w)
-  full_design <- attr( design , "full_design" )
+    w <- 1/design$prob
+    ind<- names(design$prob)
+
+    full_design <- attr( design , "full_design" )
   wagevarf <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-  wf <- 1/full_design$prob
-  ncom<- names(wf)
+
   if(na.rm){
     nas<-is.na(wagevarf)
     full_design<-full_design[!nas,]
-    wagevarf <- wagevarf[!nas]
-    wf <- wf[!nas]
+    if (length(nas) > length(full_design$prob))
+      wagevarf <- wagevarf[!nas]
+    else wagevarf[nas] <- 0
   }
-
+  wf <- 1/full_design$prob
+  ncom<- names(full_design$prob)
   # sex factor
   mf <- model.frame(sex, design$variables, na.action = na.pass)
   xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 +
