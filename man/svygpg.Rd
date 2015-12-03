@@ -36,7 +36,7 @@ library(vardpoor)
 library(survey)
 data(ses)
 des_ses<- svydesign(id=~1, weights=~weights, data=ses,
-variables=~weights+sex+earningsHour+location)
+variables=~weights+sex+earningsHour+education)
 des_ses <- convey_prep( des_ses )
 svygpg(~earningsHour, des_ses, ~sex)
 }
