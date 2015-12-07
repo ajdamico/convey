@@ -167,7 +167,7 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
         ind_fem <- sex[, col_female]
         med_men <- sum(ind_men * earn_hour * w)/sum(ind_men * w)
         med_fem <- sum(ind_fem * earn_hour * w)/sum(ind_fem * w)
-        gpg <- 100 * (med_men - med_fem)/med_men
+        gpg <- (med_men - med_fem)/med_men
         gpg
     }
     rval <- ComputeGpg(earn_hour = wage, w = ws, sex = sex)

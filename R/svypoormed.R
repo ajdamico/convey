@@ -86,8 +86,6 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     ind<- names(design$prob)
     N <- sum(w)
     incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-
-
     if(na.rm){
       nas<-is.na(incvec)
       full_design<-full_design[!nas,]

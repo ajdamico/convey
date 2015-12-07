@@ -181,6 +181,7 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
 #' @keywords survey
 #'
 #' @examples
+#'
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
