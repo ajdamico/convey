@@ -144,7 +144,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
       rval <- sum(w*h(incvar,arpt,g))/N
       ahat <- sum(w*ht(incvar,arpt,g))/N
       if(g==0){
-        ARPR <- svyarpr(formula = formula, full_design, order=order, percent=percent,  na.rm=na.rm)
+        ARPR <- svyarpr(formula = formula, design, order=order, percent=percent,  na.rm=na.rm)
         fgtlin <- attr(ARPR,"lin")
       } else
         fgtlin <-(h(incvar,arpt,g)-rval)/N+(ahat*arptlin)
@@ -165,11 +165,15 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
       rval <- sum(w*h(incvar,t,g))/N
       fgtlin <- (h(incvar,t,g)-rval)/N
     }
-    if(nrow(full_design$variables)>length(fgtlin)){
-    names(fgtlin)<- ind
-    fgtlin <- complete(fgtlin, ncom)
+
+    if(type_thresh=='abs') variance <- (SE_lin2(fgtlin, design))^2
+    else{
+      if(nrow(full_design$variables)>length(fgtlin)){
+        names(fgtlin)<- ind
+        fgtlin <- complete(fgtlin, ncom)
+      }
+      variance <- (SE_lin2(fgtlin, full_design))^2
     }
-    variance <- (SE_lin2(fgtlin, full_design))^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
