@@ -97,12 +97,18 @@ svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
     ncom<- names(full_design$prob)
     wf <- 1/full_design$prob
     htot <- h_fun(incvec, wf)
-    linqalpha <- iqalpha(formula = formula, design = design, alpha = order, h=htot,
-      comp = TRUE,  compinc = FALSE, na.rm = na.rm,nas=nas)
-    rval <- percent * coef(linqalpha)
-    lin <- percent * attr(linqalpha, "lin")
-
-    # names(lin) <- ind; if (comp) lin <- complete(lin, ncom)
+    q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = order,
+      method = "constant", na.rm = na.rm)
+    q_alpha <- as.vector(q_alpha)
+    rval <- percent * q_alpha
+    Fprime <- densfun(formula = formula, design = design, q_alpha, h=htot, fun = "F", na.rm=na.rm)
+    N <- sum(w)
+    linquant<- -(1/(N * Fprime)) * ((incvar <= q_alpha) - order)
+    lin <- percent * linquant
+    if(length(lin) < nrow(full_design$variables)){
+    names(lin)<- ind
+    lin<- complete (lin, ncom)
+    }
     variance <- (SE_lin2(lin, full_design))^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"

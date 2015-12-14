@@ -67,15 +67,6 @@ svyrmir <- function(formula, design, ...) {
 
 
 svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.rm=FALSE,...){
-  if (is.null(attr(design, "full_design")))
-    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
@@ -87,40 +78,32 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
       incvar <- incvar[nas==0]
       agevar <- agevar[nas==0]
       w <- w[nas==0]
-      }
-    ind<- names(w)
-
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    agevarf <- model.frame(age, full_design$variables, na.action = na.pass)[[1]]
-    wf <- 1/full_design$prob
-    ncom<- names(wf)
-    xf <- cbind(incvec,agevarf)
-    if(na.rm){
-      nas<-rowSums(is.na(xf))
-      full_design<-full_design[nas==0,]
-      incvec<-incvec[nas==0]
-      agevarf <- agevarf[nas==0]
-      wf <- wf[nas==0]
     }
-
-    htot<- h_fun(incvec,wf)
+    N<- sum(w)
+    h<- h_fun(incvar,w)
     dsub1 <- subset(design, age < agelim )
-    iquant1<- iqalpha(formula = formula, design = dsub1, order, h=htot, na.rm = na.rm )
-    linquant1<-attr(iquant1, "lin")
-    if(nrow(full_design)>length(ind))linquant1<- linquant1[ncom]
-    dsub2 <- subset(design, age >= agelim )
-    iquant2<- iqalpha(formula = formula, design = dsub2, order, h=htot, na.rm = na.rm )
-    linquant2<-attr(iquant2, "lin")
-    if(nrow(full_design)>length(ind))linquant2<- linquant2[ncom]
-    # linearize ratio of medians
+    q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,
+      method = "constant", na.rm = na.rm)
+    q_alpha1 <- coef(q_alpha1)
+    Fprime <- densfun(formula = formula, design = design, q_alpha1, h=h, fun = "F", na.rm=na.rm)
 
-    MED1 <- list(value =coef(iquant1) , lin=linquant1 )
-    MED2 <- list(value = coef(iquant2), lin=linquant2 )
+    linquant1<- -(1/(N * Fprime)) * ((incvar <= q_alpha1) - order)
+    dsub2 <- subset(design, age >= agelim )
+    q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order,
+          method = "constant", na.rm = na.rm)
+    q_alpha2 <- as.vector(q_alpha2)
+    Fprime <- densfun(formula = formula, design = design, q_alpha2, h=h, fun = "F", na.rm=na.rm)
+
+    linquant2<- -(1/(N * Fprime)) * ((incvar <= q_alpha2) - order)
+      # linearize ratio of medians
+
+    MED1 <- list(value =q_alpha1 , lin=linquant1 )
+    MED2 <- list(value = q_alpha2, lin=linquant2 )
     list_all<- list(MED1=MED1, MED2=MED2)
     RMED <- contrastinf(quote(MED2/MED1),list_all)
     rval <- as.vector(RMED$value)
     lin <- RMED$lin
-    variance <- (SE_lin2( lin , full_design ) )^2
+    variance <- (SE_lin2( lin , design ) )^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
@@ -133,16 +116,6 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
 #' @export
 #'
 svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim,na.rm=FALSE,...) {
-
-  if (is.null(attr(design, "full_design")))
-    stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
-  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
 
 df <- model.frame(design)
 incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]

@@ -33,9 +33,11 @@
 #'data(ses)
 #'des_ses<- svydesign(id=~1, weights=~weights, data=ses,
 #'variables=~weights+sex+earningsHour+education)
-#'des_ses <- convey_prep( des_ses )
+#'# linearized design
 #'svygpg(~earningsHour, des_ses, ~sex)
-#'
+#'# replicate-weighted design
+#'des_ses_rep <-  survey:::as.svrepdesign( des_ses , type = "bootstrap" )
+#'svygpg(~earningsHour, des_ses_rep, ~sex)
 
 #' @export
 
@@ -48,16 +50,8 @@ svygpg <- function(formula, design, ...) {
 
 #' @rdname svygpg
 #' @export
-svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,...) {
+svygpg.survey.design <- function(formula, design, sex,  na.rm=FALSE,...) {
 
-  if( is.null( attr( design , "full_design" ) ) ) stop( "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function." )
-
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
     wagevar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(wagevar)
@@ -69,18 +63,6 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
     w <- 1/design$prob
     ind<- names(design$prob)
 
-    full_design <- attr( design , "full_design" )
-  wagevarf <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-
-  if(na.rm){
-    nas<-is.na(wagevarf)
-    full_design<-full_design[!nas,]
-    if (length(nas) > length(full_design$prob))
-      wagevarf <- wagevarf[!nas]
-    else wagevarf[nas] <- 0
-  }
-  wf <- 1/full_design$prob
-  ncom<- names(full_design$prob)
   # sex factor
   mf <- model.frame(sex, design$variables, na.action = na.pass)
   xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 +
@@ -102,17 +84,11 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
   TM<- list(value = sum(wagevar*sex[, col_male]*w), lin=wagevar*sex[, col_male])
   TF<- list(value = sum(wagevar*sex[, col_female]*w), lin=wagevar*sex[, col_female])
   list_all_tot <-list(INDM=INDM,INDF=INDF,TM=TM,TF=TF)
-  if(nrow(full_design$variables)>length(ind)){
-  list_all_tot<-lapply(list_all_tot, function(t){
-    names(t$lin)<-ind
-    list(value=t$value,lin=complete(t$lin,ncom))
-  })
-  }
   IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_tot)
   infun<-IGPG$lin
     rval <- IGPG$value
 
-  variance <- SE_lin2( infun , full_design )^2
+  variance <- SE_lin2( infun , design )^2
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"
   attr( rval , "var" ) <- variance
@@ -125,16 +101,6 @@ svygpg.survey.design <- function(formula, design, sex, comp=TRUE, na.rm=FALSE,..
 #' @rdname svygpg
 #' @export
 svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
-
-  if (is.null(attr(design, "full_design")))
-    stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
 
     wage <- terms.formula(formula)[[2]]
     df <- model.frame(design)

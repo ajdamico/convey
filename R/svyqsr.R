@@ -62,18 +62,8 @@ svyqsr <- function(formula, design, ...) {
 #' @rdname svyqsr
 #' @export
 svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=FALSE,...) {
-  if (is.null(attr(design, "full_design")))
-    stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-  # if the class of the full_design attribute is just a TRUE, then the design is
-  # already the full design.  otherwise, pull the full_design from that attribute.
-  if ("logical" %in% class(attr(design, "full_design")))
-    full_design <- design else full_design <- attr(design, "full_design")
-
-
-    if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
+     if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
@@ -85,33 +75,23 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     }
     w <- 1/design$prob
     ind<- names(design$prob)
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
-      if (length(nas) > length(full_design$prob))
-        incvec <- incvec[!nas]
-      else incvec[nas] <- 0
-    }
-    wf <- 1/full_design$prob
-    ncom<- names(full_design$prob)
     alpha1 <- alpha
     alpha2 <- 1 - alpha
     # Linearization of S20
-    S20 <- isq(formula = formula, design = design, alpha1,compinc=TRUE, na.rm=na.rm)
-    S20 <- list(value= S20[1], lin=attr(S20,"lin"))
+    S20 <- svyisq(formula = formula, design = design, alpha1, na.rm=na.rm)
+    S20 <- list(value= coef(S20), lin=attr(S20,"lin"))
     # Linearization of S80
-    S80 <- isq(formula = formula, design = design, alpha2,compinc = TRUE, na.rm=na.rm)
-    S80 <- list(value= S80[1], lin=attr(S80,"lin"))
+    S80 <- svyisq(formula = formula, design = design, alpha2, na.rm=na.rm)
+    S80 <- list(value= coef(S80), lin=attr(S80,"lin"))
     names(incvar)<-ind
-    TOT<- list(value=sum(incvar*w), lin=incvec)
+    TOT<- list(value=sum(incvar*w), lin=incvar)
     # LINEARIZED VARIABLE OF THE SHARE RATIO
 
     list_all<- list(TOT=TOT, S20 = S20, S80 = S80)
     QSR <- contrastinf( quote((TOT-S80)/S20), list_all)
     rval <- QSR$value
     lin<- as.vector(QSR$lin)
-    variance <- (SE_lin2(lin, full_design))^2
+    variance <- (SE_lin2(lin, design))^2
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance

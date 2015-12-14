@@ -164,10 +164,8 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
       t<-abs_thresh
       rval <- sum(w*h(incvar,t,g))/N
       fgtlin <- (h(incvar,t,g)-rval)/N
-    }
-
-    if(type_thresh=='abs') variance <- (SE_lin2(fgtlin, design))^2
-    else{
+      variance <- (SE_lin2(fgtlin, design))^2
+    } else{
       if(nrow(full_design$variables)>length(fgtlin)){
         names(fgtlin)<- ind
         fgtlin <- complete(fgtlin, ncom)
