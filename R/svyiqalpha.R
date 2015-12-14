@@ -29,9 +29,6 @@
 #' library(vardpoor)
 #' data(eusilc)
 #' library(survey)
-#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-#'  svyiqalpha(~eqIncome, design=des_eusilc, .50 )
-#'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #'

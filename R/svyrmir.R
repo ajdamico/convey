@@ -35,13 +35,11 @@
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-#' des_eusilc <- convey_prep( des_eusilc )
 #'
 #' svyrmir( ~eqIncome , design = des_eusilc , age = ~age , agelim = 65 )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
 #'
 #' # linearized design using a variable with missings
@@ -84,7 +82,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     dsub1 <- subset(design, age < agelim )
     q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,
       method = "constant", na.rm = na.rm)
-    q_alpha1 <- coef(q_alpha1)
+    q_alpha1 <- as.vector(q_alpha1)
     Fprime <- densfun(formula = formula, design = design, q_alpha1, h=h, fun = "F", na.rm=na.rm)
 
     linquant1<- -(1/(N * Fprime)) * ((incvar <= q_alpha1) - order)

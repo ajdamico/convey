@@ -43,13 +43,11 @@ data(eusilc)
 
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-des_eusilc <- convey_prep( des_eusilc )
 
 svyrmir( ~eqIncome , design = des_eusilc , age = ~age , agelim = 65 )
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-des_eusilc_rep <- convey_prep( des_eusilc_rep )
 svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
 
 # linearized design using a variable with missings
