@@ -3,12 +3,18 @@ Title: income concentration analysis with complex survey samples
 Version: 0.1
 Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("aut","cre")),
             person("Anthony", "Damico", email= "ajdamico@gmail.com", role= "aut"))
-Description: Variance estimation on indicators of income concentration and poverty using linearized or replication-based survey designs.  Wrapper around the survey package.
-Depends: R (>= 3.2.1)
-Imports: survey
+Description: Variance estimation on indicators of income concentration and
+    poverty using linearized or replication-based survey designs. Wrapper around the
+    survey package.
+Depends:
+    R (>= 3.2.1)
+Imports:
+    survey
 License: GPL-3
 LazyData: true
-Suggests: testthat,
+Suggests:
+    testthat,
     knitr,
     rmarkdown
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1
