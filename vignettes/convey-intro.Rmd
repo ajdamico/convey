@@ -335,8 +335,9 @@ Jean-Claude Deville (1999). Variance estimation for complex statistics and estim
 linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 
-
-
+<script type="text/x-mathjax-config">
+   MathJax.Hub.Config({  "HTML-CSS": { minScaleAdjust: 125, availableFonts: [] }  });
+</script>
 
 
 
