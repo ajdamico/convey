@@ -133,14 +133,11 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
     else incvar[nas] <- 0
   }
   w <- 1/design$prob
-  ind<- names(w)
+  #ind<- names(w)
   N <- sum(w)
   poor <- (incvar <= x) * 1
-  names(poor) <- ind
   value<- sum(poor*w)/N
-  lin<-(1/N)*((incvar<=x)-value)
-  names(lin)<- ind
-  if(nrow(design$variables)>length(ind))lin<-complete(lin,ncom)
+  lin<-((incvar<=x)-value)/N
   rval <- value
   variance <- (SE_lin2(lin, design))^2
   class(rval) <- "cvystat"
