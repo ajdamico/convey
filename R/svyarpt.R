@@ -179,8 +179,8 @@ svyarpt.DBIsvydesign <-
 	{
 	
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){
-			full_design$variables <- survey:::getvars(x, full_design$db$connection, full_design$db$tablename, 
-				updates = full_design$updates, subset = full_design$subset)
+			attr( dbd_eusilc , "full_design" )$variables <- survey:::getvars(x, attr( dbd_eusilc , "full_design" )$db$connection, attr( dbd_eusilc , "full_design" )$db$tablename, 
+				updates = attr( dbd_eusilc , "full_design" )$updates, subset = attr( dbd_eusilc , "full_design" )$subset)
 		}
 			
 		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
