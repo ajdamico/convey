@@ -53,6 +53,17 @@
 #' svyarpt( ~ py010n , design = des_eusilc_rep )
 #' svyarpt( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 #'
+#' 
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#' 
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#'
+#' svyarpt( ~ eqIncome , design = dbd_eusilc )
+#' 
 #' @export
 #'
 svyarpt <- function(formula, design, ...) {
@@ -159,3 +170,13 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     attr(rval, "statistic") <- "arpt"
     rval
 }
+
+#' @rdname svyarpt
+#' @export
+svyarpt.DBIsvydesign <-
+	function (x, design, ...) 
+	{
+		design$variables <- getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+		NextMethod("svyarpt", design)
+	}

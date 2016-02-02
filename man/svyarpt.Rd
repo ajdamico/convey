@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyarpt.R
 \name{svyarpt}
 \alias{svyarpt}
+\alias{svyarpt.DBIsvydesign}
 \alias{svyarpt.survey.design}
 \alias{svyarpt.svyrep.design}
 \title{At-risk-of-poverty threshold}
@@ -13,6 +14,8 @@ svyarpt(formula, design, ...)
 
 \method{svyarpt}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   na.rm = FALSE, ...)
+
+\method{svyarpt}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -60,6 +63,17 @@ svyarpt( ~ py010n , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyarpt( ~ py010n , design = des_eusilc_rep )
 svyarpt( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+
+
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+
+svyarpt( ~ eqIncome , design = dbd_eusilc )
 
 }
 \author{
