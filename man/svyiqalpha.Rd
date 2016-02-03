@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyiqalpha.R
 \name{svyiqalpha}
 \alias{svyiqalpha}
+\alias{svyiqalpha.DBIsvydesign}
 \alias{svyiqalpha.survey.design}
 \alias{svyiqalpha.svyrep.design}
-\alias{svysvyiqalpha.DBIsvydesign}
 \title{Linearization of a variable quantile}
 \usage{
 svyiqalpha(formula, design, ...)
@@ -13,7 +13,7 @@ svyiqalpha(formula, design, ...)
 
 \method{svyiqalpha}{svyrep.design}(formula, design, alpha, na.rm = FALSE, ...)
 
-svysvyiqalpha.DBIsvydesign(x, design, ...)
+\method{svyiqalpha}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

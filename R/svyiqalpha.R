@@ -133,7 +133,7 @@ svyiqalpha.svyrep.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
 
 #' @rdname svyiqalpha
 #' @export
-svysvyiqalpha.DBIsvydesign <-
+svyiqalpha.DBIsvydesign <-
   function (x, design, ...)
   {
 
