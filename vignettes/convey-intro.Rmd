@@ -50,9 +50,9 @@ Note that it is not possible to use Taylor linearization for these measures beca
 ### Influence function
 
 
-Let $U$ be a population of size $N$ and $M$ a measure that allocates mass one to the set composed by one unit, that is $M(i)=M_i= 1$ if $i\in U$ and $M(i)=0$ if $i\notin U$ 
+Let $U$ be a population of size $N$ and $M$ be a measure that allocates mass one to the set composed by one unit, that is $M(i)=M_i= 1$ if $i\in U$ and $M(i)=0$ if $i\notin U$ 
 
-A population parameter $\theta$ can be expressed as a functional of $M$
+Now, a population parameter $\theta$ can be expressed as a functional of $M$
 \[
 \theta=T(M)
 \]
@@ -157,7 +157,7 @@ $f$ - income density function;
 
 ### Structure of the library
 
-In the library convey, there are some basic functions that produces the linearized variables of some estimates that often enter in the definition of measures of concentration and poverty. For example the `quantile` which is linearized by the function `iqalpha`. Other example is the function `isq` that linearizes the total below a quantile of the variable.
+In the library convey, there are some basic functions that produces the linearized variables of some estimates that often enter in the definition of measures of concentration and poverty. For example the `quantile` which is linearized by the function `svyiqalpha`. Other example is the function `svyisq` that linearizes the total below a quantile of the variable.
 
 From the linearized variables of these basic estimates it is possible by using rules of composition, valid for influence functions, to derive the influence function of more complex estimates. By definition the influence function is a Gateaux derivative and the rules rules of composition valid for Gateaux derivatives also hold for Influence Functions.
 
@@ -187,7 +187,7 @@ we linearize the `rmpg`.
 ### Examples of use of the library convey
 
 
-In the following examples we will use the data set eusilc contained in the libraries `vardpoor` and `Laeken`.
+In the following examples we will use the data set `eusilc` contained in the libraries `vardpoor` and `Laeken`.
 
 ```{r results='hide', message=FALSE, warning=FALSE}
 library(vardpoor)
@@ -217,7 +217,6 @@ svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5,
   percent = 0.6,deff = FALSE)
 ```
 
-
 Using the same data set, we estimate the `quantile share ratio`: 
 
 ```{r comment=NA}
@@ -230,7 +229,7 @@ svyby(~eqIncome, by = ~db040, design = des_eusilc,
 
 ```
 
-These functions can be use as S3 method for the class `survey.design` and the class `svyrep.design`.
+These functions can be used as S3 methods for the classes `survey.design` and `svyrep.design`.
 
 Let's create a design object of class `svyrep.design` and run the function `convey_prep` on it:
 
@@ -246,6 +245,7 @@ svyarpr(~eqIncome, design=des_eusilc_rep, .5, .6)
 svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, deff = FALSE)
 ```
 The functions of the library convey are called in a similar way  to the functions in library survey.
+
 It is also possible to deal with missing values by using the argument `na.rm`.
 
 ```{r comment=NA}
@@ -274,8 +274,9 @@ h(y_{k},\theta )=\left[ \frac{(\theta -y_{k})}{\theta }\right] ^{\gamma
 }\delta \left\{ y_{k}\leq \theta \right\} , 
 \]
 
-being $\theta$ the poverty threshold; $\delta$ the indicator function that assigns 
-value 1 if the condition $\{y_{k}\leq \theta \}$ is satisfied and 0 otherwise, and $\gamma$ a non-negative constant. When $\gamma =0$, $p$ can be interpreted as the ratio of poor people, and for   $\gamma \geq 1$, the weight of poor people increases with the value $\gamma$, (Foster and all, 1984).
+where: $\theta$ is the poverty threshold; $\delta$ the indicator function that assigns value 1 if the condition $\{y_{k}\leq \theta \}$ is satisfied and 0 otherwise, and $\gamma$ is a non-negative constant. 
+
+When $\gamma =0$, $p$ can be interpreted as the ratio of poor people, and for   $\gamma \geq 1$, the weight of poor people increases with the value $\gamma$, (Foster and all, 1984).
 
 The poverty measure FGT is implemented in the library convey by the function `svyfgt`.
 The argument `thresh_type` of this function defines the type of poverty threshold adopted.
@@ -288,7 +289,7 @@ There are three possible choices:
 The quantile and the mean envolved in the definition of the threshold are estimated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator `arpr` computed by
 the function  `svyarpr`. 
 
-In the following we give some examples of the function `svyfgt` to estimate the values of the FGT poverty index.
+Next, we give some examples of the function `svyfgt` to estimate the values of the FGT poverty index.
 
 Consider first the poverty threshold fixed ($\gamma=0$) in the value $10000$. The headcount ratio (FGT0) is
 
@@ -307,14 +308,17 @@ To estimate the FGT0 with the poverty threshold fixed at $0.6* MED$ we fix the a
 ```{r comment=NA}
 svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
 ```
+that matches the estimate obtained by
+
+```{r comment=NA}
+svyarpr(~eqIncome, design=des_eusilc, .5, .6)
+```
 To estimate the poverty gap(FGT1) with the poverty threshold equal to $0.6*MEAN$
 we use:
 
 ```{r comment=NA}
 svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
 ```
-
-
 
 
 

@@ -312,6 +312,8 @@ coef.cvystat <- function(object, ...) {
 #' @export
 convey_prep <- function(design) {
 
+	if( ( "DBIsvydesign" %in% class( design ) ) | ( "DBIrepdesign" %in% class( design ) ) ) stop( "the `convey` package does not support database-backed survey designs.\r\nyou must create your design within memory" )
+
     if (!is.null(attr(design, "full_design")))stop("convey_prep has already been run on this design")
 
     cat("preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.\n\r")

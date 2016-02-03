@@ -3,11 +3,17 @@
 \name{svyiqalpha}
 \alias{svyiqalpha}
 \alias{svyiqalpha.survey.design}
+\alias{svyiqalpha.svyrep.design}
+\alias{svysvyiqalpha.DBIsvydesign}
 \title{Linearization of a variable quantile}
 \usage{
 svyiqalpha(formula, design, ...)
 
 \method{svyiqalpha}{survey.design}(formula, design, alpha, na.rm = FALSE, ...)
+
+\method{svyiqalpha}{svyrep.design}(formula, design, alpha, na.rm = FALSE, ...)
+
+svysvyiqalpha.DBIsvydesign(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -46,6 +52,16 @@ svyiqalpha( ~ py010n , design = des_eusilc , .50, na.rm = TRUE )
 svyiqalpha( ~ py010n , design = des_eusilc_rep, .50 )
 svyiqalpha( ~ py010n , design = des_eusilc_rep ,.50, na.rm = TRUE )
 
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+dbd_eusilc <- convey_prep( dbd_eusilc )
+
+svyiqalpha( ~ eqIncome , design = dbd_eusilc, .50 )
 
 }
 \author{

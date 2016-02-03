@@ -46,6 +46,16 @@
 #' svyiqalpha( ~ py010n , design = des_eusilc_rep, .50 )
 #' svyiqalpha( ~ py010n , design = des_eusilc_rep ,.50, na.rm = TRUE )
 #'
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#'
+#' svyiqalpha( ~ eqIncome , design = dbd_eusilc, .50 )
 #'
 #' @export
 #'
@@ -89,7 +99,7 @@ svyiqalpha.survey.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   rval
 }
 
-#' @rdname svygpg
+#' @rdname svyiqalpha
 #' @export
 #'
 svyiqalpha.svyrep.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
@@ -121,3 +131,16 @@ svyiqalpha.svyrep.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   attr(rval, "statistic") <- "quantile"
   rval
 }
+
+#' @rdname svyiqalpha
+#' @export
+svysvyiqalpha.DBIsvydesign <-
+  function (x, design, ...)
+  {
+
+ design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+      updates = design$updates, subset = design$subset)
+
+    NextMethod("svyiqalpha", design)
+  }
+
