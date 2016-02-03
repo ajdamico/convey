@@ -131,15 +131,31 @@ svyiqalpha.svyrep.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   rval
 }
 
+  
 #' @rdname svyiqalpha
 #' @export
 svyiqalpha.DBIsvydesign <-
-  function (x, design, ...)
-  {
+	function (x, design, ...) 
+	{
+	
+		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+			
+			full_design <- attr( design , "full_design" )
+		
+			full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename, 
+				updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+			
+			attr( design , "full_design" ) <- full_design
+			
+			rm( full_design )
+			
+		}
+			
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+			updates = design$updates, subset = design$subset)
+			
+		NextMethod("svyiqalpha", design)
+	}
 
-design$variables <- survey:::getvars(x, design$db$connection,
-  design$db$tablename, updates = design$updates, subset = design$subset)
-
-    NextMethod("svyiqalpha", design)
-  }
-
+  
+  
