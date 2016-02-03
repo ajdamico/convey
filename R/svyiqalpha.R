@@ -53,7 +53,6 @@
 #' dbWriteTable( conn , 'eusilc' , eusilc )
 #'
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
-#' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyiqalpha( ~ eqIncome , design = dbd_eusilc, .50 )
 #'
@@ -138,8 +137,8 @@ svysvyiqalpha.DBIsvydesign <-
   function (x, design, ...)
   {
 
- design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
-      updates = design$updates, subset = design$subset)
+design$variables <- survey:::getvars(x, design$db$connection,
+  design$db$tablename, updates = design$updates, subset = design$subset)
 
     NextMethod("svyiqalpha", design)
   }
