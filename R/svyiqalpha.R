@@ -54,6 +54,7 @@
 #'
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
 #' svyiqalpha( ~ eqIncome , design = dbd_eusilc, .50 )
 #'
 #' @export
@@ -70,7 +71,7 @@ UseMethod("svyiqalpha", design)
 svyiqalpha.survey.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-
+  nome<-terms.formula(formula)[[2]]
   if(na.rm){
     nas<-is.na(incvar)
     design<-design[!nas,]
@@ -89,8 +90,9 @@ svyiqalpha.survey.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F",
     na.rm=na.rm)
   iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
-
-    variance <- (SE_lin2(iq, design))^2
+  design <- update(design,
+    t = eval(quote(-(1/(N * Fprime)) * ((eval(nome) <= q_alpha) - alpha))))
+  variance <- vcov(svytotal(~t,design))
   class(rval) <- "cvystat"
   attr(rval, "lin") <- iq
   attr(rval, "var") <- variance
@@ -131,31 +133,30 @@ svyiqalpha.svyrep.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   rval
 }
 
-  
+
 #' @rdname svyiqalpha
 #' @export
 svyiqalpha.DBIsvydesign <-
-	function (x, design, ...) 
+	function (x, design, ...)
 	{
-	
+
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){
-			
+
 			full_design <- attr( design , "full_design" )
-		
-			full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename, 
+
+			full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
 				updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
-			
+
 			attr( design , "full_design" ) <- full_design
-			
+
 			rm( full_design )
-			
+
 		}
-			
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
 			updates = design$updates, subset = design$subset)
-			
+
 		NextMethod("svyiqalpha", design)
 	}
 
-  
-  
+
