@@ -41,6 +41,17 @@
 #' svyisq( ~ py010n , design = des_eusilc_rep, .20 )
 #' svyisq( ~ py010n , design = des_eusilc_rep , .20,  na.rm = TRUE )
 #'
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#' svyisq( ~ eqIncome , design = dbd_eusilc, .20 )
+#'
 #' @export
 
 svyisq <- function(formula, design, ...) {
@@ -54,7 +65,7 @@ svyisq <- function(formula, design, ...) {
 
 svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-
+  nome<-terms.formula(formula)[[2]]
   if(na.rm){
     nas<-is.na(incvar)
     design<-design[!nas,]
@@ -69,17 +80,24 @@ svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
   q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha,
     method = "constant", na.rm = na.rm)
   q_alpha <- as.vector(q_alpha)
-  Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
-  iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
-  rval <- sum((incvar<=q_alpha)*incvar * w)
-  Fprime <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
-  isqalpha1<- incvar * ((incvar <= q_alpha))
-  isqalpha <- isqalpha1 + Fprime * iq
-  variance <- SE_lin2(isqalpha, design)^2
+  Fprime0 <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
+  Fprime1 <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
+
+  list.iq0 <- list(incvar=incvar,N=N,Fprime0=Fprime0,Fprime1=Fprime1,q_alpha=q_alpha,  alpha=alpha)
+  list.iq <- list(incvar=nome,N=N,Fprime0=Fprime0,Fprime1=Fprime1,
+    q_alpha=q_alpha, alpha=alpha)
+    rval <- sum((incvar<=q_alpha)*incvar * w)
+  iq <- quote(-(1/(N * Fprime0)) * ((incvar <= q_alpha) - alpha))
+  isqalpha1<- quote(incvar * (incvar <= q_alpha))
+  isqalpha <- quote(isqalpha1 + Fprime1 * iq)
+  lin0 <- eval(substitute(substitute(lin,list(isqalpha1=isqalpha1,iq=iq)),list(lin=isqalpha)))
+  lin <- eval(substitute(substitute(lin,list.iq),list(lin=lin0)))
+  design <- eval(substitute(update(design, t=lin)),list(lin=lin))
+  variance <- vcov(svytotal(~t,design))
   class(rval) <- "cvystat"
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "isq"
-  attr(rval, "lin") <- isqalpha
+  attr(rval, "lin") <- eval(substitute(substitute(lin0,list.iq0),list(lin0=lin0)))
   rval
 }
 
@@ -110,5 +128,29 @@ svyisq.svyrep.design <- function(formula, design, alpha, na.rm = FALSE,...){
     rval
   }
 
+#' @rdname svyisq
+#' @export
+svyisq.DBIsvydesign <-
+  function (x, design, ...)
+  {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+      updates = design$updates, subset = design$subset)
+
+    NextMethod("svyisq", design)
+  }
 
 

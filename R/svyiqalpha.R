@@ -89,10 +89,15 @@ svyiqalpha.survey.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   h<- h_fun(incvar, w)
   Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F",
     na.rm=na.rm)
-  iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
-  design <- update(design,
-    t = eval(quote(-(1/(N * Fprime)) * ((eval(nome) <= q_alpha) - alpha))))
-  variance <- vcov(svytotal(~t,design))
+iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+expr<- quote( -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha))
+list.iq <- list(incvar=nome,N=N,Fprime=Fprime,q_alpha=q_alpha,alpha=alpha)
+
+lin <- eval(substitute(substitute(lin,list.iq),list(lin=expr)))
+
+design <- eval(substitute(update(design, t=lin)),list(lin=lin))
+variance <- vcov(svytotal(~t,design))
+
   class(rval) <- "cvystat"
   attr(rval, "lin") <- iq
   attr(rval, "var") <- variance

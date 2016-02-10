@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyisq.R
 \name{svyisq}
 \alias{svyisq}
+\alias{svyisq.DBIsvydesign}
 \alias{svyisq.survey.design}
 \alias{svyisq.svyrep.design}
 \title{Linearization of the total below a quantile}
@@ -11,6 +12,8 @@ svyisq(formula, design, ...)
 \method{svyisq}{survey.design}(formula, design, alpha, na.rm = FALSE, ...)
 
 \method{svyisq}{svyrep.design}(formula, design, alpha, na.rm = FALSE, ...)
+
+\method{svyisq}{DBIsvydesign}(x, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -43,6 +46,17 @@ svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyisq( ~ py010n , design = des_eusilc_rep, .20 )
 svyisq( ~ py010n , design = des_eusilc_rep , .20,  na.rm = TRUE )
+
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+
+dbd_eusilc <- convey_prep( dbd_eusilc )
+svyisq( ~ eqIncome , design = dbd_eusilc, .20 )
 
 }
 \author{
