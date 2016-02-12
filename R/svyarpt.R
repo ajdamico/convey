@@ -38,7 +38,6 @@
 #'
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
-#'
 #' svyarpt( ~eqIncome , design = des_eusilc )
 #'
 #' # replicate-weighted design
@@ -53,18 +52,18 @@
 #' svyarpt( ~ py010n , design = des_eusilc_rep )
 #' svyarpt( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 #'
-#' 
+#'
 #' # database-backed design
 #' require(RSQLite)
 #' tfile <- tempfile()
 #' conn <- dbConnect( SQLite() , tfile )
 #' dbWriteTable( conn , 'eusilc' , eusilc )
-#' 
+#'
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyarpt( ~ eqIncome , design = dbd_eusilc )
-#' 
+#'
 #' @export
 #'
 svyarpt <- function(formula, design, ...) {
@@ -81,12 +80,12 @@ svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-
   # if the class of the full_design attribute is just a TRUE, then the design is
   # already the full design.  otherwise, pull the full_design from that attribute.
   if ("logical" %in% class(attr(design, "full_design")))
     full_design <- design else full_design <- attr(design, "full_design")
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    nome<-terms.formula(formula)[[2]]
 
 
     if(na.rm){
@@ -121,7 +120,9 @@ svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
     names(lin)<- ind
     lin<- complete (lin, ncom)
     }
-    variance <- (SE_lin2(lin, full_design))^2
+
+    variance <- svyrecvar(lin/design$prob, design$cluster,
+      design$strata, design$fpc, postStrata = design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
@@ -175,24 +176,24 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
 #' @rdname svyarpt
 #' @export
 svyarpt.DBIsvydesign <-
-	function (x, design, ...) 
+	function (x, design, ...)
 	{
-	
+
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){
-			
+
 			full_design <- attr( design , "full_design" )
-		
-			full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename, 
+
+			full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
 				updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
-			
+
 			attr( design , "full_design" ) <- full_design
-			
+
 			rm( full_design )
-			
+
 		}
-			
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename, 
+
+		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
 			updates = design$updates, subset = design$subset)
-			
+
 		NextMethod("svyarpt", design)
 	}
