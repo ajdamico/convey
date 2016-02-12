@@ -2,6 +2,7 @@
 
 S3method(coef,cvystat)
 S3method(print,cvystat)
+S3method(svyarpr,DBIsvydesign)
 S3method(svyarpr,survey.design)
 S3method(svyarpr,svyrep.design)
 S3method(svyarpt,DBIsvydesign)
