@@ -52,6 +52,17 @@
 #' svyarpr( ~ py010n , design = des_eusilc_rep )
 #' svyarpr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 #'
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#'
+#' svyarpt( ~ eqIncome , design = dbd_eusilc )
+#'
 #' @export
 #'
 svyarpr <- function(formula, design, ...) {
@@ -116,7 +127,10 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     # use h for the whole sample
     Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F", na.rm=na.rm)
     arprlin <- arpr1lin + Fprime * arptlin
-    variance <- (SE_lin2(arprlin, full_design))^2
+    variance <- svyrecvar(arprlin/full_design$prob, full_design$cluster,
+      full_design$strata, full_design$fpc,
+      postStrata = full_design$postStrata)
+
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
@@ -183,3 +197,28 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     attr(rval, "statistic") <- "arpr"
     rval
 }
+
+#' @rdname svyarpr
+#' @export
+svyarpr.DBIsvydesign <-
+  function (x, design, ...)
+  {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+      updates = design$updates, subset = design$subset)
+
+    NextMethod("svyarpr", design)
+  }
