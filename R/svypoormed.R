@@ -51,6 +51,16 @@
 #' # replicate-weighted design using a variable with missings
 #' svypoormed( ~ py010n , design = des_eusilc_rep )
 #' svypoormed( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#' svypoormed( ~ eqIncome , design = dbd_eusilc )
 #'
 #' @export
 #'
@@ -100,7 +110,9 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
     arpt <- coef(ARPT)
     linarpt <- attr(ARPT, "lin")
-    dsub <- subset(design, subset = (incvar <= arpt))
+    nome<-terms.formula(formula)[[2]]
+    dsub <- eval(substitute(subset(design, subset=(incvar <= arpt)),list(incvar=nome, arpt = arpt)))
+
     medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm)
     medp <- as.vector(medp)
     ARPR <- svyarpr(formula=formula, design= design, order, percent, na.rm = na.rm)
@@ -115,7 +127,8 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     # linearize median of poor
     linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
     rval <-medp
-    variance <- ( SE_lin2( linmedp , full_design ) )^2
+    variance <- svyrecvar(linmedp/full_design$prob, full_design$cluster,
+      full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
@@ -187,3 +200,29 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
     attr(rval, "statistic") <- "poormed"
     rval
 }
+
+#' @rdname svypoormed
+#' @export
+svypoormed.DBIsvydesign <-
+  function (formula, design, ...)
+  {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
+      updates = design$updates, subset = design$subset)
+
+    NextMethod("svypoormed", design)
+  }
+

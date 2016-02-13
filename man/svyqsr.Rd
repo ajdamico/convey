@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyqsr.R
 \name{svyqsr}
 \alias{svyqsr}
+\alias{svyqsr.DBIsvydesign}
 \alias{svyqsr.survey.design}
 \alias{svyqsr.svyrep.design}
 \title{Quintile Share Ratio}
@@ -13,6 +14,8 @@ svyqsr(formula, design, ...)
 
 \method{svyqsr}{svyrep.design}(formula, design, alpha = 0.2, na.rm = FALSE,
   ...)
+
+\method{svyqsr}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -56,6 +59,18 @@ svyqsr( ~ py010n , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyqsr( ~ py010n , design = des_eusilc_rep )
 svyqsr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#'
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+
+dbd_eusilc <- convey_prep( dbd_eusilc )
+svyqsr( ~ eqIncome , design = dbd_eusilc )
+
 
 }
 \author{
