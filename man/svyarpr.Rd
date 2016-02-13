@@ -15,7 +15,7 @@ svyarpr(formula, design, ...)
 \method{svyarpr}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   na.rm = FALSE, ...)
 
-\method{svyarpr}{DBIsvydesign}(x, design, ...)
+\method{svyarpr}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

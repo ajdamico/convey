@@ -13,7 +13,7 @@ svyiqalpha(formula, design, ...)
 
 \method{svyiqalpha}{svyrep.design}(formula, design, alpha, na.rm = FALSE, ...)
 
-\method{svyiqalpha}{DBIsvydesign}(x, design, ...)
+\method{svyiqalpha}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

@@ -176,14 +176,14 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
 #' @rdname svyarpt
 #' @export
 svyarpt.DBIsvydesign <-
-	function (x, design, ...)
+	function (formula, design, ...)
 	{
 
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){
 
 			full_design <- attr( design , "full_design" )
 
-			full_design$variables <- survey:::getvars(x, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+			full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
 				updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 
 			attr( design , "full_design" ) <- full_design
@@ -192,7 +192,7 @@ svyarpt.DBIsvydesign <-
 
 		}
 
-		design$variables <- survey:::getvars(x, design$db$connection, design$db$tablename,
+		design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
 			updates = design$updates, subset = design$subset)
 
 		NextMethod("svyarpt", design)

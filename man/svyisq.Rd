@@ -13,7 +13,7 @@ svyisq(formula, design, ...)
 
 \method{svyisq}{svyrep.design}(formula, design, alpha, na.rm = FALSE, ...)
 
-\method{svyisq}{DBIsvydesign}(x, design, ...)
+\method{svyisq}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
