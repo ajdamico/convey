@@ -71,8 +71,7 @@ UseMethod("svyiqalpha", design)
 svyiqalpha.survey.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  nome<-terms.formula(formula)[[2]]
-  if(na.rm){
+    if(na.rm){
     nas<-is.na(incvar)
     design<-design[!nas,]
     if (length(nas) > length(design$prob))
@@ -90,13 +89,9 @@ svyiqalpha.survey.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F",
     na.rm=na.rm)
 iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
-expr<- quote( -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha))
-list.iq <- list(incvar=nome,N=N,Fprime=Fprime,q_alpha=q_alpha,alpha=alpha)
+variance <- svyrecvar(iq/design$prob, design$cluster,
+  design$strata, design$fpc, postStrata = design$postStrata)
 
-lin <- eval(substitute(substitute(lin,list.iq),list(lin=expr)))
-
-design <- eval(substitute(update(design, t=lin)),list(lin=lin))
-variance <- vcov(svytotal(~t,design))
 
   class(rval) <- "cvystat"
   attr(rval, "lin") <- iq
