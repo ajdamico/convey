@@ -83,21 +83,16 @@ svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
   Fprime0 <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
   Fprime1 <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
 
-  list.iq0 <- list(incvar=incvar,N=N,Fprime0=Fprime0,Fprime1=Fprime1,q_alpha=q_alpha,  alpha=alpha)
-  list.iq <- list(incvar=nome,N=N,Fprime0=Fprime0,Fprime1=Fprime1,
-    q_alpha=q_alpha, alpha=alpha)
-    rval <- sum((incvar<=q_alpha)*incvar * w)
-  iq <- quote(-(1/(N * Fprime0)) * ((incvar <= q_alpha) - alpha))
-  isqalpha1<- quote(incvar * (incvar <= q_alpha))
-  isqalpha <- quote(isqalpha1 + Fprime1 * iq)
-  lin0 <- eval(substitute(substitute(lin,list(isqalpha1=isqalpha1,iq=iq)),list(lin=isqalpha)))
-  lin <- eval(substitute(substitute(lin,list.iq),list(lin=lin0)))
-  design <- eval(substitute(update(design, t=lin)),list(lin=lin))
-  variance <- vcov(svytotal(~t,design))
+  rval <- sum((incvar<=q_alpha)*incvar * w)
+  iq <- -(1/(N * Fprime0)) * ((incvar <= q_alpha) - alpha)
+  isqalpha1<- incvar * (incvar <= q_alpha)
+  isqalpha <- isqalpha1 + Fprime1 * iq
+  variance <- svyrecvar(isqalpha/design$prob, design$cluster,
+    design$strata, design$fpc, postStrata = design$postStrata)
   class(rval) <- "cvystat"
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "isq"
-  attr(rval, "lin") <- eval(substitute(substitute(lin0,list.iq0),list(lin0=lin0)))
+  attr(rval, "lin") <- isqalpha
   rval
 }
 
