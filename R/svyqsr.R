@@ -49,6 +49,18 @@
 #' # replicate-weighted design using a variable with missings
 #' svyqsr( ~ py010n , design = des_eusilc_rep )
 #' svyqsr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#' #'
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#' svyqsr( ~ eqIncome , design = dbd_eusilc )
+#'
 #'
 #' @export
 #'
@@ -91,11 +103,13 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     QSR <- contrastinf( quote((TOT-S80)/S20), list_all)
     rval <- QSR$value
     lin<- as.vector(QSR$lin)
-    variance <- (SE_lin2(lin, design))^2
+    variance <- svyrecvar(lin/design$prob, design$cluster,
+      design$strata, design$fpc, postStrata = design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"
+    attr(rval, "lin") <- lin
     rval
 }
 
@@ -151,3 +165,30 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
     attr(rval, "statistic") <- "qsr"
     rval
 }
+
+#' @rdname svyqsr
+#' @export
+svyqsr.DBIsvydesign <-
+  function (formula, design, ...)
+  {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
+      updates = design$updates, subset = design$subset)
+
+    NextMethod("svyqsr", design)
+  }
+
+
