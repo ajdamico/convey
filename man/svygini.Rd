@@ -2,6 +2,7 @@
 % Please edit documentation in R/svygini.R
 \name{svygini}
 \alias{svygini}
+\alias{svygini.DBIsvydesign}
 \alias{svygini.survey.design}
 \alias{svygini.svyrep.design}
 \title{Gini coefficient}
@@ -11,6 +12,8 @@ svygini(formula, design, ...)
 \method{svygini}{survey.design}(formula, design, na.rm = FALSE, ...)
 
 \method{svygini}{svyrep.design}(formula, design, na.rm = FALSE, ...)
+
+\method{svygini}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -50,6 +53,18 @@ svygini( ~ py010n , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svygini( ~ py010n , design = des_eusilc_rep )
 svygini( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+
+
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+
+dbd_eusilc <- convey_prep( dbd_eusilc )
+svygini( ~ eqIncome , design = dbd_eusilc )
 
 }
 \author{
