@@ -107,7 +107,6 @@ svygini.survey.design <-  function(formula, design, na.rm=FALSE, ...) {
   names(lingini) <- ind
   if (nrow(design)>length(ind)) lingini<-complete(lingini, ncom)
   rval <- GINI$value
-  #variance <- (SE_lin2(lingini, design))^2
   variance <- svyrecvar(lingini/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
