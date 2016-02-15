@@ -4,7 +4,7 @@
 #'
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param age formula defining the variable age
 #' @param agelim the age cutpoint, the default is 65
 #' @param order income quantile order, usually .5

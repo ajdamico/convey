@@ -43,7 +43,7 @@ h_fun <- function(incvar, w) {
 #'computes the derivative of a function in a point using kernel estimation
 #'
 #'@param formula a formula specifying the income variable
-#'@param design a design object of class \code{survey.design} of the library survey.  database-backed designs not supported
+#'@param design a design object of class \code{survey.design} from the \code{survey} library.
 #'@param x the point where the derivative is calculated
 #'@param h value of the bandwidth based on the whole sample
 #'@param if \code{F} estimates the derivative of the cdf function; if \code{S} estimates
@@ -91,7 +91,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE
 #' Computes the linearized variable of the cdf function in a point.
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design}  of the library survey.  database-backed designs not supported
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #'
 #'@return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -204,7 +204,7 @@ ratio_inf <- function(T, S) {
 #' Computes the se from the linearized variable.
 #'
 #' @param object output of a linearizing indicator function
-#' @param design a survey design object of the library survey.  database-backed designs not supported
+#' @param design a survey design object of the library survey.
 #' @return the estime of the indicator se
 #'
 #' @author Djalma Pessoa and Anthony Damico
@@ -273,7 +273,7 @@ coef.cvystat <- function(object, ...) {
 #'
 #' stores the full survey design (needed for convey functions) within the design
 #'
-#' @param design a survey design object of the library survey.  database-backed designs not supported
+#' @param design a survey design object of the library survey.
 #' @return design the same survey object, preparred for all convey package functions.
 #'
 #' @author Djalma Pessoa and Anthony Damico

@@ -3,7 +3,7 @@
 #' The standard definition is to use 60\% of the median income.
 #'
 #' @param formula a formula specifying the income variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param order income quantile order, usually .50 (median)
 #' @param percent fraction of the quantile, usually .60
 #' @param comp logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros

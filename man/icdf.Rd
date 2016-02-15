@@ -9,7 +9,7 @@ icdf(formula, design, x, na.rm = FALSE, ...)
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design}  of the library survey.  database-backed designs not supported}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.

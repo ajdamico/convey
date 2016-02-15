@@ -9,7 +9,7 @@ SE_lin2(object, design)
 \arguments{
 \item{object}{output of a linearizing indicator function}
 
-\item{design}{a survey design object of the library survey.  database-backed designs not supported}
+\item{design}{a survey design object of the library survey.}
 }
 \value{
 the estime of the indicator se

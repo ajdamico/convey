@@ -4,7 +4,7 @@
 #'
 #'
 #' @param formula a formula specifying the gross hourly earnings variable
-#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param sex formula with a factor with labels 'male' and 'female'
 #' @param na.rm Should cases with missing values be dropped?
 #'

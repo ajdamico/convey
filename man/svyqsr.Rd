@@ -20,7 +20,7 @@ svyqsr(formula, design, ...)
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} of the library survey.  database-backed designs not supported}
+\item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
 \item{alpha}{order of the quintile ratio}
 

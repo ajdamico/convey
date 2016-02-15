@@ -7,7 +7,7 @@
 convey_prep(design)
 }
 \arguments{
-\item{design}{a survey design object of the library survey.  database-backed designs not supported}
+\item{design}{a survey design object of the library survey.}
 }
 \value{
 design the same survey object, preparred for all convey package functions.
