@@ -31,13 +31,25 @@
 #'library(vardpoor)
 #'library(survey)
 #'data(ses)
-#'des_ses<- svydesign(id=~1, weights=~weights, data=ses,
-#'variables=~weights+sex+earningsHour+education)
+#'des_ses<- svydesign(id=~1, weights=~weights, data=ses)
+#'
 #'# linearized design
 #'svygpg(~earningsHour, des_ses, ~sex)
 #'# replicate-weighted design
 #'des_ses_rep <-  survey:::as.svrepdesign( des_ses , type = "bootstrap" )
 #'svygpg(~earningsHour, des_ses_rep, ~sex)
+#'
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'ses' , ses )
+#'
+#' dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=tfile, dbtype="SQLite")
+#'
+#' dbd_ses <- convey_prep( dbd_ses )
+#' svygpg(~earningsHour, dbd_ses, ~sex)
+#'
 
 #' @export
 
@@ -87,9 +99,9 @@ svygpg.survey.design <- function(formula, design, sex,  na.rm=FALSE,...) {
   IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_tot)
   infun<-IGPG$lin
     rval <- IGPG$value
-
-  variance <- SE_lin2( infun , design )^2
-  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    variance <- svyrecvar(infun/design$prob, design$cluster,
+      design$strata, design$fpc, postStrata = design$postStrata)
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"
   attr( rval , "var" ) <- variance
   attr(rval, "lin") <- infun
@@ -146,6 +158,36 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
    	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "gqg"
+    attr(rval, "statistic") <- "gpg"
     rval
 }
+
+#' @rdname svygpg
+#' @export
+svygpg.DBIsvydesign <-
+  function (formula, sex, design, ...)
+  {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- cbind(survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
+        survey:::getvars(sex, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+          updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset))
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- cbind(survey:::getvars(formula, design$db$connection,
+      design$db$tablename, updates = design$updates, subset = design$subset),
+      survey:::getvars(sex, design$db$connection, design$db$tablename,
+        updates = design$updates, subset = design$subset))
+
+    NextMethod("svygpg", design)
+  }
+

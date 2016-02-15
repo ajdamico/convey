@@ -2,6 +2,7 @@
 % Please edit documentation in R/svygpg.R
 \name{svygpg}
 \alias{svygpg}
+\alias{svygpg.DBIsvydesign}
 \alias{svygpg.survey.design}
 \alias{svygpg.svyrep.design}
 \title{Linearization of the gender pay (wage) gap}
@@ -11,6 +12,8 @@ svygpg(formula, design, ...)
 \method{svygpg}{survey.design}(formula, design, sex, na.rm = FALSE, ...)
 
 \method{svygpg}{svyrep.design}(formula, design, sex, na.rm = FALSE, ...)
+
+\method{svygpg}{DBIsvydesign}(formula, sex, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the gross hourly earnings variable}
@@ -34,13 +37,25 @@ you must run the \code{convey_prep} function on your survey design object immedi
 library(vardpoor)
 library(survey)
 data(ses)
-des_ses<- svydesign(id=~1, weights=~weights, data=ses,
-variables=~weights+sex+earningsHour+education)
+des_ses<- svydesign(id=~1, weights=~weights, data=ses)
+
 # linearized design
 svygpg(~earningsHour, des_ses, ~sex)
 # replicate-weighted design
 des_ses_rep <-  survey:::as.svrepdesign( des_ses , type = "bootstrap" )
 svygpg(~earningsHour, des_ses_rep, ~sex)
+
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'ses' , ses )
+
+dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=tfile, dbtype="SQLite")
+
+dbd_ses <- convey_prep( dbd_ses )
+svygpg(~earningsHour, dbd_ses, ~sex)
+
 }
 \author{
 Djalma Pessoa and Anthony Damico
