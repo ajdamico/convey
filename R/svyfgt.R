@@ -71,6 +71,29 @@
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
 #' svyfgt(~eqIncome, des_eusilc_rep, g=1, type_thresh= "relm")
 #'
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#'
+#' # headcount ratio, poverty threshold fixed
+#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+#' # poverty gap index, poverty threshold fixed
+#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' # headcount ratio, poverty threshold equal to arpt
+#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relq")
+#' # poverty gap index, poverty threshold equal to arpt
+#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relq")
+#' # headcount ratio, poverty threshold equal to .6 times the mean
+#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relm")
+#' # poverty gap index, poverty threshold equal to 0.6 times the mean
+#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relm")
+#'
 #'
 #'
 #' @export
@@ -164,14 +187,17 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
       t<-abs_thresh
       rval <- sum(w*h(incvar,t,g))/N
       fgtlin <- (h(incvar,t,g)-rval)/N
-      variance <- (SE_lin2(fgtlin, design))^2
-    } else{
+      variance <- svyrecvar(fgtlin/design$prob, design$cluster,
+        design$strata, design$fpc, postStrata = design$postStrata)
+        } else{
       if(nrow(full_design$variables)>length(fgtlin)){
         names(fgtlin)<- ind
         fgtlin <- complete(fgtlin, ncom)
       }
-      variance <- (SE_lin2(fgtlin, full_design))^2
-    }
+
+      variance <- svyrecvar(fgtlin/full_design$prob, full_design$cluster,
+        full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+        }
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
@@ -252,3 +278,30 @@ svyfgt.svyrep.design <-  function(formula, design, g, type_thresh, abs_thresh,
     attr(rval, "statistic") <- paste0("fgt",g)
     rval
 }
+
+#' @rdname svyfgt
+#' @export
+svyfgt.DBIsvydesign <-
+  function (formula, design, ...)
+  {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
+      updates = design$updates, subset = design$subset)
+
+    NextMethod("svyfgt", design)
+  }
+
+

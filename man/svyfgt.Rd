@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyfgt.R
 \name{svyfgt}
 \alias{svyfgt}
+\alias{svyfgt.DBIsvydesign}
 \alias{svyfgt.survey.design}
 \alias{svyfgt.svyrep.design}
 \title{FGT measure of poverty}
@@ -13,6 +14,8 @@ svyfgt(formula, design, ...)
 
 \method{svyfgt}{svyrep.design}(formula, design, g, type_thresh, abs_thresh,
   percent = 0.6, order = 0.5, na.rm = FALSE, ...)
+
+\method{svyfgt}{DBIsvydesign}(formula, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -79,6 +82,29 @@ svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
 svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relm")
 # poverty gap index, poverty threshold equal to 0.6 times the mean
 svyfgt(~eqIncome, des_eusilc_rep, g=1, type_thresh= "relm")
+
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+
+dbd_eusilc <- convey_prep( dbd_eusilc )
+
+# headcount ratio, poverty threshold fixed
+svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+# poverty gap index, poverty threshold fixed
+svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+# headcount ratio, poverty threshold equal to arpt
+svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relq")
+# poverty gap index, poverty threshold equal to arpt
+svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relq")
+# headcount ratio, poverty threshold equal to .6 times the mean
+svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relm")
+# poverty gap index, poverty threshold equal to 0.6 times the mean
+svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relm")
 
 
 
