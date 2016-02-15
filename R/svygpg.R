@@ -48,7 +48,7 @@
 #' dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=tfile, dbtype="SQLite")
 #'
 #' dbd_ses <- convey_prep( dbd_ses )
-#' svygpg(~earningsHour, dbd_ses, ~sex)
+#' svygpg(formula=~earningsHour, design=dbd_ses, sex= ~sex)
 #'
 
 #' @export
