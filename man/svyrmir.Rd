@@ -2,6 +2,7 @@
 % Please edit documentation in R/svyrmir.R
 \name{svyrmir}
 \alias{svyrmir}
+\alias{svyrmir.DBIsvydesign}
 \alias{svyrmir.survey.design}
 \alias{svyrmir.svyrep.design}
 \title{Relative median income ratio}
@@ -13,6 +14,8 @@ svyrmir(formula, design, ...)
 
 \method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
   na.rm = FALSE, ...)
+
+\method{svyrmir}{DBIsvydesign}(formula, age, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -56,6 +59,18 @@ svyrmir( ~ py010n , design = des_eusilc , age= ~age, agelim = 65, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyrmir( ~ py010n , design = des_eusilc_rep,age= ~age, agelim = 65 )
 svyrmir( ~ py010n , design = des_eusilc_rep ,age= ~age, agelim = 65, na.rm = TRUE )
+
+# database-backed design
+require(RSQLite)
+tfile <- tempfile()
+conn <- dbConnect( SQLite() , tfile )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+
+dbd_eusilc <- convey_prep( dbd_eusilc )
+svyrmir( ~eqIncome , design = dbd_eusilc , age = ~age , agelim = 65 )
+
 
 }
 \author{

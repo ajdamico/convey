@@ -49,6 +49,18 @@
 #' svyrmir( ~ py010n , design = des_eusilc_rep,age= ~age, agelim = 65 )
 #' svyrmir( ~ py010n , design = des_eusilc_rep ,age= ~age, agelim = 65, na.rm = TRUE )
 #'
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#' svyrmir( ~eqIncome , design = dbd_eusilc , age = ~age , agelim = 65 )
+#'
+#'
 #' @export
 #'
 
@@ -79,14 +91,17 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     }
     N<- sum(w)
     h<- h_fun(incvar,w)
-    dsub1 <- subset(design, age < agelim )
+    age.name<-terms.formula(age)[[2]]
+    dsub1 <- eval(substitute(subset(design, subset = (age < agelim)),list(age = age.name, agelim = agelim)))
+
     q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,
       method = "constant", na.rm = na.rm)
     q_alpha1 <- as.vector(q_alpha1)
     Fprime <- densfun(formula = formula, design = design, q_alpha1, h=h, fun = "F", na.rm=na.rm)
 
     linquant1<- -(1/(N * Fprime)) * ((incvar <= q_alpha1) - order)
-    dsub2 <- subset(design, age >= agelim )
+    dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
+
     q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order,
           method = "constant", na.rm = na.rm)
     q_alpha2 <- as.vector(q_alpha2)
@@ -101,7 +116,9 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     RMED <- contrastinf(quote(MED2/MED1),list_all)
     rval <- as.vector(RMED$value)
     lin <- RMED$lin
-    variance <- (SE_lin2( lin , design ) )^2
+    variance <- svyrecvar(lin/design$prob, design$cluster,
+      design$strata, design$fpc, postStrata = design$postStrata)
+
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr( rval , "var" ) <- variance
@@ -149,3 +166,34 @@ attr(rval, "var") <- variance
 attr(rval, "statistic") <- "rmir"
 rval
 }
+
+#' @rdname svyrmir
+#' @export
+svyrmir.DBIsvydesign <-
+  function (formula, age, design, ...)
+  {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- cbind(survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
+        survey:::getvars(age, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+          updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset))
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- cbind(survey:::getvars(formula, design$db$connection,
+      design$db$tablename, updates = design$updates, subset = design$subset),
+      survey:::getvars(age, design$db$connection, design$db$tablename,
+        updates = design$updates, subset = design$subset))
+
+    NextMethod("svyrmir", design)
+  }
+
+
