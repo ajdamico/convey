@@ -198,37 +198,6 @@ ratio_inf <- function(T, S) {
 }
 
 
-
-#' Extracts the se estimate
-#'
-#' Computes the se from the linearized variable.
-#'
-#' @param object output of a linearizing indicator function
-#' @param design a survey design object of the library survey.
-#' @return the estime of the indicator se
-#'
-#' @author Djalma Pessoa and Anthony Damico
-#'
-#' @keywords survey
-#'
-#' @examples
-#' library(vardpoor)
-#' data(eusilc)
-#' library(survey)
-#' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-#' qsr_eqIncome <- svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
-#' # se estimate of isq_eqIncome for the whole sample
-#' SE_lin2(attr(qsr_eqIncome,"lin"), des_eusilc)
-#' @export
-
-SE_lin2 <- function(object, design) {
-    x <- update(design, t = object)
-    res <- survey::SE(survey::svytotal(~t, x))
-    res
-}
-
-
-
 # cvystat print method
 #' @export
 print.cvystat <- function(x, ...) {
