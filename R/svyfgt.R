@@ -162,15 +162,15 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
     N <- sum(w)
     if(type_thresh=='relq'){
       ARPT <- svyarpt(formula = formula, full_design, order=order, percent=percent,  na.rm=na.rm)
-      arpt <-coef(ARPT)
+      t <- coef(ARPT)
       arptlin<- attr(ARPT, "lin")
-      rval <- sum(w*h(incvar,arpt,g))/N
-      ahat <- sum(w*ht(incvar,arpt,g))/N
+      rval <- sum(w*h(incvar,t,g))/N
+      ahat <- sum(w*ht(incvar,t,g))/N
       if(g==0){
         ARPR <- svyarpr(formula = formula, design, order=order, percent=percent,  na.rm=na.rm)
         fgtlin <- attr(ARPR,"lin")
       } else
-        fgtlin <-(h(incvar,arpt,g)-rval)/N+(ahat*arptlin)
+        fgtlin <-(h(incvar,t,g)-rval)/N+(ahat*arptlin)
     }
     if(type_thresh=='relm'){
       # thresh for the whole population
@@ -203,6 +203,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- paste0("fgt",g)
     attr(rval, "lin") <- fgtlin
+    attr(rval, "thresh") <- t
     rval
 }
 
@@ -276,6 +277,7 @@ svyfgt.svyrep.design <-  function(formula, design, g, type_thresh, abs_thresh,
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- paste0("fgt",g)
+    attr(rval, "thresh") <- t
     rval
 }
 

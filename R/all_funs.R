@@ -211,8 +211,14 @@ print.cvystat <- function(x, ...) {
         m <- cbind(x, sqrt(vv))
 
     }
-
-    colnames(m) <- c(attr(x, "statistic"), "SE")
+    hasthresh <- !is.null(attr(x, "thresh"))
+    if (hasthresh) {
+      m <- cbind(m, attr(x, "thresh"))
+      colnames(m) <- c(attr(x, "statistic"), "SE", "Thresh")
+    }
+    else {
+      colnames(m) <- c(attr(x, "statistic"), "SE")
+    }
 
     printCoefmat(m)
 
