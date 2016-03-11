@@ -124,6 +124,8 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     attr( rval , "var" ) <- variance
     attr(rval, "lin") <- lin
     attr( rval , "statistic" ) <- "rmir"
+    attr( rval, "med_old") <- q_alpha2
+    attr( rval, "med_young") <- q_alpha1
     rval
 }
 

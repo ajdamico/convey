@@ -123,6 +123,8 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     attr( rval , "var" ) <- variance
     attr(rval, "lin") <- infun
     attr( rval , "statistic" ) <- "rmpg"
+    attr(rval, "thresh") <- arpt
+    attr(rval, "poor_median") <- medp
     rval
 }
 #' @rdname svyrmpg
@@ -182,6 +184,7 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "rmpg"
+
     rval
 }
 

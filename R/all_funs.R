@@ -211,10 +211,11 @@ print.cvystat <- function(x, ...) {
         m <- cbind(x, sqrt(vv))
 
     }
-    hasthresh <- !is.null(attr(x, "thresh"))
-    if (hasthresh) {
-      m <- cbind(m, attr(x, "thresh"))
-      colnames(m) <- c(attr(x, "statistic"), "SE", "Thresh")
+    nattr <- length(names(attributes(x)))
+    if (nattr>5) {
+      for(i in 6:nattr)
+      {m <- cbind(m, attr(x, names(attributes(x)[i])))}
+      colnames(m) <- c(attr(x, "statistic"), "SE", names(attributes(x))[6:nattr])
     }
     else {
       colnames(m) <- c(attr(x, "statistic"), "SE")

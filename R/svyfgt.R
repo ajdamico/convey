@@ -277,7 +277,6 @@ svyfgt.svyrep.design <-  function(formula, design, g, type_thresh, abs_thresh,
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- paste0("fgt",g)
-    attr(rval, "thresh") <- t
     rval
 }
 

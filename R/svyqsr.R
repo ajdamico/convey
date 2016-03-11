@@ -91,9 +91,15 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     alpha2 <- 1 - alpha
     # Linearization of S20
     S20 <- svyisq(formula = formula, design = design, alpha1, na.rm=na.rm)
+    qS20 <- attr(S20, "quantile")
+    totS20 <- coef(S20)
+    attributes(totS20) <- NULL
     S20 <- list(value= coef(S20), lin=attr(S20,"lin"))
     # Linearization of S80
     S80 <- svyisq(formula = formula, design = design, alpha2, na.rm=na.rm)
+    qS80 <- attr(S80, "quantile")
+    totS80 <- coef(S80)
+    attributes(totS80) <- NULL
     S80 <- list(value= coef(S80), lin=attr(S80,"lin"))
     names(incvar)<-ind
     TOT<- list(value=sum(incvar*w), lin=incvar)
@@ -102,6 +108,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     list_all<- list(TOT=TOT, S20 = S20, S80 = S80)
     QSR <- contrastinf( quote((TOT-S80)/S20), list_all)
     rval <- QSR$value
+    attributes (rval) <- NULL
     lin<- as.vector(QSR$lin)
     variance <- svyrecvar(lin/design$prob, design$cluster,
       design$strata, design$fpc, postStrata = design$postStrata)
@@ -110,6 +117,10 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"
     attr(rval, "lin") <- lin
+    attr(rval, "upper_quant") <- qS80
+    attr(rval, "lower_quant") <- qS20
+    attr(rval, "upper_tot") <- totS80
+    attr(rval, "lower_tot") <- totS20
     rval
 }
 

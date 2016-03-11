@@ -88,10 +88,13 @@ svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
   isqalpha <- isqalpha1 + Fprime1 * iq
   variance <- svyrecvar(isqalpha/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
+
+  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- "cvystat"
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "isq"
   attr(rval, "lin") <- isqalpha
+  attr(rval, "quantile") <- q_alpha
   rval
 }
 
