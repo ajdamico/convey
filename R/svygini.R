@@ -105,7 +105,7 @@ svygini.survey.design <-  function(formula, design, na.rm=FALSE, ...) {
   lingini <- as.vector(GINI$lin)
   # complete with 0
   names(lingini) <- ind
-  if (nrow(design)>length(ind)) lingini<-complete(lingini, ncom)
+  if (length(ncom)>length(ind)) lingini<-complete(lingini, ncom)
   rval <- GINI$value
   variance <- svyrecvar(lingini/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
