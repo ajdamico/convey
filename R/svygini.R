@@ -73,19 +73,21 @@ svygini <- function(formula, design, ...) {
 #' @export
 svygini.survey.design <-  function(formula, design, na.rm=FALSE, ...) {
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  w <- 1/design$prob
-  ncom<- names(w)
-  if(na.rm){
-    nas<-is.na(incvar)
-    design<-design[!nas,]
-    incvar <- incvar[!nas]
-    w <- w[!nas]
+
+  if (na.rm) {
+    nas <- is.na(incvar)
+    design <- design[nas == 0, ]
+    if (length(nas) > length(design$prob))
+      incvar <- incvar[nas == 0]
+    else incvar[nas > 0] <- 0
   }
+
+  w <- 1/design$prob
 
   ordincvar<-order(incvar)
   w <- w[ordincvar]
   incvar <- incvar[ordincvar]
-  ind<- names(w)
+
   # population size
   N <- sum(w)
   # total income
@@ -103,9 +105,6 @@ svygini.survey.design <-  function(formula, design, na.rm=FALSE, ...) {
   list_all<- list(T1 = T1, T2 = T2, T3 = T3)
   GINI<- contrastinf(quote((2*T1-T2)/(T2*T3)-1), list_all)
   lingini <- as.vector(GINI$lin)
-  # complete with 0
-  names(lingini) <- ind
-  if (length(design$prob)>length(lingini)) lingini<-complete(lingini, ncom)
   rval <- GINI$value
   variance <- svyrecvar(lingini/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
