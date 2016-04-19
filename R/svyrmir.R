@@ -81,14 +81,20 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
     x <- cbind(incvar,agevar)
-    w <- 1/design$prob
+
     if(na.rm){
       nas<-rowSums(is.na(x))
       design<-design[nas==0,]
-      incvar <- incvar[nas==0]
-      agevar <- agevar[nas==0]
-      w <- w[nas==0]
+      if (length(nas) > length(design$prob)){
+        incvar <- incvar[nas == 0]
+        agevar <- agevar[nas==0]
+      }
+      else{
+        incvar[nas > 0] <- 0
+        agevar[nas > 0] <- 0
+      }
     }
+    w <- 1/design$prob
     N<- sum(w)
     h<- h_fun(incvar,w)
     age.name<-terms.formula(age)[[2]]

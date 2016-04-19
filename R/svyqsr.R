@@ -119,7 +119,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     attr(rval, "lin") <- lin
     attr(rval, "upper_quant") <- qS80
     attr(rval, "lower_quant") <- qS20
-    attr(rval, "upper_tot") <- totS80
+    attr(rval, "upper_tot") <- TOT$value-totS80
     attr(rval, "lower_tot") <- totS20
     rval
 }
