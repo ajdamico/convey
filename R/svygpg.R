@@ -65,29 +65,42 @@ svygpg <- function(formula, design, ...) {
 svygpg.survey.design <- function(formula, design, sex,  na.rm=FALSE,...) {
 
     wagevar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    if(na.rm){
-      nas<-is.na(wagevar)
-      design<-design[!nas,]
-      if (length(nas) > length(design$prob))
-        wagevar <- wagevar[!nas]
-      else wagevar[nas] <- 0
+
+    # sex factor
+    mf <- model.frame(sex, design$variables, na.action = na.pass)
+    xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 +
+        .(tt))), mf))
+    cols <- sapply(xx, NCOL)
+    sex <- matrix(nrow = NROW(xx[[1]]), ncol = sum(cols))
+    scols <- c(0, cumsum(cols))
+    for (i in 1:length(xx)) {
+      sex[, scols[i] + 1:cols[i]] <- xx[[i]]
     }
+    colnames(sex) <- do.call("c", lapply(xx, colnames))
+    sex <- as.matrix(sex)
+   x <- cbind(wagevar,sex)
+
+   if(na.rm){
+     nas<-rowSums(is.na(x))
+     design<-design[nas==0,]
+     if (length(nas) > length(design$prob)){
+       wagevar <- wagevar[nas == 0]
+       sex <- sex[nas==0,]
+     }
+     else{
+       wagevar[nas > 0] <- 0
+       sex[nas > 0,] <- 0
+     }
+   }
     w <- 1/design$prob
     ind<- names(design$prob)
 
-  # sex factor
-  mf <- model.frame(sex, design$variables, na.action = na.pass)
-  xx <- lapply(attr(terms(sex), "variables")[-1], function(tt) model.matrix(eval(bquote(~0 +
-      .(tt))), mf))
-  cols <- sapply(xx, NCOL)
-  sex <- matrix(nrow = NROW(xx[[1]]), ncol = sum(cols))
-  scols <- c(0, cumsum(cols))
-  for (i in 1:length(xx)) {
-    sex[, scols[i] + 1:cols[i]] <- xx[[i]]
+
+  if(na.rm){
+    if (length(nas) > length(design$prob))
+    sex<-sex[!nas,]
+    else sex[nas] <- 0
   }
-  colnames(sex) <- do.call("c", lapply(xx, colnames))
-  sex <- as.matrix(sex)
-  if(na.rm)sex<-sex[!nas,]
   col_female <- grep("female", colnames(sex))
   col_male <- setdiff(1:2, col_female)
   # create linearization objects of totals
