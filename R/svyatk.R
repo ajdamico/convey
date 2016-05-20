@@ -40,11 +40,11 @@
 #' svyatk( ~eqIncome , design = des_eusilc_rep, epsilon = .5 )
 #'
 #' # linearized design using a variable with missings
-#' svyatk( ~eqIncome , design = des_eusilc, epsilon = .5 )
-#' svyatk( ~eqIncome , design = des_eusilc, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , design = des_eusilc, epsilon = .5 )
+#' svyatk( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
-#' svyatk( ~eqIncome , design = des_eusilc_rep, epsilon = .5 )
-#' svyatk( ~eqIncome , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5 )
+#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
 #'
 #'
 #' # database-backed design
