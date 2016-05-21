@@ -1,6 +1,6 @@
 context("fgt output survey.design and svyrep.design")
 library(vardpoor)
-data(eusilc)
+data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
@@ -8,12 +8,12 @@ des_eusilc_rep <-survey::: as.svrepdesign(des_eusilc, type= "bootstrap")
 
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-a1 <- svyfgt(~eqIncome, design = des_eusilc, t=10000, alpha=0)
-a2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyfgt, t=10000, alpha=1, deff = FALSE)
+a1 <- svyfgt(~eqincome, design = des_eusilc, t=10000, alpha=0)
+a2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyfgt, t=10000, alpha=1, deff = FALSE)
 
-b1 <- svyfgt(~eqIncome, design = des_eusilc_rep,t=10000, alpha=0)
+b1 <- svyfgt(~eqincome, design = des_eusilc_rep,t=10000, alpha=0)
 
-b2 <- survey:::svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svyfgt,t=10000, alpha=1,
+b2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyfgt,t=10000, alpha=1,
   deff = FALSE)
 
 

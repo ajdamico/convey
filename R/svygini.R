@@ -29,16 +29,16 @@
 #' @examples
 #' library(survey)
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #'
-#' svygini( ~eqIncome , design = des_eusilc )
+#' svygini( ~eqincome , design = des_eusilc )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' svygini( ~eqIncome , design = des_eusilc_rep )
+#' svygini( ~eqincome , design = des_eusilc_rep )
 #'
 #' # linearized design using a variable with missings
 #' svygini( ~ py010n , design = des_eusilc )
@@ -57,7 +57,7 @@
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
-#' svygini( ~ eqIncome , design = dbd_eusilc )
+#' svygini( ~ eqincome , design = dbd_eusilc )
 #'
 #' @export
 #'

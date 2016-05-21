@@ -32,13 +32,13 @@ the distribution of a variable.
 }
 \examples{
 library(vardpoor)
-data(eusilc)
+data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-svyisq(~eqIncome, design=des_eusilc,.20)
+svyisq(~eqincome, design=des_eusilc,.20)
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-svyisq( ~eqIncome , design = des_eusilc_rep, .20 )
+svyisq( ~eqincome , design = des_eusilc_rep, .20 )
 # linearized design using a variable with missings
 svyisq( ~ py010n , design = des_eusilc, .20 )
 svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
@@ -55,7 +55,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
-svyisq( ~ eqIncome , design = dbd_eusilc, .20 )
+svyisq( ~ eqincome , design = dbd_eusilc, .20 )
 
 }
 \author{

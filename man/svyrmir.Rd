@@ -42,16 +42,16 @@ you must run the \code{convey_prep} function on your survey design object immedi
 \examples{
 library(survey)
 library(vardpoor)
-data(eusilc)
+data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 
-svyrmir( ~eqIncome , design = des_eusilc , age = ~age , agelim = 65 )
+svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 )
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
+svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65)
 
 # linearized design using a variable with missings
 svyrmir( ~ py010n , design = des_eusilc,age= ~age, agelim = 65)
@@ -69,7 +69,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
-svyrmir( ~eqIncome , design = dbd_eusilc , age = ~age , agelim = 65 )
+svyrmir( ~eqincome , design = dbd_eusilc , age = ~age , agelim = 65 )
 
 
 }

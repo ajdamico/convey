@@ -33,7 +33,7 @@
 #' @examples
 #' library(survey)
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design
 #'
@@ -45,31 +45,31 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relq")
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq")
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relm")
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relm")
 #'
 #' #  using svrep.design:
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq")
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq")
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm")
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svyfgt(~eqIncome, des_eusilc_rep, g=1, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm")
 #'
 #' # database-backed design
 #' require(RSQLite)
@@ -82,17 +82,17 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relq")
+#' svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "relq")
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relq")
+#' svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "relq")
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relm")
+#' svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "relm")
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relm")
+#' svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "relm")
 #'
 #'
 #'

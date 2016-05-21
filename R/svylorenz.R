@@ -32,18 +32,18 @@
 #' @examples
 #'library(survey)
 #'library(vardpoor)
-#'data(eusilc)
+#'data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'library(convey)
 #'
 #'# linearized design
 #'des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #'des_eusilc <- convey_prep( des_eusilc )
-#'svylorenz( ~eqIncome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#'svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 #'
 #'# replicate-weighted design
 #'des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #'des_eusilc_rep <- convey_prep( des_eusilc_rep )
-#'svylorenz( ~eqIncome , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
+#'svylorenz( ~eqincome , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
 #'
 #'
 #'# linearized design using a variable with missings
@@ -63,7 +63,7 @@
 #'dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
 #'dbd_eusilc <- convey_prep( dbd_eusilc )
-#'svylorenz( ~eqIncome , design = dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 #'
 #'
 #' @export
