@@ -45,8 +45,8 @@
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
-#' svyqsr( ~eqincome , design = des_eusilc_rep )
-#'
+#' svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
+convey#'
 #' # linearized design using a variable with missings
 #' svyqsr( ~ py010n , design = des_eusilc )
 #' svyqsr( ~ py010n , design = des_eusilc , na.rm = TRUE )
@@ -158,7 +158,7 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, na.rm=FALSE, uppe
     ComputeQsr <- function(x, w, alpha) {
         alpha1 <- alpha
         alpha2 <- 1 - alpha
-        quant_inf <- survey:::computeQuantiles(x, w, p = alpha1)
+        quant_inf <- computeQuantiles(x, w, p = alpha1)
         quant_sup <- computeQuantiles(x, w, p = alpha2)
         rich <- (x > quant_sup) * x
         S80 <- sum(rich * w)

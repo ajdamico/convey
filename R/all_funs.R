@@ -147,7 +147,8 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
   rval
 }
 
-
+# compute quantile from library survey
+#' @export
 computeQuantiles <- function(xx, w, p = quantiles) {
     if (any(is.na(xx)))
         return(NA * p)
