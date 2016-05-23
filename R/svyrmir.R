@@ -9,6 +9,8 @@
 #' @param agelim the age cutpoint, the default is 65
 #' @param order income quantile order, usually .5
 #' @param na.rm Should cases with missing values be dropped?
+#' @param med_old return the median income of people older than agelim
+#' @param med_young return the median income of people younger than agelim
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -36,7 +38,7 @@
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #'
-#' svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 )
+#' svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 , med_old = TRUE )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
@@ -76,7 +78,7 @@ svyrmir <- function(formula, design, ...) {
 #' @export
 
 
-svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.rm=FALSE,...){
+svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
@@ -130,8 +132,8 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     attr( rval , "var" ) <- variance
     attr(rval, "lin") <- lin
     attr( rval , "statistic" ) <- "rmir"
-    attr( rval, "med_old") <- q_alpha2
-    attr( rval, "med_young") <- q_alpha1
+    if (med_old) attr( rval, "med_old") <- q_alpha2
+    if (med_young) attr( rval, "med_young") <- q_alpha1
     rval
 }
 

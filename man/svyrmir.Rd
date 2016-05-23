@@ -10,7 +10,7 @@
 svyrmir(formula, design, ...)
 
 \method{svyrmir}{survey.design}(formula, design, age, agelim, order = 0.5,
-  na.rm = FALSE, ...)
+  na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
 \method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
   na.rm = FALSE, ...)
@@ -29,6 +29,10 @@ svyrmir(formula, design, ...)
 \item{order}{income quantile order, usually .5}
 
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{med_old}{return the median income of people older than agelim}
+
+\item{med_young}{return the median income of people younger than agelim}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -47,7 +51,7 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 
-svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 )
+svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 , med_old = TRUE )
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
