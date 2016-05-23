@@ -42,7 +42,7 @@
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65)
+#' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65, med_old = TRUE )
 #'
 #' # linearized design using a variable with missings
 #' svyrmir( ~ py010n , design = des_eusilc,age= ~age, agelim = 65)
@@ -140,7 +140,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
 #' @rdname svyrmir
 #' @export
 #'
-svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim,na.rm=FALSE,...) {
+svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...) {
 
 df <- model.frame(design)
 incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -159,22 +159,26 @@ ComputeRmir <- function(x, w, order, age, agelim) {
   quant_below <- computeQuantiles(x[indb], w[indb], p = order)
   inda <-  age >= agelim
   quant_above <- computeQuantiles(x[inda], w[inda], p = order)
-  quant_above/quant_below
+  c(quant_above, quant_below, quant_above/quant_below)
 }
 ws <- weights(design, "sampling")
-rval <- ComputeRmir(x = incvar, w = ws, order = order, age= agevar, agelim = agelim)
+Rmir_val <- ComputeRmir(x = incvar, w = ws, order = order, age= agevar, agelim = agelim)
+rval <- Rmir_val[3]
 ww <- weights(design, "analysis")
 qq <- apply(ww, 2, function(wi) ComputeRmir(incvar, wi, order = order,
-  age= agevar, agelim = agelim))
+  age= agevar, agelim = agelim)[3])
 variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 
 	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-class(rval) <- "cvystat"
-attr(rval, "var") <- variance
-attr(rval, "statistic") <- "rmir"
-rval
+	class(rval) <- "cvystat"
+	attr( rval , "var" ) <- variance
+	attr(rval, "lin") <- NA
+	attr( rval , "statistic" ) <- "rmir"
+	if (med_old) attr( rval, "med_old") <- Rmir_val[1]
+	if (med_young) attr( rval, "med_young") <- Rmir_val[2]
+	rval
 }
 
 #' @rdname svyrmir

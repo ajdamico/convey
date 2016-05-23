@@ -13,7 +13,7 @@ svyrmir(formula, design, ...)
   na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
 \method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
-  na.rm = FALSE, ...)
+  na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
 \method{svyrmir}{DBIsvydesign}(formula, age, design, ...)
 }
@@ -55,7 +55,7 @@ svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 , med_old = 
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65)
+svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65, med_old = TRUE )
 
 # linearized design using a variable with missings
 svyrmir( ~ py010n , design = des_eusilc,age= ~age, agelim = 65)
