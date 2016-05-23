@@ -46,7 +46,7 @@
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
-convey#'
+#'
 #' # linearized design using a variable with missings
 #' svyqsr( ~ py010n , design = des_eusilc )
 #' svyqsr( ~ py010n , design = des_eusilc , na.rm = TRUE )
