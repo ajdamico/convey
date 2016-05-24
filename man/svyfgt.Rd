@@ -10,10 +10,10 @@
 svyfgt(formula, design, ...)
 
 \method{svyfgt}{survey.design}(formula, design, g, type_thresh, abs_thresh,
-  percent = 0.6, order = 0.5, na.rm = FALSE, ...)
+  percent = 0.6, order = 0.5, na.rm = FALSE, thresh = FALSE, ...)
 
 \method{svyfgt}{svyrep.design}(formula, design, g, type_thresh, abs_thresh,
-  percent = 0.6, order = 0.5, na.rm = FALSE, ...)
+  percent = 0.6, order = 0.5, na.rm = FALSE, thresh = FALSE, ...)
 
 \method{svyfgt}{DBIsvydesign}(formula, design, ...)
 }
@@ -32,6 +32,8 @@ of abs_thresh; if "relq" it is given by percent times the order quantile; if "re
 \item{order}{the quantile order used used in the poverty threshold definition}
 
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{thresh}{return the poverty threshold value}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -61,13 +63,13 @@ svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 # poverty gap index, poverty threshold fixed
 svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
-svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relq")
+svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relq" , thresh = TRUE)
 # poverty gap index, poverty threshold equal to arpt
-svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq")
+svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
 # headcount ratio, poverty threshold equal to .6 times the mean
-svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relm")
+svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relm", thresh = TRUE)
 # poverty gap index, poverty threshold equal to 0.6 times the mean
-svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relm")
+svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relm" , thresh = TRUE)
 
 #  using svrep.design:
 # headcount ratio, poverty threshold fixed
@@ -75,13 +77,13 @@ svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
 # poverty gap index, poverty threshold fixed
 svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
-svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq")
+svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq" , thresh = TRUE)
 # poverty gap index, poverty threshold equal to arpt
-svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq")
+svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
 # headcount ratio, poverty threshold equal to .6 times the mean
-svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm")
+svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
 # poverty gap index, poverty threshold equal to 0.6 times the mean
-svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm")
+svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 
 # database-backed design
 require(RSQLite)
@@ -98,7 +100,7 @@ svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 # poverty gap index, poverty threshold fixed
 svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
-svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "relq")
+svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "relq", thresh = TRUE)
 # poverty gap index, poverty threshold equal to arpt
 svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "relq")
 # headcount ratio, poverty threshold equal to .6 times the mean
