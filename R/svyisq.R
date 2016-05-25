@@ -86,7 +86,7 @@ svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
   iq <- -(1/(N * Fprime0)) * ((incvar <= q_alpha) - alpha)
   isqalpha1<- incvar * (incvar <= q_alpha)
   isqalpha <- isqalpha1 + Fprime1 * iq
-  variance <- svyrecvar(isqalpha/design$prob, design$cluster,
+  variance <- survey::svyrecvar(isqalpha/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

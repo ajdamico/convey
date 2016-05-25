@@ -145,13 +145,13 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     v <- (1 - result$atk.result) * ( (incvar[w != 0]/sum(w[w != 0]*incvar[w != 0])) - ( result$b/((1-epsilon)*result$B) ) - epsilon/( (epsilon-1)*N ) )
     #v[w == 0] <- 0
     v[w == 0] <- NA
-    variance <- svyrecvar(v/design$prob, design$cluster,
+    variance <- survey::svyrecvar(v/design$prob, design$cluster,
                           design$strata, design$fpc, postStrata = design$postStrata)
   } else {
     v <- ( (1 - result$atk.result) / N ) * ( (N*incvar[w != 0]/sum(w[w != 0]*incvar[w != 0])) - result$b - 1 + (result$B/N) )
     #v[w == 0] <- 0
     v[w == 0] <- NA
-    variance <- svyrecvar(v/design$prob, design$cluster,
+    variance <- survey::svyrecvar(v/design$prob, design$cluster,
                           design$strata, design$fpc, postStrata = design$postStrata)
   }
 
