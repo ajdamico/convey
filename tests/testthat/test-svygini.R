@@ -3,7 +3,10 @@ library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 dati = data.frame(1:nrow(eusilc), eusilc)
 colnames(dati)[1] <- "IDd"
-
+SE_lin2 <- function(t,des){
+  variance<-survey::svyrecvar(t/des$prob, des$cluster,des$strata, des$fpc,postStrata = des$postStrata)
+  sqrt(variance)
+}
 des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 
 des_eusilc <- convey_prep(des_eusilc)
