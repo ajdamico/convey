@@ -121,7 +121,7 @@ svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
     lin<- complete (lin, ncom)
     }
 
-    variance <- svyrecvar(lin/full_design$prob, full_design$cluster,
+    variance <- survey::svyrecvar(lin/full_design$prob, full_design$cluster,
       full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"

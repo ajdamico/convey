@@ -112,7 +112,7 @@ svygpg.survey.design <- function(formula, design, sex,  na.rm=FALSE,...) {
   IGPG<-contrastinf(quote((TM/INDM-TF/INDF)/(TM/INDM)),list_all_tot)
   infun<-IGPG$lin
     rval <- IGPG$value
-    variance <- svyrecvar(infun/design$prob, design$cluster,
+    variance <- survey::svyrecvar(infun/design$prob, design$cluster,
       design$strata, design$fpc, postStrata = design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 	class(rval) <- "cvystat"

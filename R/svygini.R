@@ -106,7 +106,7 @@ svygini.survey.design <-  function(formula, design, na.rm=FALSE, ...) {
   GINI<- contrastinf(quote((2*T1-T2)/(T2*T3)-1), list_all)
   lingini <- as.vector(GINI$lin)
   rval <- GINI$value
-  variance <- svyrecvar(lingini/design$prob, design$cluster,
+  variance <- survey::svyrecvar(lingini/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- "cvystat"

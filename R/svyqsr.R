@@ -114,7 +114,7 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     rval <- QSR$value
     attributes (rval) <- NULL
     lin<- as.vector(QSR$lin)
-    variance <- svyrecvar(lin/design$prob, design$cluster,
+    variance <- survey::svyrecvar(lin/design$prob, design$cluster,
       design$strata, design$fpc, postStrata = design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"

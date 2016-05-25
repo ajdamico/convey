@@ -196,7 +196,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
         fgtlin <- complete(fgtlin, ncom)
       }
 
-      variance <- svyrecvar(fgtlin/full_design$prob, full_design$cluster,
+      variance <- survey::svyrecvar(fgtlin/full_design$prob, full_design$cluster,
         full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
         }
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

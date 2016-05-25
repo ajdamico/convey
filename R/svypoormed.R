@@ -127,7 +127,7 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     # linearize median of poor
     linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
     rval <-medp
-    variance <- svyrecvar(linmedp/full_design$prob, full_design$cluster,
+    variance <- survey::svyrecvar(linmedp/full_design$prob, full_design$cluster,
       full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"

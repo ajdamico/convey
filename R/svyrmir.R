@@ -124,7 +124,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
     RMED <- contrastinf(quote(MED2/MED1),list_all)
     rval <- as.vector(RMED$value)
     lin <- RMED$lin
-    variance <- svyrecvar(lin/design$prob, design$cluster,
+    variance <- survey::svyrecvar(lin/design$prob, design$cluster,
       design$strata, design$fpc, postStrata = design$postStrata)
 
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

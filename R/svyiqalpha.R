@@ -88,7 +88,7 @@ svyiqalpha.survey.design <- function(formula, design, alpha, na.rm=FALSE, ...) {
   Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F",
     na.rm=na.rm)
 iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
-variance <- svyrecvar(iq/design$prob, design$cluster,
+variance <- survey::svyrecvar(iq/design$prob, design$cluster,
   design$strata, design$fpc, postStrata = design$postStrata)
 
 colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
