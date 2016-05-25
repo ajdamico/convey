@@ -1,6 +1,7 @@
 
 context("arpr output")
 library(vardpoor)
+library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 dati = data.frame(1:nrow(eusilc), eusilc)
 colnames(dati)[1] <- "IDd"
@@ -45,7 +46,7 @@ test_that("compare results convey vs vardpoor",{
   expect_equal(varse, 100*convse)
   expect_equal(vardestd, 100*convestd)
   expect_equal(varsed, 100*convsed)
-  expect_less_than(confint(fun_arprw)[1], coef(fun_arprw))
-  expect_more_than(confint(fun_arprw)[2],coef(fun_arprw))
+  expect_lte(confint(fun_arprw)[1], coef(fun_arprw))
+  expect_gte(confint(fun_arprw)[2],coef(fun_arprw))
   expect_equal(coef(fun_arprw), coef(fun_arprw_rep))
 })

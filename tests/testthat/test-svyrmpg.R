@@ -1,5 +1,6 @@
 context("rmpg output")
 library(vardpoor)
+library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 dati = data.frame(1:nrow(eusilc), eusilc)
 colnames(dati)[1] <- "IDd"
