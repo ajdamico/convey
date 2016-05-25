@@ -188,7 +188,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
       t<-abs_thresh
       rval <- sum(w*h(incvar,t,g))/N
       fgtlin <- (h(incvar,t,g)-rval)/N
-      variance <- svyrecvar(fgtlin/design$prob, design$cluster,
+      variance <- survey::svyrecvar(fgtlin/design$prob, design$cluster,
         design$strata, design$fpc, postStrata = design$postStrata)
         } else{
       if(nrow(full_design$variables)>length(fgtlin)){

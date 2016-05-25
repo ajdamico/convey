@@ -8,13 +8,14 @@ des_eusilc_rep <-survey::: as.svrepdesign(des_eusilc, type= "bootstrap")
 
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-a1 <- svyfgt(~eqincome, design = des_eusilc, t=10000, alpha=0)
-a2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyfgt, t=10000, alpha=1, deff = FALSE)
+a1 <- svyfgt(~eqincome, design = des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 
-b1 <- svyfgt(~eqincome, design = des_eusilc_rep,t=10000, alpha=0)
+svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+a2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyfgt, g=0, type_thresh= "abs", abs_thresh=10000, deff = FALSE)
 
-b2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyfgt,t=10000, alpha=1,
-  deff = FALSE)
+b1 <- svyfgt(~eqincome, design = des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
+
+b2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyfgt,g=0, type_thresh= "abs", abs_thresh=10000, deff = FALSE)
 
 
 test_that("output svyfgt",{
