@@ -171,6 +171,7 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, na.rm=FALSE, uppe
     rval <- Qsr_val[5]
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha)[5])
+    if(sum(is.na(qq))==length(qq))variance <- NA else
     variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )

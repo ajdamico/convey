@@ -118,6 +118,7 @@ svyisq.svyrep.design <- function(formula, design, alpha,quantile = FALSE, na.rm 
     rval<- rval_isq[2]
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) compute_isq(incvar, wi, alpha = alpha)[2])
+    if(sum(is.na(qq))==length(qq))variance <- NA else
     variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     variance <- as.matrix( variance )
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
