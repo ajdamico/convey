@@ -53,11 +53,11 @@ h_fun <- function(incvar, w) {
 #'@keywords survey
 #' @examples
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
-#' densfun (~eqIncome, design=des_eusilc, 10000, fun="F" )
+#' densfun (~eqincome, design=des_eusilc, 10000, fun="F" )
 #' # linearized design using a variable with missings
 #' densfun ( ~ py010n , design = des_eusilc, 10000, fun="F" )
 #' densfun ( ~ py010n , design = des_eusilc , 10000,fun="F", na.rm = TRUE )
@@ -111,11 +111,11 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE
 #' @keywords survey
 #' @examples
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
-#' icdf(~eqIncome, design=des_eusilc, 10000 )
+#' icdf(~eqincome, design=des_eusilc, 10000 )
 #' # linearized design using a variable with missings
 #' icdf( ~ py010n , design = des_eusilc, 10000 )
 #' icdf( ~ py010n , design = des_eusilc , 10000, na.rm = TRUE )
@@ -147,7 +147,8 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
   rval
 }
 
-
+# compute quantile from library survey
+#' @export
 computeQuantiles <- function(xx, w, p = quantiles) {
     if (any(is.na(xx)))
         return(NA * p)
@@ -260,7 +261,7 @@ coef.cvystat <- function(object, ...) {
 #'
 #' library(survey)
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design: convey_prep must be run as soon as the linearized design has been created
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
@@ -273,7 +274,7 @@ coef.cvystat <- function(object, ...) {
 #' sub_eusilc <- subset( des_eusilc , age > 20 )
 #' # since convey_prep() was run immediately after creating the design
 #' # this will calculate the variance accurately
-#' SE( svyarpt( ~ eqIncome , sub_eusilc ) )
+#' SE( svyarpt( ~ eqincome , sub_eusilc ) )
 #' # # # end of CORRECT usage example # # #
 #'
 #' # # # INCORRECT usage example # # #
@@ -282,7 +283,7 @@ coef.cvystat <- function(object, ...) {
 #' sub_eusilc <- convey_prep( sub_eusilc )
 #' # since convey_prep() was not run immediately after creating the design
 #' # this will make the variance wrong
-#' SE( svyarpt( ~ eqIncome , sub_eusilc ) )
+#' SE( svyarpt( ~ eqincome , sub_eusilc ) )
 #' # # # end of INCORRECT usage example # # #
 #'
 #' @export

@@ -19,11 +19,11 @@ Computes the linearized variable of the cdf function in a point.
 }
 \examples{
 library(vardpoor)
-data(eusilc)
+data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep( des_eusilc )
-icdf(~eqIncome, design=des_eusilc, 10000 )
+icdf(~eqincome, design=des_eusilc, 10000 )
 # linearized design using a variable with missings
 icdf( ~ py010n , design = des_eusilc, 10000 )
 icdf( ~ py010n , design = des_eusilc , 10000, na.rm = TRUE )

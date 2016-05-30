@@ -10,6 +10,7 @@
 #' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
 #' @param order the quantile order used used in the poverty threshold definition
 #' @param na.rm Should cases with missing values be dropped?
+#' @param thresh return the poverty threshold value
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -33,7 +34,7 @@
 #' @examples
 #' library(survey)
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design
 #'
@@ -45,31 +46,31 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relq" , thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relm", thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relm" , thresh = TRUE)
 #'
 #' #  using svrep.design:
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq" , thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "relq")
+#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svyfgt(~eqIncome, des_eusilc_rep, g=0, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svyfgt(~eqIncome, des_eusilc_rep, g=1, type_thresh= "relm")
+#' svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 #'
 #' # database-backed design
 #' require(RSQLite)
@@ -82,17 +83,17 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relq")
+#' svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "relq", thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to arpt
-#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relq")
+#' svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "relq")
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svyfgt(~eqIncome, dbd_eusilc, g=0, type_thresh= "relm")
+#' svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "relm")
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svyfgt(~eqIncome, dbd_eusilc, g=1, type_thresh= "relm")
+#' svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "relm")
 #'
 #'
 #'
@@ -107,7 +108,7 @@ svyfgt <- function(formula, design, ...) {
 #' @rdname svyfgt
 #' @export
 svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
-  percent= .60, order =.50, na.rm=FALSE,...){
+  percent= .60, order =.50, na.rm=FALSE, thresh = FALSE, ...){
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -187,7 +188,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
       t<-abs_thresh
       rval <- sum(w*h(incvar,t,g))/N
       fgtlin <- (h(incvar,t,g)-rval)/N
-      variance <- svyrecvar(fgtlin/design$prob, design$cluster,
+      variance <- survey::svyrecvar(fgtlin/design$prob, design$cluster,
         design$strata, design$fpc, postStrata = design$postStrata)
         } else{
       if(nrow(full_design$variables)>length(fgtlin)){
@@ -195,7 +196,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
         fgtlin <- complete(fgtlin, ncom)
       }
 
-      variance <- svyrecvar(fgtlin/full_design$prob, full_design$cluster,
+      variance <- survey::svyrecvar(fgtlin/full_design$prob, full_design$cluster,
         full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
         }
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -203,7 +204,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- paste0("fgt",g)
     attr(rval, "lin") <- fgtlin
-    attr(rval, "thresh") <- t
+ if(thresh) attr(rval, "thresh") <- t
     rval
 }
 
@@ -212,7 +213,7 @@ svyfgt.survey.design <-   function(formula, design, g, type_thresh, abs_thresh,
 #' @rdname svyfgt
 #' @export
 svyfgt.svyrep.design <-  function(formula, design, g, type_thresh, abs_thresh,
-  percent= .60, order =.50, na.rm=FALSE,...) {
+  percent= .60, order =.50, na.rm=FALSE, thresh = FALSE,...) {
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
@@ -277,6 +278,8 @@ svyfgt.svyrep.design <-  function(formula, design, g, type_thresh, abs_thresh,
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- paste0("fgt",g)
+    attr(rval, "lin") <- NA
+    if(thresh) attr(rval, "thresh") <- t
     rval
 }
 

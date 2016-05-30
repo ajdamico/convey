@@ -8,6 +8,10 @@
 #' @param alpha order of the quintile ratio
 #' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
+#' @param upper_quant return the lower bound of highest earners
+#' @param lower_quant return the upper bound of lowest earners
+#' @param upper_tot return the highest earners total
+#' @param lower_tot return the lowest earners total
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -30,18 +34,18 @@
 #' @examples
 #' library(survey)
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
 #'
-#' svyqsr( ~eqIncome , design = des_eusilc )
+#' svyqsr( ~eqincome , design = des_eusilc, upper_tot = TRUE, lower_tot = TRUE )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
-#' svyqsr( ~eqIncome , design = des_eusilc_rep )
+#' svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
 #'
 #' # linearized design using a variable with missings
 #' svyqsr( ~ py010n , design = des_eusilc )
@@ -59,7 +63,7 @@
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
-#' svyqsr( ~ eqIncome , design = dbd_eusilc )
+#' svyqsr( ~ eqincome , design = dbd_eusilc )
 #'
 #'
 #' @export
@@ -73,7 +77,7 @@ svyqsr <- function(formula, design, ...) {
 
 #' @rdname svyqsr
 #' @export
-svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=FALSE,...) {
+svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
      if( alpha > 0.5 ) stop( "alpha cannot be larger than 50%" )
 
@@ -110,23 +114,23 @@ svyqsr.survey.design <- function(formula, design, alpha = 0.2, comp=TRUE,na.rm=F
     rval <- QSR$value
     attributes (rval) <- NULL
     lin<- as.vector(QSR$lin)
-    variance <- svyrecvar(lin/design$prob, design$cluster,
+    variance <- survey::svyrecvar(lin/design$prob, design$cluster,
       design$strata, design$fpc, postStrata = design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "qsr"
     attr(rval, "lin") <- lin
-    attr(rval, "upper_quant") <- qS80
-    attr(rval, "lower_quant") <- qS20
-    attr(rval, "upper_tot") <- TOT$value-totS80
-    attr(rval, "lower_tot") <- totS20
+  if(upper_quant)  attr(rval, "upper_quant") <- qS80
+  if(lower_quant)  attr(rval, "lower_quant") <- qS20
+  if(upper_tot)  attr(rval, "upper_tot") <- TOT$value-totS80
+  if(lower_tot)  attr(rval, "lower_tot") <- totS20
     rval
 }
 
 #' @rdname svyqsr
 #' @export
-svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) {
+svyqsr.svyrep.design <- function(formula, design, alpha = 0.2, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
@@ -160,21 +164,27 @@ svyqsr.svyrep.design <- function(formula, design, alpha = 0.2,na.rm=FALSE, ...) 
         S80 <- sum(rich * w)
         poor <- (x <= quant_inf) * x
         S20 <- sum(poor * w)
-        S80/S20
+        c( quant_sup, quant_inf, S80, S20, S80/S20)
     }
     ws <- weights(design, "sampling")
-    rval <- ComputeQsr(incvar, ws, alpha = alpha)
+    Qsr_val <- ComputeQsr(incvar, ws, alpha = alpha)
+    rval <- Qsr_val[5]
     ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha))
+    qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha)[5])
     variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 
 	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- "cvystat"
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "qsr"
-    rval
+	class(rval) <- "cvystat"
+	attr(rval, "var") <- variance
+	attr(rval, "statistic") <- "qsr"
+	attr(rval, "lin") <- NA
+	if(upper_quant)  attr(rval, "upper_quant") <- Qsr_val[1]
+	if(lower_quant)  attr(rval, "lower_quant") <- Qsr_val[2]
+	if(upper_tot)  attr(rval, "upper_tot") <- Qsr_val[3]
+	if(lower_tot)  attr(rval, "lower_tot") <- Qsr_val[4]
+	rval
 }
 
 #' @rdname svyqsr

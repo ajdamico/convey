@@ -32,18 +32,18 @@
 #' @examples
 #' library(survey)
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
 #'
-#' svypoormed( ~eqIncome , design = des_eusilc )
+#' svypoormed( ~eqincome , design = des_eusilc )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
-#' svypoormed( ~eqIncome , design = des_eusilc_rep )
+#' svypoormed( ~eqincome , design = des_eusilc_rep )
 #'
 #' # linearized design using a variable with missings
 #' svypoormed( ~ py010n , design = des_eusilc )
@@ -60,7 +60,7 @@
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
-#' svypoormed( ~ eqIncome , design = dbd_eusilc )
+#' svypoormed( ~ eqincome , design = dbd_eusilc )
 #'
 #' @export
 #'
@@ -127,7 +127,7 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     # linearize median of poor
     linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
     rval <-medp
-    variance <- svyrecvar(linmedp/full_design$prob, full_design$cluster,
+    variance <- survey::svyrecvar(linmedp/full_design$prob, full_design$cluster,
       full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"

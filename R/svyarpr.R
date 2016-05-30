@@ -31,19 +31,19 @@
 #' @examples
 #' library(survey)
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
 #'
-#' svyarpr( ~eqIncome , design = des_eusilc )
+#' svyarpr( ~eqincome , design = des_eusilc )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
-#' svyarpr( ~eqIncome , design = des_eusilc_rep )
+#' svyarpr( ~eqincome , design = des_eusilc_rep )
 #'
 #' # linearized design using a variable with missings
 #' svyarpr( ~ py010n , design = des_eusilc )
@@ -61,7 +61,7 @@
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
-#' svyarpr( ~ eqIncome , design = dbd_eusilc )
+#' svyarpr( ~ eqincome , design = dbd_eusilc )
 #'
 #' @export
 #'
@@ -127,7 +127,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     # use h for the whole sample
     Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F", na.rm=na.rm)
     arprlin <- arpr1lin + Fprime * arptlin
-    variance <- svyrecvar(arprlin/full_design$prob, full_design$cluster,
+    variance <- survey::svyrecvar(arprlin/full_design$prob, full_design$cluster,
       full_design$strata, full_design$fpc,
       postStrata = full_design$postStrata)
 

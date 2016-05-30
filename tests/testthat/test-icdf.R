@@ -16,6 +16,6 @@ test_that("out components", {
   expect_is(a[1],"numeric")
   expect_equal(length(attr(a,"lin")),nrow(test))
   expect_named(attr(a,"lin"))
-  expect_less_than(a[1],1)
-  expect_more_than(a[1],0)
+  expect_lte(a[1],1)
+  expect_gte(a[1],0)
 })

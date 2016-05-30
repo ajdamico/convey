@@ -26,13 +26,13 @@
 #'
 #' @examples
 #' library(vardpoor)
-#' data(eusilc)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-#' svyisq(~eqIncome, design=des_eusilc,.20)
+#' svyisq(~eqincome, design=des_eusilc,.20)
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' svyisq( ~eqIncome , design = des_eusilc_rep, .20 )
+#' svyisq( ~eqincome , design = des_eusilc_rep, .20 )
 #'# linearized design using a variable with missings
 #' svyisq( ~ py010n , design = des_eusilc, .20 )
 #' svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
@@ -49,7 +49,7 @@
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
-#' svyisq( ~ eqIncome , design = dbd_eusilc, .20 )
+#' svyisq( ~ eqincome , design = dbd_eusilc, .20 )
 #'
 #' @export
 
@@ -86,7 +86,7 @@ svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
   iq <- -(1/(N * Fprime0)) * ((incvar <= q_alpha) - alpha)
   isqalpha1<- incvar * (incvar <= q_alpha)
   isqalpha <- isqalpha1 + Fprime1 * iq
-  variance <- svyrecvar(isqalpha/design$prob, design$cluster,
+  variance <- survey::svyrecvar(isqalpha/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

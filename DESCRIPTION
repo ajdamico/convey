@@ -2,7 +2,8 @@ Package: convey
 Title: income concentration analysis with complex survey samples
 Version: 0.1.0
 Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("aut","cre")),
-            person("Anthony", "Damico", email= "ajdamico@gmail.com", role= "aut"))
+            person("Anthony", "Damico", email= "ajdamico@gmail.com", role= "aut"),
+            person("Guilherme", "Jacob", email= "guilhermejacob91@gmail.com", role= "aut"))
 Description: Variance estimation on indicators of income concentration and
     poverty using linearized or replication-based survey designs. Wrapper around the
     survey package.

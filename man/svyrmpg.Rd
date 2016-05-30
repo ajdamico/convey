@@ -10,10 +10,10 @@
 svyrmpg(formula, design, ...)
 
 \method{svyrmpg}{survey.design}(formula, design, order = 0.5, percent = 0.6,
-  comp, na.rm = FALSE, ...)
+  comp, na.rm = FALSE, thresh = FALSE, poor_median = FALSE, ...)
 
 \method{svyrmpg}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
-  na.rm = FALSE, ...)
+  na.rm = FALSE, thresh = FALSE, poor_median = FALSE, ...)
 
 \method{svyrmpg}{DBIsvydesign}(formula, design, ...)
 }
@@ -29,6 +29,10 @@ svyrmpg(formula, design, ...)
 \item{comp}{logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros}
 
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{thresh}{return the poverty poverty threshold}
+
+\item{poor_median}{return the median income of poor people}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -42,18 +46,18 @@ you must run the \code{convey_prep} function on your survey design object immedi
 \examples{
 library(survey)
 library(vardpoor)
-data(eusilc)
+data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep( des_eusilc )
 
-svyrmpg( ~eqIncome , design = des_eusilc )
+svyrmpg( ~eqincome , design = des_eusilc, thresh = TRUE )
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
-svyrmpg( ~eqIncome , design = des_eusilc_rep )
+svyrmpg( ~eqincome , design = des_eusilc_rep, thresh = TRUE )
 
 
 # linearized design using a variable with missings
@@ -72,7 +76,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
-svyrmpg( ~ eqIncome , design = dbd_eusilc )
+svyrmpg( ~ eqincome , design = dbd_eusilc )
 
 
 }

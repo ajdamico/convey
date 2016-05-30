@@ -10,10 +10,10 @@
 svyrmir(formula, design, ...)
 
 \method{svyrmir}{survey.design}(formula, design, age, agelim, order = 0.5,
-  na.rm = FALSE, ...)
+  na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
 \method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
-  na.rm = FALSE, ...)
+  na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
 \method{svyrmir}{DBIsvydesign}(formula, age, design, ...)
 }
@@ -29,6 +29,10 @@ svyrmir(formula, design, ...)
 \item{order}{income quantile order, usually .5}
 
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{med_old}{return the median income of people older than agelim}
+
+\item{med_young}{return the median income of people younger than agelim}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -42,16 +46,16 @@ you must run the \code{convey_prep} function on your survey design object immedi
 \examples{
 library(survey)
 library(vardpoor)
-data(eusilc)
+data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 
-svyrmir( ~eqIncome , design = des_eusilc , age = ~age , agelim = 65 )
+svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 , med_old = TRUE )
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-svyrmir( ~eqIncome , design = des_eusilc_rep, age= ~age, agelim = 65)
+svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65, med_old = TRUE )
 
 # linearized design using a variable with missings
 svyrmir( ~ py010n , design = des_eusilc,age= ~age, agelim = 65)
@@ -69,7 +73,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
-svyrmir( ~eqIncome , design = dbd_eusilc , age = ~age , agelim = 65 )
+svyrmir( ~eqincome , design = dbd_eusilc , age = ~age , agelim = 65 )
 
 
 }
