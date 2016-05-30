@@ -189,6 +189,7 @@ svypoormed.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6
       names(wi)<- row.names(df_full)
       ComputePoormed(incvec, wi, ind=ind, order = order,percent = percent)
     })
+    if(sum(is.na(qq))==length(qq))variance <- NA else
    variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse,
       coef = rval)
 
