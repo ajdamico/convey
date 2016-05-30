@@ -9,6 +9,8 @@
 #' @param alpha a number that especifies de confidence level for the graph.
 #' @param empirical Should an empirical Lorenz curve be estimated as well? Defaults to \code{FALSE}.
 #' @param plot Should the Lorenz curve be plotted? Defaults to \code{TRUE}.
+#' @param add Should a new curve be plotted on the current graph?
+#' @param curve.col a string defining the color of the curve.
 #' @param na.rm Should cases with missing values be dropped? Defaults to \code{FALSE}.
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
@@ -76,7 +78,7 @@ svylorenz <- function(formula, design, ...) {
 
 #' @rdname svylorenz
 #' @export
-svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, ci = TRUE, alpha = .05, na.rm = FALSE ) {
+svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE ) {
 
   # quantile function:
   wtd.qtl <- function (x, q = .5, weights = NULL ) {
@@ -223,16 +225,18 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   attr(rval, "SE") <- se
 
     if ( plot ) {
-      plot( NULL,NULL, xlim = c(0,1), ylim = c(0,1), cex = .1, xlab = "Cumulative Population Share", ylab = "Total Income Share" )
+      if (!add) {
+        plot( NULL,NULL, xlim = c(0,1), ylim = c(0,1), cex = .1, xlab = "Cumulative Population Share", ylab = "Total Income Share" )
+      }
 
       abline(0,1, ylim = c(0,1) )
-      if (empirical) { lines( c(E_p), c(E_L.p), xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .1, lwd = 1, col = "red" ) }
-      points( quantiles, L.p, xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .4, lwd = 1, col = "red" )
+      if (empirical) { lines( c(E_p), c(E_L.p), xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .1, lwd = 1, col = curve.col ) }
+      points( quantiles, L.p, xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .4, lwd = 1, col = curve.col )
 
       if (ci) {
         X.Vec <- as.numeric( c(p, tail(p, 1), rev(p), p[1]) )
         Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-        polygon(X.Vec, Y.Vec, col = adjustcolor( "red", alpha.f = .2), border = NA)
+        polygon(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA)
       }
 
     }
@@ -243,7 +247,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
 #' @rdname svylorenz
 #' @export
-svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, ci = TRUE, alpha = .05, na.rm = FALSE) {
+svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE) {
 
     # quantile function:
     wtd.qtl <- function (x, q = .5, weights = NULL ) {
@@ -356,16 +360,18 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
 
   if ( plot ) {
-    plot( NULL,NULL, xlim = c(0,1), ylim = c(0,1), cex = .1, xlab = "Cumulative Population Share", ylab = "Total Income Share" )
+    if (!add) {
+      plot( NULL,NULL, xlim = c(0,1), ylim = c(0,1), cex = .1, xlab = "Cumulative Population Share", ylab = "Total Income Share" )
+    }
 
     abline(0,1, ylim = c(0,1) )
-    if (empirical) { lines( c(E_p), c(E_L.p), xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .1, lwd = 1, col = "red" ) }
-    points( quantiles, L.p, xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .4, lwd = 1, col = "red" )
+    if (empirical) { lines( c(E_p), c(E_L.p), xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .1, lwd = 1, col = curve.col ) }
+    points( quantiles, L.p, xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .4, lwd = 1, col = curve.col )
 
     if (ci) {
       X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
       Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-      polygon(X.Vec, Y.Vec, col = adjustcolor( "red", alpha.f = .2), border = NA)
+      polygon(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA)
     }
   }
 
