@@ -51,6 +51,8 @@
 #'# linearized design using a variable with missings
 #'svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 #'svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
+#'# demonstration of `curve.col=` and `add=` parameters 
+#'svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
 #'# replicate-weighted design using a variable with missings
 #'svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
 #'svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
