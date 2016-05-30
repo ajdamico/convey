@@ -261,7 +261,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
 	if ( plot ) {
 
-	  if ( !add ) svylorenzplot( ... )
+	  if ( !add ) svylorenzplot_wrap( ... )
 
 		if( any( c( 'xlim' , 'ylim' ) %in% names( list( ... ) ) ) ) stop( "xlim= and ylim= parameters are fixed within `svylorenz`" )
 		abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
@@ -396,7 +396,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
   if ( plot ) {
 	
-	if ( !add ) svylorenzplot( ... )
+	if ( !add ) svylorenzplot_wrap( ... )
 	
 	if( any( c( 'xlim' , 'ylim' ) %in% names( list( ... ) ) ) ) stop( "xlim= and ylim= parameters are fixed within `svylorenz`" )
 	abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
