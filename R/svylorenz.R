@@ -79,6 +79,38 @@ svylorenz <- function(formula, design, ...) {
 
 }
 
+svylorenzplot_wrap <- 
+	function( cex = 0.1 , xlab = "Cumulative Population Share" , ylab = "Total Income Share" , ... ){
+		plot( 
+			NULL , 
+			NULL , 
+			xlim = c( 0 , 1 ) ,
+			ylim = c( 0 , 1 ) ,
+			cex = cex ,
+			xlab = xlab ,
+			ylab = ylab ,
+			... 
+		)
+	}
+
+svylorenzlines_wrap <-
+	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = curve.col , ... ){
+		lines( x , y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex , lwd = lwd , col = col , ... )
+	}
+	
+svylorenzpoints_wrap <-
+	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = curve.col , ... ){
+		
+		points( x, y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex * 4 , lwd = lwd , col = col , ... )
+	
+	}
+	
+svylorenzpolygon_wrap <-
+	function( x = x , y = y , col = col , border = NA , ... ){
+		polygon( x , y , col = col , border = border , ... )
+	}
+	
+	
 #' @rdname svylorenz
 #' @export
 svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ... ) {
@@ -227,37 +259,24 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
 
-    if ( plot ) {
-      if (!add) {
+	if ( plot ) {
 
-		pass_to_plot <- list( ... )
-		
-        plot( 
-			NULL , 
-			NULL , 
-			if( !'xlim' %in% names( pass_to_plot ) ) xlim = c( 0 , 1 ) else NULL ,
-			if( !'ylim' %in% names( pass_to_plot ) ) ylim = c( 0 , 1 ) else NULL ,
-			if( !'cex' %in% names( pass_to_plot ) ) 0.1 else NULL ,
-			if( !'xlab' %in% names( pass_to_plot ) ) xlab = "Cumulative Population Share" else NULL ,
-			if( !'ylab' %in% names( pass_to_plot ) ) ylab = "Total Income Share"  else NULL ,
-			... 
-		)
-		
-      }
+	  if ( !add ) svylorenzplot( ... )
 
-      abline(0,1, ylim = c(0,1) )
-      if (empirical) { lines( c(E_p), c(E_L.p), xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .1, lwd = 1, col = curve.col ) }
-      points( quantiles, L.p, xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .4, lwd = 1, col = curve.col )
+		if( any( c( 'xlim' , 'ylim' ) %in% names( list( ... ) ) ) ) stop( "xlim= and ylim= parameters are fixed within `svylorenz`" )
+		abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
+		if( empirical ) svylorenzlines_wrap( E_p , E_L.p , ... )
+		svylorenzpoints_wrap( quantiles , L.p , ... )
 
-      if (ci) {
-        X.Vec <- as.numeric( c(p, tail(p, 1), rev(p), p[1]) )
-        Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-        polygon(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA)
-      }
+		if (ci) {
+			X.Vec <- as.numeric( c(p, tail(p, 1), rev(p), p[1]) )
+			Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
+			svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
+		}
 
-    }
+	}
 
-  return(rval)
+	return(rval)
 }
 
 
@@ -376,32 +395,21 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
 
   if ( plot ) {
-    if (!add) {
-      
-		pass_to_plot <- list( ... )
-		
-        plot( 
-			NULL , 
-			NULL , 
-			if( !'xlim' %in% names( pass_to_plot ) ) xlim = c( 0 , 1 ) else NULL ,
-			if( !'ylim' %in% names( pass_to_plot ) ) ylim = c( 0 , 1 ) else NULL ,
-			if( !'cex' %in% names( pass_to_plot ) ) 0.1 else NULL ,
-			if( !'xlab' %in% names( pass_to_plot ) ) xlab = "Cumulative Population Share" else NULL ,
-			if( !'ylab' %in% names( pass_to_plot ) ) ylab = "Total Income Share"  else NULL ,
-			... 
-		)
-		
-    }
+	
+	if ( !add ) svylorenzplot( ... )
+	
+	if( any( c( 'xlim' , 'ylim' ) %in% names( list( ... ) ) ) ) stop( "xlim= and ylim= parameters are fixed within `svylorenz`" )
+	abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
+	if( empirical ) svylorenzlines_wrap( E_p , E_L.p , ... )
+	svylorenzpoints_wrap( quantiles , L.p , ... )
 
-    abline(0,1, ylim = c(0,1) )
-    if (empirical) { lines( c(E_p), c(E_L.p), xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .1, lwd = 1, col = curve.col ) }
-    points( quantiles, L.p, xlim = c(0,1), ylim = c(0,1), pch = 16, cex = .4, lwd = 1, col = curve.col )
+	if (ci) {
+		X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
+		Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
+		svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
 
-    if (ci) {
-      X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
-      Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-      polygon(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA)
-    }
+		
+	}
   }
 
   return(rval)
