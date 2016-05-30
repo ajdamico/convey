@@ -162,6 +162,7 @@ svyarpt.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     rval <- percent * quant_val
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) 0.6 * computeQuantiles(incvar, wi, p = order))
+    if(sum(is.na(qq))==length(qq))variance <- NA else
     variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
