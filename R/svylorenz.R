@@ -12,6 +12,7 @@
 #' @param add Should a new curve be plotted on the current graph?
 #' @param curve.col a string defining the color of the curve.
 #' @param na.rm Should cases with missing values be dropped? Defaults to \code{FALSE}.
+#' @param ... additional arguments passed to \code{plot} methods
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -80,7 +81,7 @@ svylorenz <- function(formula, design, ...) {
 
 #' @rdname svylorenz
 #' @export
-svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE ) {
+svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ... ) {
 
   # quantile function:
   wtd.qtl <- function (x, q = .5, weights = NULL ) {
@@ -228,7 +229,20 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
     if ( plot ) {
       if (!add) {
-        plot( NULL,NULL, xlim = c(0,1), ylim = c(0,1), cex = .1, xlab = "Cumulative Population Share", ylab = "Total Income Share" )
+
+		pass_to_plot <- list( ... )
+		
+        plot( 
+			NULL , 
+			NULL , 
+			if( !'xlim' %in% names( pass_to_plot ) ) xlim = c( 0 , 1 ) else NULL ,
+			if( !'ylim' %in% names( pass_to_plot ) ) ylim = c( 0 , 1 ) else NULL ,
+			if( !'cex' %in% names( pass_to_plot ) ) 0.1 else NULL ,
+			if( !'xlab' %in% names( pass_to_plot ) ) xlab = "Cumulative Population Share" else NULL ,
+			if( !'ylab' %in% names( pass_to_plot ) ) ylab = "Total Income Share"  else NULL ,
+			... 
+		)
+		
       }
 
       abline(0,1, ylim = c(0,1) )
@@ -363,7 +377,20 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
   if ( plot ) {
     if (!add) {
-      plot( NULL,NULL, xlim = c(0,1), ylim = c(0,1), cex = .1, xlab = "Cumulative Population Share", ylab = "Total Income Share" )
+      
+		pass_to_plot <- list( ... )
+		
+        plot( 
+			NULL , 
+			NULL , 
+			if( !'xlim' %in% names( pass_to_plot ) ) xlim = c( 0 , 1 ) else NULL ,
+			if( !'ylim' %in% names( pass_to_plot ) ) ylim = c( 0 , 1 ) else NULL ,
+			if( !'cex' %in% names( pass_to_plot ) ) 0.1 else NULL ,
+			if( !'xlab' %in% names( pass_to_plot ) ) xlab = "Cumulative Population Share" else NULL ,
+			if( !'ylab' %in% names( pass_to_plot ) ) ylab = "Total Income Share"  else NULL ,
+			... 
+		)
+		
     }
 
     abline(0,1, ylim = c(0,1) )
