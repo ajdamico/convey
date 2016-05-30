@@ -282,7 +282,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
 #' @rdname svylorenz
 #' @export
-svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE) {
+svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ...) {
 
     # quantile function:
     wtd.qtl <- function (x, q = .5, weights = NULL ) {
