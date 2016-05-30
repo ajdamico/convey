@@ -11,7 +11,7 @@ svylorenz(formula, design, ...)
 
 \method{svylorenz}{survey.design}(formula, design, quantiles = seq(0, 1, 0.1),
   empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red",
-  ci = TRUE, alpha = 0.05, na.rm = FALSE)
+  ci = TRUE, alpha = 0.05, na.rm = FALSE, ...)
 
 \method{svylorenz}{svyrep.design}(formula, design, quantiles = seq(0, 1, 0.1),
   empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red",
@@ -23,6 +23,8 @@ svylorenz(formula, design, ...)
 \item{formula}{a formula specifying the income variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
+
+\item{...}{additional arguments passed to \code{plot} methods}
 
 \item{quantiles}{a sequence of probabilities that defines the quantiles sum to be calculated}
 
@@ -70,6 +72,8 @@ svylorenz( ~eqincome , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha 
 # linearized design using a variable with missings
 svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
+# demonstration of `curve.col=` and `add=` parameters 
+svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
 # replicate-weighted design using a variable with missings
 svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
 svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
