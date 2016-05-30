@@ -9,9 +9,11 @@
 \usage{
 svyisq(formula, design, ...)
 
-\method{svyisq}{survey.design}(formula, design, alpha, na.rm = FALSE, ...)
+\method{svyisq}{survey.design}(formula, design, alpha, quantile = FALSE,
+  na.rm = FALSE, ...)
 
-\method{svyisq}{svyrep.design}(formula, design, alpha, na.rm = FALSE, ...)
+\method{svyisq}{svyrep.design}(formula, design, alpha, quantile = FALSE,
+  na.rm = FALSE, ...)
 
 \method{svyisq}{DBIsvydesign}(formula, design, ...)
 }
@@ -21,6 +23,8 @@ svyisq(formula, design, ...)
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
 \item{alpha}{the order of the quantile}
+
+\item{quantile}{return the upper bound of the lower tail}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
@@ -35,10 +39,10 @@ library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-svyisq(~eqincome, design=des_eusilc,.20)
+svyisq(~eqincome, design=des_eusilc,.20 , quantile = TRUE)
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-svyisq( ~eqincome , design = des_eusilc_rep, .20 )
+svyisq( ~eqincome , design = des_eusilc_rep, .20 , quantile = TRUE )
 # linearized design using a variable with missings
 svyisq( ~ py010n , design = des_eusilc, .20 )
 svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
