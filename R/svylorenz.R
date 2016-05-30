@@ -265,7 +265,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
 		if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
 		abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
-		if( empirical ) svylorenzlines_wrap( E_p , E_L.p , ... )
+		if( empirical ) svylorenzlines_wrap( E_p , E_L.p , col = curve.col , ... )
 		svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
 
 		if (ci) {
@@ -400,7 +400,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 	
 	if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
 	abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
-	if( empirical ) svylorenzlines_wrap( E_p , E_L.p , ... )
+	if( empirical ) svylorenzlines_wrap( E_p , E_L.p , col = curve.col , ... )
 	svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
 
 	if (ci) {
