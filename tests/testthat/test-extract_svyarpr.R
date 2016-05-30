@@ -1,4 +1,4 @@
-context("arpr output survey.design and svyrep.design")
+context("Arpr output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )

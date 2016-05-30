@@ -1,4 +1,4 @@
-context("gpg output survey.design and svyrep.design")
+context("Gpg output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 data(ses)

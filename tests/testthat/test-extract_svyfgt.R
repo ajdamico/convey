@@ -1,4 +1,4 @@
-context("fgt output survey.design and svyrep.design")
+context("Fgt output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -11,7 +11,6 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 a1 <- svyfgt(~eqincome, design = des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 
-svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
 a2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyfgt, g=0, type_thresh= "abs", abs_thresh=10000, deff = FALSE)
 
 b1 <- svyfgt(~eqincome, design = des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)

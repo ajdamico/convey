@@ -6,6 +6,7 @@
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param alpha the order of the quantile
+#' @param quantile return the upper bound of the lower tail
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
 #'the statistic.
 #'
@@ -29,10 +30,10 @@
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-#' svyisq(~eqincome, design=des_eusilc,.20)
+#' svyisq(~eqincome, design=des_eusilc,.20 , quantile = TRUE)
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' svyisq( ~eqincome , design = des_eusilc_rep, .20 )
+#' svyisq( ~eqincome , design = des_eusilc_rep, .20 , quantile = TRUE )
 #'# linearized design using a variable with missings
 #' svyisq( ~ py010n , design = des_eusilc, .20 )
 #' svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
@@ -62,7 +63,7 @@ svyisq <- function(formula, design, ...) {
 #' @rdname svyisq
 #' @export
 
-svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
+svyisq.survey.design <- function(formula, design, alpha, quantile = FALSE, na.rm = FALSE,...) {
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   nome<-terms.formula(formula)[[2]]
   if(na.rm){
@@ -94,13 +95,13 @@ svyisq.survey.design <- function(formula, design, alpha, na.rm = FALSE,...) {
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "isq"
   attr(rval, "lin") <- isqalpha
-  attr(rval, "quantile") <- q_alpha
+ if(quantile)attr(rval, "quantile") <- q_alpha
   rval
 }
 
 #' @rdname svyisq
 #' @export
-svyisq.svyrep.design <- function(formula, design, alpha, na.rm = FALSE,...){
+svyisq.svyrep.design <- function(formula, design, alpha,quantile = FALSE, na.rm = FALSE,...){
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if(na.rm){
       nas<-is.na(incvar)
@@ -111,17 +112,20 @@ svyisq.svyrep.design <- function(formula, design, alpha, na.rm = FALSE,...){
     }
     compute_isq<- function(x, w, alpha){
       q_alpha<-computeQuantiles(x=x, w=w, p = alpha)
-      sum(x*(x<=q_alpha)*w)
+      c(q_alpha,sum(x*(x<=q_alpha)*w))
     }
-    rval<-compute_isq(incvar, alpha = alpha, w = weights(design, "sampling"))
+    rval_isq <- compute_isq(incvar, alpha = alpha, w = weights(design, "sampling"))
+    rval<- rval_isq[2]
     ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) compute_isq(incvar, wi, alpha = alpha))
+    qq <- apply(ww, 2, function(wi) compute_isq(incvar, wi, alpha = alpha)[2])
     variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
     variance <- as.matrix( variance )
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "isq"
+    attr(rval, "lin") <- NA
+    if(quantile)attr(rval, "quantile") <- rval_isq[1]
     rval
   }
 

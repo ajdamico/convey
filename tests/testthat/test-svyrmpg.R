@@ -1,4 +1,4 @@
-context("rmpg output")
+context("Rmpg output")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -33,8 +33,10 @@ vardestd<-unlist(vardpoor_rmpgd$value$rmpg)
 varsed<-sapply(data.frame(vardpoor_rmpgd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
+
 fun_rmpgd <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc,
-  FUN = svyrmpg, deff = FALSE)
+FUN = svyrmpg, deff = FALSE)
+
 convestd<- coef(fun_rmpgd)
 attributes(convestd) <- NULL
 convsed<- survey:::SE(fun_rmpgd)

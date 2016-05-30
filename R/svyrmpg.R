@@ -117,8 +117,9 @@ svyrmpg.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     RMPG<- contrastinf(quote((ARPT-MEDP)/ARPT), list_all)
     rval <- RMPG$value
     infun <- unlist( RMPG$lin)
-     variance <- survey::svyrecvar(infun/design$prob, design$cluster,
-      design$strata, design$fpc, postStrata = design$postStrata)
+    variance <- survey::svyrecvar(infun/full_design$prob, full_design$cluster,
+      full_design$strata, full_design$fpc,
+      postStrata = full_design$postStrata)
 
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"

@@ -1,4 +1,4 @@
-context("rmpg output survey.design and svyrep.design")
+context("Rmpg output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )

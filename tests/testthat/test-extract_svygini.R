@@ -1,4 +1,4 @@
-context("gini output survey.design and svyrep.design")
+context("Gini output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )

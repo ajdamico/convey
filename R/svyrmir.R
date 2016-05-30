@@ -35,6 +35,11 @@
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
+#' missing completely at random, missingness rate = .20
+#' ind_miss <- rbinom(nrow(eusilc), 1, .20 )
+#' eusilc$eqincome_miss <- eusilc$eqincome
+#' is.na(eusilc$eqincome_miss)<- ind_miss==1
+#'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #'
@@ -45,11 +50,11 @@
 #' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65, med_old = TRUE )
 #'
 #' # linearized design using a variable with missings
-#' svyrmir( ~ py010n , design = des_eusilc,age= ~age, agelim = 65)
-#' svyrmir( ~ py010n , design = des_eusilc , age= ~age, agelim = 65, na.rm = TRUE )
+#' svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age, agelim = 65)
+#' svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, agelim = 65, na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
-#' svyrmir( ~ py010n , design = des_eusilc_rep,age= ~age, agelim = 65 )
-#' svyrmir( ~ py010n , design = des_eusilc_rep ,age= ~age, agelim = 65, na.rm = TRUE )
+#' svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age, agelim = 65 )
+#' svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, agelim = 65, na.rm = TRUE )
 #'
 #' # database-backed design
 #' require(RSQLite)

@@ -1,4 +1,4 @@
-context("arpt output")
+context("Arpt output")
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 dati = data.frame(1:nrow(eusilc), eusilc)

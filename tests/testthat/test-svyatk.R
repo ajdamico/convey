@@ -1,7 +1,7 @@
 library(testthat)
 library(convey)
 library(survey)
-context("atk output")
+context("Atk output")
 library(vardpoor)
 data(eusilc)
 dati = data.frame(1:nrow(eusilc), eusilc)

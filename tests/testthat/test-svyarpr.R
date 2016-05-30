@@ -1,5 +1,5 @@
 
-context("arpr output")
+context("Arpr output")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )

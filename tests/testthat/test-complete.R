@@ -1,5 +1,5 @@
 library(convey)
-context("complete")
+context("Complete")
 
 x<-c(1,3,5)
 names(x)<-as.character(1:3)

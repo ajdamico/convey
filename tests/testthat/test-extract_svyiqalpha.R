@@ -1,22 +1,27 @@
-context("Qsr output survey.design and svyrep.design")
+context("Svyiqalpha output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <- survey:::as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <-survey::: as.svrepdesign(des_eusilc, type= "bootstrap")
+
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-a1 <- svyqsr(~eqincome, design = des_eusilc)
-a2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyqsr, deff = FALSE)
-
-b1 <- svyqsr(~eqincome, design = des_eusilc_rep)
-
-b2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyqsr,deff = FALSE)
+a1 <- svyiqalpha( ~eqincome , design = des_eusilc , .20 )
 
 
-test_that("output svyarpr",{
+a2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyiqalpha, alpha = .20, deff = FALSE)
+
+b1 <- svyiqalpha( ~eqincome , design = des_eusilc_rep , .20 )
+
+
+b2 <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyiqalpha, alpha = .20, deff = FALSE)
+
+
+
+test_that("output svyiqalpha",{
   expect_is(coef(a1),"numeric")
   expect_is(coef(a2), "numeric")
   expect_is(coef(b1),"numeric")

@@ -139,7 +139,8 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
   value<- sum(poor*w)/N
   lin<-((incvar<=x)-value)/N
   rval <- value
-  variance <- (SE_lin2(lin, design))^2
+  variance <- survey::svyrecvar(lin/design$prob, design$cluster,
+    design$strata, design$fpc, postStrata = design$postStrata)
   class(rval) <- "cvystat"
   attr(rval, "lin") <- lin
   attr(rval, "var") <- variance
