@@ -180,10 +180,12 @@ svyatk.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
 
   if ( any(incvar <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- incvar <= 0
-    design <- design[nps == 0 ]
-    if (length(nps) > length(design$prob))
+    nps[ is.na(nps) ] <- 0
+    design <- design[ nps == 0 ]
+    if (length(nps) > length(design$prob)) {
       incvar <- incvar[nps == 0]
-    else incvar[nps > 0] <- 0
+    } else { incvar[nps > 0] <- 0 }
+
   }
 
   calc.atkinson <- function( x, w, epsilon ) {
