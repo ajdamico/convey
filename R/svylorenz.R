@@ -99,7 +99,7 @@ svylorenzlines_wrap <-
 	}
 	
 svylorenzpoints_wrap <-
-	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = curve.col , ... ){
+	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = col , ... ){
 		
 		points( x, y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex * 4 , lwd = lwd , col = col , ... )
 	
@@ -263,10 +263,10 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
 	  if ( !add ) svylorenzplot_wrap( ... )
 
-		if( any( c( 'xlim' , 'ylim' ) %in% names( list( ... ) ) ) ) stop( "xlim= and ylim= parameters are fixed within `svylorenz`" )
+		if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
 		abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
 		if( empirical ) svylorenzlines_wrap( E_p , E_L.p , ... )
-		svylorenzpoints_wrap( quantiles , L.p , ... )
+		svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
 
 		if (ci) {
 			X.Vec <- as.numeric( c(p, tail(p, 1), rev(p), p[1]) )
@@ -398,10 +398,10 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 	
 	if ( !add ) svylorenzplot_wrap( ... )
 	
-	if( any( c( 'xlim' , 'ylim' ) %in% names( list( ... ) ) ) ) stop( "xlim= and ylim= parameters are fixed within `svylorenz`" )
+	if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
 	abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
 	if( empirical ) svylorenzlines_wrap( E_p , E_L.p , ... )
-	svylorenzpoints_wrap( quantiles , L.p , ... )
+	svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
 
 	if (ci) {
 		X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
