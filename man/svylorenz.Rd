@@ -51,6 +51,11 @@ Estimate the Lorenz curve, an inequality graph
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+
+Notice that the 'empirical' curve is observation-based and is the one actually used to calculate the Gini index.
+On the other hand, the quantile-based curve is used to estimate the shares, SEs and confidence intervals.
+
+This way, as the number of quantiles of the quantile-based function increases, the qwuantile-based curve approacches the observation-based curve.
 }
 \examples{
 library(survey)
@@ -72,7 +77,7 @@ svylorenz( ~eqincome , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha 
 # linearized design using a variable with missings
 svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
-# demonstration of `curve.col=` and `add=` parameters 
+# demonstration of `curve.col=` and `add=` parameters
 svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
 # replicate-weighted design using a variable with missings
 svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
@@ -90,6 +95,14 @@ dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , dat
 dbd_eusilc <- convey_prep( dbd_eusilc )
 svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 
+# highlithing the difference between the quantile-based curve and the empirical version:
+svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
+svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), alpha = .01, add = TRUE )
+legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
+# as the number of quantiles increased, the difference between the curves gets smaller
+svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
+svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), alpha = .01, add = TRUE )
+legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 
 }
 \author{
@@ -98,10 +111,12 @@ Djalma Pessoa, Anthony Damico and Guilherme Jacob.
 \references{
 Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
-Vol.13, No.1, 1997. pp. 41–58. URL \url{http://www.jos.nu/Articles/abstract.asp?article=13141}.
+Vol.13, No.1, 1997. pp. 41 58. URL \url{http://www.jos.nu/Articles/abstract.asp?article=13141}.
 
 Shlomo Yitzhaki and Robert Lerman (1989). Improving the accuracy of estimates of Gini coefficients.
 \emph{Journal of Econometrics}, Vol.42(1), pp. 43-47, September.
+
+Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. PhD thesis. URL \url{http://doc.rero.ch/record/29204}.
 }
 \seealso{
 \code{\link{survey::svyquantile}}

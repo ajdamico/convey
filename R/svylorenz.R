@@ -16,6 +16,11 @@
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
+#' Notice that the 'empirical' curve is observation-based and is the one actually used to calculate the Gini index.
+#' On the other hand, the quantile-based curve is used to estimate the shares, SEs and confidence intervals.
+#'
+#' This way, as the number of quantiles of the quantile-based function increases, the qwuantile-based curve approacches the observation-based curve.
+#'
 #' @return Object of class "\code{svyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
 #' and a "\code{SE}" attribute giving the standard errors of the estimates.
 #'
@@ -25,10 +30,12 @@
 #'
 #' @references Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 #' Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
-#' Vol.13, No.1, 1997. pp. 41–58. URL \url{http://www.jos.nu/Articles/abstract.asp?article=13141}.
+#' Vol.13, No.1, 1997. pp. 41 58. URL \url{http://www.jos.nu/Articles/abstract.asp?article=13141}.
 #'
 #'Shlomo Yitzhaki and Robert Lerman (1989). Improving the accuracy of estimates of Gini coefficients.
 #'\emph{Journal of Econometrics}, Vol.42(1), pp. 43-47, September.
+#'
+#'Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. PhD thesis. URL \url{http://doc.rero.ch/record/29204}.
 #'
 #' @keywords survey
 #'
@@ -52,7 +59,7 @@
 #'# linearized design using a variable with missings
 #'svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 #'svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
-#'# demonstration of `curve.col=` and `add=` parameters 
+#'# demonstration of `curve.col=` and `add=` parameters
 #'svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
 #'# replicate-weighted design using a variable with missings
 #'svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
@@ -70,6 +77,14 @@
 #'dbd_eusilc <- convey_prep( dbd_eusilc )
 #'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 #'
+#'# highlithing the difference between the quantile-based curve and the empirical version:
+#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
+#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), alpha = .01, add = TRUE )
+#'legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
+#'# as the number of quantiles increased, the difference between the curves gets smaller
+#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
+#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), alpha = .01, add = TRUE )
+#'legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 #'
 #' @export
 
@@ -82,17 +97,17 @@ svylorenz <- function(formula, design, ...) {
 
 # thanks to alex for these wrapper functions
 # http://stackoverflow.com/a/37518103/1759499
-svylorenzplot_wrap <- 
+svylorenzplot_wrap <-
 	function( cex = 0.1 , xlab = "Cumulative Population Share" , ylab = "Total Income Share" , ... ){
-		plot( 
-			NULL , 
-			NULL , 
+		plot(
+			NULL ,
+			NULL ,
 			xlim = c( 0 , 1 ) ,
 			ylim = c( 0 , 1 ) ,
 			cex = cex ,
 			xlab = xlab ,
 			ylab = ylab ,
-			... 
+			...
 		)
 	}
 
@@ -100,20 +115,20 @@ svylorenzlines_wrap <-
 	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = curve.col , ... ){
 		lines( x , y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex , lwd = lwd , col = col , ... )
 	}
-	
+
 svylorenzpoints_wrap <-
 	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = col , ... ){
-		
+
 		points( x, y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex * 4 , lwd = lwd , col = col , ... )
-	
+
 	}
-	
+
 svylorenzpolygon_wrap <-
 	function( x = x , y = y , col = col , border = NA , ... ){
 		polygon( x , y , col = col , border = border , ... )
 	}
-	
-	
+
+
 #' @rdname svylorenz
 #' @export
 svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ... ) {
@@ -398,9 +413,9 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
 
   if ( plot ) {
-	
+
 	if ( !add ) svylorenzplot_wrap( ... )
-	
+
 	if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
 	abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
 	if( empirical ) svylorenzlines_wrap( E_p , E_L.p , col = curve.col , ... )
@@ -411,7 +426,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 		Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
 		svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
 
-		
+
 	}
   }
 
