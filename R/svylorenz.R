@@ -79,6 +79,9 @@ svylorenz <- function(formula, design, ...) {
 
 }
 
+
+# thanks to alex for these wrapper functions
+# http://stackoverflow.com/a/37518103/1759499
 svylorenzplot_wrap <- 
 	function( cex = 0.1 , xlab = "Cumulative Population Share" , ylab = "Total Income Share" , ... ){
 		plot( 
