@@ -100,11 +100,11 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
 
   calc.gei <- function( x, weights, epsilon ) {
     if ( epsilon == 0 ) {
-      result.est <- -T_fn(x,w,0)/U_fn(x,w,0) + log(U_fn(x,w,1)/U_fn(x,w,0))
+      result.est <- -T_fn(x,weights,0)/U_fn(x,weights,0) + log(U_fn(x,weights,1)/U_fn(x,weights,0))
     } else if ( epsilon == 1 ) {
-      result.est <- (T_fn(x,w,1)/U_fn( x, w, 1)) - log( U_fn( x, w, 1)/U_fn( x, w, 0) )
+      result.est <- (T_fn(x,weights,1)/U_fn( x, weights, 1)) - log( U_fn( x, weights, 1)/U_fn( x, weights, 0) )
     } else {
-      result.est <- ((epsilon)*((epsilon)-1))^(-1)*(U_fn( x, w, 0)^((epsilon)-1)*U_fn( x, w, 1)^(-(epsilon))*U_fn( x, w, epsilon)-1)
+      result.est <- ((epsilon)*((epsilon)-1))^(-1)*(U_fn( x, weights, 0)^((epsilon)-1)*U_fn( x, weights, 1)^(-(epsilon))*U_fn( x, weights, epsilon)-1)
     }
 
     result <- NULL
@@ -114,25 +114,25 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
   }
 
   result <- NULL
-  result <- calc.gei( x = incvar, w = w, epsilon = epsilon )
+  result <- calc.gei( x = incvar, weights = w, epsilon = epsilon )
 
   rval <- result$gei.result
 
   if ( epsilon == 0 ) {
     v <- -U_fn(incvar,w,0)^(-1)*log(incvar) + U_fn(incvar,w,1)^(-1)*incvar + U_fn(incvar,w,0)^(-1)*(T_fn(incvar,w,0)*U_fn(incvar,w,0)^(-1) - 1 )
-    v[w == 0] <- NA
+    #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
                                   design$strata, design$fpc, postStrata = design$postStrata)
   } else if ( epsilon == 1) {
     v <- U_fn(incvar,w,1)^(-1)*incvar*log(incvar) - U_fn(incvar,w,1)^(-1)*(T_fn(incvar,w,1)*U_fn(incvar,w,1)^(-1)+1)*incvar + U_fn(incvar,w,0)^(-1)
-    v[w == 0] <- NA
+    #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
                                   design$strata, design$fpc, postStrata = design$postStrata)
   } else {
     v <- (epsilon)^(-1)*U_fn(incvar,w,epsilon)*U_fn(incvar,w,1)^(-(epsilon))*U_fn(incvar,w,0)^((epsilon)-2) -
       ((epsilon)-1)^(-1)*U_fn(incvar,w,epsilon)*U_fn(incvar,w,1)^(-(epsilon)-1)*U_fn(incvar,w,0)^((epsilon)-1)*incvar +
       ((epsilon)^2-(epsilon))^(-1)*U_fn(incvar,w,0)^((epsilon)-1)*U_fn(incvar,w,1)^(-(epsilon))*incvar^(epsilon)
-    v[w == 0] <- NA
+    #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
                                   design$strata, design$fpc, postStrata = design$postStrata)
   }

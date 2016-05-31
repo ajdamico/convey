@@ -94,18 +94,10 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
 
   ordincvar<-order(incvar)
   w <- w[ordincvar]
+  N <- sum(w)
   incvar <- incvar[ordincvar]
 
-  # population size
-  N <- sum(w)
-  # total income
-  Y <- sum(incvar * w)
-  # cumulative weight
-  r <- cumsum(w)
-  # partial weighted function
-  G <- cumsum(incvar * w)
-
-  wtd.generalized.mean <- function( y, weights, gamma ) {
+  wtd.generalized.mean <- function( x, weights, gamma ) {
     if (gamma == 0) {
       result <- exp( sum( weights * log(x) ) / sum( weights ) )
     } else {
@@ -114,17 +106,17 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     return( result )
   }
 
-  calc.atkinson <- function( x, w, epsilon ) {
-    N <- sum( w )
-    x_bar <- sum( x * w ) / N
+  calc.atkinson <- function( x, weights, epsilon ) {
+    N <- sum( weights )
+    x_bar <- sum( x * weights ) / N
     if ( epsilon != 1 ) {
-      b <- x[w != 0]^( 1 - epsilon )
-      B <- sum( w[w != 0] * b )
-      atk.result <- 1 - ( N^( epsilon/(epsilon-1) ) ) * ( B^(1/(1-epsilon) ) ) / sum( w[w != 0] * x[w != 0] )
+      b <- x^( 1 - epsilon )
+      B <- sum( weights * b )
+      atk.result <- 1 - ( N^( epsilon/(epsilon-1) ) ) * ( B^(1/(1-epsilon) ) ) / sum( weights * x )
     } else {
-      b <- log( x[w != 0], base = exp(1) )
-      B <- sum( w[w != 0] * b )
-      atk.result <- 1 - ( N / sum( x[w != 0] * w[w != 0] ) ) * exp( B/N )
+      b <- log( x, base = exp(1) )
+      B <- sum( weights * b )
+      atk.result <- 1 - ( N / sum( x * weights ) ) * exp( B/N )
     }
 
     result <- NULL
@@ -137,20 +129,20 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
   }
 
   result <- NULL
-  result <- calc.atkinson( x = incvar, w = w, epsilon = epsilon )
+  result <- calc.atkinson( x = incvar, weights = w, epsilon = epsilon )
 
   rval <- result$atk.result
 
   if ( epsilon != 1 ) {
-    v <- (1 - result$atk.result) * ( (incvar[w != 0]/sum(w[w != 0]*incvar[w != 0])) - ( result$b/((1-epsilon)*result$B) ) - epsilon/( (epsilon-1)*N ) )
+    v <- (1 - result$atk.result) * ( (incvar/sum(w*incvar)) - ( result$b/((1-epsilon)*result$B) ) - epsilon/( (epsilon-1)*N ) )
     #v[w == 0] <- 0
-    v[w == 0] <- NA
+    #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
                           design$strata, design$fpc, postStrata = design$postStrata)
   } else {
-    v <- ( (1 - result$atk.result) / N ) * ( (N*incvar[w != 0]/sum(w[w != 0]*incvar[w != 0])) - result$b - 1 + (result$B/N) )
+    v <- ( (1 - result$atk.result) / N ) * ( (N*incvar/sum(w*incvar)) - result$b - 1 + (result$B/N) )
     #v[w == 0] <- 0
-    v[w == 0] <- NA
+    #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
                           design$strata, design$fpc, postStrata = design$postStrata)
   }
@@ -188,24 +180,24 @@ svyatk.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
 
   }
 
-  calc.atkinson <- function( x, w, epsilon ) {
-    N <- sum( w )
-    x_bar <- sum( x * w ) / N
+  calc.atkinson <- function( x, weights, epsilon ) {
+    N <- sum( weights )
+    x_bar <- sum( x * weights ) / N
     if ( epsilon != 1 ) {
-      b <- x[w != 0]^( 1 - epsilon )
-      B <- sum( w[w != 0] * b )
-      atk.result <- 1 - ( N^( epsilon/(epsilon-1) ) ) * ( B^(1/(1-epsilon) ) ) / sum( w[w != 0] * x[w != 0] )
+      b <- x[weights != 0]^( 1 - epsilon )
+      B <- sum( weights[weights != 0] * b )
+      atk.result <- 1 - ( N^( epsilon/(epsilon-1) ) ) * ( B^(1/(1-epsilon) ) ) / sum( weights[weights != 0] * x[weights != 0] )
     } else {
-      b <- log( x[w != 0], base = exp(1) )
-      B <- sum( w[w != 0] * b )
-      atk.result <- 1 - ( N / sum( x[w != 0] * w[w != 0] ) ) * exp( B/N )
+      b <- log( x[weights != 0], base = exp(1) )
+      B <- sum( weights[weights != 0] * b )
+      atk.result <- 1 - ( N / sum( x[weights != 0] * weights[weights != 0] ) ) * exp( B/N )
     }
 
     return( atk.result )
 
   }
   ws <- weights(design, "sampling")
-  rval <- calc.atkinson( x = incvar, w = ws, epsilon = epsilon)
+  rval <- calc.atkinson( x = incvar, weights = ws, epsilon = epsilon)
   ww <- weights(design, "analysis")
   qq <- apply(ww, 2, function(wi) calc.atkinson(incvar, wi, epsilon = epsilon))
   if ( any(is.na(qq))) {
