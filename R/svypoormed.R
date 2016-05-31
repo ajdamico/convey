@@ -109,6 +109,15 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     htot <- h_fun(incvec, wf)
     ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
     arpt <- coef(ARPT)
+    if(is.na(arpt)){
+    rval <- NA
+    variance <- NA
+    class(rval) <- "cvystat"
+    attr( rval , "var" ) <- variance
+    attr(rval, "lin") <- NA
+    attr( rval , "statistic" ) <- "poormed"
+    rval
+    } else{
     linarpt <- attr(ARPT, "lin")
     nome<-terms.formula(formula)[[2]]
     dsub <- eval(substitute(subset(design, subset=(incvar <= arpt)),list(incvar=nome, arpt = arpt)))
@@ -134,7 +143,7 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     attr( rval , "var" ) <- variance
     attr(rval, "lin") <- linmedp
     attr( rval , "statistic" ) <- "poormed"
-    rval
+    rval}
 }
 
 
