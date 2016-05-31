@@ -34,10 +34,9 @@
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-#'
 #' library(convey)
 #' des_eusilc <- convey_prep(des_eusilc)
-#' svygei( ~eqincome , design = des_eusilc )
+#' svygei( ~eqincome , design = des_eusilc, epsilon = .5 )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
