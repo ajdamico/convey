@@ -207,6 +207,7 @@ svyatk.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "atkinson"
+    attr(rval,"epsilon")<- epsilon
 
     return(rval)
 
@@ -220,7 +221,9 @@ svyatk.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
   class(rval) <- "cvystat"
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "atkinson"
+  attr(rval,"epsilon")<- epsilon
   return(rval)
+
 }
 
 
