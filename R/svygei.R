@@ -18,7 +18,7 @@
 #' @seealso \code{\link{svyatk}}
 #'
 #' @references Matti Langel (2012). Measuring inequality in finite population sampling.
-#'PhD thesis: Université de Neuchâtel,
+#' PhD thesis: Université de Neuchâtel,
 #' URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 #'
 #'Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
@@ -85,7 +85,9 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     else incvar[nas > 0] <- 0
   }
 
-  if ( epsilon %in% c(0,1) & any(incvar == 0) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
+  w <- 1/design$prob
+
+  if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
 
   w <- 1/design$prob
   N <- sum( w )
@@ -95,6 +97,8 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     return( sum( weights * x^gamma ) )
   }
   T_fn <- function( x, weights, gamma ) {
+    x <- x[ weights != 0 ]
+    weights <- weights[ weights != 0 ]
     return( sum( weights * x^gamma * log( x ) ) )
   }
 
@@ -154,7 +158,6 @@ svygei.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
   df <- model.frame(design)
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-  if ( epsilon %in% c(0,1) & any(incvar == 0) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
 
   if(na.rm){
     nas<-is.na(incvar)
@@ -188,6 +191,9 @@ svygei.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
   }
 
   ws <- weights(design, "sampling")
+
+  if ( epsilon %in% c(0,1) & any(incvar [ ws != 0 ] == 0) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
+
   rval <- calc.gei( x = incvar, w = ws, epsilon = epsilon)
   ww <- weights(design, "analysis")
   qq <- apply(ww, 2, function(wi) calc.gei(incvar, wi, epsilon = epsilon))

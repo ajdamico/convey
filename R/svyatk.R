@@ -13,10 +13,10 @@
 #'
 #' @author Djalma Pessoa, Anthony Damico and Guilherme Jacob
 #'
-#' @seealso \code{\link{arpr}}
+#' @seealso \code{\link{svygei}}
 #'
 #' @references Matti Langel (2012). Measuring inequality in finite population sampling.
-#'PhD thesis: Université de Neuchâtel,
+#' PhD thesis: Université de Neuchâtel,
 #' URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 #'
 #'Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
@@ -74,7 +74,9 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
   if (epsilon <= 0 ) { stop( "epsilon has to be (0,+Inf) ") }
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-  if ( any(incvar <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
+  w <- 1/design$prob
+
+  if ( any(incvar[w != 0] <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- incvar <= 0
     design <- design[nps == 0 ]
     if (length(nps) > length(design$prob))
@@ -92,56 +94,52 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
 
   w <- 1/design$prob
 
-  ordincvar<-order(incvar)
-  w <- w[ordincvar]
-  N <- sum(w)
-  incvar <- incvar[ordincvar]
-
-  wtd.generalized.mean <- function( x, weights, gamma ) {
-    if (gamma == 0) {
-      result <- exp( sum( weights * log(x) ) / sum( weights ) )
-    } else {
-      result <- ( ( sum( weights * x^(gamma) ) / sum( weights ) ) )^(1/gamma)
-    }
-    return( result )
+  # Funções U e T de Jenkins & Biewen:
+  U_fn <- function( x, weights, gamma ) {
+    return( sum( weights * x^gamma ) )
+  }
+  T_fn <- function( x, weights, gamma ) {
+    return( sum( weights * x^gamma * log( x ) ) )
   }
 
   calc.atkinson <- function( x, weights, epsilon ) {
-    N <- sum( weights )
-    x_bar <- sum( x * weights ) / N
-    if ( epsilon != 1 ) {
-      b <- x^( 1 - epsilon )
-      B <- sum( weights * b )
-      atk.result <- 1 - ( N^( epsilon/(epsilon-1) ) ) * ( B^(1/(1-epsilon) ) ) / sum( weights * x )
+    if ( epsilon == 1 ) {
+      x <- x[ weights != 0 ]
+      weights <- weights[ weights != 0 ]
+      result.est <- 1 - U_fn(x,weights,0) * U_fn(x,weights,1)^(-1) * exp( T_fn(x,weights,0)/U_fn(x,weights,0))
     } else {
-      b <- log( x, base = exp(1) )
-      B <- sum( weights * b )
-      atk.result <- 1 - ( N / sum( x * weights ) ) * exp( B/N )
+      result.est <- 1 - ( U_fn(x,weights,0)^(-epsilon/(1-epsilon)) ) * U_fn(x,weights,1-epsilon)^(1/(1-epsilon)) / U_fn(x,weights,1)
     }
 
-    result <- NULL
-    result$atk.result <- atk.result
-    result$b <- b
-    result$B <- B
-
-    return( result )
+    return( result.est )
 
   }
 
-  result <- NULL
-  result <- calc.atkinson( x = incvar, weights = w, epsilon = epsilon )
+  rval <- NULL
+  rval <- calc.atkinson( x = incvar, weights = w, epsilon = epsilon )
 
-  rval <- result$atk.result
+  if ( is.na(rval) ) {
+    variance <- as.matrix(NA)
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "atkinson"
+    attr(rval,"epsilon")<- epsilon
+    return(rval)
+
+  }
 
   if ( epsilon != 1 ) {
-    v <- (1 - result$atk.result) * ( (incvar/sum(w*incvar)) - ( result$b/((1-epsilon)*result$B) ) - epsilon/( (epsilon-1)*N ) )
-    #v[w == 0] <- 0
+    v <- ((epsilon)/(1-(epsilon)))*U_fn(incvar,w,1)^(-1)*U_fn(incvar,w,1-epsilon)^(1/(1-(epsilon)))*U_fn(incvar,w,0)^(-1/(1-(epsilon))) +
+      U_fn(incvar,w,0)^(-(epsilon)/(1-(epsilon)))*U_fn(incvar,w,1-epsilon)^(1/(1-(epsilon)))*U_fn(incvar,w,1)^(-2)*incvar -
+      (1/(1-(epsilon)))*U_fn(incvar,w,0)^(-(epsilon)/(1-(epsilon)))*U_fn(incvar,w,1)^(-1)*U_fn(incvar,w,1-epsilon)^((epsilon)/(1-(epsilon)))*incvar^(1-(epsilon))
+    v[w == 0] <- 0
     #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
                           design$strata, design$fpc, postStrata = design$postStrata)
   } else {
-    v <- ( (1 - result$atk.result) / N ) * ( (N*incvar/sum(w*incvar)) - result$b - 1 + (result$B/N) )
-    #v[w == 0] <- 0
+    v <- (rval-1)*U_fn(incvar,w,0)^(-1)*(1-U_fn(incvar,w,0)^(-1)*T_fn(incvar[w != 0],w[w != 0],0)) + (1-rval)*U_fn(incvar,w,1)^(-1)*incvar + (rval-1)*U_fn(incvar,w,0)^(-1)*log(incvar)
+    v[w == 0] <- 0
     #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
                           design$strata, design$fpc, postStrata = design$postStrata)
@@ -180,22 +178,25 @@ svyatk.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
 
   }
 
+  # Funções U e T de Jenkins & Biewen:
+  U_fn <- function( x, weights, gamma ) {
+    return( sum( weights * x^gamma ) )
+  }
+  T_fn <- function( x, weights, gamma ) {
+    return( sum( weights * x^gamma * log( x ) ) )
+  }
+
   calc.atkinson <- function( x, weights, epsilon ) {
-    N <- sum( weights )
-    x_bar <- sum( x * weights ) / N
-    if ( epsilon != 1 ) {
-      b <- x[weights != 0]^( 1 - epsilon )
-      B <- sum( weights[weights != 0] * b )
-      atk.result <- 1 - ( N^( epsilon/(epsilon-1) ) ) * ( B^(1/(1-epsilon) ) ) / sum( weights[weights != 0] * x[weights != 0] )
+    if ( epsilon == 1 ) {
+      result.est <- 1 - U_fn(x,weights,0) * U_fn(x,weights,1)^(-1) * exp(T_fn(x,weights,0)/U_fn(x,weights,0))
     } else {
-      b <- log( x[weights != 0], base = exp(1) )
-      B <- sum( weights[weights != 0] * b )
-      atk.result <- 1 - ( N / sum( x[weights != 0] * weights[weights != 0] ) ) * exp( B/N )
+      result.est <- 1 - ( U_fn(x,weights,0)^(-epsilon/(1-epsilon)) ) * U_fn(x,weights,1-epsilon)^(1/(1-epsilon)) / U_fn(x,weights,1)
     }
 
-    return( atk.result )
+    return( result.est )
 
   }
+
   ws <- weights(design, "sampling")
   rval <- calc.atkinson( x = incvar, weights = ws, epsilon = epsilon)
   ww <- weights(design, "analysis")
