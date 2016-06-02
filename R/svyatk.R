@@ -1,6 +1,6 @@
 #' Atkinson index
 #'
-#' Estimate the Atkinson index, a measure of inequalty
+#' Estimate the Atkinson index, a measure of inequality
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
