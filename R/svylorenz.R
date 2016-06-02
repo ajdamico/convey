@@ -32,10 +32,10 @@
 #' Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
 #' Vol.13, No.1, 1997. pp. 41 58. URL \url{http://www.jos.nu/Articles/abstract.asp?article=13141}.
 #'
-#'Shlomo Yitzhaki and Robert Lerman (1989). Improving the accuracy of estimates of Gini coefficients.
-#'\emph{Journal of Econometrics}, Vol.42(1), pp. 43-47, September.
+#' Shlomo Yitzhaki and Robert Lerman (1989). Improving the accuracy of estimates of Gini coefficients.
+#' \emph{Journal of Econometrics}, Vol.42(1), pp. 43-47, September.
 #'
-#'Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. PhD thesis. URL \url{http://doc.rero.ch/record/29204}.
+#' Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. PhD thesis. URL \url{http://doc.rero.ch/record/29204}.
 #'
 #' @keywords survey
 #'
