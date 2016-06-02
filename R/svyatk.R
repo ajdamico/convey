@@ -158,7 +158,6 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
 #' @rdname svyatk
 #' @export
 svyatk.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) {
-  df <- model.frame(design)
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
   if(na.rm){

@@ -176,7 +176,6 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
 #' @export
 svygei.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) {
   if (epsilon < 0 ) { stop( "epsilon has to be [0,+Inf) ") }
-  df <- model.frame(design)
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
 

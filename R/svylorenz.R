@@ -361,7 +361,6 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     as.numeric(res)
   }
 
-  df <- model.frame(design)
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
   if(na.rm){
