@@ -32,20 +32,11 @@
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-#'
-#' svyatk( ~eqincome , design = des_eusilc, epsilon = .5 )
+#' library(convey)
+#' des_eusilc <- convey_prep(des_eusilc)
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' svyatk( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
-#'
-#' # linearized design using a variable with missings
-#' svyatk( ~py010n , design = des_eusilc, epsilon = .5 )
-#' svyatk( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
-#' # replicate-weighted design using a variable with missings
-#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5 )
-#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
-#'
 #'
 #' # database-backed design
 #' require(RSQLite)
@@ -54,9 +45,59 @@
 #' dbWriteTable( conn , 'eusilc' , eusilc )
 #'
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
-#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
+#'
+#' # linearized design
+#' svyatk( ~eqincome , design = des_eusilc, epsilon = .5 )
+#' svyatk( ~eqincome , design = subset(des_eusilc, eqincome > 0), epsilon = 1 )
+#' svyatk( ~eqincome , design = des_eusilc, epsilon = 2 )
+#'
+#' # database-backed linearized design
 #' svyatk( ~eqincome , design = dbd_eusilc, epsilon = .5 )
+#' svyatk( ~eqincome , design = subset(dbd_eusilc, eqincome > 0), epsilon = 1 )
+#' svyatk( ~eqincome , design = dbd_eusilc, epsilon = 2 )
+#'
+#' # replicate-weighted design
+#' svyatk( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
+#' svyatk( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
+#' svyatk( ~eqincome , design = des_eusilc_rep, epsilon = 2 )
+#'
+#' # linearized design using a variable with missings
+#' svyatk( ~py010n , design = des_eusilc, epsilon = .5 )
+#' svyatk( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svyatk( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svyatk( ~py010n , design = des_eusilc, epsilon = 2 )
+#' svyatk( ~py010n , design = des_eusilc, epsilon = 2, na.rm = TRUE )
+#'
+#' # database-backed linearized design using a variable with missings
+#' svyatk( ~py010n , design = dbd_eusilc, epsilon = .5 )
+#' svyatk( ~py010n , design = dbd_eusilc, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svyatk( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svyatk( ~py010n , design = dbd_eusilc, epsilon = 2 )
+#' svyatk( ~py010n , design = dbd_eusilc, epsilon = 2, na.rm = TRUE )
+#'
+#' # replicate-weighted design using a variable with missings
+#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5 )
+#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svyatk( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = 2 )
+#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = 2, na.rm = TRUE )
+#'
+#' # subsetting
+#' svyatk( ~eqincome , design = subset(des_eusilc, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , design = subset(des_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
+#' svyatk( ~eqincome , design = subset(des_eusilc, db040 == "Styria"), epsilon = 2 )
+#'
+#' svyatk( ~eqincome , design = subset(dbd_eusilc, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
+#' svyatk( ~eqincome , design = subset(dbd_eusilc, db040 == "Styria"), epsilon = 2 )
+#'
+#' svyatk( ~eqincome , design = subset(des_eusilc_rep, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
+#' svyatk( ~eqincome , design = subset(des_eusilc_rep, db040 == "Styria"), epsilon = 2 )
 #'
 #' @export
 #'
@@ -74,15 +115,7 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
   if (epsilon <= 0 ) { stop( "epsilon has to be (0,+Inf) ") }
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-  w <- 1/design$prob
 
-  if ( any(incvar[w != 0] <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
-    nps <- incvar <= 0
-    design <- design[nps == 0 ]
-    if (length(nps) > length(design$prob))
-      incvar <- incvar[nps == 0]
-    else incvar[nps > 0] <- 0
-  }
 
   if (na.rm) {
     nas <- is.na(incvar)
@@ -93,19 +126,43 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
   }
 
   w <- 1/design$prob
+  if ( any( is.na(incvar [w != 0]) ) ) {
+    rval <- NA
+    variance <- as.matrix(NA)
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "atkinson"
+    attr(rval,"epsilon")<- epsilon
+    return(rval)
+  }
+
+  if ( any(incvar[w != 0] <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
+    nps <- incvar <= 0
+    design <- design[nps == 0 ]
+    if (length(nps) > length(design$prob))
+      incvar <- incvar[nps == 0]
+    else incvar[nps > 0] <- 0
+  }
+
+  w <- 1/design$prob
 
   # Funções U e T de Jenkins & Biewen:
   U_fn <- function( x, weights, gamma ) {
+    x <- x[weights != 0]
+    weights <- weights[weights != 0]
     return( sum( weights * x^gamma ) )
   }
   T_fn <- function( x, weights, gamma ) {
+    x <- x[weights != 0]
+    weights <- weights[weights != 0]
     return( sum( weights * x^gamma * log( x ) ) )
   }
 
   calc.atkinson <- function( x, weights, epsilon ) {
+    x <- x[weights != 0]
+    weights <- weights[weights != 0]
     if ( epsilon == 1 ) {
-      x <- x[ weights != 0 ]
-      weights <- weights[ weights != 0 ]
       result.est <- 1 - U_fn(x,weights,0) * U_fn(x,weights,1)^(-1) * exp( T_fn(x,weights,0)/U_fn(x,weights,0))
     } else {
       result.est <- 1 - ( U_fn(x,weights,0)^(-epsilon/(1-epsilon)) ) * U_fn(x,weights,1-epsilon)^(1/(1-epsilon)) / U_fn(x,weights,1)
