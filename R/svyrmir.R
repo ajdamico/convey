@@ -35,7 +35,7 @@
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
-#' missing completely at random, missingness rate = .20
+#' # missing completely at random, missingness rate = .20
 #' ind_miss <- rbinom(nrow(eusilc), 1, .20 )
 #' eusilc$eqincome_miss <- eusilc$eqincome
 #' is.na(eusilc$eqincome_miss)<- ind_miss==1
