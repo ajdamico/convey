@@ -36,19 +36,9 @@
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' library(convey)
 #' des_eusilc <- convey_prep(des_eusilc)
-#' svygei( ~eqincome , design = des_eusilc, epsilon = .5 )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' svygei( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
-#'
-#' # linearized design using a variable with missings
-#' svygei( ~py010n , design = des_eusilc, epsilon = .5 )
-#' svygei( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
-#' # replicate-weighted design using a variable with missings
-#' svygei( ~py010n , design = des_eusilc_rep, epsilon = .5 )
-#' svygei( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
-#'
 #'
 #' # database-backed design
 #' require(RSQLite)
@@ -59,7 +49,55 @@
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
+#' # linearized design
+#' svygei( ~eqincome , design = subset(des_eusilc, eqincome > 0), epsilon = 0 )
+#' svygei( ~eqincome , design = des_eusilc, epsilon = .5 )
+#' svygei( ~eqincome , design = subset(des_eusilc, eqincome > 0), epsilon = 1 )
+#' svygei( ~eqincome , design = des_eusilc, epsilon = 2 )
+#'
+#' # database-backed linearized design
+#' svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0), epsilon = 0 )
 #' svygei( ~eqincome , design = dbd_eusilc, epsilon = .5 )
+#' svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0), epsilon = 1 )
+#' svygei( ~eqincome , design = dbd_eusilc, epsilon = 2 )
+#'
+#' # replicate-weighted design
+#' svygei( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0), epsilon = 0 )
+#' svygei( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
+#' svygei( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
+#' svygei( ~eqincome , design = des_eusilc_rep, epsilon = 2 )
+#'
+#'
+#' # linearized design using a variable with missings
+#' svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
+#' svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
+#' svygei( ~py010n , design = des_eusilc, epsilon = .5 )
+#' svygei( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
+#' svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svygei( ~py010n , design = des_eusilc, epsilon = 2 )
+#' svygei( ~py010n , design = des_eusilc, epsilon = 2, na.rm = TRUE )
+#'
+#' # database-backed linearized design using a variable with missings
+#' svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
+#' svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
+#' svygei( ~py010n , design = dbd_eusilc, epsilon = .5 )
+#' svygei( ~py010n , design = dbd_eusilc, epsilon = .5, na.rm = TRUE )
+#' svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svygei( ~py010n , design = dbd_eusilc, epsilon = 2 )
+#' svygei( ~py010n , design = dbd_eusilc, epsilon = 2, na.rm = TRUE )
+#'
+#' # replicate-weighted design using a variable with missings
+#' svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0 )
+#' svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
+#' svygei( ~py010n , design = des_eusilc_rep, epsilon = .5 )
+#' svygei( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
+#' svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svygei( ~py010n , design = des_eusilc_rep, epsilon = 2 )
+#' svygei( ~py010n , design = des_eusilc_rep, epsilon = 2, na.rm = TRUE )
+#'
 #'
 #' @export
 #'
@@ -85,6 +123,9 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     else incvar[nas > 0] <- 0
   }
 
+  w <- 1/design$prob
+  if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
+
   # Jenkins & Biewen's U and T functions:
   U_fn <- function( x, weights, gamma ) {
     x <- x[ weights != 0 ]
@@ -96,28 +137,6 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     weights <- weights[ weights != 0 ]
     return( sum( weights * x^gamma * log( x ) ) )
   }
-
-  calc.renyi <- function( x, weights, epsilon ) {
-    x <- x[weights != 0 ]
-    weights <- weights[weights != 0 ]
-
-    N <- sum(weights)
-    X <- sum( weights * x )
-    x_bar <- X/N
-    if ( epsilon == 1 ) {
-      #b <- x * log(x)
-      #B <- T_fn(x,weights,1)
-      result <- (T_fn(x,weights,1)/U_fn( x, weights, 1)) - log( U_fn( x, weights, 1)/U_fn( x, weights, 0) ) }
-    else {
-      #b <- x^epsilon
-      #B <- U_fn(x, weights, gamma = epsilon )
-      result <- ( (epsilon - 1)*log(sum(weights)) - epsilon*log(U_fn(x,weights,1)) + log(U_fn(x, weights, gamma = epsilon )) )/(epsilon-1)
-    }
-    return( result )
-  }
-
-  w <- 1/design$prob
-  if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
 
   calc.gei <- function( x, weights, epsilon ) {
 
@@ -132,16 +151,11 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
       result.est <- ((epsilon)*((epsilon)-1))^(-1)*(U_fn( x, weights, 0)^((epsilon)-1)*U_fn( x, weights, 1)^(-(epsilon))*U_fn( x, weights, epsilon)-1)
     }
 
-    result <- NULL
-    result$gei.result <- result.est
+    return( result.est )
 
-    return( result )
   }
 
-  result <- NULL
-  result <- calc.gei( x = incvar, weights = w, epsilon = epsilon )
-
-  rval <- result$gei.result
+  rval <- calc.gei( x = incvar, weights = w, epsilon = epsilon )
 
   if ( epsilon == 0 ) {
     v <- -U_fn(incvar,w,0)^(-1)*log(incvar) + U_fn(incvar,w,1)^(-1)*incvar + U_fn(incvar,w,0)^(-1)*(T_fn(incvar,w,0)*U_fn(incvar,w,0)^(-1) - 1 )

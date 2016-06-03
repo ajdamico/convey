@@ -46,19 +46,9 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 library(convey)
 des_eusilc <- convey_prep(des_eusilc)
-svygei( ~eqincome , design = des_eusilc, epsilon = .5 )
 
 # replicate-weighted design
 des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-svygei( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
-
-# linearized design using a variable with missings
-svygei( ~py010n , design = des_eusilc, epsilon = .5 )
-svygei( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
-# replicate-weighted design using a variable with missings
-svygei( ~py010n , design = des_eusilc_rep, epsilon = .5 )
-svygei( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
-
 
 # database-backed design
 require(RSQLite)
@@ -69,7 +59,54 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
+# linearized design
+svygei( ~eqincome , design = subset(des_eusilc, eqincome > 0), epsilon = 0 )
+svygei( ~eqincome , design = des_eusilc, epsilon = .5 )
+svygei( ~eqincome , design = subset(des_eusilc, eqincome > 0), epsilon = 1 )
+svygei( ~eqincome , design = des_eusilc, epsilon = 2 )
+
+# database-backed linearized design
+svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0), epsilon = 0 )
 svygei( ~eqincome , design = dbd_eusilc, epsilon = .5 )
+svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0), epsilon = 1 )
+svygei( ~eqincome , design = dbd_eusilc, epsilon = 2 )
+
+# replicate-weighted design
+svygei( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0), epsilon = 0 )
+svygei( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
+svygei( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
+svygei( ~eqincome , design = des_eusilc_rep, epsilon = 2 )
+
+
+# linearized design using a variable with missings
+svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
+svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
+svygei( ~py010n , design = des_eusilc, epsilon = .5 )
+svygei( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
+svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+svygei( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+svygei( ~py010n , design = des_eusilc, epsilon = 2 )
+svygei( ~py010n , design = des_eusilc, epsilon = 2, na.rm = TRUE )
+
+# database-backed linearized design using a variable with missings
+svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
+svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
+svygei( ~py010n , design = dbd_eusilc, epsilon = .5 )
+svygei( ~py010n , design = dbd_eusilc, epsilon = .5, na.rm = TRUE )
+svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+svygei( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+svygei( ~py010n , design = dbd_eusilc, epsilon = 2 )
+svygei( ~py010n , design = dbd_eusilc, epsilon = 2, na.rm = TRUE )
+
+# replicate-weighted design using a variable with missings
+svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0 )
+svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
+svygei( ~py010n , design = des_eusilc_rep, epsilon = .5 )
+svygei( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
+svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
+svygei( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+svygei( ~py010n , design = des_eusilc_rep, epsilon = 2 )
+svygei( ~py010n , design = des_eusilc_rep, epsilon = 2, na.rm = TRUE )
 }
 \author{
 Djalma Pessoa, Anthony Damico and Guilherme Jacob
