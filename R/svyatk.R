@@ -123,7 +123,19 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     else incvar[nas > 0] <- 0
   }
 
-  if ( any(incvar <= 0, na.rm = TRUE) ) { warning( "The function is defined for strictly positive incomes only.")
+  w <- 1/design$prob
+  if ( any( is.na(incvar [w != 0]) ) ) {
+    rval <- NA
+    variance <- as.matrix(NA)
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "atkinson"
+    attr(rval,"epsilon")<- epsilon
+    return(rval)
+  }
+
+  if ( any(incvar[w != 0] <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- incvar <= 0
     design <- design[nps == 0 ]
     if (length(nps) > length(design$prob))
@@ -179,13 +191,13 @@ svyatk.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
     v[w == 0] <- 0
     #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
-                                  design$strata, design$fpc, postStrata = design$postStrata)
+                          design$strata, design$fpc, postStrata = design$postStrata)
   } else {
     v <- (rval-1)*U_fn(incvar,w,0)^(-1)*(1-U_fn(incvar,w,0)^(-1)*T_fn(incvar[w != 0],w[w != 0],0)) + (1-rval)*U_fn(incvar,w,1)^(-1)*incvar + (rval-1)*U_fn(incvar,w,0)^(-1)*log(incvar)
     v[w == 0] <- 0
     #v[w == 0] <- NA
     variance <- survey::svyrecvar(v/design$prob, design$cluster,
-                                  design$strata, design$fpc, postStrata = design$postStrata)
+                          design$strata, design$fpc, postStrata = design$postStrata)
   }
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -210,7 +222,8 @@ svyatk.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) 
     incvar <- incvar[!nas]
   }
 
-  if ( any(incvar <= 0, na.rm = TRUE ) ) { warning( "The function is defined for strictly positive incomes only.")
+  ws <- weights(design, "sampling")
+  if ( any(incvar[ws != 0] <= 0, na.rm = TRUE) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- incvar <= 0
     nps[ is.na(nps) ] <- 0
     design <- design[ nps == 0 ]
