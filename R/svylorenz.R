@@ -81,7 +81,7 @@
 #'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
 #'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), alpha = .01, add = TRUE )
 #'legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
-#'# as the number of quantiles increased, the difference between the curves gets smaller
+#'# as the number of quantiles increases, the difference between the curves gets smaller
 #'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
 #'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), alpha = .01, add = TRUE )
 #'legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
@@ -152,7 +152,19 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
   }
 
-  # partial sum:
+  # partial sum (1st definition):
+  wtd.psum <- function (x, q = .5, weights = NULL ) {
+    indices <- weights != 0
+    x <- x[indices]
+    weights <- weights[indices]
+
+    x_thres <- wtd.qtl(x = x, q = q, weights = weights )
+
+    return( sum( weights * x * 1 * (x <= x_thres) ) )
+
+  }
+
+  # partial sum (2nd definition)
   wtd.psum <- function (x, q = .5, weights = NULL ) {
 
     indices <- weights != 0
@@ -212,12 +224,9 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
   p <- NULL
   L.p <- NULL
-  for ( pc in quantiles ) {
-    i <- match( pc, quantiles )
-    p[i] <- pc
-    L.p[i] <- wtd.psum( x = incvar, q = pc, weights = w ) / sum( w*incvar )
-    rm( i, pc )
-  }
+
+  L.p <- as.numeric( lapply( quantiles, function(x) wtd.psum(x = incvar, weights = w, q = x ) ) ) / sum( w * incvar )
+
   GL.p <- L.p * average
 
   if (empirical) {
@@ -273,7 +282,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
 
   cis <- array( rbind(CI.L,CI.U), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
-  rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( p ), as.character(formula)[2] ) ) )
+  rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
 
@@ -287,7 +296,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 		svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
 
 		if (ci) {
-			X.Vec <- as.numeric( c(p, tail(p, 1), rev(p), p[1]) )
+			X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
 			Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
 			svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
 		}
@@ -302,58 +311,78 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 #' @export
 svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ...) {
 
-    # quantile function:
-    wtd.qtl <- function (x, q = .5, weights = NULL ) {
+  # quantile function:
+  wtd.qtl <- function (x, q = .5, weights = NULL ) {
 
-        indices <- weights != 0
-        x <- x[indices]
-        weights <- weights[indices]
+    indices <- weights != 0
+    x <- x[indices]
+    weights <- weights[indices]
 
-        x_1 <- c(0,x[-length(x)])
-        N <- sum(weights)
-        wsum <- cumsum(weights)
-        wsum_1 <- c(0,wsum[-length(wsum)])
-        alpha_k <- wsum / N
+    ordx <- order(x)
+    x <- x[ordx]
+    weights <- weights[ordx]
 
-        k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
+    x_1 <- c(0,x[-length(x)])
+    N <- sum(weights)
+    wsum <- cumsum(weights)
+    wsum_1 <- c(0,wsum[-length(wsum)])
+    alpha_k <- wsum / N
 
-        return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[k] ) / weights[k] )
+    k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
+    return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[k] ) / weights[k] )
+
+  }
+
+  # partial sum (1st definition):
+  wtd.psum <- function (x, q = .5, weights = NULL ) {
+    indices <- weights != 0
+    x <- x[indices]
+    weights <- weights[indices]
+
+    ordx <- order(x)
+    x <- x[ordx]
+    weights <- weights[ordx]
+
+    x_thres <- wtd.qtl(x = x, q = q, weights = weights )
+
+    return( sum( weights * x * 1 * (x <= x_thres) ) )
+
+  }
+
+  # partial sum (2nd definition)
+  wtd.psum <- function (x, q = .5, weights = NULL ) {
+
+    indices <- weights != 0
+    x <- x[indices]
+    weights <- weights[indices]
+
+    ordx <- order(x)
+    x <- x[ordx]
+    weights <- weights[ordx]
+
+    x_1 <- c(0,x[-length(x)])
+    N <- sum(weights)
+    wsum <- cumsum(weights)
+    wsum_1 <- c(0,wsum[-length(wsum)])
+    alpha_k <- wsum / N
+
+    k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
+
+    t_k <- ( (q * N) - wsum_1 ) / weights
+
+    H_fn <- function(x) {
+      y <- NULL
+      y[ x < 0 ] <- 0
+      y[ (0 <= x) & (x < 1) ] <- x[ (0 <= x) & (x < 1) ]
+      y[ x >= 1 ] <- 1
+
+      return(y)
     }
 
-    # partial sum:
-    wtd.psum <- function (x, q = .5, weights = NULL ) {
+    return( sum( weights * x * H_fn(t_k) ) )
 
-        xorder <- order(x)
-        x <- x[xorder]
-        weights <- weights[xorder]
-
-        indices <- weights != 0
-        x <- x[indices]
-        weights <- weights[indices]
-
-        x_1 <- c(0,x[-length(x)])
-        N <- sum(weights)
-        wsum <- cumsum(weights)
-        wsum_1 <- c(0,wsum[-length(wsum)])
-        alpha_k <- wsum / N
-
-        k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
-
-        t_k <- ( (q * N) - wsum_1 ) / weights
-
-        H_fn <- function(x) {
-            y <- NULL
-            y[ x < 0 ] <- 0
-            y[ (0 <= x) & (x < 1) ] <- x[ (0 <= x) & (x < 1) ]
-            y[ x >= 1 ] <- 1
-
-            return(y)
-        }
-
-        return( sum( weights * x * H_fn(t_k) ) )
-
-    }
+  }
 
   # wtd.psum for multiple quantiles:
   lapply_wtd.psum <- function (x, qs = seq(0,1,.2), weights = NULL ) {
@@ -371,7 +400,6 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   }
 
   ws <- weights(design, "sampling")
-  wtd.psum(incvar, q = .1, weights = ws )/sum( ws * incvar )
   L.p <- t( as.matrix( lapply_wtd.psum(x = incvar, qs = quantiles, weights = ws ) ) )
   rval <- t( matrix( data = L.p, dimnames = list( as.character( quantiles ) ) ) )
   ww <- weights(design, "analysis")
