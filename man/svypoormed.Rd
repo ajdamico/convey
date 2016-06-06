@@ -10,7 +10,7 @@
 svypoormed(formula, design, ...)
 
 \method{svypoormed}{survey.design}(formula, design, order = 0.5,
-  percent = 0.6, comp = TRUE, na.rm = FALSE, ...)
+  percent = 0.6, na.rm = FALSE, ...)
 
 \method{svypoormed}{svyrep.design}(formula, design, order = 0.5,
   percent = 0.6, na.rm = FALSE, ...)
@@ -25,8 +25,6 @@ svypoormed(formula, design, ...)
 \item{order}{income quantile order, usually .5}
 
 \item{percent}{fraction of the quantile, usually .60}
-
-\item{comp}{logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 }

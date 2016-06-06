@@ -6,7 +6,6 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param order income quantile order, usually .5
 #' @param percent fraction of the quantile, usually .60
-#' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
@@ -73,7 +72,7 @@ svyarpr <- function(formula, design, ...) {
 
 #' @rdname svyarpr
 #' @export
-svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, na.rm=FALSE,...) {
+svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, na.rm=FALSE,...) {
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -115,18 +114,19 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, c
     ncom<- names(full_design$prob)
     wf <- 1/full_design$prob
     htot <- h_fun(incvec, wf)
-    ARPT <- svyarpt(formula = formula, design=full_design, order = 0.5, percent = 0.6, comp=comp, na.rm = na.rm)
+    ARPT <- svyarpt (formula = formula, design=full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
     arptv <- coef(ARPT)
     arptlin <- attr(ARPT, "lin")
     # value of arpr and first term of lin
     poor<- incvar<=arptv
     rval <- sum(poor*w)/N
-    arpr1lin <- (1/N)*((incvar<=arptv)-rval)
-    names(arpr1lin)<- ind
-    if(nrow(full_design)>length(ind)) arpr1lin<- complete(arpr1lin,ncom )
+    ID <- rep(1, length(incvec))* (ncom %in% ind)
+    arpr1lin <- (1/N)*ID*((incvec<=arptv)-rval)
+
     # use h for the whole sample
     Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F", na.rm=na.rm)
-    arprlin <- arpr1lin + Fprime * arptlin
+
+    arprlin <- ID*(arpr1lin + Fprime * arptlin)
     variance <- survey::svyrecvar(arprlin/full_design$prob, full_design$cluster,
       full_design$strata, full_design$fpc,
       postStrata = full_design$postStrata)

@@ -7,7 +7,6 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param order income quantile order, usually .5
 #' @param percent fraction of the quantile, usually .60
-#' @param comp logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
@@ -73,7 +72,7 @@ svypoormed <- function(formula, design, ...) {
 
 #' @rdname svypoormed
 #' @export
-svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6, comp=TRUE, na.rm=FALSE, ...) {
+svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6, na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -107,43 +106,44 @@ svypoormed.survey.design <- function(formula, design, order = 0.5, percent = 0.6
     wf <- 1/full_design$prob
     ncom<- names(full_design$prob)
     htot <- h_fun(incvec, wf)
-    ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
+    ARPT <- svyarpt(formula = formula, full_design, order = 0.5,
+      percent = 0.6, na.rm = na.rm)
     arpt <- coef(ARPT)
     if(is.na(arpt)){
-    rval <- NA
-    variance <- NA
-    class(rval) <- "cvystat"
-    attr( rval , "var" ) <- variance
-    attr(rval, "lin") <- NA
-    attr( rval , "statistic" ) <- "poormed"
-    rval
+      rval <- NA
+      variance <- NA
+      class(rval) <- "cvystat"
+      attr( rval , "var" ) <- variance
+      attr(rval, "lin") <- NA
+      attr( rval , "statistic" ) <- "poormed"
+      rval
     } else{
-    linarpt <- attr(ARPT, "lin")
-    nome<-terms.formula(formula)[[2]]
-    dsub <- eval(substitute(subset(design, subset=(incvar <= arpt)),list(incvar=nome, arpt = arpt)))
+      linarpt <- attr(ARPT, "lin")
+      nome<-terms.formula(formula)[[2]]
+      dsub <- eval(substitute(subset(design, subset=(incvar <= arpt)),list(incvar=nome, arpt = arpt)))
 
-    medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm)
-    medp <- as.vector(medp)
-    ARPR <- svyarpr(formula=formula, design= design, order, percent, na.rm = na.rm)
-    Fprimemedp <- densfun(formula = formula, design = design, medp,
-      h = htot, fun = "F", na.rm = na.rm)
-    arpr<-coef(ARPR)
-    ifarpr<-attr(ARPR, "lin")
-    # linearize cdf of medp
-    ifmedp <- (1/N) * ((incvar <= medp) - 0.5 * arpr)
-    names(ifmedp) <- ind
-    if(nrow(full_design)>length(ind)) ifmedp <- complete(ifmedp, ncom)
-    # linearize median of poor
-    linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
-    rval <-medp
-    variance <- survey::svyrecvar(linmedp/full_design$prob, full_design$cluster,
-      full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- "cvystat"
-    attr( rval , "var" ) <- variance
-    attr(rval, "lin") <- linmedp
-    attr( rval , "statistic" ) <- "poormed"
-    rval}
+      medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm)
+      medp <- as.vector(medp)
+      ARPR <- svyarpr (formula=formula, design= design, order, percent, na.rm = na.rm)
+      Fprimemedp <- densfun(formula = formula, design = design, medp,
+        h = htot, fun = "F", na.rm = na.rm)
+      arpr<-coef(ARPR)
+      ifarpr<-attr(ARPR, "lin")
+      ID <- rep(1, length(incvec))* (ncom %in% ind)
+      # linearize cdf of medp
+      ifmedp <- (1/N) *ID* ((incvec <= medp) - 0.5 * arpr)
+
+      # linearize median of poor
+      linmedp <- (0.5 * ifarpr - ifmedp)/Fprimemedp
+      rval <-medp
+      variance <- survey::svyrecvar(linmedp/full_design$prob, full_design$cluster,
+        full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+      colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+      class(rval) <- "cvystat"
+      attr( rval , "var" ) <- variance
+      attr(rval, "lin") <- linmedp
+      attr( rval , "statistic" ) <- "poormed"
+      rval}
 }
 
 

@@ -6,7 +6,6 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param order income quantile order, usually .50 (median)
 #' @param percent fraction of the quantile, usually .60
-#' @param comp logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
 #'
 #'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
@@ -74,7 +73,7 @@ svyarpt <- function(formula, design, ...) {
 
 #' @rdname svyarpt
 #' @export
-svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, comp = TRUE, na.rm = FALSE,...) {
+svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6,  na.rm = FALSE,...) {
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -86,8 +85,6 @@ svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
     full_design <- design else full_design <- attr(design, "full_design")
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     nome<-terms.formula(formula)[[2]]
-
-
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
@@ -114,12 +111,9 @@ svyarpt.survey.design <-  function(formula, design, order = 0.5, percent = 0.6, 
     rval <- percent * q_alpha
     Fprime <- densfun(formula = formula, design = design, q_alpha, h=htot, fun = "F", na.rm=na.rm)
     N <- sum(w)
-    linquant<- -(1/(N * Fprime)) * ((incvar <= q_alpha) - order)
+    ID <- rep(1, length(incvec))*(ncom %in% ind)
+    linquant<- -(1/(N * Fprime)) * ID*((incvec <= q_alpha) - order)
     lin <- percent * linquant
-    if(length(lin) < nrow(full_design$variables)){
-    names(lin)<- ind
-    lin<- complete (lin, ncom)
-    }
 
     variance <- survey::svyrecvar(lin/full_design$prob, full_design$cluster,
       full_design$strata, full_design$fpc, postStrata = full_design$postStrata)

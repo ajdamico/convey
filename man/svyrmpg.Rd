@@ -10,7 +10,7 @@
 svyrmpg(formula, design, ...)
 
 \method{svyrmpg}{survey.design}(formula, design, order = 0.5, percent = 0.6,
-  comp, na.rm = FALSE, thresh = FALSE, poor_median = FALSE, ...)
+  na.rm = FALSE, thresh = FALSE, poor_median = FALSE, ...)
 
 \method{svyrmpg}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
   na.rm = FALSE, thresh = FALSE, poor_median = FALSE, ...)
@@ -25,8 +25,6 @@ svyrmpg(formula, design, ...)
 \item{order}{income quantile order, usually .5}
 
 \item{percent}{fraction of the quantile, usually .60}
-
-\item{comp}{logical variable \code{TRUE} if the inearized variable for domains should be completed with zeros}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
