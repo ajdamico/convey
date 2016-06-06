@@ -98,35 +98,35 @@ svylorenz <- function(formula, design, ...) {
 # thanks to alex for these wrapper functions
 # http://stackoverflow.com/a/37518103/1759499
 svylorenzplot_wrap <-
-	function( cex = 0.1 , xlab = "Cumulative Population Share" , ylab = "Total Income Share" , ... ){
-		plot(
-			NULL ,
-			NULL ,
-			xlim = c( 0 , 1 ) ,
-			ylim = c( 0 , 1 ) ,
-			cex = cex ,
-			xlab = xlab ,
-			ylab = ylab ,
-			...
-		)
-	}
+  function( cex = 0.1 , xlab = "Cumulative Population Share" , ylab = "Total Income Share" , ... ){
+    plot(
+      NULL ,
+      NULL ,
+      xlim = c( 0 , 1 ) ,
+      ylim = c( 0 , 1 ) ,
+      cex = cex ,
+      xlab = xlab ,
+      ylab = ylab ,
+      ...
+    )
+  }
 
 svylorenzlines_wrap <-
-	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = curve.col , ... ){
-		lines( x , y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex , lwd = lwd , col = col , ... )
-	}
+  function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = curve.col , ... ){
+    lines( x , y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex , lwd = lwd , col = col , ... )
+  }
 
 svylorenzpoints_wrap <-
-	function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = col , ... ){
+  function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = col , ... ){
 
-		points( x, y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex * 4 , lwd = lwd , col = col , ... )
+    points( x, y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex * 4 , lwd = lwd , col = col , ... )
 
-	}
+  }
 
 svylorenzpolygon_wrap <-
-	function( x = x , y = y , col = col , border = NA , ... ){
-		polygon( x , y , col = col , border = border , ... )
-	}
+  function( x = x , y = y , col = col , border = NA , ... ){
+    polygon( x , y , col = col , border = border , ... )
+  }
 
 
 #' @rdname svylorenz
@@ -165,7 +165,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
 
   # partial sum (2nd definition)
-  wtd.psum <- function (x, q = .5, weights = NULL ) {
+  wtd.psum1 <- function (x, q = .5, weights = NULL ) {
 
     indices <- weights != 0
     x <- x[indices]
@@ -220,7 +220,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     class(rval) <- "svyquantile"
 
     return(rval)
-    }
+  }
 
   p <- NULL
   L.p <- NULL
@@ -286,24 +286,24 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
 
-	if ( plot ) {
+  if ( plot ) {
 
-	  if ( !add ) svylorenzplot_wrap( ... )
+    if ( !add ) svylorenzplot_wrap( ... )
 
-		if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
-		abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
-		if( empirical ) svylorenzlines_wrap( E_p , E_L.p , col = curve.col , ... )
-		svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
+    if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
+    abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
+    if( empirical ) svylorenzlines_wrap( E_p , E_L.p , col = curve.col , ... )
+    svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
 
-		if (ci) {
-			X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
-			Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-			svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
-		}
+    if (ci) {
+      X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
+      Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
+      svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
+    }
 
-	}
+  }
 
-	return(rval)
+  return(rval)
 }
 
 
@@ -351,7 +351,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   }
 
   # partial sum (2nd definition)
-  wtd.psum <- function (x, q = .5, weights = NULL ) {
+  wtd.psum1 <- function (x, q = .5, weights = NULL ) {
 
     indices <- weights != 0
     x <- x[indices]
@@ -393,10 +393,10 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
   if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      df <- model.frame(design)
-      incvar <- incvar[!nas]
+    nas<-is.na(incvar)
+    design<-design[!nas,]
+    df <- model.frame(design)
+    incvar <- incvar[!nas]
   }
 
   ws <- weights(design, "sampling")
@@ -422,11 +422,11 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   se <- sqrt(variance)
 
   if (empirical) {
-      ordincvar <- order(incvar)
-      incvar <- incvar[ordincvar]
-      ws <- ws[ordincvar]
-      E_p <- ( 2*cumsum(ws[ws != 0]) - ws[ws != 0] ) / ( 2*sum(ws[ws != 0]) )
-      E_L.p <- cumsum(ws[ws != 0]*incvar[ws != 0])/sum(ws[ws != 0]*incvar[ws != 0])
+    ordincvar <- order(incvar)
+    incvar <- incvar[ordincvar]
+    ws <- ws[ordincvar]
+    E_p <- ( 2*cumsum(ws[ws != 0]) - ws[ws != 0] ) / ( 2*sum(ws[ws != 0]) )
+    E_L.p <- cumsum(ws[ws != 0]*incvar[ws != 0])/sum(ws[ws != 0]*incvar[ws != 0])
   }
 
   CI.L <- as.numeric( L.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE ) )
@@ -441,20 +441,20 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
   if ( plot ) {
 
-	if ( !add ) svylorenzplot_wrap( ... )
+    if ( !add ) svylorenzplot_wrap( ... )
 
-	if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
-	abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
-	if( empirical ) svylorenzlines_wrap( E_p , E_L.p , col = curve.col , ... )
-	svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
+    if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
+    abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
+    if( empirical ) svylorenzlines_wrap( E_p , E_L.p , col = curve.col , ... )
+    svylorenzpoints_wrap( quantiles , L.p , col = curve.col , ... )
 
-	if (ci) {
-		X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
-		Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-		svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
+    if (ci) {
+      X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
+      Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
+      svylorenzpolygon_wrap(X.Vec, Y.Vec, col = adjustcolor( curve.col, alpha.f = .2), border = NA , ...)
 
 
-	}
+    }
   }
 
   return(rval)
@@ -466,22 +466,22 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 svylorenz.DBIsvydesign <- function (formula, design, ...)
 {
 
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+  if (!( "logical" %in% class(attr(design, "full_design"))) ){
 
-        full_design <- attr( design , "full_design" )
+    full_design <- attr( design , "full_design" )
 
-        full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                                  updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+    full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+                                              updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 
-        attr( design , "full_design" ) <- full_design
+    attr( design , "full_design" ) <- full_design
 
-        rm( full_design )
+    rm( full_design )
 
-    }
+  }
 
-    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
-                                         updates = design$updates, subset = design$subset)
+  design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
+                                       updates = design$updates, subset = design$subset)
 
-    NextMethod("svylorenz", design)
+  NextMethod("svylorenz", design)
 
 }
