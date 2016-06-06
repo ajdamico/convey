@@ -126,7 +126,7 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, n
     # use h for the whole sample
     Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F", na.rm=na.rm)
 
-    arprlin <- ID*(arpr1lin + Fprime * arptlin)
+    arprlin <- arpr1lin + Fprime * arptlin
     variance <- survey::svyrecvar(arprlin/full_design$prob, full_design$cluster,
       full_design$strata, full_design$fpc,
       postStrata = full_design$postStrata)
