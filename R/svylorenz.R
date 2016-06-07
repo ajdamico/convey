@@ -165,7 +165,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
 
   # partial sum (2nd definition)
-  wtd.psum1 <- function (x, q = .5, weights = NULL ) {
+  wtd.psum <- function (x, q = .5, weights = NULL ) {
 
     indices <- weights != 0
     x <- x[indices]
@@ -351,7 +351,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   }
 
   # partial sum (2nd definition)
-  wtd.psum1 <- function (x, q = .5, weights = NULL ) {
+  wtd.psum <- function (x, q = .5, weights = NULL ) {
 
     indices <- weights != 0
     x <- x[indices]
