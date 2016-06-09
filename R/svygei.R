@@ -104,7 +104,9 @@
 
 svygei <- function(formula, design, ...) {
 
-  UseMethod("svygei", design)
+	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+	
+	UseMethod("svygei", design)
 
 }
 

@@ -63,8 +63,10 @@
 #'
 
 svygini <- function(formula, design, ...) {
+ 
+	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-    UseMethod("svygini", design)
+	UseMethod("svygini", design)
 
 }
 
