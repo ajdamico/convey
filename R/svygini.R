@@ -60,126 +60,151 @@
 #' svygini( ~ eqincome , design = dbd_eusilc )
 #'
 #' @export
-svygini <- function(formula, design, ...) {
- 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+svygini <- 
+	function(formula, design, ...) {
+	 
+		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-	UseMethod("svygini", design)
+		UseMethod("svygini", design)
 
 }
 
 
 #' @rdname svygini
 #' @export
-svygini.survey.design <-  function(formula, design, na.rm=FALSE, ...) {
-  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+svygini.survey.design <-
+	function(formula, design, na.rm=FALSE, ...) {
 
-  if (na.rm) {
-    nas <- is.na(incvar)
-    design <- design[nas == 0, ]
-    if (length(nas) > length(design$prob))
-      incvar <- incvar[nas == 0]
-    else incvar[nas > 0] <- 0
-  }
+		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-  w <- 1/design$prob
+		if (na.rm) {
+			nas <- is.na(incvar)
+			design <- design[nas == 0, ]
+			if (length(nas) > length(design$prob)) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
+		}
 
-  ordincvar<-order(incvar)
-  w <- w[ordincvar]
-  incvar <- incvar[ordincvar]
+		w <- 1/design$prob
 
-  # population size
-  N <- sum(w)
-  # total income
-  Y <- sum(incvar * w)
-  # cumulative weight
-  r <- cumsum(w)
-  # partial weighted function
-  G <- cumsum(incvar * w)
-  T2<- list(value=sum(incvar*w), lin=incvar)
-  T3<- list(value= sum(w), lin=rep(1, length(incvar)))
-  # get T1
-  T1val<- sum(r*incvar*w)
-  T1lin<-  Y - G + incvar * w + r* incvar
-  T1<- list(value=T1val, lin=T1lin)
-  list_all<- list(T1 = T1, T2 = T2, T3 = T3)
-  GINI<- contrastinf(quote((2*T1-T2)/(T2*T3)-1), list_all)
-  lingini <- as.vector(GINI$lin)
-  rval <- GINI$value
-  variance <- survey::svyrecvar(lingini/design$prob, design$cluster,
-    design$strata, design$fpc, postStrata = design$postStrata)
-  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-  class(rval) <- "cvystat"
-  attr(rval, "var") <- variance
-  attr(rval, "statistic") <- "gini"
-  attr(rval,"lin")<- lingini
-  rval
-}
+		ordincvar <- order(incvar)
+		w <- w[ordincvar]
+		incvar <- incvar[ordincvar]
+
+		# population size
+		N <- sum(w)
+		
+		# total income
+		Y <- sum(incvar * w)
+		
+		# cumulative weight
+		r <- cumsum(w)
+		
+		# partial weighted function
+		G <- cumsum(incvar * w)
+		T2<- list(value=sum(incvar*w), lin=incvar)
+		T3<- list(value= sum(w), lin=rep(1, length(incvar)))
+		
+		# get T1
+		T1val <- sum( r * incvar * w )
+		T1lin <-  Y - G + incvar * w + r * incvar
+		T1 <- list( value = T1val , lin = T1lin )
+		list_all <- list(T1 = T1, T2 = T2, T3 = T3)
+		GINI <- contrastinf( quote( ( 2 * T1 - T2 ) / ( T2 * T3 ) - 1 ) , list_all )
+		lingini <- as.vector( GINI$lin )
+		rval <- GINI$value
+		
+		variance <- survey::svyrecvar(lingini/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+		
+		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+		class(rval) <- "cvystat"
+		attr(rval, "var") <- variance
+		attr(rval, "statistic") <- "gini"
+		attr(rval,"lin")<- lingini
+	
+		rval
+	}
 
 #' @rdname svygini
 #' @export
-svygini.svyrep.design <- function(formula, design,na.rm=FALSE, ...) {
-    df <- model.frame(design)
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      df <- model.frame(design)
-      incvar <- incvar[!nas]
-    }
+svygini.svyrep.design <- 
+	function(formula, design,na.rm=FALSE, ...) {
+	
+		df <- model.frame(design)
+		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+		
+		if(na.rm){
+			nas<-is.na(incvar)
+			design<-design[!nas,]
+			df <- model.frame(design)
+			incvar <- incvar[!nas]
+		}
 
 
-    ComputeGini <- function(x, w) {
-        w <- w[order(x)]
-        x <- x[order(x)]
-        N <- sum(w)
-        n <- length(x)
-        T <- sum(x * w)
-        r <- cumsum(w)
-        Num <- sum((2 * r - 1) * x * w)
-        Den <- N * T
-        (Num/Den) - 1
-    }
-    ws <- weights(design, "sampling")
-    rval <- ComputeGini(incvar, ws)
-    ww <- weights(design, "analysis")
-    qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
-    if(sum(is.na(qq))==length(qq))variance <- NA else
-    variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		ComputeGini <- 
+			function(x, w) {
+				w <- w[order(x)]
+				x <- x[order(x)]
+				N <- sum(w)
+				n <- length(x)
+				T <- sum(x * w)
+				r <- cumsum(w)
+				Num <- sum((2 * r - 1) * x * w)
+				Den <- N * T
+				(Num/Den) - 1
+			}
+			
+		ws <- weights(design, "sampling")
+		
+		rval <- ComputeGini(incvar, ws)
+		
+		ww <- weights(design, "analysis")
+		
+		qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
+		
+		if(sum(is.na(qq))==length(qq))variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-	variance <- as.matrix( variance )
+		variance <- as.matrix( variance )
 
-	colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- "cvystat"
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "gini"
-    rval
-}
+		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+		class(rval) <- "cvystat"
+		attr(rval, "var") <- variance
+		attr(rval, "statistic") <- "gini"
+		
+		rval
+	}
 
 
 #' @rdname svygini
 #' @export
 svygini.DBIsvydesign <-
-  function (formula, design, ...)
-  {
+	function (formula, design, ...){
 
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+		if (!( "logical" %in% class(attr(design, "full_design"))) ){
 
-      full_design <- attr( design , "full_design" )
+			full_design <- attr( design , "full_design" )
 
-      full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-        updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+			full_design$variables <- 
+				survey:::getvars(
+					formula, 
+					attr( design , "full_design" )$db$connection, 
+					attr( design , "full_design" )$db$tablename,
+					updates = attr( design , "full_design" )$updates, 
+					subset = attr( design , "full_design" )$subset
+				)
 
-      attr( design , "full_design" ) <- full_design
+			attr( design , "full_design" ) <- full_design
 
-      rm( full_design )
+			rm( full_design )
 
-    }
+		}
 
-    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
-      updates = design$updates, subset = design$subset)
+		design$variables <- 
+			survey:::getvars(
+				formula, 
+				design$db$connection, 
+				design$db$tablename,
+				updates = design$updates, 
+				subset = design$subset
+			)
 
-    NextMethod("svygini", design)
-  }
-
-
+		NextMethod("svygini", design)
+	}
