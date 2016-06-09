@@ -105,7 +105,9 @@
 svygei <- function(formula, design, ...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-	
+
+	if( 'epsilon' %in% names( list(...) ) & list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
+		
 	UseMethod("svygei", design)
 
 }
@@ -114,7 +116,7 @@ svygei <- function(formula, design, ...) {
 #' @rdname svygei
 #' @export
 svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, ... ) {
-  if (epsilon < 0 ) { stop( "epsilon has to be [0,+Inf)") }
+
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
   if (na.rm) {
@@ -191,7 +193,7 @@ svygei.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE, 
 #' @rdname svygei
 #' @export
 svygei.svyrep.design <- function(formula, design, epsilon = 1,na.rm=FALSE, ...) {
-  if (epsilon < 0 ) { stop( "epsilon has to be [0,+Inf) ") }
+
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
 
