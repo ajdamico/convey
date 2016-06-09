@@ -99,7 +99,7 @@
 #'
 #' @export
 svyfgt <-
-	function(formula, design, ...) {
+	function(formula, design, type_thresh="abs",  ...) {
 
 		if( !( list(...)[["g"]] %in% c( 0 , 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or 1 to estimate the poverty index" )
 
@@ -114,7 +114,7 @@ svyfgt <-
 #' @rdname svyfgt
 #' @export
 svyfgt.survey.design <-
-	function(formula, design, g, type_thresh = "abs", abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE, ...){
+	function(formula, design, g, type_thresh,  abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE, ...){
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -233,7 +233,7 @@ svyfgt.survey.design <-
 #' @rdname svyfgt
 #' @export
 svyfgt.svyrep.design <-
-	function(formula, design, g, type_thresh = "abs", abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE,...) {
+	function(formula, design, g, type_thresh, abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE,...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
