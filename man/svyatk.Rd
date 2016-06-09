@@ -50,7 +50,7 @@ des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 # database-backed design
 library(DBI)
 dbfolder <- tempdir()
-conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+conn <- dbConnect( MonetDB.R::MonetDBLite() , dbfolder )
 dbWriteTable( conn , 'eusilc' , eusilc )
 
 dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
