@@ -51,14 +51,14 @@ svyisq( ~ py010n , design = des_eusilc_rep, .20 )
 svyisq( ~ py010n , design = des_eusilc_rep , .20,  na.rm = TRUE )
 
 # database-backed design
-require(RSQLite)
-tfile <- tempfile()
-conn <- dbConnect( SQLite() , tfile )
+library(DBI)
+dbfolder <- tempdir()
+conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 dbWriteTable( conn , 'eusilc' , eusilc )
 
-dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
-
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
 dbd_eusilc <- convey_prep( dbd_eusilc )
+
 svyisq( ~ eqincome , design = dbd_eusilc, .20 )
 
 }

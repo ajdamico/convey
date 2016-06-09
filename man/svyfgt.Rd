@@ -9,8 +9,9 @@
 \usage{
 svyfgt(formula, design, ...)
 
-\method{svyfgt}{survey.design}(formula, design, g, type_thresh, abs_thresh,
-  percent = 0.6, order = 0.5, na.rm = FALSE, thresh = FALSE, ...)
+\method{svyfgt}{survey.design}(formula, design, g, type_thresh = "abs",
+  abs_thresh, percent = 0.6, order = 0.5, na.rm = FALSE, thresh = FALSE,
+  ...)
 
 \method{svyfgt}{svyrep.design}(formula, design, g, type_thresh, abs_thresh,
   percent = 0.6, order = 0.5, na.rm = FALSE, thresh = FALSE, ...)
@@ -86,19 +87,19 @@ svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
 svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 
 # database-backed design
-require(RSQLite)
-tfile <- tempfile()
-conn <- dbConnect( SQLite() , tfile )
+library(DBI)
+dbfolder <- tempdir()
+conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 dbWriteTable( conn , 'eusilc' , eusilc )
 
-dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
 # headcount ratio, poverty threshold fixed
-svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+svyfgt(~eqincome, dbd_eusilc, g=0, abs_thresh=10000)
 # poverty gap index, poverty threshold fixed
-svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+svyfgt(~eqincome, dbd_eusilc, g=1, abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
 svyfgt(~eqincome, dbd_eusilc, g=0, type_thresh= "relq", thresh = TRUE)
 # poverty gap index, poverty threshold equal to arpt
