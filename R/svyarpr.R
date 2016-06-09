@@ -186,7 +186,7 @@ svyarpr.svyrep.design <-
 
 		ComputeArpr <- 
 			function(xf, wf, ind, order, percent) {
-				thresh <- percent * convey:::computeQuantiles(xf, wf, p = order)
+				thresh <- percent * computeQuantiles(xf, wf, p = order)
 				sum((xf[ind] <= thresh) * wf[ind])/sum(wf[ind])
 			}
 			

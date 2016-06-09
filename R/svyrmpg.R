@@ -164,11 +164,11 @@ svyrmpg.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
     names(incvec)<-names(wsf)<- row.names(df_full)
     ind<- row.names(df)
     ComputeRmpg <- function(xf, wf, ind, order, percent) {
-      tresh <- percent * convey:::computeQuantiles(xf, wf, p = order)
+      tresh <- percent * computeQuantiles(xf, wf, p = order)
       x<-xf[ind]
       w<- wf[ind]
       indpoor <- (x <= tresh)
-      medp <- convey:::computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
+      medp <- computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
       c(tresh, medp, 1 - (medp/tresh) )
     }
     ws <- weights(design, "sampling")
