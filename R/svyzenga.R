@@ -63,8 +63,6 @@
 #' svyzenga(~py010n, subset( des_eusilc_rep, db040 == "Styria"), na.rm = TRUE)
 #'
 #' @export
-#'
-
 svyzenga <- function(formula, design, ...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )

@@ -8,18 +8,18 @@
 #' @param alpha the order of the quantile
 #' @param quantile return the upper bound of the lower tail
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
-#'the statistic.
+#' the statistic.
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
 #' @seealso \code{\link{arpr}}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
-#'of poverty and inequality. \emph{Journal of the European Survey Research
+#' of poverty and inequality. \emph{Journal of the European Survey Research
 #' Association}, Vol.3, No.3, pp. 167-195,
 #' ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
-
-#'Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
+#'
+#' Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 #' linearization and residual techniques. Survey Methodology, 25, 193-203,
 #' URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 #'
@@ -34,7 +34,7 @@
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' svyisq( ~eqincome , design = des_eusilc_rep, .20 , quantile = TRUE )
-#'# linearized design using a variable with missings
+#' # linearized design using a variable with missings
 #' svyisq( ~ py010n , design = des_eusilc, .20 )
 #' svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
@@ -53,7 +53,6 @@
 #' svyisq( ~ eqincome , design = dbd_eusilc, .20 )
 #'
 #' @export
-
 svyisq <- function(formula, design, ...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
@@ -64,7 +63,6 @@ svyisq <- function(formula, design, ...) {
 
 #' @rdname svyisq
 #' @export
-
 svyisq.survey.design <- function(formula, design, alpha, quantile = FALSE, na.rm = FALSE,...) {
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   nome<-terms.formula(formula)[[2]]
@@ -156,5 +154,3 @@ svyisq.DBIsvydesign <-
 
     NextMethod("svyisq", design)
   }
-
-

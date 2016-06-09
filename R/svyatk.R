@@ -100,7 +100,6 @@
 #' svyatk( ~eqincome , design = subset(des_eusilc_rep, db040 == "Styria"), epsilon = 2 )
 #'
 #' @export
-#'
 svyatk <- 
 	function(formula, design, ...) {
 

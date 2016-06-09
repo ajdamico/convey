@@ -40,54 +40,53 @@
 #' @keywords survey
 #'
 #' @examples
-#'library(survey)
-#'library(vardpoor)
-#'data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
-#'library(convey)
+#' library(survey)
+#' library(vardpoor)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
+#' library(convey)
 #'
-#'# linearized design
-#'des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-#'des_eusilc <- convey_prep( des_eusilc )
-#'svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#' # linearized design
+#' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
+#' des_eusilc <- convey_prep( des_eusilc )
+#' svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 #'
-#'# replicate-weighted design
-#'des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#'des_eusilc_rep <- convey_prep( des_eusilc_rep )
-#'svylorenz( ~eqincome , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
-#'
-#'
-#'# linearized design using a variable with missings
-#'svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
-#'svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
-#'# demonstration of `curve.col=` and `add=` parameters
-#'svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
-#'# replicate-weighted design using a variable with missings
-#'svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
-#'svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
+#' # replicate-weighted design
+#' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- convey_prep( des_eusilc_rep )
+#' svylorenz( ~eqincome , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
 #'
 #'
-#'# database-backed design
-#'require(RSQLite)
-#'tfile <- tempfile()
-#'conn <- dbConnect( SQLite() , tfile )
-#'dbWriteTable( conn , 'eusilc' , eusilc )
+#' # linearized design using a variable with missings
+#' svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#' svylorenz( ~py010n , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
+#' # demonstration of `curve.col=` and `add=` parameters
+#' svylorenz( ~eqincome , design = des_eusilc, quantiles = seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
+#' # replicate-weighted design using a variable with missings
+#' svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
+#' svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
 #'
-#'dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
-#'dbd_eusilc <- convey_prep( dbd_eusilc )
-#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#' # database-backed design
+#' require(RSQLite)
+#' tfile <- tempfile()
+#' conn <- dbConnect( SQLite() , tfile )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
 #'
-#'# highlithing the difference between the quantile-based curve and the empirical version:
-#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
-#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), alpha = .01, add = TRUE )
-#'legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
-#'# as the number of quantiles increases, the difference between the curves gets smaller
-#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
-#'svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), alpha = .01, add = TRUE )
-#'legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#' svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#'
+#' # highlithing the difference between the quantile-based curve and the empirical version:
+#' svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
+#' svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.5), alpha = .01, add = TRUE )
+#' legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
+#' # as the number of quantiles increases, the difference between the curves gets smaller
+#' svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
+#' svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), alpha = .01, add = TRUE )
+#' legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 #'
 #' @export
-
 svylorenz <- function(formula, design, ...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
