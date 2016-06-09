@@ -99,13 +99,13 @@
 #' svyatk( ~eqincome , design = subset(des_eusilc_rep, db040 == "Styria"), epsilon = 2 )
 #'
 #' @export
-svyatk <- 
+svyatk <-
 	function(formula, design, ...) {
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 		if( 'epsilon' %in% names( list(...) ) & list(...)[["epsilon"]] <= 0 ) stop( "epsilon= must be positive." )
-	
+
 		UseMethod("svyatk", design)
 
 	}
@@ -113,7 +113,7 @@ svyatk <-
 
 #' @rdname svyatk
 #' @export
-svyatk.survey.design <- 
+svyatk.survey.design <-
 	function ( formula, design, epsilon = 1, na.rm = FALSE, ... ) {
 
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -138,11 +138,10 @@ svyatk.survey.design <-
 			return(rval)
 		}
 
-		if ( any(incvar[w != 0] <= 0) ){ 
+		if ( any(incvar[w != 0] <= 0) ){
 			warning("The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
 			nps <- incvar <= 0
 			design <- design[!nps]
-			if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[ nps ] <- 0
 		}
 
 		w <- 1/design$prob
@@ -161,56 +160,56 @@ svyatk.survey.design <-
 		}
 
 		if ( epsilon != 1 ) {
-		
-			v <- 
-				( ( epsilon ) / ( 1 - epsilon ) ) * 
-				U_fn( incvar , w , 1 )^( -1 ) * 
-				U_fn( incvar , w , 1 - epsilon )^( 1 / ( 1 - epsilon ) ) * 
+
+			v <-
+				( ( epsilon ) / ( 1 - epsilon ) ) *
+				U_fn( incvar , w , 1 )^( -1 ) *
+				U_fn( incvar , w , 1 - epsilon )^( 1 / ( 1 - epsilon ) ) *
 				U_fn( incvar , w , 0 )^( -1 / ( 1 - epsilon ) ) +
-				
+
 				U_fn( incvar , w , 0 )^( -epsilon / ( 1 - epsilon ) ) *
 				U_fn( incvar , w , 1 - epsilon )^( 1 / ( 1 - epsilon ) ) *
-				U_fn( incvar , w , 1 )^( -2 ) * 
+				U_fn( incvar , w , 1 )^( -2 ) *
 				incvar -
-			
-				( 1 / ( 1 - epsilon ) ) * 
-				U_fn( incvar , w , 0 )^( -epsilon / ( 1 - epsilon ) ) * 
-				U_fn( incvar , w , 1 )^( -1 ) * 
+
+				( 1 / ( 1 - epsilon ) ) *
+				U_fn( incvar , w , 0 )^( -epsilon / ( 1 - epsilon ) ) *
+				U_fn( incvar , w , 1 )^( -1 ) *
 				U_fn( incvar , w , 1 - epsilon )^( epsilon / ( 1 - epsilon ) ) *
 				incvar^( 1 - epsilon )
-			
+
 		} else {
-		
-			v <- 
-				( rval - 1 ) * 
-				U_fn( incvar , w , 0 )^( -1 ) * 
-				( 1 - U_fn( incvar , w , 0 )^( -1 ) * T_fn( incvar[w != 0] , w[ w != 0 ] , 0 ) ) + 
-				
-				( 1 - rval ) * U_fn( incvar , w , 1 )^( -1 ) * incvar + 
-				( rval - 1 ) * U_fn( incvar , w , 0 )^( -1 ) * 
+
+			v <-
+				( rval - 1 ) *
+				U_fn( incvar , w , 0 )^( -1 ) *
+				( 1 - U_fn( incvar , w , 0 )^( -1 ) * T_fn( incvar[w != 0] , w[ w != 0 ] , 0 ) ) +
+
+				( 1 - rval ) * U_fn( incvar , w , 1 )^( -1 ) * incvar +
+				( rval - 1 ) * U_fn( incvar , w , 0 )^( -1 ) *
 				log( incvar )
-			
+
 		}
-	
+
 		v[w == 0] <- 0
-		
+
 		variance <- survey::svyrecvar(v/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
-		
+
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 		class(rval) <- "cvystat"
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "atkinson"
 		attr(rval,"epsilon")<- epsilon
-		
+
 		rval
 	}
 
 
 #' @rdname svyatk
 #' @export
-svyatk.svyrep.design <- 
+svyatk.svyrep.design <-
 	function(formula, design, epsilon = 1, na.rm=FALSE, ...) {
-	
+
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
 		if(na.rm){
@@ -221,9 +220,9 @@ svyatk.svyrep.design <-
 		}
 
 		ws <- weights(design, "sampling")
-		
-		if ( any( incvar[ws != 0] <= 0 ) ) { 
-		
+
+		if ( any( incvar[ws != 0] <= 0 ) ) {
+
 			warning( "The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
 			nps <- incvar <= 0
 			nps[ is.na(nps) ] <- TRUE
@@ -236,9 +235,9 @@ svyatk.svyrep.design <-
 		rval <- calc.atkinson( x = incvar, weights = ws, epsilon = epsilon)
 		ww <- weights(design, "analysis")
 		qq <- apply(ww, 2, function(wi) calc.atkinson(incvar, wi, epsilon = epsilon))
-		
+
 		if ( any(is.na(qq))) {
-			
+
 			variance <- as.matrix(NA)
 			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 			class(rval) <- "cvystat"
@@ -249,11 +248,11 @@ svyatk.svyrep.design <-
 			return(rval)
 
 		} else {
-		
+
 			variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 			variance <- as.matrix( variance )
-			
+
 		}
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -275,12 +274,12 @@ svyatk.DBIsvydesign <-
 
 			full_design <- attr( design , "full_design" )
 
-			full_design$variables <- 
+			full_design$variables <-
 				survey:::getvars(
-					formula, 
-					attr( design , "full_design" )$db$connection, 
+					formula,
+					attr( design , "full_design" )$db$connection,
 					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates, 
+					updates = attr( design , "full_design" )$updates,
 					subset = attr( design , "full_design" )$subset
 				)
 
@@ -290,12 +289,12 @@ svyatk.DBIsvydesign <-
 
 		}
 
-		design$variables <- 
+		design$variables <-
 			survey:::getvars(
-				formula, 
-				design$db$connection, 
+				formula,
+				design$db$connection,
 				design$db$tablename,
-				updates = design$updates, 
+				updates = design$updates,
 				subset = design$subset
 			)
 
@@ -306,28 +305,28 @@ svyatk.DBIsvydesign <-
 
 
 
-calc.atkinson <- 
+calc.atkinson <-
 	function( x, weights, epsilon ) {
-	
+
 		x <- x[ weights != 0 ]
-	
+
 		weights <- weights[ weights != 0 ]
-		
+
 		if ( epsilon == 1 ) {
-			
-			result.est <- 
-				1 - 
-				U_fn( x , weights , 0 ) * 
-				U_fn( x , weights , 1 )^( -1 ) * 
+
+			result.est <-
+				1 -
+				U_fn( x , weights , 0 ) *
+				U_fn( x , weights , 1 )^( -1 ) *
 				exp( T_fn( x , weights , 0 ) / U_fn( x , weights , 0 ) )
-				
+
 		} else {
-		
-			result.est <- 
-				1 - 
-				( U_fn( x , weights , 0 )^( -epsilon / ( 1 - epsilon ) ) ) * 
+
+			result.est <-
+				1 -
+				( U_fn( x , weights , 0 )^( -epsilon / ( 1 - epsilon ) ) ) *
 				U_fn( x , weights , 1 - epsilon )^( 1 / ( 1 - epsilon ) )  / U_fn( x , weights , 1 )
-		
+
 		}
 
 		result.est

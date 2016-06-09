@@ -199,9 +199,6 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
-    if (length(nas) > length(design$prob))
-      incvar <- incvar[nas == 0]
-    else incvar[nas > 0] <- 0
   }
 
   w <- 1/design$prob

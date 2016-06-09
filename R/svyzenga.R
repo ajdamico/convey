@@ -65,7 +65,7 @@
 svyzenga <- function(formula, design, ...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-	
+
 	UseMethod("svyzenga", design)
 
 }
@@ -80,9 +80,6 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
   if ( any(y[d != 0] <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- y <= 0
     design <- design[nps == 0 ]
-    if (length(nps) > length(design$prob))
-      y <- y[nps == 0]
-    else y[nps > 0] <- 0
   }
 
   if (na.rm) {
