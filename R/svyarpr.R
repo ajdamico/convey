@@ -198,7 +198,7 @@ svyarpr.svyrep.design <-
 				ComputeArpr(incvec, wi, ind=ind, order = order,percent = percent)}
 			)
 
-		if(sum(is.na(qq))==length(qq))variance <- NA else variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		if(sum(is.na(qq))==length(qq))variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 

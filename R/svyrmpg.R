@@ -194,7 +194,7 @@ svyrmpg.svyrep.design <-
 				ComputeRmpg(incvec, wi, ind=ind, order = order,percent = percent)[3]
 				})
 
-		variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 

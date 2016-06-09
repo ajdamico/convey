@@ -170,7 +170,7 @@ rval <- Rmir_val[3]
 ww <- weights(design, "analysis")
 qq <- apply(ww, 2, function(wi) ComputeRmir(incvar, wi, order = order,
   age= agevar, agelim = agelim)[3])
-variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 

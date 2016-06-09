@@ -163,7 +163,7 @@ svygpg.svyrep.design <- function(formula, design, sex,na.rm=FALSE, ...) {
     rval <- ComputeGpg(earn_hour = wage, w = ws, sex = sex)
     ww <- weights(design, "analysis")
     qq <- apply(ww, 2, function(wi) ComputeGpg(wage, wi, sex = sex))
-    variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 	variance <- as.matrix( variance )
 

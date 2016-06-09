@@ -417,7 +417,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
   }
 
-  variance <- apply( qq, 1, function(x) survey:::svrVar(x, design$scale, design$rscales, mse = design$mse, coef = rval) )
+  variance <- apply( qq, 1, function(x) survey::svrVar(x, design$scale, design$rscales, mse = design$mse, coef = rval) )
   variance[c(1, length(quantiles))] <- 0
   se <- sqrt(variance)
 

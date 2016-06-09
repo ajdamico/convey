@@ -297,7 +297,7 @@ svyfgt.svyrep.design <-
 				ComputeFGT(incd, wd, g = g, th)}
 			)
 
-		variance <- survey:::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 
