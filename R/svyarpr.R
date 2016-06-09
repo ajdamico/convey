@@ -112,7 +112,7 @@ svyarpr.survey.design <-
 		wf <- 1/full_design$prob
 		htot <- h_fun(incvec, wf)
 		
-		ARPT <- svyarpt(formula = formula, design=full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
+		ARPT <- svyarpt(formula = formula, design=full_design, order = order, percent = percent, na.rm = na.rm)
 		arptv <- coef(ARPT)
 		arptlin <- attr(ARPT, "lin")
 		
