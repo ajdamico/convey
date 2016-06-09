@@ -37,12 +37,12 @@ you must run the \code{convey_prep} function on your survey design object immedi
 library(vardpoor)
 library(survey)
 data(ses)
-des_ses<- svydesign(id=~1, weights=~weights, data=ses)
+des_ses <- svydesign(id=~1, weights=~weights, data=ses)
 
 # linearized design
 svygpg(~earningsHour, des_ses, ~sex)
 # replicate-weighted design
-des_ses_rep <-  survey:::as.svrepdesign( des_ses , type = "bootstrap" )
+des_ses_rep <-  as.svrepdesign( des_ses , type = "bootstrap" )
 svygpg(~earningsHour, des_ses_rep, ~sex)
 
 # database-backed design
@@ -65,6 +65,7 @@ Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
 Association}, Vol.3, No.3, pp. 167-195,
 ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+
 Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.

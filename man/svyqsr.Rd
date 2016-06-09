@@ -9,9 +9,9 @@
 \usage{
 svyqsr(formula, design, ...)
 
-\method{svyqsr}{survey.design}(formula, design, alpha = 0.2, comp = TRUE,
-  na.rm = FALSE, upper_quant = FALSE, lower_quant = FALSE,
-  upper_tot = FALSE, lower_tot = FALSE, ...)
+\method{svyqsr}{survey.design}(formula, design, alpha = 0.2, na.rm = FALSE,
+  upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE,
+  lower_tot = FALSE, ...)
 
 \method{svyqsr}{svyrep.design}(formula, design, alpha = 0.2, na.rm = FALSE,
   upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE,
@@ -25,8 +25,6 @@ svyqsr(formula, design, ...)
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
 \item{alpha}{order of the quintile ratio}
-
-\item{comp}{logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
@@ -59,7 +57,7 @@ des_eusilc <- convey_prep( des_eusilc )
 svyqsr( ~eqincome , design = des_eusilc, upper_tot = TRUE, lower_tot = TRUE )
 
 # replicate-weighted design
-des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
+des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
 
@@ -91,6 +89,7 @@ Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
 Association}, Vol.3, No.3, pp. 167-195,
 ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+
 Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.

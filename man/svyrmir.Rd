@@ -9,11 +9,11 @@
 \usage{
 svyrmir(formula, design, ...)
 
-\method{svyrmir}{survey.design}(formula, design, age, agelim, order = 0.5,
-  na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
+\method{svyrmir}{survey.design}(formula, design, age, agelim = 65,
+  order = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
-\method{svyrmir}{svyrep.design}(formula, design, order = 0.5, age, agelim,
-  na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
+\method{svyrmir}{svyrep.design}(formula, design, age, agelim = 65,
+  order = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
 \method{svyrmir}{DBIsvydesign}(formula, age, design, ...)
 }
@@ -56,18 +56,18 @@ is.na(eusilc$eqincome_miss)<- ind_miss==1
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 
-svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 , med_old = TRUE )
+svyrmir( ~eqincome , design = des_eusilc , age = ~age, med_old = TRUE )
 
 # replicate-weighted design
-des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65, med_old = TRUE )
+des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, med_old = TRUE )
 
 # linearized design using a variable with missings
-svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age, agelim = 65)
-svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, agelim = 65, na.rm = TRUE )
+svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age)
+svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
-svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age, agelim = 65 )
-svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, agelim = 65, na.rm = TRUE )
+svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age )
+svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, na.rm = TRUE )
 
 # database-backed design
 require(RSQLite)
@@ -78,7 +78,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
-svyrmir( ~eqincome , design = dbd_eusilc , age = ~age , agelim = 65 )
+svyrmir( ~eqincome , design = dbd_eusilc , age = ~age )
 
 
 }
@@ -90,6 +90,7 @@ Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
 Association}, Vol.3, No.3, pp. 167-195,
 ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+
 Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.

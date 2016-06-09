@@ -44,7 +44,7 @@ des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , da
 svygini( ~eqincome , design = des_eusilc )
 
 # replicate-weighted design
-des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
+des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 svygini( ~eqincome , design = des_eusilc_rep )
 
 # linearized design using a variable with missings
@@ -75,6 +75,7 @@ Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
 Association}, Vol.3, No.3, pp. 167-195,
 ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+
 Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
