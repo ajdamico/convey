@@ -63,11 +63,11 @@
 #' @export
 svyrenyi <- function(formula, design, ...) {
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-	if( 'epsilon' %in% names( list(...) ) & list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
+  if( 'epsilon' %in% names( list(...) ) & list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
 
-	UseMethod("svyrenyi", design)
+  UseMethod("svyrenyi", design)
 
 }
 
@@ -80,6 +80,9 @@ svyrenyi.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
+    if (length(nas) > length(design$prob))
+      incvar <- incvar[nas == 0]
+    else incvar[nas > 0] <- 0
   }
 
   # Jenkins & Biewen's U and T functions:

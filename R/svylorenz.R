@@ -88,9 +88,9 @@
 #' @export
 svylorenz <- function(formula, design, ...) {
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-	UseMethod("svylorenz", design)
+  UseMethod("svylorenz", design)
 
 }
 
@@ -199,6 +199,9 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
+    if (length(nas) > length(design$prob))
+      incvar <- incvar[nas == 0]
+    else incvar[nas > 0] <- 0
   }
 
   w <- 1/design$prob
