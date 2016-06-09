@@ -125,7 +125,7 @@ svygei.survey.design <-
 		}
 
 		w <- 1/design$prob
-		if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
+		if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
 		rval <- calc.gei( x = incvar, weights = w, epsilon = epsilon )
 
@@ -208,7 +208,7 @@ svygei.svyrep.design <-
 
 		ws <- weights(design, "sampling")
 
-		if ( epsilon %in% c(0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) { stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) ) }
+		if ( epsilon %in% c(0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
 		rval <- calc.gei( x = incvar, w = ws, epsilon = epsilon)
 
