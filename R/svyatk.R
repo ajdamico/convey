@@ -306,25 +306,6 @@ svyatk.DBIsvydesign <-
 
 
 
-# Funções U e T de Jenkins & Biewen:
-U_fn <- 
-	function( x, weights, gamma ) {
-		x <- x[weights != 0]
-		
-		weights <- weights[weights != 0]
-		
-		sum( weights * x^gamma )
-	}
-	
-T_fn <- 
-	function( x, weights, gamma ) {
-		x <- x[weights != 0]
-		
-		weights <- weights[weights != 0]
-		
-		sum( weights * x^gamma * log( x ) )
-	}
-
 calc.atkinson <- 
 	function( x, weights, epsilon ) {
 	
