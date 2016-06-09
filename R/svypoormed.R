@@ -106,7 +106,7 @@ svypoormed.survey.design <-
 		ncom<- names(full_design$prob)
 		htot <- h_fun(incvec, wf)
 		
-		ARPT <- svyarpt(formula = formula, full_design, order = 0.5, percent = 0.6, na.rm = na.rm)
+		ARPT <- svyarpt(formula = formula, full_design, order = order, percent = percent, na.rm = na.rm)
 		arpt <- coef(ARPT)
 
 		if(is.na(arpt)){
