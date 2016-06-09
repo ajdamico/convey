@@ -9,7 +9,7 @@ SE_lin2 <- function(t,des){
   variance<-survey::svyrecvar(t/des$prob, des$cluster,des$strata, des$fpc,postStrata = des$postStrata)
   sqrt(variance)
 }
-des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 
 des_eusilc <- convey_prep(des_eusilc)
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
@@ -23,7 +23,7 @@ attributes(varse)<- NULL
 fun_svyrmpgw <- svyrmpg(~eqincome, design = des_eusilc, 0.5, 0.6)
 convest<-coef(fun_svyrmpgw)
 attributes(convest)<-NULL
-convse<- survey:::SE(fun_svyrmpgw)
+convse<- SE(fun_svyrmpgw)
 attributes(convse)<-NULL
 #domain
 vardpoor_rmpgd <- linrmpg(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("db040"),    dataset = dati)
@@ -34,12 +34,12 @@ varsed<-sapply(data.frame(vardpoor_rmpgd$lin)[,2:10],function(t) SE_lin2(t,des_e
 attributes (varsed) <- NULL
 # library convey
 
-fun_rmpgd <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc,
+fun_rmpgd <- svyby(~eqincome, by = ~db040, design = des_eusilc,
 FUN = svyrmpg, deff = FALSE)
 
 convestd<- coef(fun_rmpgd)
 attributes(convestd) <- NULL
-convsed<- survey:::SE(fun_rmpgd)
+convsed<- SE(fun_rmpgd)
 
 
 

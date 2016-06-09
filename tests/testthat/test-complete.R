@@ -1,4 +1,3 @@
-library(convey)
 context("Complete")
 
 x<-c(1,3,5)

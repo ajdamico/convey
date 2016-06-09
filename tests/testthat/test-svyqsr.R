@@ -9,7 +9,7 @@ SE_lin2 <- function(t,des){
   sqrt(variance)
 }
 
-des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 
 des_eusilc <- convey_prep(des_eusilc)
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
@@ -23,7 +23,7 @@ attributes(varse)<- NULL
 fun_qsrw <-svyqsr(~eqincome, design=des_eusilc, alpha= .20)
 convest<-coef(fun_qsrw)
 attributes(convest)<-NULL
-convse<- survey:::SE(fun_qsrw)
+convse<- SE(fun_qsrw)
 attributes(convse)<-NULL
 #domain
 vardpoor_qsrd <- linqsr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("db040"),    dataset = dati)
@@ -33,11 +33,11 @@ vardestd<-unlist(vardpoor_qsrd$value$QSR)
 varsed<-sapply(data.frame(vardpoor_qsrd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_qsrd <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc,
+fun_qsrd <- svyby(~eqincome, by = ~db040, design = des_eusilc,
   FUN = svyqsr,deff = FALSE)
 convestd<- coef(fun_qsrd)
 attributes(convestd) <- NULL
-convsed<- survey:::SE(fun_qsrd)
+convsed<- SE(fun_qsrd)
 
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest,convest)

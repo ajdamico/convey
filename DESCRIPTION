@@ -17,6 +17,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
-	IC2
+	IC2,
+	vardpoor
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

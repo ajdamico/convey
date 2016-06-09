@@ -34,7 +34,7 @@
 #' svyiqalpha( ~eqincome , design = des_eusilc, .50 )
 #'
 #' # replicate-weighted design
-#' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #'
 #' svyiqalpha( ~eqincome , design = des_eusilc_rep, .50 )
 #'

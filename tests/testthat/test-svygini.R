@@ -7,7 +7,7 @@ SE_lin2 <- function(t,des){
   variance<-survey::svyrecvar(t/des$prob, des$cluster,des$strata, des$fpc,postStrata = des$postStrata)
   sqrt(variance)
 }
-des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 
 des_eusilc <- convey_prep(des_eusilc)
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
@@ -22,7 +22,7 @@ attributes(varse)<- NULL
 fun_giniw <- svygini(~eqincome, design = des_eusilc)
 convest<-coef(fun_giniw)
 attributes(convest)<-NULL
-convse<- survey:::SE(fun_giniw)
+convse<- SE(fun_giniw)
 attributes(convse)<-NULL
 #domain
 vardpoor_ginid <- lingini(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("db040"),    dataset = dati)
@@ -32,11 +32,11 @@ vardestd<-unlist(vardpoor_ginid$value$Gini)
 varsed<-sapply(data.frame(vardpoor_ginid$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_ginid <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc,
+fun_ginid <- svyby(~eqincome, by = ~db040, design = des_eusilc,
   FUN = svygini,deff = FALSE)
 convestd<- coef(fun_ginid)
 attributes(convestd) <- NULL
-convsed<- survey:::SE(fun_ginid)
+convsed<- SE(fun_ginid)
 
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest[1],100*convest)

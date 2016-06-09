@@ -10,9 +10,9 @@ variance<-survey::svyrecvar(t/des$prob, des$cluster,des$strata, des$fpc,postStra
 sqrt(variance)
  }
 
-des_eusilc <- survey:::svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <- survey:::as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
 vardpoor_arprw <- linarpr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = NULL, dataset = dati, percentage = 60, order_quant = 50)
@@ -25,7 +25,7 @@ fun_arprw <- svyarpr(~eqincome, design = des_eusilc, 0.5, 0.6)
 fun_arprw_rep<- svyarpr(~eqincome, design = des_eusilc_rep, 0.5, 0.6)
 convest<-coef(fun_arprw)
 attributes(convest)<-NULL
-convse<- survey:::SE(fun_arprw)
+convse<- SE(fun_arprw)
 attributes(convse)<-NULL
 #domain
 vardpoor_arprd <- linarpr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = "db040",
@@ -36,10 +36,10 @@ vardestd<-unlist(vardpoor_arprd$value$arpr)
 varsed<-sapply(data.frame(vardpoor_arprd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_arprd <- survey:::svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+fun_arprd <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 convestd<- coef(fun_arprd)
 attributes(convestd) <- NULL
-convsed<- survey:::SE(fun_arprd)
+convsed<- SE(fun_arprd)
 
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest,100*convest)

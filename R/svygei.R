@@ -21,8 +21,8 @@
 #' PhD thesis: Université de Neuchâtel,
 #' URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 #'
-#'Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
-#'and Atkinson Inequality Indices from Complex Survey Data. \emph{DIW Discussion Papers},
+#' Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
+#' and Atkinson Inequality Indices from Complex Survey Data. \emph{DIW Discussion Papers},
 #' No.345,
 #' URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.pdf}.
 #' @keywords survey
@@ -34,11 +34,10 @@
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
-#' library(convey)
 #' des_eusilc <- convey_prep(des_eusilc)
 #'
 #' # replicate-weighted design
-#' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #'
 #' # database-backed design
 #' require(RSQLite)

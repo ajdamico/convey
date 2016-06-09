@@ -36,7 +36,7 @@
 #' # linearized design
 #' svygpg(~earningsHour, des_ses, ~sex)
 #' # replicate-weighted design
-#' des_ses_rep <-  survey:::as.svrepdesign( des_ses , type = "bootstrap" )
+#' des_ses_rep <-  as.svrepdesign( des_ses , type = "bootstrap" )
 #' svygpg(~earningsHour, des_ses_rep, ~sex)
 #'
 #' # database-backed design

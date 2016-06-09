@@ -37,7 +37,7 @@
 #' svygini( ~eqincome , design = des_eusilc )
 #'
 #' # replicate-weighted design
-#' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' svygini( ~eqincome , design = des_eusilc_rep )
 #'
 #' # linearized design using a variable with missings

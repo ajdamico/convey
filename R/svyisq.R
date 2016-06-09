@@ -32,7 +32,7 @@
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' svyisq(~eqincome, design=des_eusilc,.20 , quantile = TRUE)
 #' # replicate-weighted design
-#' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' svyisq( ~eqincome , design = des_eusilc_rep, .20 , quantile = TRUE )
 #' # linearized design using a variable with missings
 #' svyisq( ~ py010n , design = des_eusilc, .20 )
