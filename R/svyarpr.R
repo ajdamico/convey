@@ -66,7 +66,9 @@
 #'
 svyarpr <- function(formula, design, ...) {
 
-    UseMethod("svyarpr", design)
+	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+	UseMethod("svyarpr", design)
 
 }
 
@@ -76,8 +78,6 @@ svyarpr.survey.design <- function(formula, design, order = 0.5, percent = 0.6, n
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 
   # if the class of the full_design attribute is just a TRUE, then the design is
@@ -147,8 +147,6 @@ svyarpr.svyrep.design <- function(formula, design, order = 0.5, percent = 0.6,na
 
   if (is.null(attr(design, "full_design")))
     stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
-  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 
   # if the class of the full_design attribute is just a TRUE, then the design is

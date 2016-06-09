@@ -43,18 +43,18 @@
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #'
-#' svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 , med_old = TRUE )
+#' svyrmir( ~eqincome , design = des_eusilc , age = ~age, med_old = TRUE )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- survey:::as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, agelim = 65, med_old = TRUE )
+#' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, med_old = TRUE )
 #'
 #' # linearized design using a variable with missings
-#' svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age, agelim = 65)
-#' svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, agelim = 65, na.rm = TRUE )
+#' svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age)
+#' svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
-#' svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age, agelim = 65 )
-#' svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, agelim = 65, na.rm = TRUE )
+#' svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age )
+#' svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, na.rm = TRUE )
 #'
 #' # database-backed design
 #' require(RSQLite)
@@ -65,7 +65,7 @@
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
-#' svyrmir( ~eqincome , design = dbd_eusilc , age = ~age , agelim = 65 )
+#' svyrmir( ~eqincome , design = dbd_eusilc , age = ~age )
 #'
 #'
 #' @export
@@ -83,7 +83,7 @@ svyrmir <- function(formula, design, ...) {
 #' @export
 
 
-svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
+svyrmir.survey.design  <- function(formula, design, age, agelim = 65, order=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
     agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
@@ -145,7 +145,7 @@ svyrmir.survey.design  <- function(formula, design, age, agelim, order=0.5, na.r
 #' @rdname svyrmir
 #' @export
 #'
-svyrmir.svyrep.design <- function(formula, design, order = 0.5, age, agelim, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...) {
+svyrmir.svyrep.design <- function(formula, design, age, agelim = 65, order = 0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...) {
 
 df <- model.frame(design)
 incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
