@@ -141,7 +141,7 @@ svyatk.survey.design <-
 			warning("The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
 			nps <- incvar <= 0
 			design <- design[!nps]
-			if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[!nps] <- 0
+			if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[ nps ] <- 0
 		}
 
 		w <- 1/design$prob
@@ -227,7 +227,7 @@ svyatk.svyrep.design <-
 			nps <- incvar <= 0
 			nps[ is.na(nps) ] <- TRUE
 			design <- design[ !nps ]
-			if (length(nps) > length(design$prob)) incvar <- incvar[ !nps ] else incvar[ !nps ] <- 0
+			if (length(nps) > length(design$prob)) incvar <- incvar[ !nps ] else incvar[ nps ] <- 0
 
 		}
 
