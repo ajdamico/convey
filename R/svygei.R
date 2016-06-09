@@ -99,205 +99,206 @@
 #'
 #'
 #' @export
-svygei <-
-  function(formula, design, ...) {
+svygei <- 
+	function(formula, design, ...) {
 
-    if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-    if( 'epsilon' %in% names( list(...) ) & list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
+		if( 'epsilon' %in% names( list(...) ) & list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
+			
+		UseMethod("svygei", design)
 
-    UseMethod("svygei", design)
-
-  }
-
-
-#' @rdname svygei
-#' @export
-svygei.survey.design <-
-  function ( formula, design, epsilon = 1, na.rm = FALSE, ... ) {
-
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-
-    if (na.rm) {
-      nas <- is.na(incvar)
-      design <- design[nas == 0, ]
-      if (length(nas) > length(design$prob)) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
-    }
-
-    w <- 1/design$prob
-    if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
-
-    rval <- calc.gei( x = incvar, weights = w, epsilon = epsilon )
-
-    if ( epsilon == 0 ){
-      v <-
-        -U_fn( incvar , w , 0 )^( -1 ) *
-        log( incvar ) +
-        U_fn( incvar , w ,  1 )^( -1 ) *
-        incvar +
-        U_fn( incvar , w , 0 )^( -1 ) *
-        (
-          T_fn( incvar , w , 0 ) *
-            U_fn( incvar , w , 0 )^( -1 ) - 1
-        )
-
-      v[w == 0] <- 0
-
-      variance <- svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-
-    } else if ( epsilon == 1) {
-
-      v <-
-        U_fn( incvar , w , 1 )^( -1 ) * incvar * log( incvar ) -
-        U_fn( incvar , w , 1 )^( -1 ) * ( T_fn( incvar , w , 1 ) * U_fn( incvar , w, 1 )^( -1 ) + 1 ) * incvar +
-        U_fn( incvar , w , 0 )^( -1 )
-
-      v[w == 0] <- 0
-
-      variance <- svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-
-    } else {
-
-      v <-
-        ( epsilon )^( -1 ) *
-        U_fn( incvar , w , epsilon ) *
-        U_fn( incvar , w , 1 )^( -epsilon ) *
-        U_fn( incvar , w , 0 )^( epsilon - 2 ) -
-
-        ( epsilon - 1 )^( -1 ) *
-        U_fn( incvar , w , epsilon ) *
-        U_fn( incvar , w , 1 )^( -epsilon -1 ) *
-        U_fn( incvar , w , 0 )^( epsilon - 1 ) * incvar +
-
-        ( epsilon^2 - epsilon )^( -1 ) *
-        U_fn( incvar , w , 0 )^( epsilon - 1 ) *
-        U_fn( incvar , w , 1 )^( -epsilon ) *
-        incvar^(epsilon)
-
-      v[w == 0] <- 0
-
-      variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-
-    }
-
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- "cvystat"
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "gei"
-    attr(rval,"epsilon")<- epsilon
-    rval
-
-  }
+	}
 
 
 #' @rdname svygei
 #' @export
-svygei.svyrep.design <-
-  function(formula, design, epsilon = 1,na.rm=FALSE, ...) {
+svygei.survey.design <- 
+	function ( formula, design, epsilon = 1, na.rm = FALSE, ... ) {
 
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      df <- model.frame(design)
-      incvar <- incvar[!nas]
-    }
+		if (na.rm) {
+			nas <- is.na(incvar)
+			design <- design[nas == 0, ]
+			if (length(nas) > length(design$prob)) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
+		}
+
+		w <- 1/design$prob
+		if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
+
+		rval <- calc.gei( x = incvar, weights = w, epsilon = epsilon )
+
+		if ( epsilon == 0 ){
+			v <- 
+				-U_fn( incvar , w , 0 )^( -1 ) * 
+				log( incvar ) + 
+				U_fn( incvar , w ,  1 )^( -1 ) * 
+				incvar + 
+				U_fn( incvar , w , 0 )^( -1 ) * 
+				( 
+					T_fn( incvar , w , 0 ) * 
+					U_fn( incvar , w , 0 )^( -1 ) - 1 
+				)
+				
+			v[w == 0] <- 0
+			
+			variance <- svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+			
+		} else if ( epsilon == 1) {
+
+			v <- 
+				U_fn( incvar , w , 1 )^( -1 ) * incvar * log( incvar ) - 
+				U_fn( incvar , w , 1 )^( -1 ) * ( T_fn( incvar , w , 1 ) * U_fn( incvar , w, 1 )^( -1 ) + 1 ) * incvar + 
+				U_fn( incvar , w , 0 )^( -1 )
+				
+			v[w == 0] <- 0
+			
+			variance <- svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+			
+		} else {
+
+			v <- 
+				( epsilon )^( -1 ) * 
+				U_fn( incvar , w , epsilon ) * 
+				U_fn( incvar , w , 1 )^( -epsilon ) * 
+				U_fn( incvar , w , 0 )^( epsilon - 2 ) -
+			
+				( epsilon - 1 )^( -1 ) * 
+				U_fn( incvar , w , epsilon ) * 
+				U_fn( incvar , w , 1 )^( -epsilon -1 ) * 
+				U_fn( incvar , w , 0 )^( epsilon - 1 ) * incvar +
+			
+				( epsilon^2 - epsilon )^( -1 ) * 
+				U_fn( incvar , w , 0 )^( epsilon - 1 ) *
+				U_fn( incvar , w , 1 )^( -epsilon ) * 
+				incvar^(epsilon)
+		
+			v[w == 0] <- 0
+			
+			variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+			
+		}
+
+		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+		class(rval) <- "cvystat"
+		attr(rval, "var") <- variance
+		attr(rval, "statistic") <- "gei"
+		attr(rval,"epsilon")<- epsilon
+		rval
+
+	}
+
+
+#' @rdname svygei
+#' @export
+svygei.svyrep.design <- 
+	function(formula, design, epsilon = 1,na.rm=FALSE, ...) {
+
+		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+		if(na.rm){
+			nas<-is.na(incvar)
+			design<-design[!nas,]
+			df <- model.frame(design)
+			incvar <- incvar[!nas]
+		}
 
 
 
-    ws <- weights(design, "sampling")
+		ws <- weights(design, "sampling")
 
-    if ( epsilon %in% c(0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
+		if ( epsilon %in% c(0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
-    rval <- calc.gei( x = incvar, w = ws, epsilon = epsilon)
+		rval <- calc.gei( x = incvar, w = ws, epsilon = epsilon)
 
-    ww <- weights(design, "analysis")
+		ww <- weights(design, "analysis")
 
-    qq <- apply(ww, 2, function(wi) calc.gei(incvar, wi, epsilon = epsilon))
+		qq <- apply(ww, 2, function(wi) calc.gei(incvar, wi, epsilon = epsilon))
+		
+		if ( any(is.na(qq))) {
 
-    if ( any(is.na(qq))) {
+			variance <- as.matrix(NA)
+			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+			class(rval) <- "cvystat"
+			attr(rval, "var") <- variance
+			attr(rval, "statistic") <- "generalized entropy index"
 
-      variance <- as.matrix(NA)
-      colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      class(rval) <- "cvystat"
-      attr(rval, "var") <- variance
-      attr(rval, "statistic") <- "generalized entropy index"
+			return(rval)
 
-      return(rval)
+		} else {
+			
+			variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-    } else {
+			variance <- as.matrix( variance )
+			
+		}
 
-      variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-
-      variance <- as.matrix( variance )
-
-    }
-
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- "cvystat"
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "gei"
-    return(rval)
-  }
+		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+		class(rval) <- "cvystat"
+		attr(rval, "var") <- variance
+		attr(rval, "statistic") <- "gei"
+		return(rval)
+	}
 
 
 #' @rdname svygei
 #' @export
 svygei.DBIsvydesign <-
-  function (formula, design, ...) {
+		function (formula, design, ...) {
 
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+		if (!( "logical" %in% class(attr(design, "full_design"))) ){
 
-      full_design <- attr( design , "full_design" )
+			full_design <- attr( design , "full_design" )
 
-      full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                                updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+			full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+			updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 
-      attr( design , "full_design" ) <- full_design
+			attr( design , "full_design" ) <- full_design
 
-      rm( full_design )
+			rm( full_design )
 
-    }
+		}
 
-    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
+		design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 
-    NextMethod("svygei", design)
-  }
-
-
-calc.gei <-
-  function( x, weights, epsilon ) {
-
-    x <- x[weights != 0 ]
-    weights <- weights[weights != 0 ]
-
-    if ( epsilon == 0 ) {
-
-      result.est <-
-        -T_fn( x , weights , 0 ) / U_fn( x , weights , 0 ) +
-        log( U_fn( x , weights , 1 ) / U_fn( x , weights , 0 ) )
-
-    } else if ( epsilon == 1 ) {
-
-      result.est <-
-        ( T_fn( x , weights , 1 ) / U_fn( x , weights , 1 ) ) -
-        log( U_fn( x , weights , 1 ) / U_fn( x , weights , 0 ) )
-
-    } else {
-
-      result.est <-
-        ( epsilon * ( epsilon - 1 ) )^( -1 ) *
-        (
-          U_fn( x , weights , 0 )^( epsilon - 1 ) *
-            U_fn( x , weights , 1 )^( -epsilon ) *
-            U_fn( x , weights , epsilon ) - 1
-        )
-
-    }
-
-    result.est
-
-  }
+		NextMethod("svygei", design)
+	}
 
 
+calc.gei <- 
+	function( x, weights, epsilon ) {
+
+		x <- x[weights != 0 ]
+		weights <- weights[weights != 0 ]
+
+		if ( epsilon == 0 ) {
+			
+			result.est <- 
+				-T_fn( x , weights , 0 ) / U_fn( x , weights , 0 ) + 
+				log( U_fn( x , weights , 1 ) / U_fn( x , weights , 0 ) )
+				
+		} else if ( epsilon == 1 ) {
+			
+			result.est <- 
+				( T_fn( x , weights , 1 ) / U_fn( x , weights , 1 ) ) - 
+				log( U_fn( x , weights , 1 ) / U_fn( x , weights , 0 ) )
+			
+		} else {
+			
+			result.est <- 
+				( epsilon * ( epsilon - 1 ) )^( -1 ) * 
+				( 
+					U_fn( x , weights , 0 )^( epsilon - 1 ) * 
+					U_fn( x , weights , 1 )^( -epsilon ) * 
+					U_fn( x , weights , epsilon ) - 1 
+				)
+				
+		}
+
+		result.est
+
+	}
+
+	
+	
