@@ -40,14 +40,14 @@
 #' svygpg(~earningsHour, des_ses_rep, ~sex)
 #'
 #' # database-backed design
-#' require(RSQLite)
-#' tfile <- tempfile()
-#' conn <- dbConnect( SQLite() , tfile )
+#' library(DBI)
+#' dbfolder <- tempdir()
+#' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 #' dbWriteTable( conn , 'ses' , ses )
 #'
-#' dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=tfile, dbtype="SQLite")
-#'
+#' dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfolder, dbtype="MonetDBLite")
 #' dbd_ses <- convey_prep( dbd_ses )
+#'
 #' svygpg(formula=~earningsHour, design=dbd_ses, sex= ~sex)
 #'
 #' @export

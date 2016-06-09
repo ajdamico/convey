@@ -20,6 +20,8 @@ Suggests:
     knitr,
     rmarkdown,
 	IC2,
-	vardpoor
+	vardpoor,
+	DBI,
+	MonetDBLite
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1

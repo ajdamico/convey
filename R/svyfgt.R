@@ -73,12 +73,12 @@
 #' svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 #'
 #' # database-backed design
-#' require(RSQLite)
-#' tfile <- tempfile()
-#' conn <- dbConnect( SQLite() , tfile )
+#' library(DBI)
+#' dbfolder <- tempdir()
+#' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 #' dbWriteTable( conn , 'eusilc' , eusilc )
 #'
-#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=tfile, dbtype="SQLite")
+#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
