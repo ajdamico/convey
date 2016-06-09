@@ -65,6 +65,8 @@ h_fun <- function(incvar, w) {
 
 densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
 
+	if( !( fun %in% c( "F" , "S" ) ) ) stop( "valid choices for `fun=` are 'F' and 'S'" )
+
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   if(na.rm){
     nas<-is.na(incvar)
