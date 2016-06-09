@@ -8,7 +8,7 @@
 #' @param percent fraction of the quantile, usually .60
 #' @param na.rm Should cases with missing values be dropped?
 #'
-#'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+#' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -17,11 +17,11 @@
 #' @seealso \code{\link{arpr}}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
-#'of poverty and inequality. \emph{Journal of the European Survey Research
+#' of poverty and inequality. \emph{Journal of the European Survey Research
 #' Association}, Vol.3, No.3, pp. 167-195,
 #' ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
 #'
-#'Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
+#' Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 #' linearization and residual techniques. Survey Methodology, 25, 193-203,
 #' URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 #'
