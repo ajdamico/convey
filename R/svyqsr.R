@@ -6,7 +6,6 @@
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param alpha order of the quintile ratio
-#' @param comp logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros
 #' @param na.rm Should cases with missing values be dropped?
 #' @param upper_quant return the lower bound of highest earners
 #' @param lower_quant return the upper bound of lowest earners
@@ -81,7 +80,7 @@ svyqsr <-
 #' @rdname svyqsr
 #' @export
 svyqsr.survey.design <- 
-	function(formula, design, alpha = 0.2, comp=TRUE,na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
+	function(formula, design, alpha = 0.2, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
