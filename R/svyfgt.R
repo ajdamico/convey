@@ -101,10 +101,12 @@
 svyfgt <- 
 	function(formula, design, ...) {
 
-		if( !( g %in% c( 0 , 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or 1 to estimate the poverty index" )
+		if( !( list(...)[["g"]] %in% c( 0 , 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or 1 to estimate the poverty index" )
 		
-		if( !( type_thresh %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.' )
+		if( !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.' )
 		
+		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
 		UseMethod("svyfgt", design)
 
 	}
@@ -115,8 +117,6 @@ svyfgt.survey.design <-
 	function(formula, design, g, type_thresh, abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE, ...){
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 		# if the class of the full_design attribute is just a TRUE, then the design is
 		# already the full design.  otherwise, pull the full_design from that attribute.
@@ -236,9 +236,6 @@ svyfgt.svyrep.design <-
 	function(formula, design, g, type_thresh, abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE,...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
-		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
 
 		# if the class of the full_design attribute is just a TRUE, then the design is
 		# already the full design.  otherwise, pull the full_design from that attribute.
