@@ -14,7 +14,7 @@
 #' @param na.rm Should cases with missing values be dropped? Defaults to \code{FALSE}.
 #' @param ... additional arguments passed to \code{plot} methods
 #'
-#'@details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+#' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
 #' Notice that the 'empirical' curve is observation-based and is the one actually used to calculate the Gini index.
 #' On the other hand, the quantile-based curve is used to estimate the shares, SEs and confidence intervals.
