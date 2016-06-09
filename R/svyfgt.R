@@ -46,9 +46,9 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=0,  abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
 #' svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relq" , thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to arpt
@@ -60,9 +60,9 @@
 #'
 #' #  using svrep.design:
 #' # headcount ratio, poverty threshold fixed
-#' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc_rep, g=0,  abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+#' svyfgt(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
 #' svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq" , thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to arpt
@@ -233,7 +233,7 @@ svyfgt.survey.design <-
 #' @rdname svyfgt
 #' @export
 svyfgt.svyrep.design <-
-	function(formula, design, g, type_thresh, abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE,...) {
+	function(formula, design, g, type_thresh = "abs", abs_thresh, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE,...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
