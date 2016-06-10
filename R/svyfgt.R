@@ -73,6 +73,7 @@
 #' svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 #'
 #' # database-backed design
+#' library(MonetDBLite)
 #' library(DBI)
 #' dbfolder <- tempdir()
 #' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

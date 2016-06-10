@@ -49,6 +49,7 @@
 #'
 #'
 #' # database-backed design
+#' library(MonetDBLite)
 #' library(DBI)
 #' dbfolder <- tempdir()
 #' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

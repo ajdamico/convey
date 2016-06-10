@@ -52,6 +52,7 @@
 #' svypoormed( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 #'
 #' # database-backed design
+#' library(MonetDBLite)
 #' library(DBI)
 #' dbfolder <- tempdir()
 #' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
