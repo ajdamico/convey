@@ -104,7 +104,7 @@ svygei <-
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-		if( 'epsilon' %in% names( list(...) ) & list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
+		if( 'epsilon' %in% names( list(...) ) && list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
 			
 		UseMethod("svygei", design)
 

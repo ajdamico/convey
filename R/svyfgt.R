@@ -103,7 +103,7 @@ svyfgt <-
 
 		if( !( list(...)[["g"]] %in% c( 0 , 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or 1 to estimate the poverty index" )
 
-		if( 'type_thresh' %in% names( list( ... ) ) & !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.' )
+		if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.' )
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
