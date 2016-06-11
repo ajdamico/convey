@@ -114,7 +114,7 @@ svyfgt <-
 
 #' @rdname svyfgt
 #' @export
-svyfgt.survey.design1 <-
+svyfgt.survey.design <-
   function(formula, design, g, type_thresh="abs",  abs_thresh=NULL, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE, ...){
 
     if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
