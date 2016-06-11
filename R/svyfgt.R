@@ -239,13 +239,13 @@ svyfgt.svyrep.design <-
 		full_design <- design else full_design <- attr(design, "full_design")
 
 		# svyrep design h function
-		h <- function(y,w,g) ( ( ( w - y ) / w )^g ) * ( y <= w )
+		h <- function(y,t,g) ( ( ( t - y ) / t )^g ) * ( y <= t )
 
 		# svyrep design ComputeFGT function
 		ComputeFGT <-
-			function(y, w, th, g){
+			function(y, w, t, g){
 				N <- sum(w)
-				sum( w * h( incvar , th , g ) ) / N
+				sum( w * h( y , t , g ) ) / N
 			}
 
 
