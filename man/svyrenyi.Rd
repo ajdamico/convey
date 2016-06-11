@@ -60,6 +60,7 @@ svyrenyi( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
 
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

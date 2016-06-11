@@ -48,6 +48,7 @@ des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDB.R::MonetDBLite() , dbfolder )

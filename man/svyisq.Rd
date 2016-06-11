@@ -51,6 +51,7 @@ svyisq( ~ py010n , design = des_eusilc_rep, .20 )
 svyisq( ~ py010n , design = des_eusilc_rep , .20,  na.rm = TRUE )
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

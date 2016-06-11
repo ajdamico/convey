@@ -21,8 +21,6 @@ svygini(formula, design, ...)
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
 \item{na.rm}{Should cases with missing values be dropped?}
-
-\item{comp}{logical variable \code{TRUE} if the linearized variable for domains should be completed with zeros}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -56,6 +54,7 @@ svygini( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

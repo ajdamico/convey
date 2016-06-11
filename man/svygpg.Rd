@@ -46,6 +46,7 @@ des_ses_rep <-  as.svrepdesign( des_ses , type = "bootstrap" )
 svygpg(~earningsHour, des_ses_rep, ~sex)
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

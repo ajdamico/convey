@@ -10,12 +10,12 @@
 svyfgt(formula, design, ...)
 
 \method{svyfgt}{survey.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh, percent = 0.6, order = 0.5, na.rm = FALSE, thresh = FALSE,
-  ...)
+  abs_thresh = NULL, percent = 0.6, order = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
 \method{svyfgt}{svyrep.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh, percent = 0.6, order = 0.5, na.rm = FALSE, thresh = FALSE,
-  ...)
+  abs_thresh = NULL, percent = 0.6, order = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
 \method{svyfgt}{DBIsvydesign}(formula, design, ...)
 }
@@ -88,6 +88,7 @@ svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
 svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

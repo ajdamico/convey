@@ -84,6 +84,7 @@ svylorenz( ~py010n , design = des_eusilc_rep, quantiles = seq(0,1,.05), alpha = 
 
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )

@@ -70,6 +70,7 @@ svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age )
 svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, na.rm = TRUE )
 
 # database-backed design
+library(MonetDBLite)
 library(DBI)
 dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
