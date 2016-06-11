@@ -114,122 +114,113 @@ svyfgt <-
 
 #' @rdname svyfgt
 #' @export
-svyfgt.survey.design <-
-	function(formula, design, g, type_thresh="abs",  abs_thresh=NULL, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE, ...){
+svyfgt.survey.design1 <-
+  function(formula, design, g, type_thresh="abs",  abs_thresh=NULL, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE, ...){
 
-		if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
-		
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
 
-		# if the class of the full_design attribute is just a TRUE, then the design is
-		# already the full design.  otherwise, pull the full_design from that attribute.
-		if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-
-		#  survey design h function
-		h <- function( y , w , g ) ( ( ( w - y ) / w )^g ) * ( y <= w )
-
-		# ht function
-		ht <- function( y , w , g ) ( g * ( ( ( w - y ) / w )^( g - 1 ) ) * ( y / ( w^2 ) ) ) * ( y <= w )
-
-		# domain
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
-			if (length(nas) > length(design$prob))incvar <- incvar[!nas] else incvar[nas] <- 0
-		}
-
-		w <- 1/design$prob
-		ind <- names(design$prob)
-		N <- sum(w)
-
-		# if the class of the full_design attribute is just a TRUE, then the design is
-		# already the full design.  otherwise, pull the full_design from that attribute.
-		if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
-
-		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-
-		if(na.rm){
-			nas<-is.na(incvec)
-			full_design<-full_design[!nas,]
-			if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
-		}
-
-		wf <- 1/full_design$prob
-		ncom <- names(full_design$prob)
-		htot <- h_fun(incvec, wf)
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
 
-		# linearization
-		N <- sum(w)
+    #  survey design h function
+    h <- function( y , t , g ) ( ( ( t - y ) / t )^g ) * ( y <= t )
 
-		if( type_thresh == 'relq' ){
+    # ht function
+    ht <- function( y , t , g ) ( g * ( ( ( t - y ) / t )^( g - 1 ) ) * ( y / ( t^2 ) ) ) * ( y <= t )
 
-			ARPT <- svyarpt(formula = formula, full_design, order=order, percent=percent,  na.rm=na.rm, ...)
-			th <- coef(ARPT)
-			arptlin <- attr(ARPT, "lin")
-			rval <- sum(th*h(incvar,th,g))/N
-			ahat <- sum(th*ht(incvar,th,g))/N
+    # domain
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-			if( g == 0 ){
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
+      if (length(nas) > length(design$prob))incvar <- incvar[!nas] else incvar[nas] <- 0
+    }
 
-				ARPR <- svyarpr(formula = formula, design, order=order, percent=percent,  na.rm=na.rm, ...)
-				fgtlin <- attr(ARPR,"lin")
+    w <- 1/design$prob
+    ind <- names(design$prob)
+    N <- sum(w)
 
-			} else fgtlin <- ( h( incvar , th , g ) - rval ) / N + ( ahat * arptlin )
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-		}
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-		if( type_thresh == 'relm'){
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
+    }
 
-			# thresh for the whole population
-			th <- percent*sum(incvec*wf)/sum(wf)
-			rval <- sum(th*h(incvar,th,g))/N
-			ahat <- sum(th*ht(incvar,th,g))/N
+    wf <- 1/full_design$prob
+    ncom <- names(full_design$prob)
+    htot <- h_fun(incvec, wf)
+    ID <- rep(1, length(incvec))* (ncom %in% ind)
 
-			if( g == 0 ){
 
-				Fprime <- densfun(formula=formula, design = design, x= th, fun = "F", na.rm = na.rm )
-				fgtlin<- (h(incvar,th,g)-rval + Fprime*(incvar-th))/N
+    # linearization
 
-			} else fgtlin <-( h( incvar , th , g ) - rval + ( ( percent * incvar ) - th ) * ahat ) / N
+    if( type_thresh == 'relq' ){
 
-		}
+      ARPT <- svyarpt(formula = formula, full_design, order=order, percent=percent,  na.rm=na.rm, ...)
+      th <- coef(ARPT)
+      arptlin <- attr(ARPT, "lin")
+      rval <- sum(w*h(incvar,th,g))/N
+      ahat <- sum(ht(incvar,th,g))/N
 
-		if( type_thresh == 'abs' ){
+      if( g == 0 ){
 
-			th <- abs_thresh
+        ARPR <- svyarpr(formula = formula, design, order=order, percent=percent,  na.rm=na.rm, ...)
+        fgtlin <- attr(ARPR,"lin")
 
-			rval <- sum( th * h( incvar , th , g ) ) / N
+      } else fgtlin <- ( h( incvar , th , g ) - rval ) / N + ( ahat * arptlin )
 
-			fgtlin <- ( h( incvar , th , g ) - rval ) / N
+    }
 
-			variance <- survey::svyrecvar(fgtlin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+    if( type_thresh == 'relm'){
 
-		} else {
+      # thresh for the whole population
+      th <- percent*sum(incvec*wf)/sum(wf)
+      rval <- sum(w*h(incvar,th,g))/N
+      ahat <- sum(ht(incvar,th,g))/N
 
-			if( nrow(full_design$variables) > length(fgtlin) ){
+      if( g == 0 ){
 
-				names(fgtlin)<- ind
-				fgtlin <- complete(fgtlin, ncom)
+        Fprime <- densfun(formula=formula, design = design, x= th, fun = "F", na.rm = na.rm )
+        fgtlin<- (h(incvar,th,g)-rval + Fprime*(incvar-th))/N
 
-			}
+      } else fgtlin <-( h( incvar , th , g ) - rval + ( ( percent * incvar ) - th ) * ahat ) / N
 
-			variance <- survey::svyrecvar(fgtlin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+    }
 
-		}
+    if( type_thresh == 'abs' ){
 
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- paste0("fgt",g)
-		attr(rval, "lin") <- fgtlin
-		if(thresh) attr(rval, "thresh") <- th
-		rval
+      th <- abs_thresh
 
-	}
+      rval <- sum( w*h( incvar , th , g ) ) / N
+
+      fgtlin <- ID*( h( incvec , th , g ) - rval ) / N
+
+    }
+
+    variance <- survey::svyrecvar(fgtlin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+
+
+
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- "cvystat"
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- paste0("fgt",g)
+    attr(rval, "lin") <- fgtlin
+    if(thresh) attr(rval, "thresh") <- th
+    rval
+
+  }
 
 
 
@@ -239,7 +230,7 @@ svyfgt.svyrep.design <-
 	function(formula, design, g, type_thresh="abs", abs_thresh=NULL, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE,...) {
 
 		if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
-	
+
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
 		# if the class of the full_design attribute is just a TRUE, then the design is
