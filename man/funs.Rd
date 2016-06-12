@@ -3,7 +3,6 @@
 \name{funs}
 \alias{cl_inf}
 \alias{comp_inf}
-\alias{contrastinf}
 \alias{fun_par_inf}
 \alias{funs}
 \alias{iconst}
@@ -16,18 +15,16 @@ iconst(formula, design)
 
 itot(formula, design)
 
-cl_inf(a, b, T, S)
+cl_inf(a, b, big_t, big_s)
 
-prod_inf(T, S)
+prod_inf(big_t, big_s)
 
-ratio_inf(T, S)
+ratio_inf(big_t, big_s)
 
-comp_inf(T, S)
+comp_inf(big_t, big_s)
 
-fun_par_inf(S, F, Fprime, ...)
+fun_par_inf(big_s, F, Fprime, ...)
 
-contrastinf(exprlist, infunlist)
-
-fun_par_inf(S, F, Fprime, ...)
+fun_par_inf(big_s, F, Fprime, ...)
 }
 

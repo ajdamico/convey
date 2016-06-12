@@ -4,8 +4,8 @@
 \alias{densfun}
 \title{Estimate the derivative of the cdf function using kernel estimator}
 \usage{
-densfun(formula, design, x, h = NULL, fun = c("F", "S"), na.rm = FALSE,
-  ...)
+densfun(formula, design, x, h = NULL, fun = c("F", "big_s"),
+  na.rm = FALSE, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -16,7 +16,7 @@ densfun(formula, design, x, h = NULL, fun = c("F", "S"), na.rm = FALSE,
 
 \item{h}{value of the bandwidth based on the whole sample}
 
-\item{if}{\code{F} estimates the derivative of the cdf function; if \code{S} estimates
+\item{if}{\code{F} estimates the derivative of the cdf function; if \code{big_s} estimates
 the derivative of total in the tails of the distribution}
 }
 \value{
