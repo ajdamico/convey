@@ -85,7 +85,7 @@ svyisq.survey.design <-
 		q_alpha <- as.vector(q_alpha)
 
 		Fprime0 <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
-		Fprime1 <- densfun(formula = formula, design = design, q_alpha, fun = "S", na.rm = na.rm)
+		Fprime1 <- densfun(formula = formula, design = design, q_alpha, fun = "big_s", na.rm = na.rm)
 
 		rval <- sum((incvar<=q_alpha)*incvar * w)
 

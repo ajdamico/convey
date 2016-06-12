@@ -86,7 +86,7 @@ svyrenyi.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
     else incvar[nas > 0] <- 0
   }
 
-  # Jenkins & Biewen's U and T functions:
+  # Jenkins & Biewen's U and big_t functions:
   U_fn <- function( x, weights, gamma ) {
     x <- x[ weights != 0 ]
     weights <- weights[ weights != 0 ]
@@ -169,7 +169,7 @@ svyrenyi.svyrep.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
     incvar <- incvar[!nas]
   }
 
-  # Jenkins & Biewen's U and T functions:
+  # Jenkins & Biewen's U and big_t functions:
   U_fn <- function( x, weights, gamma ) {
     return( sum( weights * x^gamma ) )
   }

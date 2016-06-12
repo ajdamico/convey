@@ -145,10 +145,10 @@ svygini.svyrep.design <-
 				x <- x[order(x)]
 				N <- sum(w)
 				n <- length(x)
-				T <- sum(x * w)
+				big_t <- sum(x * w)
 				r <- cumsum(w)
 				Num <- sum((2 * r - 1) * x * w)
-				Den <- N * T
+				Den <- N * big_t
 				(Num/Den) - 1
 			}
 

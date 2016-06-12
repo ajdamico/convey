@@ -127,10 +127,10 @@ svyfgt.survey.design <-
 
 
     #  survey design h function
-    h <- function( y , t , g ) ( ( ( t - y ) / t )^g ) * ( y <= t )
+    h <- function( y , thresh , g ) ( ( ( thresh - y ) / thresh )^g ) * ( y <= thresh )
 
     # ht function
-    ht <- function( y , t , g ) ( g * ( ( ( t - y ) / t )^( g - 1 ) ) * ( y / ( t^2 ) ) ) * ( y <= t )
+    ht <- function( y , thresh , g ) ( g * ( ( ( thresh - y ) / thresh )^( g - 1 ) ) * ( y / ( thresh^2 ) ) ) * ( y <= thresh )
 
     # domain
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -239,13 +239,13 @@ svyfgt.svyrep.design <-
 		full_design <- design else full_design <- attr(design, "full_design")
 
 		# svyrep design h function
-		h <- function(y,t,g) ( ( ( t - y ) / t )^g ) * ( y <= t )
+		h <- function(y,thresh,g) ( ( ( thresh - y ) / thresh )^g ) * ( y <= thresh )
 
 		# svyrep design ComputeFGT function
 		ComputeFGT <-
-			function(y, w, t, g){
+			function(y, w, thresh, g){
 				N <- sum(w)
-				sum( w * h( y , t , g ) ) / N
+				sum( w * h( y , thresh , g ) ) / N
 			}
 
 

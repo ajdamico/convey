@@ -266,8 +266,8 @@ svyzenga.svyrep.design <- function(formula, design, na.rm=FALSE, ...) {
     x <- x[ ordx ]
     weights <- weights[ ordx ]
 
-    z_1 <- ( sum(weights*x)/(sum(weights) * x[1] ) - 1) * log( sum(weights*x)/(sum(weights*x) - Y_fn(x,weights,0,T)[1]) )
-    z_n <- (1 - sum(weights*x)/(sum(weights)*x[length(x)])) * log(D_fn(x,weights,0,T)[length(x)]/D_fn(x,weights,1,T)[length(x)])
+    z_1 <- ( sum(weights*x)/(sum(weights) * x[1] ) - 1) * log( sum(weights*x)/(sum(weights*x) - Y_fn(x,weights,0,big_t)[1]) )
+    z_n <- (1 - sum(weights*x)/(sum(weights)*x[length(x)])) * log(D_fn(x,weights,0,big_t)[length(x)]/D_fn(x,weights,1,big_t)[length(x)])
     z <- (A_fn(x,weights)/(sum(weights*x)+A_fn(x,weights))) * log(D_fn(x,weights)/D_fn(x,weights,1)) +
       ( sum(weights * x)/(sum(weights) * x) - sum(weights*x)/(sum(weights*x)+A_fn(x,weights) ) ) *
       log( (sum(weights * x) - Y_fn(x,weights,1))/(sum(weights * x) - Y_fn(x,weights,0)) )
