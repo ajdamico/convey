@@ -208,16 +208,15 @@ des_eusilc <- convey_prep( des_eusilc )
 To estimate the `at-risk-of-poverty rate` we use the function `svyarpt`:
 
 ```{r comment=NA}
-svyarpr(~eqIncome, design=des_eusilc, .5, .6)
+svyarpr(~eqIncome, design=des_eusilc)
 ```
 To estimate the `at-risk-of-poverty rate` for domains defined by the variable `db040` we use
 
 ```{r comment=NA}
-svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, 
-  percent = 0.6,deff = FALSE)
+svyby(~eqIncome, by = ~db040, design = des_eusilc, FUN = svyarpr, deff = FALSE)
 ```
 
-Using the same data set, we estimate the `quantile share ratio`: 
+Using the same data set, we estimate the `quintile share ratio`: 
 
 ```{r comment=NA}
 # for the whole population
@@ -225,7 +224,7 @@ svyqsr(~eqIncome, design=des_eusilc, alpha= .20)
 
 # for domains
 svyby(~eqIncome, by = ~db040, design = des_eusilc,
-  FUN = svyqsr,deff = FALSE)
+  FUN = svyqsr, alpha= .20, deff = FALSE)
 
 ```
 
@@ -241,7 +240,7 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 and then use the function `svyarpr`:
 
 ```{r comment=NA}
-svyarpr(~eqIncome, design=des_eusilc_rep, .5, .6)
+svyarpr(~eqIncome, design=des_eusilc_rep)
 svyby(~eqIncome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, deff = FALSE)
 ```
 The functions of the library convey are called in a similar way  to the functions in library survey.
@@ -286,7 +285,7 @@ There are three possible choices:
 2. `relq` -- a proportion of a quantile fixed by the argument `proportion` and the quantile is defined by the argument `order`.
 3. `relm` -- a proportion of the mean fixed the argument `proportion`
 
-The quantile and the mean envolved in the definition of the threshold are estimated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator `arpr` computed by
+The quantile and the mean involved in the definition of the threshold are estimated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator `arpr` computed by
 the function  `svyarpr`. 
 
 Next, we give some examples of the function `svyfgt` to estimate the values of the FGT poverty index.
@@ -294,13 +293,13 @@ Next, we give some examples of the function `svyfgt` to estimate the values of t
 Consider first the poverty threshold fixed ($\gamma=0$) in the value $10000$. The headcount ratio (FGT0) is
 
 ```{r comment=NA}
-svyfgt(~eqIncome, des_eusilc, g=0, type_thresh= "abs", abs_thresh=10000)
+svyfgt(~eqIncome, des_eusilc, g=0, abs_thresh=10000)
 ```
 
 The poverty gap (FGT1) ($\gamma=1$) index for the poverty threshold fixed at the same value is
 
 ```{r comment=NA}
-svyfgt(~eqIncome, des_eusilc, g=1, type_thresh= "abs", abs_thresh=10000)
+svyfgt(~eqIncome, des_eusilc, g=1, abs_thresh=10000)
 ```
 
 To estimate the FGT0 with the poverty threshold fixed at $0.6* MED$ we fix the argument type_thresh="relq" and use the default values for  `percent`  and   `order`:
