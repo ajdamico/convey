@@ -22,10 +22,6 @@ itot <- function(formula, design) {
 }
 
 
-
-## derivation rules for influence functions of functionals linear combination of
-## functionals: formula (29) a, b - scalars big_t, big_s - lists with two components:
-## value and lin IF - list with with two components Fprime - real function
 #' @rdname funs
 #' @export
 
@@ -78,17 +74,6 @@ fun_par_inf <- function(big_s, F, Fprime, ...) {
     }
     list(value = value, lin = lin)
 }
-
-## function of functionals big_t(M)= a{T1(M), T2(M),...} IT(M)= sum((da/dTj)* ITj(M))
-
-# exemplo: razão de dois totais big_t= Y/X IT= 1/X*I(Y)-Y/X^2*I(X) Use deriv to get
-# da/dTj
-
-# expression for the function a list of object generated the linearization
-# functions.
-
-
-
 
 
 #' @rdname funs

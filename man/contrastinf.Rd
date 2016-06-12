@@ -9,7 +9,7 @@ contrastinf(exprlist, infunlist)
 \arguments{
 \item{exprlist}{a call}
 
-\item{infunlist}{a list of list, each having two components: value - the estimate and lin - the linearized variable}
+\item{infunlist}{a list of lists, each having two components: value - the estimate value and lin - the linearized variable}
 }
 \value{
 a list with two components: values - the estimate value and lin - the linearized variable
@@ -18,7 +18,7 @@ a list with two components: values - the estimate value and lin - the linearized
 Computes the linearized variable of a function of a survey statististics
 }
 \details{
-the call must use function the \code{deriv} knows how to differentiate
+the call must use function that \code{deriv} knows how to differentiate
 }
 \examples{
 library(survey)
