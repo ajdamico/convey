@@ -102,7 +102,7 @@ contrastinf <- function(exprlist, infunlist) {
     matval <- attr(values_deriv$contrast, "gradient")
     matlin <- matrix(NA, length(infunlist[[1]]$lin), ncol(matval))
     for (i in 1:length(listlin)) matlin[, i] <- listlin[[i]]
-    IT_lin <- matlin %*% thresh(matval)
+    IT_lin <- matlin %*% t(matval)
     list(value = value, lin = IT_lin)
 }
 

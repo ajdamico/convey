@@ -215,7 +215,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   if ( is.na(average) ) {
     variance <- as.matrix(NA)
     cis <- array( rbind(rep(NA, length(quantiles)),rep(NA, length(quantiles))), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
-    rval <- thresh( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
+    rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
     rval <- list(quantiles = rval, CIs = cis)
     attr(rval, "SE") <- rep(NA, length(quantiles))
     class(rval) <- "svyquantile"
@@ -283,7 +283,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
 
   cis <- array( rbind(CI.L,CI.U), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
-  rval <- thresh( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
+  rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
 
@@ -401,15 +401,15 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   }
 
   ws <- weights(design, "sampling")
-  L.p <- thresh( as.matrix( lapply_wtd.psum(x = incvar, qs = quantiles, weights = ws ) ) )
-  rval <- thresh( matrix( data = L.p, dimnames = list( as.character( quantiles ) ) ) )
+  L.p <- t( as.matrix( lapply_wtd.psum(x = incvar, qs = quantiles, weights = ws ) ) )
+  rval <- t( matrix( data = L.p, dimnames = list( as.character( quantiles ) ) ) )
   ww <- weights(design, "analysis")
   qq <- apply(ww, 2, function(wi) lapply_wtd.psum(x = incvar, qs = quantiles, weights = wi ) )
 
   if ( any(is.na(qq))) {
     variance <- as.matrix(NA)
     cis <- array( rbind(rep(NA, length(quantiles)),rep(NA, length(quantiles))), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
-    rval <- thresh( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
+    rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
     rval <- list(quantiles = rval, CIs = cis)
     attr(rval, "SE") <- rep(NA, length(quantiles))
     class(rval) <- "svyquantile"
@@ -434,7 +434,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   CI.U <- as.numeric( L.p + se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE ) )
 
   cis <- array( rbind(CI.L,CI.U), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
-  rval <- thresh( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
+  rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
   class(rval) <- "svyquantile"

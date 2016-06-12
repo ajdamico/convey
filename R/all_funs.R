@@ -46,7 +46,7 @@ h_fun <- function(incvar, w) {
 #'@param design a design object of class \code{survey.design} from the \code{survey} library.
 #'@param x the point where the derivative is calculated
 #'@param h value of the bandwidth based on the whole sample
-#'@param if \code{F} estimates the derivative of the cdf function; if \code{S} estimates
+#'@param if \code{F} estimates the derivative of the cdf function; if \code{big_s} estimates
 #'the derivative of total in the tails of the distribution
 #'@return the value of the derivative at \code{x}
 #'@author Djalma Pessoa and Anthony Damico
@@ -63,9 +63,9 @@ h_fun <- function(incvar, w) {
 #' densfun ( ~ py010n , design = des_eusilc , 10000,fun="F", na.rm = TRUE )
 #'@export
 
-densfun <- function(formula, design, x, h = NULL, fun = c("F", "S"), na.rm=FALSE, ...) {
+densfun <- function(formula, design, x, h = NULL, fun = c("F", "big_s"), na.rm=FALSE, ...) {
 
-	if( !( fun %in% c( "F" , "S" ) ) ) stop( "valid choices for `fun=` are 'F' and 'S'" )
+	if( !( fun %in% c( "F" , "big_s" ) ) ) stop( "valid choices for `fun=` are 'F' and 'big_s'" )
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   if(na.rm){
@@ -176,34 +176,34 @@ itot <- function(formula, design) {
 }
 
 ## derivation rules for influence functions of functionals linear combination of
-## functionals: formula (29) a, b - scalars T, S - lists with two components:
+## functionals: formula (29) a, b - scalars big_t, big_s - lists with two components:
 ## value and lin IF - list with with two components Fprime - real function
 
-cl_inf <- function(a, b, T, S) {
-    lin <- a * T$lin + b * S$lin
-    value <- a * T$value + b * S$value
+cl_inf <- function(a, b, big_t, big_s) {
+    lin <- a * big_t$lin + b * big_s$lin
+    value <- a * big_t$value + b * big_s$value
     list(value = value, lin = lin)
 }
 
 # product of o two functionals: formula (30)
-prod_inf <- function(T, S) {
+prod_inf <- function(big_t, big_s) {
 
-    value <- T$value * S$value
-    lin <- T$value * S$lin + S$value * T$lin
+    value <- big_t$value * big_s$value
+    lin <- big_t$value * big_s$lin + big_s$value * big_t$lin
     list(value = value, lin = lin)
 }
 
 # ratio of functionals: formula (31)
 
-ratio_inf <- function(T, S) {
-    value <- T$value/S$value
-    lin <- (S$value * T$lin - T$value * S$lin)/((S$value)^2)
+ratio_inf <- function(big_t, big_s) {
+    value <- big_t$value/big_s$value
+    lin <- (big_s$value * big_t$lin - big_t$value * big_s$lin)/((big_s$value)^2)
     list(value = value, lin = lin)
 }
 
 
 
-# Funções U e T de Jenkins & Biewen:
+# Funções U e big_t de Jenkins & Biewen:
 U_fn <- 
 	function( x, weights, gamma ) {
 		x <- x[weights != 0]
