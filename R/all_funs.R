@@ -166,59 +166,22 @@ computeQuantiles <- function(xx, w, p = quantiles) {
 }
 
 
-
-# infuence function of a total: formula (34)
-itot <- function(formula, design) {
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    value <- coef(survey::svytotal(x = formula, design = design))
-    lin <- incvar
-    list(value = value, lin = lin)
-}
-
-## derivation rules for influence functions of functionals linear combination of
-## functionals: formula (29) a, b - scalars big_t, big_s - lists with two components:
-## value and lin IF - list with with two components Fprime - real function
-
-cl_inf <- function(a, b, big_t, big_s) {
-    lin <- a * big_t$lin + b * big_s$lin
-    value <- a * big_t$value + b * big_s$value
-    list(value = value, lin = lin)
-}
-
-# product of o two functionals: formula (30)
-prod_inf <- function(big_t, big_s) {
-
-    value <- big_t$value * big_s$value
-    lin <- big_t$value * big_s$lin + big_s$value * big_t$lin
-    list(value = value, lin = lin)
-}
-
-# ratio of functionals: formula (31)
-
-ratio_inf <- function(big_t, big_s) {
-    value <- big_t$value/big_s$value
-    lin <- (big_s$value * big_t$lin - big_t$value * big_s$lin)/((big_s$value)^2)
-    list(value = value, lin = lin)
-}
-
-
-
 # Funções U e big_t de Jenkins & Biewen:
-U_fn <- 
+U_fn <-
 	function( x, weights, gamma ) {
 		x <- x[weights != 0]
-		
+
 		weights <- weights[weights != 0]
-		
+
 		sum( weights * x^gamma )
 	}
-	
-T_fn <- 
+
+T_fn <-
 	function( x, weights, gamma ) {
 		x <- x[weights != 0]
-		
+
 		weights <- weights[weights != 0]
-		
+
 		sum( weights * x^gamma * log( x ) )
 	}
 
