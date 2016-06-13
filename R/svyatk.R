@@ -41,7 +41,7 @@
 #' library(MonetDBLite)
 #' library(DBI)
 #' dbfolder <- tempdir()
-#' conn <- dbConnect( MonetDB.R::MonetDBLite() , dbfolder )
+#' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 #' dbWriteTable( conn , 'eusilc' , eusilc )
 #'
 #' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
