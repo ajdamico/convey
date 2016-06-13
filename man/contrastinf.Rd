@@ -33,19 +33,30 @@ T1 = list(value = sum(w*eusilc$eqincome) , lin = eusilc$eqincome )
 T2 = list(value = sum(w), lin = rep (1, nrow(eusilc)) )
 list_all <- list( T1 = T1, T2 = T2)
 lin_R = contrastinf (quote(T1/T2), list_all)
-# quintile share ratio linearization
+# estimate of the variable eqincome mean
+lin_R$value
+# se estimate of the variable eqincome mean
+SE(svytotal(lin_R$lin, des_eusilc))
+# to check use
+svymean (~eqincome, des_eusilc)
+# quintile share ratio (qsr) linearization
 S20 <- svyisq(~ eqincome, design = des_eusilc, .20)
 S20_val <- coef (S20); attributes (S20_val) <- NULL
 S20_lin <- attr(S20 , "lin" )
 S80 <- svyisq(~ eqincome, design = des_eusilc, .80)
 S80_val <- coef (S80); attributes (S80_val) <- NULL
 S80_lin <- attr(S80 , "lin" )
-SU <- list (value =S80_val, lin = S80_lin )
-SI <- list (value =S20_val, lin = S20_lin )
+SU <- list (value = S80_val, lin = S80_lin )
+SI <- list (value = S20_val, lin = S20_lin )
 TOT <- list(value = sum( w * eusilc$eqincome) , lin = eusilc$eqincome )
 list_all <- list (TOT = TOT, SI = SI, SU = SU )
-lin_QSR <- contrastinf (quote((TOT-SU/SI)), list_all )
-
+lin_QSR <- contrastinf( quote((TOT-SU)/SI), list_all)
+# estimate of the qsr
+lin_QSR$value
+# se estimate of the qsr:
+SE(svytotal(lin_QSR$lin, des_eusilc))
+# to check use
+svyqsr(~eqincome, des_eusilc, alpha =.20 )
 }
 \author{
 Djalma Pessoa and Anthony Damico
