@@ -1,24 +1,3 @@
-#'Complete the linearized values with 0's
-#'
-#' Complete the vector of the linearized value of an indicator for a domain with
-#' 0 values coresponding to the other domains
-#'
-#' @param x vetor with linearized values for the domain
-#' @param n the length of the vector forthe whole sample
-#'
-#' @return vector with 0 in the elements outside the domain
-#' @author Djalma Pessoa and Anthony Damico
-#' @keywords survey
-#' @export
-
-
-complete <- function(x, ind.all) {
-    x.comp <- rep(0, length(ind.all))
-    names(x.comp) <- ind.all
-    x.comp[names(x)] <- x
-    x.comp
-}
-
 #'Computes the bandwidth needed to compute the derivative of the cdf function
 #'
 #'Using the whole sample, computes the bandwith used to get the linearized variable
