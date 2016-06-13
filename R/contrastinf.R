@@ -26,17 +26,20 @@
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' w <- weights(des_eusilc)
+#' 
 #' # ratio linearization
 #' T1 = list(value = sum(w*eusilc$eqincome) , lin = eusilc$eqincome )
 #' T2 = list(value = sum(w), lin = rep (1, nrow(eusilc)) )
 #' list_all <- list( T1 = T1, T2 = T2)
 #' lin_R = contrastinf (quote(T1/T2), list_all)
+#' 
 #' # estimate of the variable eqincome mean
 #' lin_R$value
 #' # se estimate of the variable eqincome mean
 #' SE(svytotal(lin_R$lin, des_eusilc))
-#' # to check use
+#' # to check, use
 #' svymean (~eqincome, des_eusilc)
+#' 
 #' # quintile share ratio (qsr) linearization
 #' S20 <- svyisq(~ eqincome, design = des_eusilc, .20)
 #' S20_val <- coef (S20); attributes (S20_val) <- NULL
@@ -49,11 +52,12 @@
 #' TOT <- list(value = sum( w * eusilc$eqincome) , lin = eusilc$eqincome )
 #' list_all <- list (TOT = TOT, SI = SI, SU = SU )
 #' lin_QSR <- contrastinf( quote((TOT-SU)/SI), list_all)
+#' 
 #' # estimate of the qsr
 #' lin_QSR$value
 #' # se estimate of the qsr:
 #' SE(svytotal(lin_QSR$lin, des_eusilc))
-#' # to check use
+#' # to check, use
 #' svyqsr(~eqincome, des_eusilc, alpha =.20 )
 #' 
 #' @export
