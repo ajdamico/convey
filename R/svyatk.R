@@ -99,6 +99,8 @@
 #' svyatk( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
 #' svyatk( ~eqincome , design = subset(des_eusilc_rep, db040 == "Styria"), epsilon = 2 )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svyatk <-
 	function(formula, design, ...) {

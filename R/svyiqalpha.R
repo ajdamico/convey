@@ -57,6 +57,8 @@
 #'
 #' svyiqalpha( ~ eqincome , design = dbd_eusilc, .50 )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svyiqalpha <- 
 	function(formula, design, ...) {

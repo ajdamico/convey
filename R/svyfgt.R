@@ -96,7 +96,7 @@
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
 #' svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "relm")
 #'
-#'
+#' dbRemoveTable( conn , 'eusilc' )
 #'
 #' @export
 svyfgt <-

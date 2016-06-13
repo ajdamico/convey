@@ -61,6 +61,8 @@
 #' svyrenyi( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 #' svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svyrenyi <- function(formula, design, ...) {
 

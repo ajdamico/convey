@@ -68,6 +68,7 @@
 #'
 #' svyrmir( ~eqincome , design = dbd_eusilc , age = ~age )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
 #'
 #' @export
 svyrmir <- 

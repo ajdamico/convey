@@ -65,6 +65,7 @@
 #'
 #' svyqsr( ~ eqincome , design = dbd_eusilc )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
 #'
 #' @export
 svyqsr <- 

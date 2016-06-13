@@ -99,6 +99,8 @@
 #' svygei( ~py010n , design = des_eusilc_rep, epsilon = 2, na.rm = TRUE )
 #'
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svygei <- 
 	function(formula, design, ...) {

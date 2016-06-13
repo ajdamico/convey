@@ -62,6 +62,8 @@
 #' svyzenga(~py010n, subset( dbd_eusilc, db040 == "Styria"), na.rm = TRUE)
 #' svyzenga(~py010n, subset( des_eusilc_rep, db040 == "Styria"), na.rm = TRUE)
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svyzenga <- function(formula, design, ...) {
 

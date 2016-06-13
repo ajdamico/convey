@@ -63,6 +63,8 @@
 #'
 #' svypoormed( ~ eqincome , design = dbd_eusilc )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svypoormed <- 
 	function(formula, design, ...) {

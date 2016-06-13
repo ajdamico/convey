@@ -59,6 +59,8 @@
 #'
 #' svygini( ~ eqincome , design = dbd_eusilc )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svygini <-
 	function(formula, design, ...) {

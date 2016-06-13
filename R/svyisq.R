@@ -53,6 +53,8 @@
 #'
 #' svyisq( ~ eqincome , design = dbd_eusilc, .20 )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svyisq <-
 	function(formula, design, ...) {

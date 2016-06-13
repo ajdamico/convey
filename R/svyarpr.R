@@ -63,6 +63,8 @@
 #'
 #' svyarpr( ~ eqincome , design = dbd_eusilc )
 #'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
 #' @export
 svyarpr <- function(formula, design, ...) {
 
