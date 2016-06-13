@@ -104,6 +104,8 @@ svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), empirical 
 svylorenz( ~eqincome , design = dbd_eusilc, quantiles = seq(0,1,.01), alpha = .01, add = TRUE )
 legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 
+dbRemoveTable( conn , 'eusilc' )
+
 }
 \author{
 Djalma Pessoa, Anthony Damico and Guilherme Jacob.

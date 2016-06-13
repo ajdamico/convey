@@ -81,6 +81,7 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyrmir( ~eqincome , design = dbd_eusilc , age = ~age )
 
+dbRemoveTable( conn , 'eusilc' )
 
 }
 \author{

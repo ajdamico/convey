@@ -57,6 +57,8 @@ dbd_ses <- convey_prep( dbd_ses )
 
 svygpg(formula=~earningsHour, design=dbd_ses, sex= ~sex)
 
+dbRemoveTable( conn , 'eusilc' )
+
 }
 \author{
 Djalma Pessoa and Anthony Damico

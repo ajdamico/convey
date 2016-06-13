@@ -63,6 +63,8 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyiqalpha( ~ eqincome , design = dbd_eusilc, .50 )
 
+dbRemoveTable( conn , 'eusilc' )
+
 }
 \author{
 Djalma Pessoa and Anthony Damico

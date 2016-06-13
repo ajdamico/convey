@@ -77,6 +77,7 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyrmpg( ~ eqincome , design = dbd_eusilc )
 
+dbRemoveTable( conn , 'eusilc' )
 
 }
 \author{

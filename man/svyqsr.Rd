@@ -80,6 +80,7 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyqsr( ~ eqincome , design = dbd_eusilc )
 
+dbRemoveTable( conn , 'eusilc' )
 
 }
 \author{

@@ -75,6 +75,8 @@ svyrenyi( ~eqincome , design = dbd_eusilc, epsilon = .5 )
 svyrenyi( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 
+dbRemoveTable( conn , 'eusilc' )
+
 }
 \author{
 Djalma Pessoa, Anthony Damico and Guilherme Jacob

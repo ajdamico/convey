@@ -109,6 +109,8 @@ svygei( ~py010n , design = des_eusilc_rep, epsilon = 2 )
 svygei( ~py010n , design = des_eusilc_rep, epsilon = 2, na.rm = TRUE )
 
 
+dbRemoveTable( conn , 'eusilc' )
+
 }
 \author{
 Djalma Pessoa, Anthony Damico and Guilherme Jacob
