@@ -1,4 +1,4 @@
-#' Computes the linearized variable of a function of a survey statististics
+#' Computes the linearized variable of a function for survey statististics
 
 #'
 #' @param exprlist a call
@@ -10,7 +10,7 @@
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{svysqr}
+#' @seealso \code{svyqsr}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
 #' of poverty and inequality. \emph{Journal of the European Survey Research
@@ -55,6 +55,7 @@
 #' SE(svytotal(lin_QSR$lin, des_eusilc))
 #' # to check use
 #' svyqsr(~eqincome, des_eusilc, alpha =.20 )
+#' 
 #' @export
 contrastinf <- function(exprlist, infunlist) {
     datalist <- lapply(infunlist, function(thresh) thresh$value)
