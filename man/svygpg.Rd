@@ -58,7 +58,7 @@ dbd_ses <- convey_prep( dbd_ses )
 
 svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
 
-dbRemoveTable( conn , 'eusilc' )
+dbRemoveTable( conn , 'ses' )
 
 }
 \author{

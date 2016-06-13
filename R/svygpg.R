@@ -52,7 +52,7 @@
 #'
 #' svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
 #'
-#' dbRemoveTable( conn , 'eusilc' )
+#' dbRemoveTable( conn , 'ses' )
 #'
 #' @export
 svygpg <- 
