@@ -31,13 +31,14 @@
 #' library(vardpoor)
 #' library(survey)
 #' data(ses)
+#' names( ses ) <- tolower( names( ses ) )
 #' des_ses <- svydesign(id=~1, weights=~weights, data=ses)
 #'
 #' # linearized design
-#' svygpg(~earningsHour, des_ses, ~sex)
+#' svygpg(~earningshour, des_ses, ~sex)
 #' # replicate-weighted design
 #' des_ses_rep <-  as.svrepdesign( des_ses , type = "bootstrap" )
-#' svygpg(~earningsHour, des_ses_rep, ~sex)
+#' svygpg(~earningshour, des_ses_rep, ~sex)
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -49,7 +50,7 @@
 #' dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfolder, dbtype="MonetDBLite")
 #' dbd_ses <- convey_prep( dbd_ses )
 #'
-#' svygpg(formula=~earningsHour, design=dbd_ses, sex= ~sex)
+#' svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
