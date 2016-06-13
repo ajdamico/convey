@@ -72,7 +72,7 @@ svyqsr <-
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-		if( 'alpha' %in% names( list(...) ) & list(...)[["alpha"]] > 0.5 ) stop( "alpha= cannot be larger than 0.5 (50%)" )
+		if( 'alpha' %in% names( list(...) ) && list(...)[["alpha"]] > 0.5 ) stop( "alpha= cannot be larger than 0.5 (50%)" )
 		
 		UseMethod("svyqsr", design)
 
