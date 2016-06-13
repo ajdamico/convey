@@ -288,6 +288,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
+  class(rval) <- "svyquantile"
 
   if ( plot ) {
 
