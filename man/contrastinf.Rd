@@ -2,7 +2,7 @@
 % Please edit documentation in R/contrastinf.R
 \name{contrastinf}
 \alias{contrastinf}
-\title{Computes the linearized variable of a function of a survey statististics}
+\title{Generalized linearization of a smooth function of survey statistics}
 \usage{
 contrastinf(exprlist, infunlist)
 }
@@ -15,10 +15,10 @@ contrastinf(exprlist, infunlist)
 a list with two components: values - the estimate value and lin - the linearized variable
 }
 \description{
-Computes the linearized variable of a function of a survey statististics
+Generalized linearization of a smooth function of survey statistics
 }
 \details{
-the call must use function that \code{deriv} knows how to differentiate
+The call must use function that \code{deriv} knows how to differentiate. It allows to compute the linearized variable of a complex indicator from the linearized variables of simpler component variables, avoiding the formal derivatives calculations.
 }
 \examples{
 library(survey)
@@ -28,17 +28,20 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 w <- weights(des_eusilc)
+
 # ratio linearization
 T1 = list(value = sum(w*eusilc$eqincome) , lin = eusilc$eqincome )
 T2 = list(value = sum(w), lin = rep (1, nrow(eusilc)) )
 list_all <- list( T1 = T1, T2 = T2)
 lin_R = contrastinf (quote(T1/T2), list_all)
+
 # estimate of the variable eqincome mean
 lin_R$value
 # se estimate of the variable eqincome mean
 SE(svytotal(lin_R$lin, des_eusilc))
-# to check use
+# to check, use
 svymean (~eqincome, des_eusilc)
+
 # quintile share ratio (qsr) linearization
 S20 <- svyisq(~ eqincome, design = des_eusilc, .20)
 S20_val <- coef (S20); attributes (S20_val) <- NULL
@@ -51,12 +54,21 @@ SI <- list (value = S20_val, lin = S20_lin )
 TOT <- list(value = sum( w * eusilc$eqincome) , lin = eusilc$eqincome )
 list_all <- list (TOT = TOT, SI = SI, SU = SU )
 lin_QSR <- contrastinf( quote((TOT-SU)/SI), list_all)
+
 # estimate of the qsr
 lin_QSR$value
 # se estimate of the qsr:
 SE(svytotal(lin_QSR$lin, des_eusilc))
-# to check use
-svyqsr(~eqincome, des_eusilc, alpha =.20 )
+# to check, use
+svyqsr(~eqincome, des_eusilc )
+# proportion of income below the quantile .20
+list_all <- list (TOT = TOT, SI = SI )
+lin_Lor <- contrastinf( quote(SI/TOT), list_all)
+# estimate of the proportion of income below the quantile .20
+lin_Lor$value
+# se estimate
+SE(svytotal(lin_Lor$lin,des_eusilc))
+
 }
 \author{
 Djalma Pessoa and Anthony Damico
@@ -68,6 +80,6 @@ Association}, Vol.3, No.3, pp. 167-195,
 ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
 }
 \seealso{
-\code{svysqr}
+\code{svyqsr}
 }
 
