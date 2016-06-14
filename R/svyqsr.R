@@ -68,20 +68,20 @@
 #' dbRemoveTable( conn , 'eusilc' )
 #'
 #' @export
-svyqsr <- 
+svyqsr <-
 	function(formula, design, ...) {
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 		if( 'alpha' %in% names( list(...) ) && list(...)[["alpha"]] > 0.5 ) stop( "alpha= cannot be larger than 0.5 (50%)" )
-		
+
 		UseMethod("svyqsr", design)
 
 	}
 
 #' @rdname svyqsr
 #' @export
-svyqsr.survey.design <- 
+svyqsr.survey.design <-
 	function(formula, design, alpha = 0.2, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -91,17 +91,17 @@ svyqsr.survey.design <-
 			design<-design[!nas,]
 			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
 		}
-		
+
 		w <- 1/design$prob
 		ind <- names(design$prob)
-		
+
 		# Linearization of S20
 		S20 <- svyisq(formula = formula, design = design, alpha, na.rm=na.rm)
 		qS20 <- attr(S20, "quantile")
 		totS20 <- coef(S20)
 		attributes(totS20) <- NULL
 		S20 <- list(value= coef(S20), lin=attr(S20,"lin"))
-		
+
 		# Linearization of S80
 		S80 <- svyisq(formula = formula, design = design, 1 - alpha, na.rm=na.rm)
 		qS80 <- attr(S80, "quantile")
@@ -116,11 +116,11 @@ svyqsr.survey.design <-
 		list_all <- list(TOT=TOT, S20 = S20, S80 = S80)
 		QSR <- contrastinf( quote((TOT-S80)/S20), list_all)
 		rval <- QSR$value
-		
+
 		attributes (rval) <- NULL
 		lin <- as.vector(QSR$lin)
 		variance <- survey::svyrecvar(lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-		
+
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 		class(rval) <- "cvystat"
 		attr(rval, "var") <- variance
@@ -130,13 +130,13 @@ svyqsr.survey.design <-
 		if(lower_quant)  attr(rval, "lower_quant") <- qS20
 		if(upper_tot)  attr(rval, "upper_tot") <- TOT$value-totS80
 		if(lower_tot)  attr(rval, "lower_tot") <- totS20
-		
+
 		rval
 	}
 
 #' @rdname svyqsr
 #' @export
-svyqsr.svyrep.design <- 
+svyqsr.svyrep.design <-
 	function(formula, design, alpha = 0.2, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
@@ -156,7 +156,7 @@ svyqsr.svyrep.design <-
 		}
 
 
-		ComputeQsr <- 
+		ComputeQsr <-
 			function(x, w, alpha) {
 				quant_inf <- computeQuantiles(x, w, p = alpha)
 				quant_sup <- computeQuantiles(x, w, p = 1 - alpha)
@@ -166,15 +166,16 @@ svyqsr.svyrep.design <-
 				S20 <- sum(poor * w)
 				c( quant_sup, quant_inf, S80, S20, S80/S20)
 			}
-			
+
 		ws <- weights(design, "sampling")
 		Qsr_val <- ComputeQsr(incvar, ws, alpha = alpha)
 		rval <- Qsr_val[5]
-		
+
 		ww <- weights(design, "analysis")
 		qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha)[5])
-		
-		if(sum(is.na(qq))==length(qq))variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+
+		if(anyNA(qq))variance <- NA
+		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 
@@ -187,7 +188,7 @@ svyqsr.svyrep.design <-
 		if(lower_quant)  attr(rval, "lower_quant") <- Qsr_val[2]
 		if(upper_tot)  attr(rval, "upper_tot") <- Qsr_val[3]
 		if(lower_tot)  attr(rval, "lower_tot") <- Qsr_val[4]
-		
+
 		rval
 		}
 
@@ -200,12 +201,12 @@ svyqsr.DBIsvydesign <-
 
 			full_design <- attr( design , "full_design" )
 
-			full_design$variables <- 
+			full_design$variables <-
 				survey:::getvars(
-					formula, 
-					attr( design , "full_design" )$db$connection, 
+					formula,
+					attr( design , "full_design" )$db$connection,
 					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates, 
+					updates = attr( design , "full_design" )$updates,
 					subset = attr( design , "full_design" )$subset
 				)
 
@@ -215,12 +216,12 @@ svyqsr.DBIsvydesign <-
 
 		}
 
-		design$variables <- 
+		design$variables <-
 			survey:::getvars(
-				formula, 
-				design$db$connection, 
+				formula,
+				design$db$connection,
 				design$db$tablename,
-				updates = design$updates, 
+				updates = design$updates,
 				subset = design$subset
 			)
 

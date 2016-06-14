@@ -292,8 +292,8 @@ svyfgt.svyrep.design <-
 				incd <- incvec[ind]
 				ComputeFGT(incd, wd, g = g, th)}
 			)
-
-		variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		if(anyNA(qq))variance <- NA
+		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 

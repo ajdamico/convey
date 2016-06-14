@@ -134,7 +134,8 @@ svyisq.svyrep.design <-
 
 		qq <- apply(ww, 2, function(wi) compute_isq(incvar, wi, alpha = alpha)[2])
 
-		if(sum(is.na(qq))==length(qq))variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		if(anyNA(qq))variance <- NA
+		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 

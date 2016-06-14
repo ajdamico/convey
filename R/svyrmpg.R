@@ -69,7 +69,7 @@
 #' dbRemoveTable( conn , 'eusilc' )
 #'
 #' @export
-	svyrmpg <- 
+	svyrmpg <-
 		function(formula, design, ...) {
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
@@ -81,7 +81,7 @@
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.survey.design <- 
+svyrmpg.survey.design <-
 	function(formula, design, order = 0.5, percent = 0.6, na.rm=FALSE, thresh = FALSE, poor_median = FALSE,...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -90,9 +90,9 @@ svyrmpg.survey.design <-
 		# if the class of the full_design attribute is just a TRUE, then the design is
 		# already the full design.  otherwise, pull the full_design from that attribute.
 		if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
-		
+
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-		
+
 		if(na.rm){
 			nas<-is.na(incvar)
 			design<-design[!nas,]
@@ -100,30 +100,30 @@ svyrmpg.survey.design <-
 		}
 
 		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-		
+
 		if(na.rm){
 			nas<-is.na(incvec)
 			full_design<-full_design[!nas,]
 			if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
 		}
-		
+
 		ARPT <- svyarpt (formula = formula, full_design, order = order, percent = percent, na.rm = na.rm )
 		arpt <- coef(ARPT)
 		linarpt <- attr(ARPT, "lin")
-		
+
 		POORMED <- svypoormed (formula = formula, design = design, order = order, percent = percent, na.rm = na.rm)
 		medp <- coef(POORMED)
 		linmedp <- attr(POORMED, "lin")
-		
+
 		MEDP <- list(value = medp, lin = linmedp)
 		ARPT <- list(value = arpt, lin = linarpt)
 		list_all<- list(ARPT=ARPT, MEDP=MEDP)
-		
+
 		# linearize RMPG
 		RMPG <- contrastinf( quote( ( ARPT - MEDP ) / ARPT ) , list_all )
 		rval <- RMPG$value
 		infun <- unlist(RMPG$lin)
-		
+
 		variance <- svyrecvar(infun/full_design$prob, full_design$cluster,full_design$strata, full_design$fpc,postStrata = full_design$postStrata)
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -133,14 +133,14 @@ svyrmpg.survey.design <-
 		attr( rval , "statistic" ) <- "rmpg"
 		if(thresh) attr(rval, "thresh") <- arpt
 		if(poor_median)attr(rval, "poor_median") <- medp
-		
+
 		rval
 	}
 
 
 #' @rdname svyrmpg
 #' @export
-svyrmpg.svyrep.design <- 
+svyrmpg.svyrep.design <-
 	function(formula, design, order = 0.5, percent = 0.6,na.rm=FALSE, thresh = FALSE, poor_median = FALSE, ...) {
 
 		if (is.null(attr(design, "full_design")))
@@ -152,7 +152,7 @@ svyrmpg.svyrep.design <-
 
 		df <- model.frame(design)
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-		
+
 		if(na.rm){
 			nas<-is.na(incvar)
 			design<-design[!nas,]
@@ -173,8 +173,8 @@ svyrmpg.svyrep.design <-
 		wsf <- weights(full_design,"sampling")
 		names(incvec) <- names(wsf) <- row.names(df_full)
 		ind<- row.names(df)
-		
-		ComputeRmpg <- 
+
+		ComputeRmpg <-
 			function(xf, wf, ind, order, percent) {
 				tresh <- percent * computeQuantiles(xf, wf, p = order)
 				x<-xf[ind]
@@ -190,13 +190,13 @@ svyrmpg.svyrep.design <-
 
 		wwf <- weights(full_design, "analysis")
 
-		qq <- 
+		qq <-
 			apply(wwf, 2, function(wi){
 				names(wi)<- row.names(df_full)
 				ComputeRmpg(incvec, wi, ind=ind, order = order,percent = percent)[3]
 				})
-
-		variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		if(anyNA(qq))variance <- NA
+		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 
@@ -207,7 +207,7 @@ svyrmpg.svyrep.design <-
 		attr( rval , "statistic" ) <- "rmpg"
 		if(thresh) attr(rval, "thresh") <- Rmpg_val[1]
 		if(poor_median)attr(rval, "poor_median") <- Rmpg_val[2]
-		
+
 		rval
 	}
 
@@ -220,12 +220,12 @@ svyrmpg.DBIsvydesign <-
 
 			full_design <- attr( design , "full_design" )
 
-			full_design$variables <- 
+			full_design$variables <-
 				survey:::getvars(
-					formula, 
-					attr( design , "full_design" )$db$connection, 
+					formula,
+					attr( design , "full_design" )$db$connection,
 					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates, 
+					updates = attr( design , "full_design" )$updates,
 					subset = attr( design , "full_design" )$subset
 				)
 
@@ -235,15 +235,15 @@ svyrmpg.DBIsvydesign <-
 
 		}
 
-		design$variables <- 
+		design$variables <-
 			survey:::getvars(
-				formula, 
-				design$db$connection, 
+				formula,
+				design$db$connection,
 				design$db$tablename,
-				updates = design$updates, 
+				updates = design$updates,
 				subset = design$subset
 			)
 
 		NextMethod("svyrmpg", design)
-		
+
 	}

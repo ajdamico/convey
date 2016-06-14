@@ -161,8 +161,8 @@ svygini.svyrep.design <-
 		ww <- weights(design, "analysis")
 
 		qq <- apply(ww, 2, function(wi) ComputeGini(incvar, wi))
-
-		if(sum(is.na(qq))==length(qq))variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+		if(anyNA(qq))variance <- NA
+		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
 
