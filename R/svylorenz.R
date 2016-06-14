@@ -91,9 +91,9 @@
 #' @export
 svylorenz <- function(formula, design, ...) {
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-	UseMethod("svylorenz", design)
+  UseMethod("svylorenz", design)
 
 }
 
@@ -143,31 +143,30 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     x <- x[indices]
     weights <- weights[indices]
 
-    x_1 <- c(0,x[-length(x)])
+    ordx <- order(x)
+    x <- x[ordx]
+    weights <- weights[ordx]
+
     N <- sum(weights)
     wsum <- cumsum(weights)
     wsum_1 <- c(0,wsum[-length(wsum)])
-    alpha_k <- wsum / N
 
-    k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
+    k <- which( ( wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
-    return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[k] ) / weights[k] )
-
-  }
-
-  # partial sum (1st definition):
-  wtd.psum <- function (x, q = .5, weights = NULL ) {
-    indices <- weights != 0
-    x <- x[indices]
-    weights <- weights[indices]
-
-    x_thres <- wtd.qtl(x = x, q = q, weights = weights )
-
-    return( sum( weights * x * 1 * (x <= x_thres) ) )
+    return( x[k] )
 
   }
 
   # partial sum (2nd definition)
+  H_fn <- function(x) {
+    y <- NULL
+    y[ x < 0 ] <- 0
+    y[ (0 <= x) & (x < 1) ] <- x[ (0 <= x) & (x < 1) ]
+    y[ x >= 1 ] <- 1
+
+    return(y)
+  }
+
   wtd.psum <- function (x, q = .5, weights = NULL ) {
 
     indices <- weights != 0
@@ -183,15 +182,6 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
     t_k <- ( (q * N) - wsum_1 ) / weights
-
-    H_fn <- function(x) {
-      y <- NULL
-      y[ x < 0 ] <- 0
-      y[ (0 <= x) & (x < 1) ] <- x[ (0 <= x) & (x < 1) ]
-      y[ x >= 1 ] <- 1
-
-      return(y)
-    }
 
     return( sum( weights * x * H_fn(t_k) ) )
 
@@ -249,10 +239,11 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
       quant <- wtd.qtl( x = incvar, q = pc, weights = w )
       s.quant <- L.p[i]
 
-      u_i <- NULL
-      u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
-      u_i[ w == 0 ] <- NA
-      u_i[ w == 0 ] <- 0
+      v_k <- NULL
+      #u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
+      v_k <- incvar * H_fn( pc * sum(w) - cumsum( c(0,w[-length(w)]) ) ) + ( pc - 1*(incvar < quant) )*quant
+      u_i <- 1/design$prob
+      u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
       u_i <- u_i[ sort(ordincvar) ]
 
       se[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
