@@ -58,56 +58,57 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' # linearized design
-#' svyatk( ~eqincome , design = des_eusilc, epsilon = .5 )
-#' svyatk( ~eqincome , design = subset(des_eusilc, eqincome > 0), epsilon = 1 )
-#' svyatk( ~eqincome , design = des_eusilc, epsilon = 2 )
+#' svyatk( ~eqincome , des_eusilc, epsilon = .5 )
+#' svyatk( ~eqincome , subset(des_eusilc, eqincome > 0), epsilon = 1 )
+#' svyatk( ~eqincome , des_eusilc, epsilon = 2 )
 #'
 #' # database-backed linearized design
-#' svyatk( ~eqincome , design = dbd_eusilc, epsilon = .5 )
-#' svyatk( ~eqincome , design = subset(dbd_eusilc, eqincome > 0), epsilon = 1 )
-#' svyatk( ~eqincome , design = dbd_eusilc, epsilon = 2 )
+#' svyatk( ~eqincome , dbd_eusilc, epsilon = .5 )
+#' svyatk( ~eqincome , subset(dbd_eusilc, eqincome > 0), epsilon = 1 )
+#' svyatk( ~eqincome , dbd_eusilc, epsilon = 2 )
 #'
 #' # replicate-weighted design
-#' svyatk( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
-#' svyatk( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
-#' svyatk( ~eqincome , design = des_eusilc_rep, epsilon = 2 )
+#' svyatk( ~eqincome , des_eusilc_rep, epsilon = .5 )
+#' svyatk( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
+#' svyatk( ~eqincome , des_eusilc_rep, epsilon = 2 )
 #'
 #' # linearized design using a variable with missings
-#' svyatk( ~py010n , design = des_eusilc, epsilon = .5 )
-#' svyatk( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
-#' svyatk( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-#' svyatk( ~py010n , design = subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-#' svyatk( ~py010n , design = des_eusilc, epsilon = 2 )
-#' svyatk( ~py010n , design = des_eusilc, epsilon = 2, na.rm = TRUE )
+#' svyatk( ~py010n , des_eusilc, epsilon = .5 )
+#' svyatk( ~py010n , des_eusilc, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svyatk( ~py010n , des_eusilc, epsilon = 2 )
+#' svyatk( ~py010n , des_eusilc, epsilon = 2, na.rm = TRUE )
 #'
 #' # database-backed linearized design using a variable with missings
-#' svyatk( ~py010n , design = dbd_eusilc, epsilon = .5 )
-#' svyatk( ~py010n , design = dbd_eusilc, epsilon = .5, na.rm = TRUE )
-#' svyatk( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-#' svyatk( ~py010n , design = subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-#' svyatk( ~py010n , design = dbd_eusilc, epsilon = 2 )
-#' svyatk( ~py010n , design = dbd_eusilc, epsilon = 2, na.rm = TRUE )
+#' svyatk( ~py010n , dbd_eusilc, epsilon = .5 )
+#' svyatk( ~py010n , dbd_eusilc, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
+#' svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svyatk( ~py010n , dbd_eusilc, epsilon = 2 )
+#' svyatk( ~py010n , dbd_eusilc, epsilon = 2, na.rm = TRUE )
 #'
 #' # replicate-weighted design using a variable with missings
-#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5 )
-#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
-#' svyatk( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
-#' svyatk( ~py010n , design = subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = 2 )
-#' svyatk( ~py010n , design = des_eusilc_rep, epsilon = 2, na.rm = TRUE )
+#' svyatk( ~py010n , des_eusilc_rep, epsilon = .5 )
+#' svyatk( ~py010n , des_eusilc_rep, epsilon = .5, na.rm = TRUE )
+#' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
+
+#' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svyatk( ~py010n , des_eusilc_rep, epsilon = 2 )
+#' svyatk( ~py010n , des_eusilc_rep, epsilon = 2, na.rm = TRUE )
 #'
 #' # subsetting
-#' svyatk( ~eqincome , design = subset(des_eusilc, db040 == "Styria"), epsilon = .5 )
-#' svyatk( ~eqincome , design = subset(des_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
-#' svyatk( ~eqincome , design = subset(des_eusilc, db040 == "Styria"), epsilon = 2 )
+#' svyatk( ~eqincome , subset(des_eusilc, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , subset(des_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
+#' svyatk( ~eqincome , subset(des_eusilc, db040 == "Styria"), epsilon = 2 )
 #'
-#' svyatk( ~eqincome , design = subset(dbd_eusilc, db040 == "Styria"), epsilon = .5 )
-#' svyatk( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
-#' svyatk( ~eqincome , design = subset(dbd_eusilc, db040 == "Styria"), epsilon = 2 )
+#' svyatk( ~eqincome , subset(dbd_eusilc, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , subset(dbd_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
+#' svyatk( ~eqincome , subset(dbd_eusilc, db040 == "Styria"), epsilon = 2 )
 #'
-#' svyatk( ~eqincome , design = subset(des_eusilc_rep, db040 == "Styria"), epsilon = .5 )
-#' svyatk( ~eqincome , design = subset(des_eusilc_rep, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
-#' svyatk( ~eqincome , design = subset(des_eusilc_rep, db040 == "Styria"), epsilon = 2 )
+#' svyatk( ~eqincome , subset(des_eusilc_rep, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , subset(des_eusilc_rep, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
+#' svyatk( ~eqincome , subset(des_eusilc_rep, db040 == "Styria"), epsilon = 2 )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
