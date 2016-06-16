@@ -22,6 +22,8 @@ svyatk(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{...}{future expansion}
+
 \item{epsilon}{a parameter that determines the sensivity towards inequality in the bottom of the distribution. Defaults to epsilon = 1.}
 
 \item{na.rm}{Should cases with missing values be dropped?}

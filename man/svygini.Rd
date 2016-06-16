@@ -20,6 +20,8 @@ svygini(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{...}{future expansion}
+
 \item{na.rm}{Should cases with missing values be dropped?}
 }
 \value{
