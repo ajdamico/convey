@@ -22,6 +22,8 @@ svyrmir(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{...}{future expansion}
+
 \item{age}{formula defining the variable age}
 
 \item{agelim}{the age cutpoint, the default is 65}

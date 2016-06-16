@@ -22,6 +22,8 @@ svyarpt(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{...}{future expansion}
+
 \item{order}{income quantile order, usually .50 (median)}
 
 \item{percent}{fraction of the quantile, usually .60}
