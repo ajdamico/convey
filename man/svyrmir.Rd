@@ -15,7 +15,7 @@ svyrmir(formula, design, ...)
 \method{svyrmir}{svyrep.design}(formula, design, age, agelim = 65,
   order = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
 
-\method{svyrmir}{DBIsvydesign}(formula, age, design, ...)
+\method{svyrmir}{DBIsvydesign}(formula, design, age, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -76,7 +76,16 @@ dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 dbWriteTable( conn , 'eusilc' , eusilc )
 
-dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
+dbd_eusilc <-
+	svydesign(
+		ids = ~rb030 ,
+		strata = ~db040 , 
+		weights = ~rb050 ,
+		data="eusilc",
+		dbname=dbfolder,
+		dbtype="MonetDBLite"
+	)
+
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyrmir( ~eqincome , design = dbd_eusilc , age = ~age )
@@ -98,7 +107,7 @@ linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 }
 \seealso{
-\code{\link{arpt}}
+\code{\link{svyarpt}}
 }
 \keyword{survey}
 

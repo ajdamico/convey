@@ -69,7 +69,16 @@ dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 dbWriteTable( conn , 'eusilc' , eusilc )
 
-dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
+dbd_eusilc <-
+	svydesign(
+		ids = ~rb030 ,
+		strata = ~db040 , 
+		weights = ~rb050 ,
+		data="eusilc",
+		dbname=dbfolder,
+		dbtype="MonetDBLite"
+	)
+
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyarpt( ~ eqincome , design = dbd_eusilc )
@@ -91,7 +100,7 @@ linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 }
 \seealso{
-\code{\link{arpr}}
+\code{\link{svyarpr}}
 }
 \keyword{survey}
 

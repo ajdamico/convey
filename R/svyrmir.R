@@ -210,7 +210,7 @@ svyrmir.svyrep.design <-
 #' @rdname svyrmir
 #' @export
 svyrmir.DBIsvydesign <-
-	function (formula, age, design, ...){
+	function (formula, design, age, ...){
 
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){
 

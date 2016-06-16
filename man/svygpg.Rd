@@ -13,12 +13,14 @@ svygpg(formula, design, ...)
 
 \method{svygpg}{svyrep.design}(formula, design, sex, na.rm = FALSE, ...)
 
-\method{svygpg}{DBIsvydesign}(formula, sex, design, ...)
+\method{svygpg}{DBIsvydesign}(formula, design, sex, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the gross hourly earnings variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
+
+\item{...}{future expansion}
 
 \item{sex}{formula with a factor with labels 'male' and 'female'}
 
@@ -75,7 +77,7 @@ linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 }
 \seealso{
-\code{\link{arpt}}
+\code{\link{svyarpt}}
 }
 \keyword{survey}
 

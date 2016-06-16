@@ -10,6 +10,8 @@ icdf(formula, design, x, na.rm = FALSE, ...)
 \item{formula}{a formula specifying the income variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
+
+\item{...}{future expansion}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -41,7 +43,7 @@ linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 }
 \seealso{
-\code{\link{arpr}}
+\code{\link{svyarpr}}
 }
 \keyword{survey}
 

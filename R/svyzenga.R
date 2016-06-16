@@ -5,6 +5,7 @@
 #' @param formula a formula specifying the income variable.
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param na.rm Should cases with missing values be dropped?
+#' @param ... future expansion
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'

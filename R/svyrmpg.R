@@ -10,6 +10,7 @@
 #' @param na.rm Should cases with missing values be dropped?
 #' @param thresh return the poverty poverty threshold
 #' @param poor_median return the median income of poor people
+#' @param ... future expansion
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'

@@ -7,6 +7,7 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param sex formula with a factor with labels 'male' and 'female'
 #' @param na.rm Should cases with missing values be dropped?
+#' @param ... future expansion
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -208,7 +209,7 @@ svygpg.svyrep.design <-
 #' @rdname svygpg
 #' @export
 svygpg.DBIsvydesign <-
-	function (formula, sex, design, ...){
+	function (formula, design, sex, ...){
 
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){
 

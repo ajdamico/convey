@@ -11,6 +11,7 @@
 #' @param lower_quant return the upper bound of lowest earners
 #' @param upper_tot return the highest earners total
 #' @param lower_tot return the lowest earners total
+#' @param ... future expansion
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'

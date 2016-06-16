@@ -20,11 +20,12 @@ svyiqalpha(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{...}{future expansion}
+
 \item{alpha}{the order of the quantile}
 }
 \value{
-Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of
-the statistic.
+Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
 Computes the linearized variable of a quantile of variable.
@@ -58,7 +59,16 @@ dbfolder <- tempdir()
 conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 dbWriteTable( conn , 'eusilc' , eusilc )
 
-dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
+dbd_eusilc <-
+	svydesign(
+		ids = ~rb030 ,
+		strata = ~db040 , 
+		weights = ~rb050 ,
+		data="eusilc",
+		dbname=dbfolder,
+		dbtype="MonetDBLite"
+	)
+
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyiqalpha( ~ eqincome , design = dbd_eusilc, .50 )
@@ -80,7 +90,7 @@ linearization and residual techniques. Survey Methodology, 25, 193-203,
 URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
 }
 \seealso{
-\code{\link{arpr}}
+\code{\link{svyarpr}}
 }
 \keyword{survey}
 
