@@ -4,8 +4,7 @@
 \alias{densfun}
 \title{Estimate the derivative of the cdf function using kernel estimator}
 \usage{
-densfun(formula, design, x, h = NULL, FUN = c("F", "big_s"),
-  na.rm = FALSE, ...)
+densfun(formula, design, x, h = NULL, FUN = c("F", "big_s"), ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
