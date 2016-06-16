@@ -43,13 +43,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #'
@@ -78,7 +78,7 @@
 svyzenga <- function(formula, design, ...) {
 
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-	
+
 	UseMethod("svyzenga", design)
 
 }
@@ -278,8 +278,8 @@ svyzenga.svyrep.design <- function(formula, design, na.rm=FALSE, ...) {
     x <- x[ ordx ]
     weights <- weights[ ordx ]
 
-    z_1 <- ( sum(weights*x)/(sum(weights) * x[1] ) - 1) * log( sum(weights*x)/(sum(weights*x) - Y_fn(x,weights,0,big_t)[1]) )
-    z_n <- (1 - sum(weights*x)/(sum(weights)*x[length(x)])) * log(D_fn(x,weights,0,big_t)[length(x)]/D_fn(x,weights,1,big_t)[length(x)])
+    z_1 <- ( sum(weights*x)/(sum(weights) * x[1] ) - 1) * log( sum(weights*x)/(sum(weights*x) - Y_fn(x,weights,0,TRUE)[1]) )
+    z_n <- (1 - sum(weights*x)/(sum(weights)*x[length(x)])) * log(D_fn(x,weights,0,TRUE)[length(x)]/D_fn(x,weights,1,TRUE)[length(x)])
     z <- (A_fn(x,weights)/(sum(weights*x)+A_fn(x,weights))) * log(D_fn(x,weights)/D_fn(x,weights,1)) +
       ( sum(weights * x)/(sum(weights) * x) - sum(weights*x)/(sum(weights*x)+A_fn(x,weights) ) ) *
       log( (sum(weights * x) - Y_fn(x,weights,1))/(sum(weights * x) - Y_fn(x,weights,0)) )
