@@ -18,7 +18,7 @@
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{\link{arpt}}
+#' @seealso \code{\link{svyarpt}}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
 #' of poverty and inequality. \emph{Journal of the European Survey Research

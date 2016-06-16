@@ -78,7 +78,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "big_s"), na.rm=F
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{\link{arpr}}
+#' @seealso \code{\link{svyarpr}}
 #'
 #' @references Guillaume Osier (2009). Variance estimation for complex indicators
 #'of poverty and inequality. \emph{Journal of the European Survey Research
