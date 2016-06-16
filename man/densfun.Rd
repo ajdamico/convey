@@ -4,7 +4,7 @@
 \alias{densfun}
 \title{Estimate the derivative of the cdf function using kernel estimator}
 \usage{
-densfun(formula, design, x, h = NULL, fun = c("F", "big_s"),
+densfun(formula, design, x, h = NULL, FUN = c("F", "big_s"),
   na.rm = FALSE, ...)
 }
 \arguments{
@@ -16,8 +16,9 @@ densfun(formula, design, x, h = NULL, fun = c("F", "big_s"),
 
 \item{h}{value of the bandwidth based on the whole sample}
 
-\item{if}{\code{F} estimates the derivative of the cdf function; if \code{big_s} estimates
-the derivative of total in the tails of the distribution}
+\item{FUN}{if \code{F} estimates the derivative of the cdf function; if \code{big_s} estimates the derivative of total in the tails of the distribution}
+
+\item{...}{future expansion}
 }
 \value{
 the value of the derivative at \code{x}
@@ -31,10 +32,11 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep( des_eusilc )
-densfun (~eqincome, design=des_eusilc, 10000, fun="F" )
+densfun (~eqincome, design=des_eusilc, 10000, FUN="F" )
 # linearized design using a variable with missings
-densfun ( ~ py010n , design = des_eusilc, 10000, fun="F" )
-densfun ( ~ py010n , design = des_eusilc , 10000,fun="F", na.rm = TRUE )
+densfun ( ~ py010n , design = des_eusilc, 10000, FUN="F" )
+densfun ( ~ py010n , design = des_eusilc , 10000,FUN="F", na.rm = TRUE )
+
 }
 \author{
 Djalma Pessoa and Anthony Damico

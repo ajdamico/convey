@@ -21,30 +21,34 @@ h_fun <- function(incvar, w) {
 #'
 #'computes the derivative of a function in a point using kernel estimation
 #'
-#'@param formula a formula specifying the income variable
-#'@param design a design object of class \code{survey.design} from the \code{survey} library.
-#'@param x the point where the derivative is calculated
-#'@param h value of the bandwidth based on the whole sample
-#'@param if \code{F} estimates the derivative of the cdf function; if \code{big_s} estimates
-#'the derivative of total in the tails of the distribution
-#'@return the value of the derivative at \code{x}
-#'@author Djalma Pessoa and Anthony Damico
-#'@keywords survey
+#' @param formula a formula specifying the income variable
+#' @param design a design object of class \code{survey.design} from the \code{survey} library.
+#' @param x the point where the derivative is calculated
+#' @param h value of the bandwidth based on the whole sample
+#' @param FUN if \code{F} estimates the derivative of the cdf function; if \code{big_s} estimates the derivative of total in the tails of the distribution
+#' @param ... future expansion
+#'
+#' @return the value of the derivative at \code{x}
+#'
+#' @author Djalma Pessoa and Anthony Damico
+#'
+#' @keywords survey
 #' @examples
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 #' des_eusilc <- convey_prep( des_eusilc )
-#' densfun (~eqincome, design=des_eusilc, 10000, fun="F" )
+#' densfun (~eqincome, design=des_eusilc, 10000, FUN="F" )
 #' # linearized design using a variable with missings
-#' densfun ( ~ py010n , design = des_eusilc, 10000, fun="F" )
-#' densfun ( ~ py010n , design = des_eusilc , 10000,fun="F", na.rm = TRUE )
-#'@export
+#' densfun ( ~ py010n , design = des_eusilc, 10000, FUN="F" )
+#' densfun ( ~ py010n , design = des_eusilc , 10000,FUN="F", na.rm = TRUE )
+#'
+#' @export
 
-densfun <- function(formula, design, x, h = NULL, fun = c("F", "big_s"), na.rm=FALSE, ...) {
+densfun <- function(formula, design, x, h = NULL, FUN = c("F", "big_s"), na.rm=FALSE, ...) {
 
-	if( !( fun %in% c( "F" , "big_s" ) ) ) stop( "valid choices for `fun=` are 'F' and 'big_s'" )
+	if( !( FUN %in% c( "F" , "big_s" ) ) ) stop( "valid choices for `FUN=` are 'F' and 'big_s'" )
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   if(na.rm){
@@ -59,7 +63,7 @@ densfun <- function(formula, design, x, h = NULL, fun = c("F", "big_s"), na.rm=F
   if(is.null(h)) h <- h_fun(incvar,w)
   u <- (x - incvar)/h
   vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
-  if (fun == "F")
+  if (FUN == "F")
     res <- sum(vectf * w)/(N * h) else {
       v <- w * incvar
       res <- sum(vectf * v)/h
