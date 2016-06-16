@@ -72,13 +72,13 @@ densfun <- function(formula, design, x, h = NULL, FUN = c("F", "big_s"), na.rm=F
   res
 }
 
-#' Linearization of the cdf function of a variable
+#' Linearization of the cumulative distribution function (cdf) of a variable
 #'
 #' Computes the linearized variable of the cdf function in a point.
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
-#' @param x djalma please fix this
+#' @param x the point where the cdf is calculated
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... future expansion
 #'
