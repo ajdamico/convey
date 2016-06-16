@@ -38,6 +38,8 @@ of abs_thresh; if "relq" it is given by percent times the order quantile; if "re
 \item{na.rm}{Should cases with missing values be dropped?}
 
 \item{thresh}{return the poverty threshold value}
+
+\item{na.rm}{Should cases with missing values be dropped?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.

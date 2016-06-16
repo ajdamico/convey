@@ -27,6 +27,8 @@ svyisq(formula, design, ...)
 \item{alpha}{the order of the quantile}
 
 \item{quantile}{return the upper bound of the lower tail}
+
+\item{na.rm}{Should cases with missing values be dropped?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.

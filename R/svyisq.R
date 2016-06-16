@@ -7,6 +7,7 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param alpha the order of the quantile
 #' @param quantile return the upper bound of the lower tail
+#' @param na.rm Should cases with missing values be dropped?
 #' @param ... future expansion
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.

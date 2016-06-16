@@ -26,6 +26,7 @@ h_fun <- function(incvar, w) {
 #' @param x the point where the derivative is calculated
 #' @param h value of the bandwidth based on the whole sample
 #' @param FUN if \code{F} estimates the derivative of the cdf function; if \code{big_s} estimates the derivative of total in the tails of the distribution
+#' @param na.rm Should cases with missing values be dropped?
 #' @param ... future expansion
 #'
 #' @return the value of the derivative at \code{x}

@@ -18,6 +18,8 @@ densfun(formula, design, x, h = NULL, FUN = c("F", "big_s"),
 
 \item{FUN}{if \code{F} estimates the derivative of the cdf function; if \code{big_s} estimates the derivative of total in the tails of the distribution}
 
+\item{na.rm}{Should cases with missing values be dropped?}
+
 \item{...}{future expansion}
 }
 \value{
