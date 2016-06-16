@@ -132,7 +132,7 @@ svyisq.svyrep.design <-
 
 		compute_isq <-
 			function(x, w, alpha){
-				q_alpha <- computeQuantiles( x = x , w = w , p = alpha )
+				q_alpha <- computeQuantiles( x , w , alpha )
 				c( q_alpha , sum( x * ( x <= q_alpha ) * w ) )
 			}
 

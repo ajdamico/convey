@@ -223,7 +223,7 @@ svygei.svyrep.design <-
 
 		if ( epsilon %in% c(0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
-		rval <- calc.gei( x = incvar, w = ws, epsilon = epsilon)
+		rval <- calc.gei( x = incvar, weights = ws, epsilon = epsilon)
 
 		ww <- weights(design, "analysis")
 
