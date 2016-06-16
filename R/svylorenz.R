@@ -87,12 +87,12 @@
 #' svylorenz( ~eqincome , dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
 #'
 #' # highlithing the difference between the quantile-based curve and the empirical version:
-#' svylorenz( ~eqincome , dbd_eusilc, quantiles = seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
-#' svylorenz( ~eqincome , dbd_eusilc, quantiles = seq(0,1,.5), alpha = .01, add = TRUE )
+#' svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
+#' svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.5), alpha = .01, add = TRUE )
 #' legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 #' # as the number of quantiles increases, the difference between the curves gets smaller
-#' svylorenz( ~eqincome , dbd_eusilc, quantiles = seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
-#' svylorenz( ~eqincome , dbd_eusilc, quantiles = seq(0,1,.01), alpha = .01, add = TRUE )
+#' svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
+#' svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.01), alpha = .01, add = TRUE )
 #' legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 #'
 #' dbRemoveTable( conn , 'eusilc' )
