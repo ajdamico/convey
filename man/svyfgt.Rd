@@ -31,6 +31,8 @@ svyfgt(formula, design, ...)
 \item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
 of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.}
 
+\item{abs_thresh}{poverty threshold value if type_thresh is "abs"}
+
 \item{percent}{the multiple of the the quantile or mean used in the poverty threshold definition}
 
 \item{order}{the quantile order used used in the poverty threshold definition}

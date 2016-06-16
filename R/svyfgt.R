@@ -6,6 +6,7 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
 #' of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.
+#' @param abs_thresh poverty threshold value if type_thresh is "abs"
 #' @param g If 0 estimates the headcount ratio and if 1 the poverty gap index
 #' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
 #' @param order the quantile order used used in the poverty threshold definition
