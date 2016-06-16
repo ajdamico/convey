@@ -1,6 +1,6 @@
-#' Rényi divergence measure
+#' Renyi divergence measure
 #'
-#' Estimate the Rényi divergence measure, a measure of inequality
+#' Estimate the Renyi divergence measure, a measure of inequality
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
@@ -19,7 +19,7 @@
 #' @seealso \code{\link{svygei}}
 #'
 #' @references Matti Langel (2012). Measuring inequality in finite population sampling.
-#' PhD thesis: Université de Neuchâtel,
+#' PhD thesis: Universite de Neuchatel,
 #' URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 #'
 #' @keywords survey
@@ -67,7 +67,7 @@
 #'
 #' svyrenyi( ~eqincome , design = dbd_eusilc, epsilon = .5 )
 #'
-#' # Testing if Rényi and GEI match when epsilon == 1:
+#' # Testing if Renyi and GEI match when epsilon == 1:
 #' svyrenyi( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 #' svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 #'
@@ -139,7 +139,7 @@ svyrenyi.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "rényi divergence measure"
+    attr(rval, "statistic") <- "renyi divergence measure"
     attr(rval,"epsilon")<- epsilon
 
     return(rval)
@@ -161,7 +161,7 @@ svyrenyi.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- "cvystat"
   attr(rval, "var") <- variance
-  attr(rval, "statistic") <- "rényi divergence measure"
+  attr(rval, "statistic") <- "renyi divergence measure"
   attr(rval,"epsilon")<- epsilon
 
   return( rval )
@@ -219,7 +219,7 @@ svyrenyi.svyrep.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- "cvystat"
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "rényi divergence measure"
+    attr(rval, "statistic") <- "renyi divergence measure"
 
     return(rval)
 
@@ -231,7 +231,7 @@ svyrenyi.svyrep.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- "cvystat"
   attr(rval, "var") <- variance
-  attr(rval, "statistic") <- "rényi divergence measure"
+  attr(rval, "statistic") <- "renyi divergence measure"
   attr(rval,"epsilon")<- epsilon
 
   return( rval )

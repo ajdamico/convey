@@ -16,7 +16,7 @@
 #' @seealso \code{\link{svygei}}
 #'
 #' @references Matti Langel (2012). Measuring inequality in finite population sampling.
-#' PhD thesis: Université de Neuchâtel,
+#' PhD thesis: Universite de Neuchatel,
 #' URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 #'
 #' Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy

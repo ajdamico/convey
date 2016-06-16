@@ -5,7 +5,7 @@
 \alias{svyrenyi.DBIsvydesign}
 \alias{svyrenyi.survey.design}
 \alias{svyrenyi.svyrep.design}
-\title{Rényi divergence measure}
+\title{Renyi divergence measure}
 \usage{
 svyrenyi(formula, design, ...)
 
@@ -32,7 +32,7 @@ svyrenyi(formula, design, ...)
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
-Estimate the Rényi divergence measure, a measure of inequality
+Estimate the Renyi divergence measure, a measure of inequality
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
@@ -82,7 +82,7 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 
 svyrenyi( ~eqincome , design = dbd_eusilc, epsilon = .5 )
 
-# Testing if Rényi and GEI match when epsilon == 1:
+# Testing if Renyi and GEI match when epsilon == 1:
 svyrenyi( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 
@@ -94,7 +94,7 @@ Djalma Pessoa, Anthony Damico and Guilherme Jacob
 }
 \references{
 Matti Langel (2012). Measuring inequality in finite population sampling.
-PhD thesis: Université de Neuchâtel,
+PhD thesis: Universite de Neuchatel,
 URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 }
 \seealso{
