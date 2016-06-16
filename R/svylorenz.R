@@ -24,7 +24,7 @@
 #' @return Object of class "\code{svyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
 #' and a "\code{SE}" attribute giving the standard errors of the estimates.
 #'
-#' @author Djalma Pessoa, Anthony Damico and Guilherme Jacob.
+#' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
 #' @seealso \code{\link{survey::svyquantile}}
 #'

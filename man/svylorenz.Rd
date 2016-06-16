@@ -117,7 +117,7 @@ dbRemoveTable( conn , 'eusilc' )
 
 }
 \author{
-Djalma Pessoa, Anthony Damico and Guilherme Jacob.
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
 }
 \references{
 Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income

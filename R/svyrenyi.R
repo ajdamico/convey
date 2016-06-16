@@ -14,7 +14,7 @@
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
-#' @author Djalma Pessoa, Anthony Damico and Guilherme Jacob
+#' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
 #' @seealso \code{\link{svygei}}
 #'

@@ -90,7 +90,7 @@ dbRemoveTable( conn , 'eusilc' )
 
 }
 \author{
-Djalma Pessoa, Anthony Damico and Guilherme Jacob
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
 }
 \references{
 Matti Langel (2012). Measuring inequality in finite population sampling.
