@@ -58,7 +58,16 @@
 #' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
 #' dbWriteTable( conn , 'eusilc' , eusilc )
 #'
-#' dbd_eusilc <- svydesign(ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data="eusilc", dbname=dbfolder, dbtype="MonetDBLite")
+#' dbd_eusilc <-
+#' 	svydesign(
+#' 		ids = ~rb030 ,
+#' 		strata = ~db040 , 
+#' 		weights = ~rb050 ,
+#' 		data="eusilc",
+#' 		dbname=dbfolder,
+#' 		dbtype="MonetDBLite"
+#' 	)
+#' 
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyarpr( ~ eqincome , design = dbd_eusilc )
