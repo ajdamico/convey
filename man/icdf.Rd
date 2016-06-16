@@ -11,6 +11,10 @@ icdf(formula, design, x, na.rm = FALSE, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{x}{djalma please fix this}
+
+\item{na.rm}{Should cases with missing values be dropped?}
+
 \item{...}{future expansion}
 }
 \value{
