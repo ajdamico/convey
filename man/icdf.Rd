@@ -2,7 +2,7 @@
 % Please edit documentation in R/all_funs.R
 \name{icdf}
 \alias{icdf}
-\title{Linearization of the cdf function of a variable}
+\title{Linearization of the cumulative distribution function (cdf) of a variable}
 \usage{
 icdf(formula, design, x, na.rm = FALSE, ...)
 }
@@ -11,7 +11,7 @@ icdf(formula, design, x, na.rm = FALSE, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
-\item{x}{djalma please fix this}
+\item{x}{the point where the cdf is calculated}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 

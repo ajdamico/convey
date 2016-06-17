@@ -10,7 +10,6 @@
 #' @param g If 0 estimates the headcount ratio and if 1 the poverty gap index
 #' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
 #' @param order the quantile order used used in the poverty threshold definition
-#' @param na.rm Should cases with missing values be dropped?
 #' @param thresh return the poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... passed to \code{svyarpr} and \code{svyarpt}

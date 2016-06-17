@@ -26,7 +26,7 @@
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{\link{survey::svyquantile}}
+#' @seealso \code{\link{svyquantile}}
 #'
 #' @references Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 #' Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
@@ -47,22 +47,22 @@
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
-#' svylorenz( ~eqincome , des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#' svylorenz( ~eqincome , des_eusilc, seq(0,1,.05), alpha = .01 )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
-#' svylorenz( ~eqincome , des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
+#' svylorenz( ~eqincome , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
 #'
 #'
 #' # linearized design using a variable with missings
-#' svylorenz( ~py010n , des_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
-#' svylorenz( ~py010n , des_eusilc, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
+#' svylorenz( ~py010n , des_eusilc, seq(0,1,.05), alpha = .01 )
+#' svylorenz( ~py010n , des_eusilc, seq(0,1,.05), alpha = .01, na.rm = TRUE )
 #' # demonstration of `curve.col=` and `add=` parameters
-#' svylorenz( ~eqincome , des_eusilc, quantiles = seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
+#' svylorenz( ~eqincome , des_eusilc, seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
 #' # replicate-weighted design using a variable with missings
-#' svylorenz( ~py010n , des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01 )
-#' svylorenz( ~py010n , des_eusilc_rep, quantiles = seq(0,1,.05), alpha = .01, na.rm = TRUE )
+#' svylorenz( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
+#' svylorenz( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01, na.rm = TRUE )
 #'
 #'
 #' # database-backed design
@@ -84,7 +84,7 @@
 #' 
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
-#' svylorenz( ~eqincome , dbd_eusilc, quantiles = seq(0,1,.05), alpha = .01 )
+#' svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.05), alpha = .01 )
 #'
 #' # highlithing the difference between the quantile-based curve and the empirical version:
 #' svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )

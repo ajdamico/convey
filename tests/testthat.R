@@ -1,5 +1,5 @@
 library(testthat)
-library(convey)
+library(survey)
 library(vardpoor)
 library(IC2)
 
