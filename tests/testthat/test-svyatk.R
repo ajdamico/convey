@@ -1,4 +1,6 @@
 context("Atk output")
+library(IC2)
+library(vardpoor)
 data(eusilc)
 dati = data.frame(1:nrow(eusilc), eusilc)
 colnames(dati)[1] <- "IDd"
