@@ -43,6 +43,7 @@
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
+#'
 #' svypoormed( ~eqincome , design = des_eusilc_rep )
 #'
 #' # linearized design using a variable with missings

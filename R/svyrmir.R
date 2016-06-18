@@ -43,11 +43,13 @@
 #'
 #' # linearized design
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
+#' des_eusilc <- convey_prep(des_eusilc)
 #'
 #' svyrmir( ~eqincome , design = des_eusilc , age = ~age, med_old = TRUE )
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- convey_pre(des_eusilc_rep)
 #' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, med_old = TRUE )
 #'
 #' # linearized design using a variable with missings

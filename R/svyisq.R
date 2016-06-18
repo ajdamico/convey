@@ -12,6 +12,8 @@
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
+#' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+#'
 #' @author Djalma Pessoa and Anthony Damico
 #'
 #' @seealso \code{\link{svyarpr}}
@@ -32,9 +34,13 @@
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+#' des_eusilc <- convey_prep(des_eusilc)
 #' svyisq(~eqincome, design=des_eusilc,.20 , quantile = TRUE)
+#'
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- convey_prep(des_eusilc_rep)
+#'
 #' svyisq( ~eqincome , design = des_eusilc_rep, .20 , quantile = TRUE )
 #' # linearized design using a variable with missings
 #' svyisq( ~ py010n , design = des_eusilc, .20 )

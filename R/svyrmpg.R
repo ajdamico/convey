@@ -45,6 +45,7 @@
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
+#'
 #' svyrmpg( ~eqincome , design = des_eusilc_rep, thresh = TRUE )
 #'
 #'
@@ -79,8 +80,8 @@
 #' dbRemoveTable( conn , 'eusilc' )
 #'
 #' @export
-	svyrmpg <-
-		function(formula, design, ...) {
+svyrmpg <-
+	function(formula, design, ...) {
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 

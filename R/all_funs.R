@@ -223,13 +223,16 @@ coef.cvystat <- function(object, ...) {
 
 #' prepare svydesign and svyrep.design objects for the convey package
 #'
-#' stores the full survey design (needed for convey functions) within the design
+#' stores the full survey design (needed for convey functions) within the design.  this function must be run immediately after the full design object creation with \code{svydesign} or \code{svrepdesign}
 #'
 #' @param design a survey design object of the library survey.
-#' @return design the same survey object, preparred for all convey package functions.
+#' 
+#' @return the same survey object with a \code{full_design} attribute as the storage space for the unsubsetted survey design
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
+#' @details some of the functions in the convey package require the complete (pre-subsetted) design in order to calculate variances correctly.  this function stores the full design object as a separate attribute so that functions from the \code{survey} package such as \code{subset} and \code{svyby} do not disrupt the calculation of error terms.
+#' 
 #' @keywords survey
 #'
 #' @examples
