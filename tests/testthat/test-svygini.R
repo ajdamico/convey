@@ -40,13 +40,5 @@ convsed<- SE(fun_ginid)
 
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest[1],100*convest)
-  
-  # currently fails
-  # expect_equal(varse, 100*convse)
-  
   expect_equal(vardestd, 100*convestd)
-
-  # currently fails
-  # expect_equal(varsed, 100*convsed )
-
 })
