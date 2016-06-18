@@ -202,7 +202,7 @@ svyfgt.survey.design <-
 
       if( g == 0 ){
 
-        Fprime <- densfun(formula=formula, design = design, x= th, fun = "F", na.rm = na.rm )
+        Fprime <- densfun(formula=formula, design = design, x= th, FUN = "F", na.rm = na.rm )
         fgtlin<- (h(incvar,th,g)-rval + Fprime*(incvar-th))/N
 
       } else fgtlin <-( h( incvar , th , g ) - rval + ( ( percent * incvar ) - th ) * ahat ) / N

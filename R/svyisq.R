@@ -105,8 +105,8 @@ svyisq.survey.design <-
 		q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm)
 		q_alpha <- as.vector(q_alpha)
 
-		Fprime0 <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
-		Fprime1 <- densfun(formula = formula, design = design, q_alpha, fun = "big_s", na.rm = na.rm)
+		Fprime0 <- densfun(formula = formula, design = design, q_alpha, h=h, FUN = "F", na.rm=na.rm)
+		Fprime1 <- densfun(formula = formula, design = design, q_alpha, FUN = "big_s", na.rm = na.rm)
 
 		rval <- sum((incvar<=q_alpha)*incvar * w)
 

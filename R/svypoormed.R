@@ -146,7 +146,7 @@ svypoormed.survey.design <-
 			
 			ARPR <- svyarpr(formula=formula, design= design, order, percent, na.rm = na.rm)
 			
-			Fprimemedp <- densfun(formula = formula, design = design, medp, h = htot, fun = "F", na.rm = na.rm)
+			Fprimemedp <- densfun(formula = formula, design = design, medp, h = htot, FUN = "F", na.rm = na.rm)
 			
 			arpr <- coef(ARPR)
 			ifarpr <- attr(ARPR, "lin")

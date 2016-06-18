@@ -128,7 +128,7 @@ svyarpt.survey.design <-
 		method = "constant", na.rm = na.rm)
 		q_alpha <- as.vector(q_alpha)
 		rval <- percent * q_alpha
-		Fprime <- densfun(formula = formula, design = design, q_alpha, h=htot, fun = "F", na.rm=na.rm)
+		Fprime <- densfun(formula = formula, design = design, q_alpha, h=htot, FUN = "F", na.rm=na.rm)
 		N <- sum(w)
 		ID <- rep(1, length(incvec))*(ncom %in% ind)
 		linquant<- -(1/(N * Fprime)) * ID*((incvec <= q_alpha) - order)

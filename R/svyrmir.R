@@ -126,7 +126,7 @@ svyrmir.survey.design  <-
 		q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm)
 		q_alpha1 <- as.vector(q_alpha1)
 
-		Fprime <- densfun(formula = formula, design = design, q_alpha1, h=h, fun = "F", na.rm=na.rm)
+		Fprime <- densfun(formula = formula, design = design, q_alpha1, h=h, FUN = "F", na.rm=na.rm)
 
 		linquant1 <- -( 1 / ( N * Fprime ) ) * ( ( incvar <= q_alpha1 ) - order )
 		dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
@@ -134,7 +134,7 @@ svyrmir.survey.design  <-
 		q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm)
 		q_alpha2 <- as.vector(q_alpha2)
 
-		Fprime <- densfun(formula = formula, design = design, q_alpha2, h=h, fun = "F", na.rm=na.rm)
+		Fprime <- densfun(formula = formula, design = design, q_alpha2, h=h, FUN = "F", na.rm=na.rm)
 
 		linquant2 <- -( 1 / ( N * Fprime ) ) * ( ( incvar <= q_alpha2 ) - order )
 		# linearize ratio of medians

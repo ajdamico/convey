@@ -112,7 +112,7 @@ svyiqalpha.survey.design <-
 
 		h <- h_fun(incvar, w)
 
-		Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, fun = "F", na.rm=na.rm)
+		Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, FUN = "F", na.rm=na.rm)
 
 		iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
 

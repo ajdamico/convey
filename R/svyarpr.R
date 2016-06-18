@@ -135,7 +135,7 @@ svyarpr.survey.design <-
 		arpr1lin <- ( 1 / N ) * ID * ( ( incvec <= arptv ) - rval )
 
 		# use h for the whole sample
-		Fprime <- densfun(formula = formula, design = design, arptv, h=htot, fun = "F", na.rm=na.rm)
+		Fprime <- densfun(formula = formula, design = design, arptv, h=htot, FUN = "F", na.rm=na.rm)
 
 		arprlin <- arpr1lin + Fprime * arptlin
 
