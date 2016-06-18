@@ -47,7 +47,7 @@ h_fun <- function(incvar, w) {
 #'
 #' @export
 
-densfun <- function(formula, design, x, h = NULL, FUN = c("F", "big_s"), na.rm=FALSE, ...) {
+densfun <- function(formula, design, x, h = NULL, FUN = "F" , na.rm=FALSE, ...) {
 
 	if( !( FUN %in% c( "F" , "big_s" ) ) ) stop( "valid choices for `FUN=` are 'F' and 'big_s'" )
 
@@ -151,6 +151,22 @@ computeQuantiles <- function(xx, w, p = quantiles) {
         yright = max(xx), ties = min)
     cdf(p)
 }
+
+# checkConnection from the survey library v3.30-3
+# written by Thomas Lumley and copied here under the same GPL-3 license
+checkConnection <- 
+	function (dbconnection, error = TRUE) {
+		
+		if (is(dbconnection, "DBIConnection")) {
+			if (!dbIsValid(dbconnection)) 
+				if (error) 
+					stop("Database connection is closed")
+				else return(FALSE)
+		} else {
+		
+		}
+		invisible(TRUE)
+	}
 
 # getvars from the survey library v3.30-3
 # written by Thomas Lumley and copied here under the same GPL-3 license
