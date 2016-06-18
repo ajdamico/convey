@@ -128,9 +128,9 @@ svyfgt <-
 svyfgt.survey.design <-
   function(formula, design, g, type_thresh="abs",  abs_thresh=NULL, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE, ...){
 
-    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+	if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
@@ -240,9 +240,9 @@ svyfgt.survey.design <-
 svyfgt.svyrep.design <-
 	function(formula, design, g, type_thresh="abs", abs_thresh=NULL, percent = .60, order = .50, na.rm = FALSE, thresh = FALSE,...) {
 
-		if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
-
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+
+		if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
 
 		# if the class of the full_design attribute is just a TRUE, then the design is
 		# already the full design.  otherwise, pull the full_design from that attribute.

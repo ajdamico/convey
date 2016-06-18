@@ -97,6 +97,8 @@ svyrmir <-
 svyrmir.survey.design  <-
 	function(formula, design, age, agelim = 65, order=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
 
+		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 		agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
 		x <- cbind(incvar,agevar)
@@ -162,6 +164,8 @@ svyrmir.survey.design  <-
 #' @export
 svyrmir.svyrep.design <-
 	function(formula, design, age, agelim = 65, order = 0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...) {
+
+		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
 		df <- model.frame(design)
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]

@@ -95,6 +95,8 @@ svyqsr <-
 svyqsr.survey.design <-
 	function(formula, design, alpha = 0.2, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
+		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
 		if(na.rm){

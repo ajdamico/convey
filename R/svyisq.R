@@ -87,6 +87,8 @@ svyisq <-
 svyisq.survey.design <-
 	function(formula, design, alpha, quantile = FALSE, na.rm = FALSE,...) {
 
+		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
 		if(na.rm){
@@ -128,6 +130,8 @@ svyisq.survey.design <-
 #' @export
 svyisq.svyrep.design <-
 	function(formula, design, alpha,quantile = FALSE, na.rm = FALSE,...){
+
+		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 

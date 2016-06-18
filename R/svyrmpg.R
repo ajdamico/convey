@@ -154,8 +154,7 @@ svyrmpg.survey.design <-
 svyrmpg.svyrep.design <-
 	function(formula, design, order = 0.5, percent = 0.6,na.rm=FALSE, thresh = FALSE, poor_median = FALSE, ...) {
 
-		if (is.null(attr(design, "full_design")))
-		stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
 		# if the class of the full_design attribute is just a TRUE, then the design is
 		# already the full design.  otherwise, pull the full_design from that attribute.
