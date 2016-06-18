@@ -49,7 +49,8 @@
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
-#' des_eusilc_rep <- convey_pre(des_eusilc_rep)
+#' des_eusilc_rep <- convey_prep(des_eusilc_rep)
+#'
 #' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, med_old = TRUE )
 #'
 #' # linearized design using a variable with missings

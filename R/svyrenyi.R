@@ -37,6 +37,7 @@
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- convey_prep(des_eusilc_rep)
 #'
 #' svyrenyi( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
 #'
