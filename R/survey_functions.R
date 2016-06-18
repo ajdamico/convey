@@ -6,7 +6,7 @@
 # these functions were copied following the direction in this thread:
 # https://stat.ethz.ch/pipermail/r-devel/2013-August/thread.html#67180
 
-computeQuantiles <- function(xx, w, p = quantiles) {
+computeQuantiles <- function(xx, w, p) {
     if (any(is.na(xx)))
         return(NA * p)
 
@@ -54,7 +54,7 @@ getvars <- function (formula, dbconnection, tables, db.only = TRUE, updates = NU
     else {
         query <- sub("@tab@", tables, "select * from @tab@ limit 1")
         if (is(dbconnection, "DBIConnection")) 
-            oneline <- dbGetQuery(dbconnection, query)
+            oneline <- DBI::dbGetQuery(dbconnection, query)
         else oneline <- RODBC::sqlQuery(dbconnection, query)
         in.db <- infilter$varlist[infilter$varlist %in% names(oneline)]
     }

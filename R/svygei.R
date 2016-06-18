@@ -159,7 +159,7 @@ svygei.survey.design <-
 				
 			v[w == 0] <- 0
 			
-			variance <- svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+			variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 			
 		} else if ( epsilon == 1) {
 
@@ -170,7 +170,7 @@ svygei.survey.design <-
 				
 			v[w == 0] <- 0
 			
-			variance <- svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+			variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 			
 		} else {
 
