@@ -98,6 +98,10 @@
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
+#' @importFrom grDevices adjustcolor
+#' @importFrom graphics abline lines plot points polygon
+#' @importFrom utils tail
+#'
 #' @export
 svylorenz <- function(formula, design, ...) {
 

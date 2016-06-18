@@ -1,3 +1,5 @@
+#' @importFrom stats approxfun coef deriv model.frame model.matrix na.pass printCoefmat qnorm terms terms.formula update weights
+
 # each of the functions below are from the survey library v3.30-3
 # written by Thomas Lumley and copied here under the same GPL-3 license
 # these functions were copied following the direction in this thread:
@@ -77,6 +79,4 @@ model.frame.survey.design<-function(formula,...,drop=TRUE){
 model.frame.svyrep.design<-function(formula,...){
   formula$variables
 }
-model.frame.survey.design2<-function(formula,...){
-  formula$variables
-}
+
