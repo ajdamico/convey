@@ -180,7 +180,7 @@ svyisq.DBIsvydesign <-
 			full_design <- attr( design , "full_design" )
 
 			full_design$variables <-
-				survey:::getvars(
+				getvars(
 					formula,
 					attr( design , "full_design" )$db$connection,
 					attr( design , "full_design" )$db$tablename,
@@ -195,7 +195,7 @@ svyisq.DBIsvydesign <-
 		}
 
 		design$variables <-
-			survey:::getvars(
+			getvars(
 				formula,
 				design$db$connection,
 				design$db$tablename,

@@ -224,9 +224,9 @@ svygpg.DBIsvydesign <-
 
 			full_design$variables <-
 				cbind(
-					survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
+					getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-					survey:::getvars(sex, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+					getvars(sex, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 				)
 
 			attr( design , "full_design" ) <- full_design
@@ -237,9 +237,9 @@ svygpg.DBIsvydesign <-
 
 		design$variables <-
 			cbind(
-				survey:::getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
+				getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-				survey:::getvars(sex, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+				getvars(sex, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
 			)
 
 		NextMethod("svygpg", design)

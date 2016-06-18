@@ -254,7 +254,7 @@ svyrenyi.DBIsvydesign <-
 
       full_design <- attr( design , "full_design" )
 
-      full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+      full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
                                                 updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 
       attr( design , "full_design" ) <- full_design
@@ -263,7 +263,7 @@ svyrenyi.DBIsvydesign <-
 
     }
 
-    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
+    design$variables <- getvars(formula, design$db$connection, design$db$tablename,
                                          updates = design$updates, subset = design$subset)
 
     NextMethod("svyrenyi", design)
