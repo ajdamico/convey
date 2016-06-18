@@ -129,7 +129,7 @@ svylorenzplot_wrap <-
   }
 
 svylorenzlines_wrap <-
-  function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = curve.col , ... ){
+  function( x = x , y = y , pch = 16 , cex = 0.1 , lwd = 1 , col = col , ... ){
     lines( x , y , xlim = c( 0 , 1 ) , ylim = c( 0 , 1 ) , pch = pch , cex = cex , lwd = lwd , col = col , ... )
   }
 

@@ -22,6 +22,7 @@ Suggests:
 	IC2,
 	vardpoor,
 	DBI,
-	MonetDBLite
+	MonetDBLite,
+	RODBC
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
