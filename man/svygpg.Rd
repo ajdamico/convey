@@ -41,11 +41,14 @@ library(survey)
 data(ses)
 names( ses ) <- tolower( names( ses ) )
 des_ses <- svydesign(id=~1, weights=~weights, data=ses)
+des_ses <- convey_prep(des_ses)
 
 # linearized design
 svygpg(~earningshour, des_ses, ~sex)
 # replicate-weighted design
 des_ses_rep <-  as.svrepdesign( des_ses , type = "bootstrap" )
+des_ses_rep <- convey_prep(des_ses_rep)
+
 svygpg(~earningshour, des_ses_rep, ~sex)
 
 # database-backed design

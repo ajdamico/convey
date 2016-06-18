@@ -70,6 +70,7 @@ svylorenz( ~eqincome , des_eusilc, seq(0,1,.05), alpha = .01 )
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
+
 svylorenz( ~eqincome , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
 
 

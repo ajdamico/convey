@@ -57,6 +57,7 @@ svyrmpg( ~eqincome , design = des_eusilc, thresh = TRUE )
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
+
 svyrmpg( ~eqincome , design = des_eusilc_rep, thresh = TRUE )
 
 

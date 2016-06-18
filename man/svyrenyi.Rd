@@ -47,10 +47,12 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep(des_eusilc)
+
 svyrenyi( ~eqincome , design = des_eusilc, epsilon = .5 )
 
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+
 svyrenyi( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
 
 # linearized design using a variable with missings

@@ -61,6 +61,7 @@ svyqsr( ~eqincome , design = des_eusilc, upper_tot = TRUE, lower_tot = TRUE )
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
+
 svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
 
 # linearized design using a variable with missings

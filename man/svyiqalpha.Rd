@@ -32,6 +32,9 @@ Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribut
 \description{
 Computes the linearized variable of a quantile of variable.
 }
+\details{
+you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+}
 \examples{
 
 library(vardpoor)
@@ -39,11 +42,13 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
+des_eusilc <- convey_prep(des_eusilc)
 
 svyiqalpha( ~eqincome , design = des_eusilc, .50 )
 
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyiqalpha( ~eqincome , design = des_eusilc_rep, .50 )
 
