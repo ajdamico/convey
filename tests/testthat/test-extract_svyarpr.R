@@ -15,6 +15,8 @@ b1 <- svyarpr(~eqincome, design = des_eusilc_rep, 0.5, 0.6)
 
 b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 
+rel_error1 <- abs(SE(a1)-SE(b1))/SE(a1)
+rel_error2 <- max(abs(SE(a2)-SE(b2))/SE(a2))
 
 test_that("output svyarpr",{
   expect_is(coef(a1),"numeric")
@@ -23,6 +25,8 @@ test_that("output svyarpr",{
   expect_is(coef(b2),"numeric")
   expect_equal(coef(a1), coef(b1))
   expect_equal(coef(a2), coef(b2))
+  expect_lte(rel_error1,.1)
+  expect_lte(rel_error1,.2)
   expect_is(SE(a1),"numeric")
   expect_is(SE(a2), "numeric")
   expect_is(SE(b1),"numeric")
