@@ -16,13 +16,6 @@ Imports:
 License: GPL-3
 LazyData: true
 Suggests:
-    testthat,
-    knitr,
-    rmarkdown,
-	IC2,
-	vardpoor,
-	DBI,
-	MonetDBLite,
-	RODBC
+	testthat, knitr, rmarkdown, IC2, vardpoor, DBI, MonetDBLite, RODBC
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
