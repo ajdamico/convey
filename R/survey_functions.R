@@ -122,3 +122,4 @@ model.frame.survey.design<-function(formula,...,drop=TRUE){
 model.frame.svyrep.design<-function(formula,...){
   formula$variables
 }
+

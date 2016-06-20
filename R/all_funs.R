@@ -268,6 +268,7 @@ convey_prep <- function(design) {
 }
 
 
+#' @importFrom survey svyby svyby.DBIsvydesign svyby.default svyby.ODBCsvydesign
 #' @export
 svyby.convey.design <-
 	function (formula, by, design, ...){
