@@ -7,6 +7,23 @@ des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = 
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
+ # database-backed design
+library(MonetDBLite)
+library(DBI)
+dbfolder <- tempdir()
+conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <-
+svydesign(
+ids = ~rb030 ,
+strata = ~db040 ,
+weights = ~rb050 ,
+data="eusilc",
+dbname=dbfolder,
+dbtype="MonetDBLite"
+)
+dbd_eusilc <- convey_prep( dbd_eusilc )
 
 a1 <- svyarpr(~eqincome, design = des_eusilc, 0.5, 0.6)
 a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
@@ -14,6 +31,11 @@ a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 
 b1 <- svyarpr(~eqincome, design = des_eusilc_rep, 0.5, 0.6)
 
 b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+
+# c1 <- svyarpr( ~ eqincome , design = dbd_eusilc )
+# c2 <- svyby(~ eqincome, by = ~db040, design = dbd_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+
+dbRemoveTable( conn , 'eusilc' )
 
 rel_error1 <- abs(SE(a1)-SE(b1))/SE(a1)
 rel_error2 <- max(abs(SE(a2)-SE(b2))/SE(a2))
