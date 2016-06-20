@@ -262,5 +262,33 @@ convey_prep <- function(design) {
     # store the full_design's full_design attribute as TRUE
     attr(attr(design, "full_design"), "full_design") <- TRUE
 
+	class( design ) <- c( "convey.design" , class( design ) )
+	
     design
 }
+
+
+svyby.convey.design <-
+	function (formula, by, design, ...){
+	
+		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+			full_design <- attr( design , "full_design" )
+
+			full_design$variables <-
+				getvars(
+					formula,
+					attr( design , "full_design" )$db$connection,
+					attr( design , "full_design" )$db$tablename,
+					updates = attr( design , "full_design" )$updates,
+					subset = attr( design , "full_design" )$subset
+				)
+
+			attr( design , "full_design" ) <- full_design
+
+			rm( full_design )
+
+		}
+				
+		NextMethod("svyby", design)
+	}
