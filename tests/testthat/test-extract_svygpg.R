@@ -1,9 +1,9 @@
 context("Gpg output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
-data(ses)
+data(ses) ; names( ses ) <- tolower( names( ses ) )
 des_ses <- svydesign(id=~1, weights=~weights, data=ses,
-  variables=~weights+sex+earningsHour+education)
+variables=~weights+sex+earningshour+education)
 des_ses <- convey_prep(des_ses)
 des_ses_rep <- as.svrepdesign(des_ses, type = "bootstrap")
 des_ses_rep <- convey_prep(des_ses_rep)
@@ -18,17 +18,17 @@ dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfolder, dbtyp
 dbd_ses <- convey_prep( dbd_ses )
 
 
-a1 <- svygpg(~earningsHour, des_ses, ~sex)
+a1 <- svygpg(~earningshour, des_ses, ~sex)
 
-a2 <- svyby(~earningsHour, by = ~education, design = des_ses, FUN = svygpg, sex=~sex, deff = FALSE)
+a2 <- svyby(~earningshour, by = ~education, design = des_ses, FUN = svygpg, sex=~sex, deff = FALSE)
 
-b1 <- svygpg(~earningsHour, design = des_ses_rep, ~sex)
+b1 <- svygpg(~earningshour, design = des_ses_rep, ~sex)
 
-b2 <- svyby(~earningsHour, by = ~education, design = des_ses_rep,
+b2 <- svyby(~earningshour, by = ~education, design = des_ses_rep,
   FUN = svygpg, sex=~sex, deff = FALSE)
 
 c1 <-  svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
-c2 <- svyby(~earningsHour, by = ~education, design = dbd_ses, FUN = svygpg, sex=~sex, deff = FALSE)
+c2 <- svyby(~earningshour, by = ~education, design = dbd_ses, FUN = svygpg, sex=~sex, deff = FALSE)
 
 dbRemoveTable( conn , 'ses' )
 
