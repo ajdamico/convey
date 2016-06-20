@@ -273,7 +273,7 @@ convey_prep <- function(design) {
 svyby.convey.design <-
 	function (formula, by, design, ...){
 	
-		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+		if ( ( "DBIsvydesign" %in% class(design) ) & !( "logical" %in% class(attr(design, "full_design"))) ){
 
 			full_design <- attr( design , "full_design" )
 
@@ -292,5 +292,5 @@ svyby.convey.design <-
 
 		}
 				
-		NextMethod("svyby", design)
+		survey::svyby(formula,by,design,...)
 	}
