@@ -268,6 +268,7 @@ convey_prep <- function(design) {
 }
 
 
+#' @export
 svyby.convey.design <-
 	function (formula, by, design, ...){
 	
