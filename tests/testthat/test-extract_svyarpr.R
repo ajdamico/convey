@@ -32,8 +32,8 @@ b1 <- svyarpr(~eqincome, design = des_eusilc_rep, 0.5, 0.6)
 
 b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 
-# c1 <- svyarpr( ~ eqincome , design = dbd_eusilc )
-# c2 <- svyby(~ eqincome, by = ~db040, design = dbd_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+c1 <- svyarpr( ~ eqincome , design = dbd_eusilc )
+c2 <- svyby(~ eqincome, by = ~db040, design = dbd_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 
 dbRemoveTable( conn , 'eusilc' )
 
@@ -49,6 +49,10 @@ test_that("output svyarpr",{
   expect_equal(coef(a2), coef(b2))
   expect_lte(rel_error1,.1)
   expect_lte(rel_error1,.2)
+  expect_equal(coef(a1), coef(c1))
+  expect_equal(coef(a2), coef(c2))
+  expect_equal(SE(a1), SE(c1))
+  expect_equal(SE(a2), SE(c2))
   expect_is(SE(a1),"numeric")
   expect_is(SE(a2), "numeric")
   expect_is(SE(b1),"numeric")
