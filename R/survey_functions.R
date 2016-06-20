@@ -122,3 +122,5 @@ model.frame.survey.design<-function(formula,...,drop=TRUE){
 model.frame.svyrep.design<-function(formula,...){
   formula$variables
 }
+
+svyby<-function(formula, by, design,...) UseMethod("svyby",design)
