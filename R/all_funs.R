@@ -295,5 +295,5 @@ svyby.convey.design <-
 		# remove the "convey.design" class from the current object
 		class(design) <- class(design)[-1]
 		
-		UseMethod("svyby",design)
+		survey::svyby(formula,by,design,...)
 	}
