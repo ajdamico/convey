@@ -39,7 +39,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 library(vardpoor)
 library(survey)
 data(ses)
-names( ses ) <- tolower( names( ses ) )
+names( ses ) <- gsub( "size" , "size_" , tolower( names( ses ) ) )
 des_ses <- svydesign(id=~1, weights=~weights, data=ses)
 des_ses <- convey_prep(des_ses)
 
