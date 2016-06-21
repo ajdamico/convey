@@ -32,8 +32,8 @@ c2 <- svyby(~earningshour, by = ~education, design = dbd_ses, FUN = svygpg, sex=
 
 dbRemoveTable( conn , 'ses' )
 
-rel_error1 <- abs(SE(a1)-SE(b1))/SE(a1)
-rel_error2 <- max(abs(SE(a2)-SE(b2))/SE(a2))
+# cv_dif1 <- 100*abs(cv(a1)-cv(b1))
+# cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)))
 
 test_that("output svygpg",{
   expect_is(coef(a1),"numeric")
@@ -42,8 +42,8 @@ test_that("output svygpg",{
   expect_is(coef(b2),"numeric")
   expect_equal(coef(a1), coef(b1))
   expect_equal(coef(a2), coef(b2))
-  #expect_lte(rel_error1,.1)
-  #expect_lte(rel_error1,.2)
+  # expect_lte(cv_dif1,5)
+  # expect_lte(cv_diff2,5)
   expect_equal(coef(a1), coef(c1))
   expect_equal(coef(a2), coef(c2))
   expect_equal(SE(a1), SE(c1))
