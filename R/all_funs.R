@@ -277,15 +277,38 @@ svyby.convey.design <-
 
 			full_design <- attr( design , "full_design" )
 
-			full_design$variables <-
-				getvars(
-					formula,
-					attr( design , "full_design" )$db$connection,
-					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates,
-					subset = attr( design , "full_design" )$subset
-				)
-
+			if( 'sex' %in% names( list( ... ) ) ){
+				full_design$variables <-
+					cbind(
+						getvars(
+							formula,
+							attr( design , "full_design" )$db$connection,
+							attr( design , "full_design" )$db$tablename,
+							updates = attr( design , "full_design" )$updates,
+							subset = attr( design , "full_design" )$subset
+						) ,
+						getvars(
+							list( ... )[["sex"]] ,
+							attr( design , "full_design" )$db$connection,
+							attr( design , "full_design" )$db$tablename,
+							updates = attr( design , "full_design" )$updates,
+							subset = attr( design , "full_design" )$subset
+						)
+					)
+			
+			} else {
+			
+				full_design$variables <-
+					getvars(
+						formula,
+						attr( design , "full_design" )$db$connection,
+						attr( design , "full_design" )$db$tablename,
+						updates = attr( design , "full_design" )$updates,
+						subset = attr( design , "full_design" )$subset
+					)
+			
+			}
+			
 			attr( design , "full_design" ) <- full_design
 
 			rm( full_design )
