@@ -54,24 +54,31 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #'
-#' # Variable without missing values
-#' svyzenga(~eqincome, des_eusilc, na.rm = FALSE)
-#' svyzenga(~eqincome, dbd_eusilc, na.rm = FALSE)
-#' svyzenga(~eqincome, des_eusilc_rep, na.rm = FALSE)
+#' # subset all designs to positive income and non-missing records only
+#' des_eusilc_pos_inc <- subset( des_eusilc , eqincome > 0 )
+#' des_eusilc_rep_pos_inc <- subset( des_eusilc_rep , eqincome > 0 )
+#' dbd_eusilc_pos_inc <- subset( dbd_eusilc , eqincome > 0 )
 #'
-#' # Subsetting:
-#' svyzenga(~eqincome, subset( des_eusilc, db040 == "Styria"), na.rm = FALSE)
-#' svyzenga(~eqincome, subset( dbd_eusilc, db040 == "Styria"), na.rm = FALSE)
-#' svyzenga(~eqincome, subset( des_eusilc_rep, db040 == "Styria"), na.rm = FALSE)
 #'
-#' # Variable with missing values and subsetting:
-#' svyzenga(~py010n, subset( des_eusilc, db040 == "Styria"), na.rm = FALSE)
-#' svyzenga(~py010n, subset( dbd_eusilc, db040 == "Styria"), na.rm = FALSE)
-#' svyzenga(~py010n, subset( des_eusilc_rep, db040 == "Styria"), na.rm = FALSE)
+#' # variable without missing values
+#' svyzenga(~eqincome, des_eusilc_pos_inc)
+#' svyzenga(~eqincome, des_eusilc_rep_pos_inc)
+#' svyzenga(~eqincome, dbd_eusilc_pos_inc)
 #'
-#' svyzenga(~py010n, subset( des_eusilc, db040 == "Styria"), na.rm = TRUE)
-#' svyzenga(~py010n, subset( dbd_eusilc, db040 == "Styria"), na.rm = TRUE)
-#' svyzenga(~py010n, subset( des_eusilc_rep, db040 == "Styria"), na.rm = TRUE)
+#' # subsetting:
+#' svyzenga(~eqincome, subset( des_eusilc_pos_inc, db040 == "Styria"))
+#' svyzenga(~eqincome, subset( des_eusilc_rep_pos_inc, db040 == "Styria"))
+#' svyzenga(~eqincome, subset( dbd_eusilc_pos_inc, db040 == "Styria"))
+#'
+#' # variable with with missings (but subsetted to remove negatives)
+#' svyzenga(~py010n, subset( des_eusilc, py010n > 0 | is.na(py010n)) )
+#' svyzenga(~py010n, subset( des_eusilc_rep, py010n > 0 | is.na(py010n)) )
+#' svyzenga(~py010n, subset( dbd_eusilc, py010n > 0 | is.na(py010n)) )
+#'
+#' svyzenga(~py010n, subset( des_eusilc, py010n > 0 | is.na(py010n)), na.rm = TRUE)
+#' svyzenga(~py010n, subset( des_eusilc_rep, py010n > 0 | is.na(py010n)), na.rm = TRUE)
+#' svyzenga(~py010n, subset( dbd_eusilc, py010n > 0 | is.na(py010n)), na.rm = TRUE)
+#'
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
