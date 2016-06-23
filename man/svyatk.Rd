@@ -69,57 +69,52 @@ dbd_eusilc <-
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
-# linearized design
-svyatk( ~eqincome , des_eusilc, epsilon = .5 )
-svyatk( ~eqincome , subset(des_eusilc, eqincome > 0), epsilon = 1 )
-svyatk( ~eqincome , des_eusilc, epsilon = 2 )
+# subset all designs to positive income and non-missing records only
+des_eusilc_pos_inc <- subset( des_eusilc , eqincome > 0 )
+des_eusilc_rep_pos_inc <- subset( des_eusilc_rep , eqincome > 0 )
+dbd_eusilc_pos_inc <- subset( dbd_eusilc , eqincome > 0 )
 
-# database-backed linearized design
-svyatk( ~eqincome , dbd_eusilc, epsilon = .5 )
-svyatk( ~eqincome , subset(dbd_eusilc, eqincome > 0), epsilon = 1 )
-svyatk( ~eqincome , dbd_eusilc, epsilon = 2 )
+# linearized design
+svyatk( ~eqincome , des_eusilc_pos_inc, epsilon = .5 )
+svyatk( ~eqincome , des_eusilc_pos_inc )
+svyatk( ~eqincome , des_eusilc_pos_inc, epsilon = 2 )
 
 # replicate-weighted design
 svyatk( ~eqincome , des_eusilc_rep, epsilon = .5 )
-svyatk( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
+svyatk( ~eqincome , des_eusilc_rep )
 svyatk( ~eqincome , des_eusilc_rep, epsilon = 2 )
+
+# database-backed linearized design
+svyatk( ~eqincome , dbd_eusilc, epsilon = .5 )
+svyatk( ~eqincome , dbd_eusilc )
+svyatk( ~eqincome , dbd_eusilc, epsilon = 2 )
+
 
 # linearized design using a variable with missings
 svyatk( ~py010n , des_eusilc, epsilon = .5 )
-svyatk( ~py010n , des_eusilc, epsilon = .5, na.rm = TRUE )
-svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-svyatk( ~py010n , des_eusilc, epsilon = 2 )
-svyatk( ~py010n , des_eusilc, epsilon = 2, na.rm = TRUE )
-
-# database-backed linearized design using a variable with missings
-svyatk( ~py010n , dbd_eusilc, epsilon = .5 )
-svyatk( ~py010n , dbd_eusilc, epsilon = .5, na.rm = TRUE )
-svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-svyatk( ~py010n , dbd_eusilc, epsilon = 2 )
-svyatk( ~py010n , dbd_eusilc, epsilon = 2, na.rm = TRUE )
+svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
 
 # replicate-weighted design using a variable with missings
 svyatk( ~py010n , des_eusilc_rep, epsilon = .5 )
-svyatk( ~py010n , des_eusilc_rep, epsilon = .5, na.rm = TRUE )
-svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
-svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-svyatk( ~py010n , des_eusilc_rep, epsilon = 2 )
-svyatk( ~py010n , des_eusilc_rep, epsilon = 2, na.rm = TRUE )
+svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 )
+
+# database-backed linearized design using a variable with missings
+svyatk( ~py010n , dbd_eusilc, epsilon = .5 )
+svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
+
 
 # subsetting
-svyatk( ~eqincome , subset(des_eusilc, db040 == "Styria"), epsilon = .5 )
-svyatk( ~eqincome , subset(des_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
-svyatk( ~eqincome , subset(des_eusilc, db040 == "Styria"), epsilon = 2 )
+svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria"), epsilon = .5 )
+svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria") )
+svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria"), epsilon = 2 )
 
-svyatk( ~eqincome , subset(dbd_eusilc, db040 == "Styria"), epsilon = .5 )
-svyatk( ~eqincome , subset(dbd_eusilc, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
-svyatk( ~eqincome , subset(dbd_eusilc, db040 == "Styria"), epsilon = 2 )
+svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria"), epsilon = .5 )
+svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria") )
+svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria"), epsilon = 2 )
 
-svyatk( ~eqincome , subset(des_eusilc_rep, db040 == "Styria"), epsilon = .5 )
-svyatk( ~eqincome , subset(des_eusilc_rep, eqincome > 0 & db040 == "Styria"), epsilon = 1 )
-svyatk( ~eqincome , subset(des_eusilc_rep, db040 == "Styria"), epsilon = 2 )
+svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria"), epsilon = .5 )
+svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria") )
+svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria"), epsilon = 2 )
 
 dbRemoveTable( conn , 'eusilc' )
 
