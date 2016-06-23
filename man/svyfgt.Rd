@@ -94,7 +94,7 @@ svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
-if( .Machine$sizeof.pointer > 4 ){
+\dontrun{
 
 # database-backed design
 library(MonetDBLite)

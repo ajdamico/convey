@@ -63,7 +63,7 @@ svyisq( ~ py010n , design = des_eusilc_rep , .20,  na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
-if( .Machine$sizeof.pointer > 4 ){
+\dontrun{
 
 # database-backed design
 library(MonetDBLite)

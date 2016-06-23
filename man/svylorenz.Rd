@@ -86,7 +86,7 @@ svylorenz( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01, na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
-if( .Machine$sizeof.pointer > 4 ){
+\dontrun{
 
 # database-backed design
 library(MonetDBLite)
