@@ -32,6 +32,7 @@
 #' @keywords survey
 #'
 #' @examples
+#' \dontrun{
 #' library(survey)
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -58,7 +59,6 @@
 #'
 #' # library(MonetDBLite) is only available on 64-bit machines,
 #' # so do not run this block of code in 32-bit R
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
