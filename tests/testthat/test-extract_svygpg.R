@@ -8,15 +8,6 @@ des_ses <- convey_prep(des_ses)
 des_ses_rep <- as.svrepdesign(des_ses, type = "bootstrap")
 des_ses_rep <- convey_prep(des_ses_rep)
 
-# database-backed design
-library(MonetDBLite)
-library(DBI)
-dbfolder <- tempdir()
-conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
-dbWriteTable( conn , 'ses' , ses )
-dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfolder, dbtype="MonetDBLite")
-dbd_ses <- convey_prep( dbd_ses )
-
 
 a1 <- svygpg(~earningshour, des_ses, ~sex)
 
@@ -26,11 +17,6 @@ b1 <- svygpg(~earningshour, design = des_ses_rep, ~sex)
 
 b2 <- svyby(~earningshour, by = ~education, design = des_ses_rep,
   FUN = svygpg, sex=~sex, deff = FALSE)
-
-c1 <-  svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
-c2 <- svyby(~earningshour, by = ~education, design = dbd_ses, FUN = svygpg, sex=~sex, deff = FALSE)
-
-dbRemoveTable( conn , 'ses' )
 
 cv_dif1 <- 100*abs(cv(a1)-cv(b1))
 pos_est <- coef(a2)> 0
@@ -45,10 +31,6 @@ test_that("output svygpg",{
   expect_equal(coef(a2), coef(b2))
   expect_lte(cv_dif1,5)
   expect_lte(cv_diff2,5)
-  expect_equal(coef(a1), coef(c1))
-  expect_equal(coef(a2), coef(c2))
-  expect_equal(SE(a1), SE(c1))
-  expect_equal(SE(a2), SE(c2))
   expect_is(SE(a1),"numeric")
   expect_is(SE(a2), "numeric")
   expect_is(SE(b1),"numeric")
@@ -62,3 +44,36 @@ test_that("output svygpg",{
   expect_equal(sum(confint(b2)[,1]<= coef(b2)),length(coef(b2)))
   expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
 })
+
+
+
+
+
+# library(MonetDBLite) is only available on 64-bit machines,
+# so do not run this block of code in 32-bit R
+if( .Machine$sizeof.pointer > 4 ){
+
+
+
+	# database-backed design
+	library(MonetDBLite)
+	library(DBI)
+	dbfolder <- tempdir()
+	conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+	dbWriteTable( conn , 'ses' , ses )
+	dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfolder, dbtype="MonetDBLite")
+	dbd_ses <- convey_prep( dbd_ses )
+
+	c1 <-  svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
+	c2 <- svyby(~earningshour, by = ~education, design = dbd_ses, FUN = svygpg, sex=~sex, deff = FALSE)
+
+	dbRemoveTable( conn , 'ses' )
+
+	test_that("database svygpg",{
+	  expect_equal(coef(a1), coef(c1))
+	  expect_equal(coef(a2), coef(c2))
+	  expect_equal(SE(a1), SE(c1))
+	  expect_equal(SE(a2), SE(c2))
+	}
+
+}
