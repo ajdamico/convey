@@ -60,6 +60,11 @@ svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
 svyisq( ~ py010n , design = des_eusilc_rep, .20 )
 svyisq( ~ py010n , design = des_eusilc_rep , .20,  na.rm = TRUE )
 
+
+# library(MonetDBLite) is only available on 64-bit machines,
+# so do not run this block of code in 32-bit R
+if( .Machine$sizeof.pointer > 4 ){
+
 # database-backed design
 library(MonetDBLite)
 library(DBI)
@@ -82,6 +87,8 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 svyisq( ~ eqincome , design = dbd_eusilc, .20 )
 
 dbRemoveTable( conn , 'eusilc' )
+
+}
 
 }
 \author{

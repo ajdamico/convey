@@ -39,6 +39,46 @@
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep(des_eusilc_rep)
 #'
+#'
+#' # subset all designs to positive income and non-missing records only
+#' des_eusilc_pos_inc <- subset( des_eusilc , eqincome > 0 )
+#' des_eusilc_rep_pos_inc <- subset( des_eusilc_rep , eqincome > 0 )
+#'
+#'
+#' # linearized design
+#' svyatk( ~eqincome , des_eusilc_pos_inc, epsilon = .5 )
+#' svyatk( ~eqincome , des_eusilc_pos_inc )
+#' svyatk( ~eqincome , des_eusilc_pos_inc, epsilon = 2 )
+#'
+#' # replicate-weighted design
+#' svyatk( ~eqincome , des_eusilc_rep_pos_inc, epsilon = .5 )
+#' svyatk( ~eqincome , des_eusilc_rep_pos_inc )
+#' svyatk( ~eqincome , des_eusilc_rep_pos_inc, epsilon = 2 )
+#'
+#'
+#' # subsetting
+#' svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria") )
+#' svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria"), epsilon = 2 )
+#'
+#' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria"), epsilon = .5 )
+#' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria") )
+#' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria"), epsilon = 2 )
+#'
+#'
+#' # linearized design using a variable with missings (but subsetted to remove negatives)
+#' svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
+#' svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 , na.rm=TRUE )
+#'
+#' # replicate-weighted design using a variable with missings (but subsetted to remove negatives)
+#' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 )
+#' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 , na.rm=TRUE )
+#'
+#'
+#' # library(MonetDBLite) is only available on 64-bit machines,
+#' # so do not run this block of code in 32-bit R
+#' if( .Machine$sizeof.pointer > 4 ){
+#'
 #' # database-backed design
 #' library(MonetDBLite)
 #' library(DBI)
@@ -60,48 +100,17 @@
 #'
 #'
 #' # subset all designs to positive income and non-missing records only
-#' des_eusilc_pos_inc <- subset( des_eusilc , eqincome > 0 )
-#' des_eusilc_rep_pos_inc <- subset( des_eusilc_rep , eqincome > 0 )
 #' dbd_eusilc_pos_inc <- subset( dbd_eusilc , eqincome > 0 )
 #'
-#'
-#' # linearized design
-#' svyatk( ~eqincome , des_eusilc_pos_inc, epsilon = .5 )
-#' svyatk( ~eqincome , des_eusilc_pos_inc )
-#' svyatk( ~eqincome , des_eusilc_pos_inc, epsilon = 2 )
-#'
-#' # replicate-weighted design
-#' svyatk( ~eqincome , des_eusilc_rep_pos_inc, epsilon = .5 )
-#' svyatk( ~eqincome , des_eusilc_rep_pos_inc )
-#' svyatk( ~eqincome , des_eusilc_rep_pos_inc, epsilon = 2 )
 #'
 #' # database-backed linearized design
 #' svyatk( ~eqincome , dbd_eusilc_pos_inc, epsilon = .5 )
 #' svyatk( ~eqincome , dbd_eusilc_pos_inc )
 #' svyatk( ~eqincome , dbd_eusilc_pos_inc, epsilon = 2 )
 #'
-#'
-#' # subsetting
-#' svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria"), epsilon = .5 )
-#' svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria") )
-#' svyatk( ~eqincome , subset(des_eusilc_pos_inc, db040 == "Styria"), epsilon = 2 )
-#'
-#' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria"), epsilon = .5 )
-#' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria") )
-#' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria"), epsilon = 2 )
-#'
 #' svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria"), epsilon = .5 )
 #' svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria") )
 #' svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria"), epsilon = 2 )
-#'
-#'
-#' # linearized design using a variable with missings (but subsetted to remove negatives)
-#' svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
-#' svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 , na.rm=TRUE )
-#'
-#' # replicate-weighted design using a variable with missings (but subsetted to remove negatives)
-#' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 )
-#' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 , na.rm=TRUE )
 #'
 #' # database-backed linearized design using a variable with missings (but subsetted to remove negatives)
 #' svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
@@ -109,6 +118,8 @@
 #'
 #'
 #' dbRemoveTable( conn , 'eusilc' )
+#'
+#' }
 #'
 #' @export
 svyatk <-

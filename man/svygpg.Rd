@@ -51,6 +51,11 @@ des_ses_rep <- convey_prep(des_ses_rep)
 
 svygpg(~earningshour, des_ses_rep, ~sex)
 
+
+# library(MonetDBLite) is only available on 64-bit machines,
+# so do not run this block of code in 32-bit R
+if( .Machine$sizeof.pointer > 4 ){
+
 # database-backed design
 library(MonetDBLite)
 library(DBI)
@@ -64,6 +69,8 @@ dbd_ses <- convey_prep( dbd_ses )
 svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
 
 dbRemoveTable( conn , 'ses' )
+
+}
 
 }
 \author{

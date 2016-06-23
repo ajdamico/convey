@@ -64,6 +64,10 @@ svyrenyi( ~py010n , design = des_eusilc_rep, epsilon = .5 )
 svyrenyi( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
 
 
+# library(MonetDBLite) is only available on 64-bit machines,
+# so do not run this block of code in 32-bit R
+if( .Machine$sizeof.pointer > 4 ){
+
 # database-backed design
 library(MonetDBLite)
 library(DBI)
@@ -90,6 +94,8 @@ svyrenyi( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 
 dbRemoveTable( conn , 'eusilc' )
+
+}
 
 }
 \author{

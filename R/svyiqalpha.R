@@ -50,6 +50,11 @@
 #' svyiqalpha( ~ py010n , design = des_eusilc_rep, .50 )
 #' svyiqalpha( ~ py010n , design = des_eusilc_rep ,.50, na.rm = TRUE )
 #'
+#'
+#' # library(MonetDBLite) is only available on 64-bit machines,
+#' # so do not run this block of code in 32-bit R
+#' if( .Machine$sizeof.pointer > 4 ){
+#'
 #' # database-backed design
 #' library(MonetDBLite)
 #' library(DBI)
@@ -72,6 +77,8 @@
 #' svyiqalpha( ~ eqincome , design = dbd_eusilc, .50 )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
+#'
+#' }
 #'
 #' @export
 svyiqalpha <-

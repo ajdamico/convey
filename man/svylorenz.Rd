@@ -84,6 +84,10 @@ svylorenz( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
 svylorenz( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01, na.rm = TRUE )
 
 
+# library(MonetDBLite) is only available on 64-bit machines,
+# so do not run this block of code in 32-bit R
+if( .Machine$sizeof.pointer > 4 ){
+
 # database-backed design
 library(MonetDBLite)
 library(DBI)
@@ -115,6 +119,8 @@ svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.01), alpha = .01, add = TRUE )
 legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 
 dbRemoveTable( conn , 'eusilc' )
+
+}
 
 }
 \author{
