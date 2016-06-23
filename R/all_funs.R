@@ -138,7 +138,7 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
 }
 
 
-# Funções U e big_t de Jenkins & Biewen:
+# Functions U and big_t from Jenkins & Biewen:
 U_fn <-
 	function( x, weights, gamma ) {
 		x <- x[weights != 0]
@@ -264,7 +264,7 @@ convey_prep <- function(design) {
     attr(attr(design, "full_design"), "full_design") <- TRUE
 
 	class( design ) <- c( "convey.design" , class( design ) )
-	
+
     design
 }
 
@@ -273,55 +273,55 @@ convey_prep <- function(design) {
 #' @export
 svyby.convey.design <-
 	function (formula, by, design, ...){
-	
+
 		if ( ( "DBIsvydesign" %in% class(design) ) & !( "logical" %in% class(attr(design, "full_design"))) ){
 
 			full_design <- attr( design , "full_design" )
 
 			if( 'sex' %in% names( list( ... ) ) ){
-			
+
 				full_design$variables <-
 					cbind(
-							getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset), 
+							getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset),
 							getvars(by, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset) ,
 							getvars(list( ... )[["sex"]], full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset)
 						)
-						
+
 				design$variables <-
 					cbind(
-							getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset), 
+							getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset),
 							getvars(by, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset) ,
 							getvars(list( ... )[["sex"]], design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 						)
-						
-						
+
+
 			} else {
-			
+
 				full_design$variables <-
 					cbind(
-						getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset), 
+						getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset),
 						getvars(by, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset)
 					)
 
-					
-				design$variables <- 
+
+				design$variables <-
 					cbind(
-						getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset), 
+						getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset),
 						getvars(by, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 					)
 
-			
+
 			}
-			
+
 			attr( design , "full_design" ) <- full_design
 
 			rm( full_design )
 
 		}
-		
+
 		# remove the "convey.design" and "DBIsvydesign" classes from the current object
 		class(design) <- setdiff(class(design), "convey.design")
 		class(design) <- setdiff(class(design), "DBIsvydesign")
-		
+
 		survey::svyby(formula,by,design,...)
 	}
