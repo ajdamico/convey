@@ -26,10 +26,6 @@ test_that("output svypoomed",{
   expect_equal(coef(a2), coef(b2))
   expect_lte(cv_dif1,5)
   expect_lte(cv_diff2,5)
-  expect_equal(coef(a1), coef(c1))
-  expect_equal(coef(a2), coef(c2))
-  expect_equal(SE(a1), SE(c1))
-  expect_equal(SE(a2), SE(c2))
   expect_is(SE(a1),"numeric")
   expect_is(SE(a2), "numeric")
   expect_is(SE(b1),"numeric")
@@ -83,6 +79,6 @@ if( .Machine$sizeof.pointer > 4 ){
 	  expect_equal(coef(a2), coef(c2))
 	  expect_equal(SE(a1), SE(c1))
 	  expect_equal(SE(a2), SE(c2))
-	}
+	})
 
 }

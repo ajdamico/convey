@@ -28,8 +28,6 @@ test_that("output svyarpr",{
   expect_equal(coef(a2), coef(b2))
 # expect_lte(rel_error1,.1)
 # expect_lte(rel_error2,.25)
-  expect_equal(SE(a1), SE(c1))
-  expect_equal(SE(a2), SE(c2))
   expect_is(SE(a1),"numeric")
   expect_is(SE(a2), "numeric")
   expect_is(SE(b1),"numeric")
@@ -80,6 +78,6 @@ if( .Machine$sizeof.pointer > 4 ){
 	  expect_equal(coef(a2), coef(c2))
 	  expect_equal(SE(a1), SE(c1))
 	  expect_equal(SE(a2), SE(c2))
-	}
+	})
 
 }
