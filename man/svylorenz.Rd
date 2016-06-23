@@ -58,6 +58,7 @@ On the other hand, the quantile-based curve is used to estimate the shares, SEs 
 This way, as the number of quantiles of the quantile-based function increases, the qwuantile-based curve approacches the observation-based curve.
 }
 \examples{
+\dontrun{
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -86,7 +87,6 @@ svylorenz( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01, na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
