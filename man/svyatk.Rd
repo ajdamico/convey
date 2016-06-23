@@ -123,7 +123,8 @@ svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria"), epsilon = .5 
 svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria") )
 svyatk( ~eqincome , subset(dbd_eusilc_pos_inc, db040 == "Styria"), epsilon = 2 )
 
-# database-backed linearized design using a variable with missings (but subsetted to remove negatives)
+# database-backed linearized design using a variable with missings
+# (but subsetted to remove negatives)
 svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
 svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 , na.rm=TRUE )
 

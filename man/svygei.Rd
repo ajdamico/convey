@@ -124,9 +124,9 @@ svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, n
 svygei( ~py010n , dbd_eusilc, epsilon = 2 )
 svygei( ~py010n , dbd_eusilc, epsilon = 2, na.rm = TRUE )
 
-}
-
 dbRemoveTable( conn , 'eusilc' )
+
+}
 
 }
 \author{
