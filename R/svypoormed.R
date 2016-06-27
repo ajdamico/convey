@@ -67,13 +67,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svypoormed( ~ eqincome , design = dbd_eusilc )
@@ -83,7 +83,7 @@
 #' }
 #'
 #' @export
-svypoormed <- 
+svypoormed <-
 	function(formula, design, ...) {
 
 		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
@@ -94,7 +94,7 @@ svypoormed <-
 
 #' @rdname svypoormed
 #' @export
-svypoormed.survey.design <- 
+svypoormed.survey.design <-
 	function(formula, design, order = 0.5, percent = 0.6, na.rm=FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
@@ -102,7 +102,7 @@ svypoormed.survey.design <-
 		# if the class of the full_design attribute is just a TRUE, then the design is
 		# already the full design.  otherwise, pull the full_design from that attribute.
 		if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
-		
+
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
 		if(na.rm){
@@ -110,13 +110,13 @@ svypoormed.survey.design <-
 			design<-design[!nas,]
 			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
 		}
-		
+
 		w <- 1 / design$prob
 		ind <- names(design$prob)
 		N <- sum(w)
-		
+
 		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-		
+
 		if(na.rm){
 			nas<-is.na(incvec)
 			full_design<-full_design[!nas,]
@@ -126,63 +126,64 @@ svypoormed.survey.design <-
 		wf <- 1 / full_design$prob
 		ncom<- names(full_design$prob)
 		htot <- h_fun(incvec, wf)
-		
+
 		ARPT <- svyarpt(formula = formula, full_design, order = order, percent = percent, na.rm = na.rm)
 		arpt <- coef(ARPT)
 
 		if(is.na(arpt)){
-	
+
 			rval <- NA
 			variance <- NA
 			class(rval) <- "cvystat"
 			attr( rval , "var" ) <- variance
 			attr(rval, "lin") <- NA
 			attr( rval , "statistic" ) <- "poormed"
-			
+
 		} else{
-			
+
 			linarpt <- attr(ARPT, "lin")
 			nome <- terms.formula(formula)[[2]]
-			
+
 			dsub <- eval(substitute(subset(design, subset=(incvar <= arpt)),list(incvar = nome, arpt = arpt)))
 
 			medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm)
-			
+
 			medp <- as.vector(medp)
-			
+
 			ARPR <- svyarpr(formula=formula, design= design, order, percent, na.rm = na.rm)
-			
+
 			Fprimemedp <- densfun(formula = formula, design = design, medp, h = htot, FUN = "F", na.rm = na.rm)
-			
+
 			arpr <- coef(ARPR)
 			ifarpr <- attr(ARPR, "lin")
-			
-			ID <- rep(1, length(incvec))* (ncom %in% ind)
-			
+
+			if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else
+			 ID <- 1 * ( ncom %in% ind )
+
 			# linearize cdf of medp
 			ifmedp <- ( 1 / N ) * ID * ( ( incvec <= medp ) - 0.5 * arpr )
 
 			# linearize median of poor
 			linmedp <- ( 0.5 * ifarpr - ifmedp ) / Fprimemedp
 			rval <- medp
-			
+
 			variance <- survey::svyrecvar(linmedp/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
-			
+
 			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 			class(rval) <- "cvystat"
 			attr( rval , "var" ) <- variance
 			attr(rval, "lin") <- linmedp
 			attr( rval , "statistic" ) <- "poormed"
-			
+
 		}
-		
+
 		rval
 	}
 
 
 #' @rdname svypoormed
 #' @export
-svypoormed.svyrep.design <- 
+svypoormed.svyrep.design <-
 	function(formula, design, order = 0.5, percent = 0.6,na.rm=FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
@@ -193,7 +194,7 @@ svypoormed.svyrep.design <-
 
 		df <- model.frame(design)
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-		
+
 		if(na.rm){
 			nas<-is.na(incvar)
 			design<-design[!nas,]
@@ -205,7 +206,7 @@ svypoormed.svyrep.design <-
 
 		df_full <- model.frame(full_design)
 		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-		
+
 		if(na.rm){
 			nas<-is.na(incvec)
 			full_design<-full_design[!nas,]
@@ -217,8 +218,8 @@ svypoormed.svyrep.design <-
 
 		names(incvec) <- names(wsf) <- row.names(df_full)
 		ind <- row.names(df)
-		
-		ComputePoormed <- 
+
+		ComputePoormed <-
 			function( xf , wf , ind , order , percent ){
 				tresh <- percent * computeQuantiles(xf, wf, p = order)
 				x<-xf[ind]
@@ -230,18 +231,18 @@ svypoormed.svyrep.design <-
 
 		ws <- weights(design, "sampling")
 		rval <- ComputePoormed(xf = incvec, wf=wsf, ind= ind, order = order, percent = percent)
-		
+
 		wwf <- weights(full_design, "analysis")
-		qq <- 
+		qq <-
 			apply(
-				wwf, 
-				2, 
+				wwf,
+				2,
 				function(wi){
 					names(wi)<- row.names(df_full)
 					ComputePoormed(incvec, wi, ind=ind, order = order,percent = percent)
 				}
 			)
-		
+
 		if(sum(is.na(qq))==length(qq))variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
 		variance <- as.matrix( variance )
@@ -250,7 +251,7 @@ svypoormed.svyrep.design <-
 		class(rval) <- "cvystat"
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "poormed"
-		
+
 		rval
 	}
 
@@ -263,12 +264,12 @@ svypoormed.DBIsvydesign <-
 
 			full_design <- attr( design , "full_design" )
 
-			full_design$variables <- 
+			full_design$variables <-
 				getvars(
-					formula, 
-					attr( design , "full_design" )$db$connection, 
+					formula,
+					attr( design , "full_design" )$db$connection,
 					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates, 
+					updates = attr( design , "full_design" )$updates,
 					subset = attr( design , "full_design" )$subset
 				)
 
@@ -278,12 +279,12 @@ svypoormed.DBIsvydesign <-
 
 		}
 
-		design$variables <- 
+		design$variables <-
 			getvars(
-				formula, 
-				design$db$connection, 
+				formula,
+				design$db$connection,
 				design$db$tablename,
-				updates = design$updates, 
+				updates = design$updates,
 				subset = design$subset
 			)
 

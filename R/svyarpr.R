@@ -38,7 +38,7 @@
 #' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 #' des_eusilc <- convey_prep( des_eusilc )
 #'
-#' svyarpr( ~eqincome , design = des_eusilc )
+#'
 #'
 #' # replicate-weighted design
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
@@ -66,13 +66,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyarpr( ~ eqincome , design = dbd_eusilc )
@@ -137,7 +137,8 @@ svyarpr.survey.design <-
 		# value of arpr and first term of lin
 		poor <- incvar <= arptv
 		rval <- sum( poor * w ) / N
-		ID <- rep( 1 , length( incvec ) ) * ( ncom %in% ind )
+		if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else
+		ID <- 1 * ( ncom %in% ind )
 		arpr1lin <- ( 1 / N ) * ID * ( ( incvec <= arptv ) - rval )
 
 		# use h for the whole sample
