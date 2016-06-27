@@ -1,7 +1,7 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 before_install:
-    - sudo apt-get unixODBC-devel
+    - sudo apt-get unixodbc-dev
 
 language: R
 sudo: false
