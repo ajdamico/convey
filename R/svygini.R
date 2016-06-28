@@ -65,13 +65,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svygini( ~ eqincome , design = dbd_eusilc )
@@ -133,6 +133,8 @@ svygini.survey.design <-
 		list_all <- list(T1 = T1, T2 = T2, T3 = T3)
 		GINI <- contrastinf( quote( ( 2 * T1 - T2 ) / ( T2 * T3 ) - 1 ) , list_all )
 		lingini <- as.vector( GINI$lin )
+		if(sum(w==0) > 0)  lingini <- lingini*(w!=0)
+		lingini <- lingini[order(ordincvar)]
 		rval <- GINI$value
 
 		variance <- survey::svyrecvar(lingini/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
