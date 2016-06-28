@@ -78,8 +78,6 @@ if( .Machine$sizeof.pointer > 4 ){
 }
 
 
-
-
 # compare subsetted objects to svyby objects
 sub_des <- svyarpr( ~eqincome , design = subset( des_eusilc , db040 == "Burgenland" ) )
 sby_des <- svyby( ~eqincome, by = ~db040, design = des_eusilc, FUN = svyarpr)
@@ -94,7 +92,7 @@ test_that("subsets equal svyby",{
 
 	# coefficients should match across svydesign & svrepdesign
 	expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_rep))[1])
-  
+
 	# coefficients of variation should be within five percent
 	cv_dif <- 100*abs(cv(sub_des)-cv(sby_rep)[1])
 	expect_lte(cv_dif,5)
@@ -125,18 +123,18 @@ if( .Machine$sizeof.pointer > 4 ){
 			dbname=dbfolder,
 			dbtype="MonetDBLite"
 		)
-		
+
 	dbd_eusilc <- convey_prep( dbd_eusilc )
 
 	# create a hacky database-backed svrepdesign object
 	# mirroring des_eusilc_rep
-	dbd_eusilc_rep <- 
+	dbd_eusilc_rep <-
 		svrepdesign(
-			weights = ~ rb050, 
-			repweights = des_eusilc_rep$repweights , 
+			weights = ~ rb050,
+			repweights = des_eusilc_rep$repweights ,
 			scale = des_eusilc_rep$scale ,
 			rscales = des_eusilc_rep$rscales ,
-			type = "bootstrap" , 
+			type = "bootstrap" ,
 			data = "eusilc" ,
 			dbtype = "MonetDBLite" ,
 			dbname = dbfolder ,
@@ -161,7 +159,7 @@ if( .Machine$sizeof.pointer > 4 ){
 		expect_equal(SE(sub_rep), SE(sub_dbr))
 	})
 
-	
+
 	# compare database-backed subsetted objects to database-backed svyby objects
 	test_that("dbi subsets equal dbi svyby",{
 		expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd))[1])
@@ -170,6 +168,6 @@ if( .Machine$sizeof.pointer > 4 ){
 		expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
 	})
 
-	
+
 }
 

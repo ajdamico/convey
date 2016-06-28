@@ -19,7 +19,7 @@ b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyqsr,deff =
 rel_error1 <- abs(SE(a1)-SE(b1))/SE(a1)
 rel_error2 <- max(abs(SE(a2)-SE(b2))/SE(a2))
 
-test_that("output svyarpr",{
+test_that("output svyqsr",{
   expect_is(coef(a1),"numeric")
   expect_is(coef(a2), "numeric")
   expect_is(coef(b1),"numeric")
@@ -73,7 +73,7 @@ if( .Machine$sizeof.pointer > 4 ){
 
 	dbRemoveTable( conn , 'eusilc' )
 
-	test_that("database svyarpr",{
+	test_that("database svyqsr",{
 	  expect_equal(coef(a1), coef(c1))
 	  expect_equal(coef(a2), coef(c2))
 	  expect_equal(SE(a1), SE(c1))
@@ -81,3 +81,97 @@ if( .Machine$sizeof.pointer > 4 ){
 	})
 
 }
+
+# compare subsetted objects to svyby objects
+sub_des <- svyqsr( ~eqincome , design = subset( des_eusilc , db040 == "Burgenland" ) )
+sby_des <- svyby( ~eqincome, by = ~db040, design = des_eusilc, FUN = svyqsr)
+sub_rep <- svyqsr( ~eqincome , design = subset( des_eusilc_rep , db040 == "Burgenland" ) )
+sby_rep <- svyby( ~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyqsr)
+
+test_that("subsets equal svyby",{
+  expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
+  expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep))[1])
+  expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des))[1])
+  expect_equal(as.numeric(SE(sub_rep)), as.numeric(SE(sby_rep))[1])
+
+  # coefficients should match across svydesign & svrepdesign
+  expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_rep))[1])
+
+  # coefficients of variation should be within five percent
+  cv_dif <- 100*abs(cv(sub_des)-cv(sby_rep)[1])
+  expect_lte(cv_dif,5)
+})
+
+
+
+
+# second run of database-backed designs #
+
+# library(MonetDBLite) is only available on 64-bit machines,
+# so do not run this block of code in 32-bit R
+if( .Machine$sizeof.pointer > 4 ){
+
+  # database-backed design
+  library(MonetDBLite)
+  library(DBI)
+  dbfolder <- tempdir()
+  conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+  dbWriteTable( conn , 'eusilc' , eusilc )
+
+  dbd_eusilc <-
+    svydesign(
+      ids = ~rb030 ,
+      strata = ~db040 ,
+      weights = ~rb050 ,
+      data="eusilc",
+      dbname=dbfolder,
+      dbtype="MonetDBLite"
+    )
+
+  dbd_eusilc <- convey_prep( dbd_eusilc )
+
+  # create a hacky database-backed svrepdesign object
+  # mirroring des_eusilc_rep
+  dbd_eusilc_rep <-
+    svrepdesign(
+      weights = ~ rb050,
+      repweights = des_eusilc_rep$repweights ,
+      scale = des_eusilc_rep$scale ,
+      rscales = des_eusilc_rep$rscales ,
+      type = "bootstrap" ,
+      data = "eusilc" ,
+      dbtype = "MonetDBLite" ,
+      dbname = dbfolder ,
+      combined.weights = FALSE
+    )
+
+  dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
+
+  sub_dbd <- svyqsr( ~eqincome , design = subset( dbd_eusilc , db040 == "Burgenland" ) )
+  sby_dbd <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc, FUN = svyqsr)
+  sub_dbr <- svyqsr( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Burgenland" ) )
+  sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svyqsr)
+
+  dbRemoveTable( conn , 'eusilc' )
+
+
+  # compare database-backed designs to non-database-backed designs
+  test_that("dbi subsets equal non-dbi subsets",{
+    expect_equal(coef(sub_des), coef(sub_dbd))
+    expect_equal(coef(sub_rep), coef(sub_dbr))
+    expect_equal(SE(sub_des), SE(sub_dbd))
+    expect_equal(SE(sub_rep), SE(sub_dbr))
+  })
+
+
+  # compare database-backed subsetted objects to database-backed svyby objects
+  test_that("dbi subsets equal dbi svyby",{
+    expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd))[1])
+    expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr))[1])
+    expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[1])
+    expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
+  })
+
+
+}
+
