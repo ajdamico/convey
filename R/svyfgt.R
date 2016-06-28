@@ -89,13 +89,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
@@ -178,7 +178,8 @@ svyfgt.survey.design <-
     wf <- 1/full_design$prob
     ncom <- names(full_design$prob)
     htot <- h_fun(incvec, wf)
-    ID <- rep(1, length(incvec))* (ncom %in% ind)
+    if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else
+    ID <- 1 * ( ncom %in% ind )
 
 
     # linearization
@@ -189,14 +190,14 @@ svyfgt.survey.design <-
       th <- coef(ARPT)
       arptlin <- attr(ARPT, "lin")
       rval <- sum(w*h(incvar,th,g))/N
-      ahat <- sum(ht(incvar,th,g))/N
+      ahat <- sum(w*ht(incvar,th,g))/N
 
       if( g == 0 ){
 
         ARPR <- svyarpr(formula = formula, design, order=order, percent=percent,  na.rm=na.rm, ...)
         fgtlin <- attr(ARPR,"lin")
 
-      } else fgtlin <- ( h( incvar , th , g ) - rval ) / N + ( ahat * arptlin )
+      } else fgtlin <-ID*( h( incvec , th , g ) - rval ) / N + ( ahat * arptlin )
 
     }
 
@@ -210,9 +211,9 @@ svyfgt.survey.design <-
       if( g == 0 ){
 
         Fprime <- densfun(formula=formula, design = design, x= th, FUN = "F", na.rm = na.rm )
-        fgtlin<- (h(incvar,th,g)-rval + Fprime*(incvar-th))/N
+        fgtlin<- ID*(h(incvec,th,g)-rval + Fprime*(incvec-th))/N
 
-      } else fgtlin <-( h( incvar , th , g ) - rval + ( ( percent * incvar ) - th ) * ahat ) / N
+      } else fgtlin <-ID*( h( incvec , th , g ) - rval + ( ( percent * incvec ) - th ) * ahat ) / N
 
     }
 
