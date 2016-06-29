@@ -118,7 +118,7 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
 
   d <- 1/design$prob
 
-  if ( any(y[d != 0] <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
+  if ( any( y[d != 0] <= 0, na.rm = TRUE ) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- y <= 0
     design <- design[nps == 0 ]
     if (length(nps) > length(design$prob))
