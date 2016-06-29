@@ -206,7 +206,7 @@ svyfgt.survey.design <-
       # thresh for the whole population
       th <- percent*sum(incvec*wf)/sum(wf)
       rval <- sum(w*h(incvar,th,g))/N
-      ahat <- sum(ht(incvar,th,g))/N
+      ahat <- sum(w*ht(incvar,th,g))/N
 
       if( g == 0 ){
 
