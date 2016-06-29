@@ -64,7 +64,7 @@ svyzenga(~eqincome, subset( des_eusilc_rep_pos_inc, db040 == "Styria"))
 svyzenga(~py010n, subset( des_eusilc, py010n > 0 | is.na(py010n)) )
 svyzenga(~py010n, subset( des_eusilc_rep, py010n > 0 | is.na(py010n)) )
 
-# svyzenga(~py010n, subset( des_eusilc, py010n > 0 | is.na(py010n)), na.rm = TRUE)
+svyzenga(~py010n, subset( des_eusilc, py010n > 0 | is.na(py010n)), na.rm = TRUE)
 svyzenga(~py010n, subset( des_eusilc_rep, py010n > 0 | is.na(py010n)), na.rm = TRUE)
 
 
@@ -103,7 +103,7 @@ svyzenga(~eqincome, subset( dbd_eusilc_pos_inc, db040 == "Styria"))
 # variable with with missings (but subsetted to remove negatives)
 svyzenga(~py010n, subset( dbd_eusilc, py010n > 0 | is.na(py010n)) )
 
-svyzenga(~py010n, subset( dbd_eusilc, py010n > 0 | is.na(py010n)), na.rm = TRUE)
+# svyzenga(~py010n, subset( dbd_eusilc, py010n > 0 | is.na(py010n)), na.rm = TRUE)
 
 dbRemoveTable( conn , 'eusilc' )
 
