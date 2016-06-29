@@ -118,7 +118,7 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
 
   d <- 1/design$prob
 
-  if ( any(y[d != 0] <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
+  if ( any( y[d != 0] <= 0, na.rm = TRUE ) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- y <= 0
     design <- design[nps == 0 ]
     if (length(nps) > length(design$prob))
@@ -226,7 +226,7 @@ svyzenga.svyrep.design <- function(formula, design, na.rm=FALSE, ...) {
     incvar <- incvar[!nas]
   }
 
-  if ( any(incvar <= 0) ) { warning( "The function is defined for strictly positive incomes only.")
+  if ( any(incvar <= 0, na.rm = TRUE) ) { warning( "The function is defined for strictly positive incomes only.")
     nps <- incvar <= 0
     nps[ is.na(nps) ] <- 0
     design <- design[ nps == 0 ]
@@ -355,7 +355,7 @@ svyzenga.DBIsvydesign <-
 
       full_design <- attr( design , "full_design" )
 
-      full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+      full_design$variables <- survey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
                                                 updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 
       attr( design , "full_design" ) <- full_design
@@ -364,7 +364,7 @@ svyzenga.DBIsvydesign <-
 
     }
 
-    design$variables <- getvars(formula, design$db$connection, design$db$tablename,
+    design$variables <- survey:::getvars(formula, design$db$connection, design$db$tablename,
                                          updates = design$updates, subset = design$subset)
 
     NextMethod("svyzenga", design)
