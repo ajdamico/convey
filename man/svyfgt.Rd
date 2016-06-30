@@ -26,7 +26,7 @@ svyfgt(formula, design, ...)
 
 \item{...}{passed to \code{svyarpr} and \code{svyarpt}}
 
-\item{g}{If 0 estimates the headcount ratio and if 1 the poverty gap index}
+\item{g}{If 0 estimates the headcount ratio and if >=1 the poverty gap index}
 
 \item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
 of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.}
@@ -106,7 +106,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <-
 	svydesign(
 		ids = ~rb030 ,
-		strata = ~db040 , 
+		strata = ~db040 ,
 		weights = ~rb050 ,
 		data="eusilc",
 		dbname=dbfolder,
