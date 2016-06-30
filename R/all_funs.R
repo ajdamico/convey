@@ -9,7 +9,6 @@
 #' @keywords survey
 #' @export
 
-
 h_fun <- function(incvar, w) {
     N <- sum(w)
     sd_inc <- sqrt((sum(w * incvar * incvar) - sum(w * incvar) * sum(w * incvar)/N)/N)
