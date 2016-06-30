@@ -44,7 +44,6 @@ h_fun <- function(incvar, w) {
 #' densfun ( ~ py010n , design = des_eusilc , 10000,FUN="F", na.rm = TRUE )
 #'
 #' @export
-
 densfun <- function(formula, design, x, h = NULL, FUN = "F" , na.rm=FALSE, ...) {
 
 	if( !( FUN %in% c( "F" , "big_s" ) ) ) stop( "valid choices for `FUN=` are 'F' and 'big_s'" )
