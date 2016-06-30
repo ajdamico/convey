@@ -106,7 +106,6 @@ densfun <- function(formula, design, x, h = NULL, FUN = "F" , na.rm=FALSE, ...) 
 #' icdf( ~ py010n , design = des_eusilc, 10000 )
 #' icdf( ~ py010n , design = des_eusilc , 10000, na.rm = TRUE )
 #' @export
-
 icdf <- function(formula, design, x, na.rm = FALSE, ...) {
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
