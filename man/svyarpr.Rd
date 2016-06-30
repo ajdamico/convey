@@ -49,7 +49,7 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep( des_eusilc )
 
-svyarpr( ~eqincome , design = des_eusilc )
+
 
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
@@ -77,7 +77,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <-
 	svydesign(
 		ids = ~rb030 ,
-		strata = ~db040 , 
+		strata = ~db040 ,
 		weights = ~rb050 ,
 		data="eusilc",
 		dbname=dbfolder,
