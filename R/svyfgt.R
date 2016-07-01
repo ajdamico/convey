@@ -204,7 +204,7 @@ svyfgt.survey.design <-
     if( type_thresh == 'relm'){
 
       # thresh for the whole population
-      th <- percent*sum(incvar*w)/N
+      th <- percent*sum(incvec*wf)/sum(wf)
       rval <- sum(w*h(incvar,th,g))/N
       ahat <- sum(w*ht(incvar,th,g))/N
 
