@@ -7,7 +7,7 @@
 #' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
 #' of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.
 #' @param abs_thresh poverty threshold value if type_thresh is "abs"
-#' @param g If 0 estimates the headcount ratio and if 1 the poverty gap index
+#' @param g If 0 estimates the headcount ratio and if >=1 the poverty gap index
 #' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
 #' @param order the quantile order used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value
@@ -120,7 +120,7 @@
 svyfgt <-
 	function(formula, design,  ...) {
 
-		if( !( list(...)[["g"]] %in% c( 0 , 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or 1 to estimate the poverty index" )
+		if( !is.na( list(...)[["g"]] ) && !( ( list(...)[["g"]] == 0 ) | ( list(...)[["g"]] >= 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or >=1 to estimate the poverty index" )
 
 		if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.' )
 
