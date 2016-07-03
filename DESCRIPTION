@@ -17,5 +17,7 @@ License: GPL-3
 LazyData: true
 Suggests:
 	testthat, knitr, rmarkdown, IC2, vardpoor, DBI, RODBC, MonetDBLite
+Remotes: 
+	hannesmuehleisen/MonetDBLite
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
