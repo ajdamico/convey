@@ -298,7 +298,8 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     CI.U[i] <- L.p[i] + se[i] * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
   }
 
-  cis <- array( rbind(CI.L,CI.U), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
+  cis <- structure(c(CI.L,CI.U), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
+
   rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
