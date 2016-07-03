@@ -32,8 +32,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			expect_equal(coef(a1), coef(b1))
 			expect_equal(coef(a2), coef(b2))
 			expect_lte(cv_dif1,5)
-			# restore this test after bugfix
-			# expect_lte(cv_diff2,5)
+			expect_lte(cv_diff2,5)
 			expect_is(SE(a1),"numeric")
 			expect_is(SE(a2), "numeric")
 			expect_is(SE(b1),"numeric")
@@ -105,8 +104,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			# coefficients of variation should be within five percent
 			cv_dif <- 100*abs(cv(sub_des)-cv(sby_rep)[1])
 
-			# restore this test after bugfix
-			# expect_lte(cv_dif,5)
+			expect_lte(cv_dif,5)
 		})
 
 
