@@ -28,14 +28,14 @@ attributes(convest)<-NULL
 convse<- SE(fun_rmirw)
 attributes(convse)<-NULL
 #domain
-vardpoor_rmird <- linrmir(Y = "eqincome", id = "IDd", age = "age", weight = "rb050", Dom = "db040",   dataset = dati, order_quant = 50)
+vardpoor_rmird <- linrmir(Y = "eqincome", id = "IDd", age = "age", weight = "rb050", Dom = "hsize",   dataset = dati, order_quant = 50)
 #  point estimates
 vardestd<-unlist(vardpoor_rmird$value$rmir)
 #  se estimates
 varsed<-sapply(data.frame(vardpoor_rmird$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_rmird <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyrmir,
+fun_rmird <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyrmir,
   age = ~age , agelim = 65 ,deff = FALSE)
 convestd<- coef(fun_rmird)
 attributes(convestd) <- NULL

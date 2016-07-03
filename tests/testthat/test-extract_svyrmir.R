@@ -11,11 +11,11 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 a1 <- svyrmir( ~eqincome , design = des_eusilc , age = ~age , agelim = 65 , med_old = TRUE )
 
-a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyrmir, age = ~age,  agelim =65, deff = FALSE)
+a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyrmir, age = ~age,  agelim =65, deff = FALSE)
 
 b1 <- svyrmir( ~eqincome , design = des_eusilc_rep , age = ~age , agelim = 65 , med_old = TRUE )
 
-b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyrmir, age = ~age, agelim =65, deff = FALSE)
+b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyrmir, age = ~age, agelim =65, deff = FALSE)
 
 
 test_that("output svyrmir",{

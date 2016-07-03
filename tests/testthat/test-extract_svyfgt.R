@@ -14,11 +14,11 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 
 		a1 <- svyfgt(~eqincome, design = des_eusilc, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 
-		a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyfgt, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+		a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyfgt, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
 		b1 <- svyfgt(~eqincome, design = des_eusilc_rep, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 
-		b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyfgt,g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+		b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyfgt,g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
 
 		cv_dif1 <- 100*abs(cv(a1)-cv(b1))
@@ -74,7 +74,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			dbd_eusilc <- convey_prep( dbd_eusilc )
 
 			c1 <- svyfgt(~eqincome, design = dbd_eusilc, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
-			c2 <- svyby(~eqincome, by = ~db040, design = dbd_eusilc, FUN = svyfgt, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+			c2 <- svyby(~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyfgt, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
 
 			test_that("database svyfgt",{
@@ -87,10 +87,10 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 		}
 
 		# compare subsetted objects to svyby objects
-		sub_des <- svyfgt( ~eqincome , design = subset( des_eusilc , db040 == "Burgenland" ), g=0, type_thresh= this_thresh, abs_thresh=10000 )
-		sby_des <- svyby( ~eqincome, by = ~db040, design = des_eusilc, FUN = svyfgt , g=0, type_thresh= this_thresh, abs_thresh=10000)
-		sub_rep <- svyfgt( ~eqincome , design = subset( des_eusilc_rep , db040 == "Burgenland" ), g=0, type_thresh= this_thresh, abs_thresh=10000 )
-		sby_rep <- svyby( ~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyfgt, g=0, type_thresh= this_thresh, abs_thresh=10000)
+		sub_des <- svyfgt( ~eqincome , design = subset( des_eusilc , hsize == 1), g=0, type_thresh= this_thresh, abs_thresh=10000 )
+		sby_des <- svyby( ~eqincome, by = ~hsize, design = des_eusilc, FUN = svyfgt , g=0, type_thresh= this_thresh, abs_thresh=10000)
+		sub_rep <- svyfgt( ~eqincome , design = subset( des_eusilc_rep , hsize == 1), g=0, type_thresh= this_thresh, abs_thresh=10000 )
+		sby_rep <- svyby( ~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyfgt, g=0, type_thresh= this_thresh, abs_thresh=10000)
 
 		test_that("subsets equal svyby",{
 			expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
@@ -130,10 +130,10 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 
 			dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
-			sub_dbd <- svyfgt( ~eqincome , design = subset( dbd_eusilc , db040 == "Burgenland" ), g=0, type_thresh= this_thresh, abs_thresh=10000 )
-			sby_dbd <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc, FUN = svyfgt ,g=0, type_thresh= this_thresh, abs_thresh=10000)
-			sub_dbr <- svyfgt( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Burgenland" ), g=0, type_thresh= this_thresh, abs_thresh=10000 )
-			sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svyfgt , g=0, type_thresh= this_thresh, abs_thresh=10000)
+			sub_dbd <- svyfgt( ~eqincome , design = subset( dbd_eusilc , hsize == 1), g=0, type_thresh= this_thresh, abs_thresh=10000 )
+			sby_dbd <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyfgt ,g=0, type_thresh= this_thresh, abs_thresh=10000)
+			sub_dbr <- svyfgt( ~eqincome , design = subset( dbd_eusilc_rep , hsize == 1), g=0, type_thresh= this_thresh, abs_thresh=10000 )
+			sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svyfgt , g=0, type_thresh= this_thresh, abs_thresh=10000)
 
 
 

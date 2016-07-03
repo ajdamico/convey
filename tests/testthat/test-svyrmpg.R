@@ -26,7 +26,7 @@ attributes(convest)<-NULL
 convse<- SE(fun_svyrmpgw)
 attributes(convse)<-NULL
 #domain
-vardpoor_rmpgd <- linrmpg(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("db040"),    dataset = dati)
+vardpoor_rmpgd <- linrmpg(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("hsize"),    dataset = dati)
 #  point estimates
 vardestd<-unlist(vardpoor_rmpgd$value$rmpg)
 #  se estimates
@@ -34,7 +34,7 @@ varsed<-sapply(data.frame(vardpoor_rmpgd$lin)[,2:10],function(t) SE_lin2(t,des_e
 attributes (varsed) <- NULL
 # library convey
 
-fun_rmpgd <- svyby(~eqincome, by = ~db040, design = des_eusilc,
+fun_rmpgd <- svyby(~eqincome, by = ~hsize, design = des_eusilc,
 FUN = svyrmpg, deff = FALSE)
 
 convestd<- coef(fun_rmpgd)

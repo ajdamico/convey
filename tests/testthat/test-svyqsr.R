@@ -27,14 +27,14 @@ attributes(convest)<-NULL
 convse<- SE(fun_qsrw)
 attributes(convse)<-NULL
 #domain
-vardpoor_qsrd <- linqsr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("db040"),    dataset = dati)
+vardpoor_qsrd <- linqsr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("hsize"),    dataset = dati)
 #  point estimates
 vardestd<-unlist(vardpoor_qsrd$value$QSR)
 #  se estimates
 varsed<-sapply(data.frame(vardpoor_qsrd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_qsrd <- svyby(~eqincome, by = ~db040, design = des_eusilc,
+fun_qsrd <- svyby(~eqincome, by = ~hsize, design = des_eusilc,
   FUN = svyqsr,deff = FALSE)
 convestd<- coef(fun_qsrd)
 attributes(convestd) <- NULL

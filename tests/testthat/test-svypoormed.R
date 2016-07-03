@@ -25,14 +25,14 @@ attributes(convest)<-NULL
 convse<- SE(fun_poormedtw)
 attributes(convse)<-NULL
 #domain
-vardpoor_linpoormedd <- linpoormed(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("db040"),    dataset = dati, percentage=60, order_quant=50 )
+vardpoor_linpoormedd <- linpoormed(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("hsize"),    dataset = dati, percentage=60, order_quant=50 )
 #  point estimates
 vardestd<-unlist(vardpoor_linpoormedd$value$poor_people_median)
 #  se estimates
 varsed<-sapply(data.frame(vardpoor_linpoormedd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_poormedd <- svyby(~eqincome, by = ~db040, design = des_eusilc,
+fun_poormedd <- svyby(~eqincome, by = ~hsize, design = des_eusilc,
   FUN = svypoormed,deff = FALSE)
 convestd<- coef(fun_poormedd)
 attributes(convestd) <- NULL

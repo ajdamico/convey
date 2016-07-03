@@ -28,7 +28,7 @@ attributes(convest)<-NULL
 convse<- SE(fun_arprw)
 attributes(convse)<-NULL
 #domain
-vardpoor_arprd <- linarpr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = "db040",
+vardpoor_arprd <- linarpr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = "hsize",
   dataset = dati, percentage = 60, order_quant = 50)
 #  point estimates
 vardestd<-unlist(vardpoor_arprd$value$arpr)
@@ -36,7 +36,7 @@ vardestd<-unlist(vardpoor_arprd$value$arpr)
 varsed<-sapply(data.frame(vardpoor_arprd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_arprd <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
+fun_arprd <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 convestd<- coef(fun_arprd)
 attributes(convestd) <- NULL
 convsed<- SE(fun_arprd)

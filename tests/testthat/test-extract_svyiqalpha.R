@@ -12,12 +12,12 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 a1 <- svyiqalpha( ~eqincome , design = des_eusilc , .20 )
 
 
-a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyiqalpha, alpha = .20, deff = FALSE)
+a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyiqalpha, alpha = .20, deff = FALSE)
 
 b1 <- svyiqalpha( ~eqincome , design = des_eusilc_rep , .20 )
 
 
-b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyiqalpha, alpha = .20, deff = FALSE)
+b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyiqalpha, alpha = .20, deff = FALSE)
 
 
 

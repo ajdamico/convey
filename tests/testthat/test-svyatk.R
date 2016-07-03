@@ -19,9 +19,9 @@ convest <- as.numeric(coef(convey_atk)[1])
 #domain
 # IC2 point estimates
 library(plyr)
-vardestd <- ddply( subset(dati, eqIncome > 0), .(db040), summarize, fun = calcAtkinson(x = eqIncome, w = rb050)$ineq$index)$fun
+vardestd <- ddply( subset(dati, eqIncome > 0), .(hsize), summarize, fun = calcAtkinson(x = eqIncome, w = rb050)$ineq$index)$fun
 # convey point estimates
-convestd <- as.numeric( coef( svyby(~eqIncome, ~factor(db040), subset(des_eusilc, eqIncome > 0), svyatk) ) )
+convestd <- as.numeric( coef( svyby(~eqIncome, ~factor(hsize), subset(des_eusilc, eqIncome > 0), svyatk) ) )
 
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest,convest)

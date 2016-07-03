@@ -12,12 +12,12 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 a1 <- svyisq( ~eqincome , design = des_eusilc , alpha=.20, quantile= TRUE )
 
 
-a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svyisq, alpha = .20, deff = FALSE)
+a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyisq, alpha = .20, deff = FALSE)
 
 b1 <- svyisq( ~eqincome , design = des_eusilc_rep , .20, quantile=TRUE )
 
 
-b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyisq, alpha = .20, deff = FALSE)
+b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyisq, alpha = .20, deff = FALSE)
 
 cv_dif1 <- 100*abs(cv(a1)-cv(b1))
 cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)))
@@ -73,7 +73,7 @@ if( .Machine$sizeof.pointer > 4 ){
 	dbd_eusilc <- convey_prep( dbd_eusilc )
 
 	c1 <- svyisq( ~ eqincome , design = dbd_eusilc, alpha=.20 )
-	c2 <- svyby(~ eqincome, by = ~db040, design = dbd_eusilc, FUN = svyisq, alpha = .20,deff = FALSE)
+	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyisq, alpha = .20,deff = FALSE)
 
 	dbRemoveTable( conn , 'eusilc' )
 
@@ -87,10 +87,10 @@ if( .Machine$sizeof.pointer > 4 ){
 }
 
 # compare subsetted objects to svyby objects
-sub_des <- svyisq( ~eqincome , design = subset( des_eusilc , db040 == "Burgenland" ), alpha = .20 )
-sby_des <- svyby( ~eqincome, by = ~db040, design = des_eusilc, FUN = svyisq, alpha= .20)
-sub_rep <- svyisq( ~eqincome , design = subset( des_eusilc_rep , db040 == "Burgenland" ), alpha = .20 )
-sby_rep <- svyby( ~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svyisq, alpha = .20)
+sub_des <- svyisq( ~eqincome , design = subset( des_eusilc , hsize == 1), alpha = .20 )
+sby_des <- svyby( ~eqincome, by = ~hsize, design = des_eusilc, FUN = svyisq, alpha= .20)
+sub_rep <- svyisq( ~eqincome , design = subset( des_eusilc_rep , hsize == 1), alpha = .20 )
+sby_rep <- svyby( ~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyisq, alpha = .20)
 
 test_that("subsets equal svyby",{
   expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
@@ -151,10 +151,10 @@ if( .Machine$sizeof.pointer > 4 ){
 
   dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
-  sub_dbd <- svyisq( ~eqincome , design = subset( dbd_eusilc , db040 == "Burgenland" ), alpha = .20 )
-  sby_dbd <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc, FUN = svyisq, alpha = .20)
-  sub_dbr <- svyisq( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Burgenland" ),.20 )
-  sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svyisq, alpha = .20)
+  sub_dbd <- svyisq( ~eqincome , design = subset( dbd_eusilc , hsize == 1), alpha = .20 )
+  sby_dbd <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyisq, alpha = .20)
+  sub_dbr <- svyisq( ~eqincome , design = subset( dbd_eusilc_rep , hsize == 1),.20 )
+  sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svyisq, alpha = .20)
 
   dbRemoveTable( conn , 'eusilc' )
 

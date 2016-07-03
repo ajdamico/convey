@@ -26,14 +26,14 @@ attributes(convest)<-NULL
 convse<- SE(fun_giniw)
 attributes(convse)<-NULL
 #domain
-vardpoor_ginid <- lingini(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("db040"),    dataset = dati)
+vardpoor_ginid <- lingini(Y = "eqincome", id = "IDd", weight = "rb050", Dom = c("hsize"),    dataset = dati)
 #  point estimates
 vardestd<-unlist(vardpoor_ginid$value$Gini)
 #  se estimates
 varsed<-sapply(data.frame(vardpoor_ginid$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_ginid <- svyby(~eqincome, by = ~db040, design = des_eusilc,
+fun_ginid <- svyby(~eqincome, by = ~hsize, design = des_eusilc,
   FUN = svygini,deff = FALSE)
 convestd<- coef(fun_ginid)
 attributes(convestd) <- NULL
