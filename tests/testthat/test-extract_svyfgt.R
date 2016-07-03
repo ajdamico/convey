@@ -143,8 +143,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			test_that("dbi subsets equal non-dbi subsets",{
 				expect_equal(coef(sub_des), coef(sub_dbd))
 				expect_equal(coef(sub_rep), coef(sub_dbr))
-				# restore this test after bugfix
-				 expect_equal(SE(sub_des), SE(sub_dbd))
+				expect_equal(SE(sub_des), SE(sub_dbd))
 				expect_equal(SE(sub_rep), SE(sub_dbr))
 			})
 
@@ -153,8 +152,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			test_that("dbi subsets equal dbi svyby",{
 				expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd))[1])
 				expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr))[1])
-				# restore this test after bugfix
-				 expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[1])
+				expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[1])
 				expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
 			})
 
