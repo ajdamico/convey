@@ -290,6 +290,22 @@ svyby.convey.design <-
 							getvars(list( ... )[["sex"]], design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 						)
 
+			} else if( 'age' %in% names( list( ... ) ) ){
+
+				full_design$variables <-
+					cbind(
+							getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset),
+							getvars(by, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset) ,
+							getvars(list( ... )[["age"]], full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset)
+						)
+
+				design$variables <-
+					cbind(
+							getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset),
+							getvars(by, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset) ,
+							getvars(list( ... )[["age"]], design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
+						)
+
 
 			} else {
 
