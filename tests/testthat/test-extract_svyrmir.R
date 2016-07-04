@@ -31,14 +31,14 @@ test_that("output svyrmir",{
   expect_is(SE(b2),"numeric")
   expect_lte(confint(a1)[1], coef(a1))
   expect_gte(confint(a1)[2],coef(a1))
-  expect_lte(confint(b1)[,1], coef(b1))
+  expect_lte(confint(b1)[1], coef(b1))
   expect_gte(confint(b1)[2], coef(b1))
 
-  expect_equal(sum(confint(a2)[,1]<= coef(a2)),length(coef(a2)))
-  expect_equal(sum(confint(a2)[,2]>= coef(a2)),length(coef(a2)))
+  expect_equal(sum(confint(a2)[1:8,1]<= coef(a2)[1:8]),length(coef(a2)[1:8]))
+  expect_equal(sum(confint(a2)[1:8,2]>= coef(a2)[1:8]),length(coef(a2)[1:8]))
 
-  expect_equal(sum(confint(b2)[,1]<= coef(b2)),length(coef(b2)))
-  expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
+  expect_equal(sum(confint(b2)[1:8,1]<= coef(b2)[1:8]),length(coef(b2)[1:8]))
+  expect_equal(sum(confint(b2)[1:8,2]>= coef(b2)[1:8]),length(coef(b2)[1:8]))
 })
 
 

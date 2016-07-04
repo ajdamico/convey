@@ -20,7 +20,7 @@ b1 <- svyisq( ~eqincome , design = des_eusilc_rep , .20, quantile=TRUE )
 b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyisq, alpha = .20, deff = FALSE)
 
 cv_dif1 <- 100*abs(cv(a1)-cv(b1))
-cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)))
+cv_diff2 <- 100*max(abs(cv(a2)[1:7]-cv(b2)[1:7]))
 
 test_that("output svyisq",{
   expect_is(coef(a1),"numeric")
