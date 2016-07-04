@@ -7,7 +7,7 @@
 #' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
 #' of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.
 #' @param abs_thresh poverty threshold value if type_thresh is "abs"
-#' @param g If g=0 estimates the headcount ratio and if g=1 the poverty gap index.  If g>1 then svyfgt estimates [[DJALMA FILL IN]]
+#' @param g If g=0 estimates the headcount ratio. Measures with g=1 or g=2 also have a natural interpretation
 #' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
 #' @param order the quantile order used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value

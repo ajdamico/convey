@@ -26,7 +26,7 @@ svyfgt(formula, design, ...)
 
 \item{...}{passed to \code{svyarpr} and \code{svyarpt}}
 
-\item{g}{If 0 estimates the headcount ratio and if >=1 the poverty gap index}
+\item{g}{If g=0 estimates the headcount ratio. Measures with g=1 or g=2 also have a natural interpretation}
 
 \item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
 of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.}
