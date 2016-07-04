@@ -67,13 +67,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyarpt( ~ eqincome , design = dbd_eusilc )
@@ -136,7 +136,8 @@ svyarpt.survey.design <-
 		rval <- percent * q_alpha
 		Fprime <- densfun(formula = formula, design = design, q_alpha, h=htot, FUN = "F", na.rm=na.rm)
 		N <- sum(w)
-		ID <- rep(1, length(incvec))*(ncom %in% ind)
+		if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else
+		  ID <- 1 * ( ncom %in% ind )
 		linquant<- -(1/(N * Fprime)) * ID*((incvec <= q_alpha) - order)
 		lin <- percent * linquant
 
