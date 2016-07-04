@@ -15,7 +15,7 @@ b1 <- svyarpr(~eqincome, design = des_eusilc_rep, 0.5, 0.6)
 b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyarpr, order = 0.5, percent = 0.6,deff = FALSE)
 
 cv_dif1 <- 100*abs(cv(a1)-cv(b1))
-cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)))
+cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)),na.rm=T)
 
 test_that("output svyarpr",{
   expect_is(coef(a1),"numeric")
