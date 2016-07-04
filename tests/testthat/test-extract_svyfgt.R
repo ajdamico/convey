@@ -22,7 +22,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 
 
 		cv_dif1 <- 100*abs(cv(a1)-cv(b1))
-		cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)),na.rm=TRUE)
+		cv_diff2 <- 100*max(abs(cv(a2)[1:7]-cv(b2)[1:7]))
 
 		test_that("output svyfgt",{
 			expect_is(coef(a1),"numeric")
