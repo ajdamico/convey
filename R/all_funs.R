@@ -252,8 +252,8 @@ convey_prep <- function(design) {
 
     if (!is.null(attr(design, "full_design")))stop("convey_prep has already been run on this design")
 
-    cat("preparing your full survey design to work with R convey package functions\n\rnote that this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.\n\r")
-
+	if( as.character( design$call )[1] == 'subset' ) warning("this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.")
+	
     # store the full design within one of the attributes of the design
     attr(design, "full_design") <- design
 
