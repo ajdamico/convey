@@ -24,7 +24,7 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 	b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyrenyi , epsilon = this_eps )
 
 	cv_dif1 <- 100*abs(cv(a1)-cv(b1))
-	cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)))
+	cv_diff2 <- 100*max(abs(cv(a2)[1:7]-cv(b2)[1:7]))
 
 	test_that("output svyrenyi",{
 	  expect_is(coef(a1),"numeric")
