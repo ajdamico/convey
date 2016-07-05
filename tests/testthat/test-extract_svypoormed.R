@@ -9,10 +9,10 @@ des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 a1 <- svypoormed(~eqincome, design = des_eusilc)
-a2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 8 ) , FUN = svypoormed, deff = FALSE)
+a2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 8 ) , FUN = svypoormed)
 
 b1 <- svypoormed(~eqincome, design = des_eusilc_rep)
-b2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc_rep , hsize < 8 ) , FUN = svypoormed, deff = FALSE)
+b2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc_rep , hsize < 8 ) , FUN = svypoormed)
 
 cv_dif1 <- 100*abs(cv(a1)-cv(b1))
 cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)))
@@ -70,7 +70,7 @@ if( .Machine$sizeof.pointer > 4 ){
 
 
 	c1 <- svypoormed( ~ eqincome , design = dbd_eusilc )
-	c2 <- svyby(~ eqincome, by = ~hsize, design = subset( dbd_eusilc , hsize < 8 ) , FUN = svypoormed, deff = FALSE)
+	c2 <- svyby(~ eqincome, by = ~hsize, design = subset( dbd_eusilc , hsize < 8 ) , FUN = svypoormed)
 
 	dbRemoveTable( conn , 'eusilc' )
 
