@@ -9,10 +9,10 @@ des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 a1 <- svypoormed(~eqincome, design = des_eusilc)
-a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svypoormed, deff = FALSE)
+a2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 8 ) , FUN = svypoormed, deff = FALSE)
 
 b1 <- svypoormed(~eqincome, design = des_eusilc_rep)
-b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svypoormed, deff = FALSE)
+b2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc_rep , hsize < 8 ) , FUN = svypoormed, deff = FALSE)
 
 cv_dif1 <- 100*abs(cv(a1)-cv(b1))
 cv_diff2 <- 100*max(abs(cv(a2)-cv(b2)))
@@ -70,7 +70,7 @@ if( .Machine$sizeof.pointer > 4 ){
 
 
 	c1 <- svypoormed( ~ eqincome , design = dbd_eusilc )
-	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svypoormed, deff = FALSE)
+	c2 <- svyby(~ eqincome, by = ~hsize, design = subset( dbd_eusilc , hsize < 8 ) , FUN = svypoormed, deff = FALSE)
 
 	dbRemoveTable( conn , 'eusilc' )
 
@@ -85,9 +85,9 @@ if( .Machine$sizeof.pointer > 4 ){
 
 # compare subsetted objects to svyby objects
 sub_des <- svypoormed( ~eqincome , design = subset( des_eusilc , hsize == 1) )
-sby_des <- svyby( ~eqincome, by = ~hsize, design = des_eusilc, FUN = svypoormed)
+sby_des <- svyby( ~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 8 ) , FUN = svypoormed)
 sub_rep <- svypoormed( ~eqincome , design = subset( des_eusilc_rep , hsize == 1) )
-sby_rep <- svyby( ~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svypoormed)
+sby_rep <- svyby( ~eqincome, by = ~hsize, design = subset( des_eusilc_rep , hsize < 8 ), FUN = svypoormed)
 
 test_that("subsets equal svyby",{
   expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
@@ -149,9 +149,9 @@ if( .Machine$sizeof.pointer > 4 ){
   dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
   sub_dbd <- svypoormed( ~eqincome , design = subset( dbd_eusilc , hsize == 1) )
-  sby_dbd <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svypoormed)
+  sby_dbd <- svyby( ~eqincome, by = ~hsize, design = subset( dbd_eusilc , hsize < 8 ) , FUN = svypoormed)
   sub_dbr <- svypoormed( ~eqincome , design = subset( dbd_eusilc_rep , hsize == 1) )
-  sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svypoormed)
+  sby_dbr <- svyby( ~eqincome, by = ~hsize, design = subset( dbd_eusilc_rep , hsize < 8 ) , FUN = svypoormed)
 
   dbRemoveTable( conn , 'eusilc' )
 
