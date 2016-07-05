@@ -1,4 +1,5 @@
 context("Poormed output")
+library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 dati = data.frame(1:nrow(eusilc), eusilc)
@@ -32,7 +33,7 @@ vardestd<-unlist(vardpoor_linpoormedd$value$poor_people_median)
 varsed<-sapply(data.frame(vardpoor_linpoormedd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_poormedd <- svyby(~eqincome, by = ~hsize, design = des_eusilc,
+fun_poormedd <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 8 ) ,
   FUN = svypoormed,deff = FALSE)
 convestd<- coef(fun_poormedd)
 attributes(convestd) <- NULL
@@ -42,6 +43,8 @@ convsed<- SE(fun_poormedd)
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest, convest)
   expect_equal(varse, convse)
-  expect_equal(vardestd, convestd)
-  expect_equal(varsed, convsed)
+  expect_equal(vardestd[1:7], convestd)
+  expect_identical(vardestd[8:9],as.numeric(c(NA,NA)))
+  expect_equal(varsed[1:7], convsed)
+  expect_identical(varsed[8:9],c(0,0))
 })

@@ -34,7 +34,7 @@ varsed<-sapply(data.frame(vardpoor_rmpgd$lin)[,2:10],function(t) SE_lin2(t,des_e
 attributes (varsed) <- NULL
 # library convey
 
-fun_rmpgd <- svyby(~eqincome, by = ~hsize, design = des_eusilc,
+fun_rmpgd <- svyby(~eqincome, by = ~hsize, design = subset(des_eusilc,hsize<8),
 FUN = svyrmpg, deff = FALSE)
 
 convestd<- coef(fun_rmpgd)
@@ -46,6 +46,8 @@ convsed<- SE(fun_rmpgd)
 test_that("compare results convey vs vardpoor",{
   expect_equal(vardest,100*convest)
   expect_equal(varse, 100*convse)
-  expect_equal(vardestd, 100*convestd)
-  expect_equal(varsed, 100*convsed )
+  expect_equal(vardestd[1:7], 100*convestd)
+  expect_equal(vardestd[8:9], as.numeric(c(NA,NA)))
+  expect_equal(varsed[1:7], 100*convsed )
+  expect_equal(varsed[8:9], c(0,0) )
 })
