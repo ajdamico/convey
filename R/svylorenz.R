@@ -266,7 +266,8 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
       #u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
       v_k <- incvar * H_fn( pc * sum(w) - cumsum( c(0,w[-length(w)]) ) ) + ( pc - 1*(incvar < quant) )*quant
       u_i <- 1/design$prob
-      u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
+      #u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
+      u_i <- ( v_k - s.quant * incvar ) / sum( w * incvar )
       u_i <- u_i[ sort(ordincvar) ]
 
       se[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
@@ -298,8 +299,8 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     CI.U[i] <- L.p[i] + se[i] * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
   }
 
-  cis <- structure(c(CI.L,CI.U), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
-
+  cis <- structure( rbind( CI.L,CI.U ), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
+    
   rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
@@ -453,7 +454,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   CI.L <- as.numeric( L.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE ) )
   CI.U <- as.numeric( L.p + se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE ) )
 
-  cis <- structure(c(CI.L,CI.U), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
+  cis <- structure(rbind(CI.L,CI.U), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
   rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
