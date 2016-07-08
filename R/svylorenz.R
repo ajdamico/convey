@@ -102,6 +102,8 @@
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
+#' dbDisconnect( conn , shutdown = TRUE )
+#'
 #' }
 #' 
 #' @importFrom grDevices adjustcolor
