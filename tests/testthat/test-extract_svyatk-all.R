@@ -76,9 +76,6 @@ if( .Machine$sizeof.pointer > 4 ){
 	  expect_equal(SE(a1), SE(c1))
 	  expect_equal(SE(a2), SE(c2))
 	})
-
-	dbDisconnect( conn , shutdown = TRUE )	
-	
 }
 
 
@@ -172,7 +169,6 @@ if( .Machine$sizeof.pointer > 4 ){
 		expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
 	})
 
-	dbDisconnect( conn , shutdown = TRUE )
-		
+
 }
 

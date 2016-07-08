@@ -84,8 +84,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 				expect_equal(SE(a2), SE(c2))
 			})
 
-			dbDisconnect( conn , shutdown = TRUE )
-		
 		}
 
 		# compare subsetted objects to svyby objects
@@ -158,8 +156,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 
 			dbRemoveTable( conn , 'eusilc' )
 
-			dbDisconnect( conn , shutdown = TRUE )
-		
 		}
 	}
 }
