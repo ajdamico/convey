@@ -95,8 +95,6 @@ svygei( ~eqincome , design = subset(dbd_eusilc, eqincome > 0 ), epsilon = 1 )
 
 dbRemoveTable( conn , 'eusilc' )
 
-dbDisconnect( conn , shutdown = TRUE )
-
 }
 
 }

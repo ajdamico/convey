@@ -90,8 +90,6 @@ svypoormed( ~ eqincome , design = dbd_eusilc )
 
 dbRemoveTable( conn , 'eusilc' )
 
-dbDisconnect( conn , shutdown = TRUE )
-
 }
 
 }

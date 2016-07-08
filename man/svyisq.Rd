@@ -88,8 +88,6 @@ svyisq( ~ eqincome , design = dbd_eusilc, .20 )
 
 dbRemoveTable( conn , 'eusilc' )
 
-dbDisconnect( conn , shutdown = TRUE )
-
 }
 
 }
