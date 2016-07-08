@@ -126,6 +126,8 @@ svygei( ~py010n , dbd_eusilc, epsilon = 2, na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )
 
+dbDisconnect( conn , shutdown = TRUE )
+
 }
 
 }

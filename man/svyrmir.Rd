@@ -102,6 +102,8 @@ svyrmir( ~eqincome , design = dbd_eusilc , age = ~age )
 
 dbRemoveTable( conn , 'eusilc' )
 
+dbDisconnect( conn , shutdown = TRUE )
+
 }
 
 }

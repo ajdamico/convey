@@ -131,6 +131,8 @@ svyfgt(~eqincome, dbd_eusilc, g=1, type_thresh= "relm")
 
 dbRemoveTable( conn , 'eusilc' )
 
+dbDisconnect( conn , shutdown = TRUE )
+
 }
 
 }
