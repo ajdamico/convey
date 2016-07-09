@@ -72,8 +72,6 @@ if( .Machine$sizeof.pointer > 4 ){
 
 	dbRemoveTable( conn , 'eusilc' )
 
-	dbDisconnect( db , shutdown = monetdb_shutdowns )
-
 	test_that("database svyrmir",{
 	  expect_equal(coef(a1), coef(c1))
 	  expect_equal(coef(a2), coef(c2))
@@ -154,8 +152,6 @@ if( .Machine$sizeof.pointer > 4 ){
 	sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svyrmir , age = ~age )
 
 	dbRemoveTable( conn , 'eusilc' )
-
-	dbDisconnect( db , shutdown = monetdb_shutdowns )
 
 
 	# compare database-backed designs to non-database-backed designs
