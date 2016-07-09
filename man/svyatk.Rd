@@ -131,6 +131,8 @@ svyatk( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 ,
 
 dbRemoveTable( conn , 'eusilc' )
 
+dbDisconnect( conn , shutdown = TRUE )
+
 }
 
 }

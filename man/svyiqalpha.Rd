@@ -87,6 +87,8 @@ svyiqalpha( ~ eqincome , design = dbd_eusilc, .50 )
 
 dbRemoveTable( conn , 'eusilc' )
 
+dbDisconnect( conn , shutdown = TRUE )
+
 }
 
 }

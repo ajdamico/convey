@@ -120,6 +120,8 @@ legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red"
 
 dbRemoveTable( conn , 'eusilc' )
 
+dbDisconnect( conn , shutdown = TRUE )
+
 }
 
 }
