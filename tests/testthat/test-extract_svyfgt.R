@@ -156,7 +156,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 
 			dbRemoveTable( conn , 'eusilc' )
 
-			dbDisconnect( db , shutdown = monetdb_shutdowns )
+			dbDisconnect( conn , shutdown = monetdb_shutdowns )
 
 		}
 	}

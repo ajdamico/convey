@@ -69,7 +69,7 @@ if( .Machine$sizeof.pointer > 4 ){
 
 	dbRemoveTable( conn , 'eusilc' )
 
-	dbDisconnect( db , shutdown = monetdb_shutdowns )
+	dbDisconnect( conn , shutdown = monetdb_shutdowns )
 
 	test_that("database svyarpt",{
 	  expect_equal(coef(a1), coef(c1))
@@ -152,7 +152,7 @@ if( .Machine$sizeof.pointer > 4 ){
 
 	dbRemoveTable( conn , 'eusilc' )
 
-	dbDisconnect( db , shutdown = monetdb_shutdowns )
+	dbDisconnect( conn , shutdown = monetdb_shutdowns )
 
 
 	# compare database-backed designs to non-database-backed designs
