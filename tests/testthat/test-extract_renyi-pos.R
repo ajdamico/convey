@@ -79,6 +79,8 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 
 		dbRemoveTable( conn , 'eusilc' )
 
+		dbDisconnect( db , shutdown = monetdb_shutdowns )
+
 		test_that("database svyrenyi",{
 		  expect_equal(coef(a1), coef(c1))
 		  expect_equal(coef(a2), coef(c2))
@@ -163,6 +165,8 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 		sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svyrenyi , epsilon = this_eps )
 
 		dbRemoveTable( conn , 'eusilc' )
+
+	dbDisconnect( db , shutdown = monetdb_shutdowns )
 
 
 		# compare database-backed designs to non-database-backed designs
