@@ -321,7 +321,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     if ( !add ) do.call( svylorenzplot_wrap , plot_dots )
 
     if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
-    abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
+    abline( 0 , 1 , ylim = c( 0 , 1 ) , plot_dots )
 	
     if( empirical ) {
 		lines_dots <- plot_dots
@@ -502,7 +502,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     if ( !add ) do.call( svylorenzplot_wrap , plot_dots )
 
     if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
-    abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
+    abline( 0 , 1 , ylim = c( 0 , 1 ) , plot_dots )
 	
     if( empirical ) {
 		lines_dots <- plot_dots
