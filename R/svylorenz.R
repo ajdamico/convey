@@ -69,7 +69,7 @@
 #'
 #' # library(MonetDBLite) is only available on 64-bit machines,
 #' # so do not run this block of code in 32-bit R
-#' 
+#'
 #' # database-backed design
 #' library(MonetDBLite)
 #' library(DBI)
@@ -80,13 +80,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svylorenz( ~eqincome , dbd_eusilc, seq(0,1,.05), alpha = .01 )
@@ -105,7 +105,7 @@
 #' dbDisconnect( conn , shutdown = TRUE )
 #'
 #' }
-#' 
+#'
 #' @importFrom grDevices adjustcolor
 #' @importFrom graphics abline lines plot points polygon
 #' @importFrom utils tail
@@ -228,6 +228,9 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   w <- w[ordincvar]
   incvar <- incvar[ordincvar]
 
+  incvar <- incvar[w != 0]
+  w <- w[w != 0]
+
   average <- sum( w * incvar ) / sum( w )
   if ( is.na(average) ) {
     variance <- as.matrix(NA)
@@ -268,8 +271,8 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
       #u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
       v_k <- incvar * H_fn( pc * sum(w) - cumsum( c(0,w[-length(w)]) ) ) + ( pc - 1*(incvar < quant) )*quant
       u_i <- 1/design$prob
-      #u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
-      u_i <- ( v_k - s.quant * incvar ) / sum( w * incvar )
+      u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
+      #u_i <- ( v_k - s.quant * incvar ) / sum( w * incvar )
       u_i <- u_i[ sort(ordincvar) ]
 
       se[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
@@ -302,7 +305,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
 
   cis <- structure( rbind( CI.L,CI.U ), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
-    
+
   rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
