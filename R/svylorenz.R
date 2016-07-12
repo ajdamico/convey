@@ -324,14 +324,14 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
 	
     if( empirical ) {
-		lines_dots <- plots_dots
+		lines_dots <- plot_dots
 		lines_dots$x <- E_p
 		lines_dots$y <- E_L.p
 		lines_dots$col = curve.cols
 		do.call( svylorenzlines_wrap , lines_dots )
 	}
 	
-	points_dots <- plots_dots
+	points_dots <- plot_dots
 	points_dots$x <- quantiles
 	points_dots$y <- L.p
 	points_dots$col <- curve.col
@@ -505,14 +505,14 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     abline( 0 , 1 , ylim = c( 0 , 1 ) , ... )
 	
     if( empirical ) {
-		lines_dots <- plots_dots
+		lines_dots <- plot_dots
 		lines_dots$x <- E_p
 		lines_dots$y <- E_L.p
 		lines_dots$col = curve.cols
 		do.call( svylorenzlines_wrap , lines_dots )
 	}
 	
-	points_dots <- plots_dots
+	points_dots <- plot_dots
 	points_dots$x <- quantiles
 	points_dots$y <- L.p
 	points_dots$col <- curve.col
