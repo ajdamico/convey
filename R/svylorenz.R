@@ -355,6 +355,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
   
   return(rval)
+  
 }
 
 
