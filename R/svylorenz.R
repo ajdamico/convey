@@ -327,7 +327,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 		lines_dots <- plot_dots
 		lines_dots$x <- E_p
 		lines_dots$y <- E_L.p
-		lines_dots$col = curve.cols
+		lines_dots$col = curve.col
 		do.call( svylorenzlines_wrap , lines_dots )
 	}
 	
@@ -509,7 +509,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 		lines_dots <- plot_dots
 		lines_dots$x <- E_p
 		lines_dots$y <- E_L.p
-		lines_dots$col = curve.cols
+		lines_dots$col = curve.col
 		do.call( svylorenzlines_wrap , lines_dots )
 	}
 	
