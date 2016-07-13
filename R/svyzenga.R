@@ -15,7 +15,10 @@
 #'
 #' @seealso \code{\link{svygini}}
 #'
-#' @references Matti Langel (2012). Measuring inequality in finite population sampling.
+#' @references Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
+#' Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
+#'
+#' Matti Langel (2012). Measuring inequality in finite population sampling.
 #' PhD thesis: Universite de Neuchatel,
 #' URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 #'
@@ -102,9 +105,9 @@
 #' @export
 svyzenga <- function(formula, design, ...) {
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-	UseMethod("svyzenga", design)
+  UseMethod("svyzenga", design)
 
 }
 
@@ -112,36 +115,38 @@ svyzenga <- function(formula, design, ...) {
 #' @export
 svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
+  w <- 1/design$prob
 
-  y <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-
-  d <- 1/design$prob
-
-  if ( any( y[d != 0] <= 0, na.rm = TRUE ) ) { warning( "The function is defined for strictly positive incomes only.")
-    nps <- y <= 0
+  if ( any( incvar[w != 0] <= 0, na.rm = TRUE ) ) { warning( "The function is defined for strictly positive incomes only.")
+    nps <- incvar <= 0
     design <- design[nps == 0 ]
     if (length(nps) > length(design$prob))
-      y <- y[nps == 0]
-    else y[nps > 0] <- 0
+      incvar <- incvar[nps == 0]
+    else incvar[nps > 0] <- 0
   }
 
   if (na.rm) {
-    nas <- is.na(y)
+    nas <- is.na(incvar)
     design <- design[nas == 0, ]
     if (length(nas) > length(design$prob))
-      y <- y[nas == 0]
-    else y[nas > 0] <- 0
+      incvar <- incvar[nas == 0]
+    else incvar[nas > 0] <- 0
   }
 
-  d <- 1/design$prob
+  w <- 1/design$prob
 
-  y <- y[ d != 0 ]
-  d <- d[ d != 0 ]
+  ordincvar <- order(incvar)
+  w <- w[ ordincvar ]
+  incvar <- incvar[ ordincvar ]
 
-  if ( any( is.na(y) ) ) {
+  incvar <- incvar[ w != 0 ]
+  w <- w[ w != 0 ]
+
+  if ( any( is.na(incvar) ) ) {
     rval <- as.numeric(NA)
     variance <- as.matrix(NA)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -151,58 +156,36 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
     return(rval)
 
   }
-  ordy <- order(y)
-  d <- d[ ordy ]
-  y <- y[ ordy ]
 
-  D = sum(d)
-  D_k = cumsum(d)
-  D_k_1 = c(0, D_k[ -length(D_k) ] )
-  alpha_k = D_k/D
-  alpha_k_1 = c(0, alpha_k[ -length(alpha_k) ] )
-
-  Y = sum( d * y )
-  Y_k = cumsum( d * y )
-  Y_k_1 = c(0, Y_k[ -length(Y_k) ] )
-  k <- which( (alpha_k_1 < alpha_k ) & ( alpha_k <= alpha_k) )
-  n <- max(k)
-  Y_alpha = Y_k_1 + y * ( alpha_k*D - D_k_1)
-
-  A_k <- NULL
-  A_k[ k == 0 ] <- 0
-  A_k[ k == 1 ] <- 0
-  A_k[ k >= 2 ] <- (D_k_1*y - Y_k_1)[ k >= 2 ]
-
-  Z_k <- NULL
-  Z_k[ k == 1 ] <- ( Y / ( D * y[ k==1 ] ) - 1 ) * log( Y / (Y - Y_k[ k == 1] ) )
-  Z_k[ k > 1 & k < n ] <- ( ( A_k/(Y + A_k) ) * log( D_k/D_k_1 ) + ( Y/(D*y) - Y/( Y + A_k ) ) * log( ( Y - Y_k_1 ) / (Y - Y_k ) ) ) [ k > 1 & k < n ]
-  Z_k[ k == n ] <- ( 1 - Y/( D * y[ k==n ] ) ) * log( D_k[k==n]/D_k[k==(n-1)] )
-
-  rval <- sum( Z_k )
+  N <- sum(w)
+  Tot <- sum(w * incvar)
+  H_y <- cumsum(w)
+  K_y <- Tot - ( cumsum(w * incvar) - w*incvar )
+  # K_y <- Tot - cumsum(w * incvar)
 
 
-  v_l <- NULL
+  rval <- 1 - sum(  w * ( N - H_y )*( Tot - K_y ) / ( N * H_y * K_y ) )
+  # sum( w/N -  w * ( N - H_y )*( Tot - K_y ) / ( N * H_y * K_y ) )
 
-  for ( l in 1:length(y) ) {
+  lin_zenga <- function(i) {
 
-    u_l <- NULL
-    u_l[ k == 1 ] = ( (D*y[l] - Y)/(D^2)*y[1])*log( Y / ( Y - Y_k[1] ) ) + y[l]*( Y/(D*y[1]) - 1 ) * ( 1/Y - 1 * (l > 1)/ ( Y - Y_k [1] ) )
-    u_l[ k == n ] = ( ( Y - D*y[l] )/( y[k==n]*D^2 ) ) * log ( D / D_k[ k == (n-1) ] ) + ( 1 - Y/(D*y[k==n]) ) * ( 1/D - 1*(l < n)/D_k[k == (n-1) ] )
-    u_l[ k > 1 & k < n ] = ( ( ( Y * ( y - y[l] ) * ( l < k ) - A_k * y[l] )/(Y + A_k)^2 ) * log( D_k*( Y - Y_k_1 )/( D_k_1 * (Y - Y_k) ) ) +
-                               (A_k/(Y + A_k))*( (l <= k)/D_k - (l < k)/D_k_1 ) + ( ( D*y[l] - Y )/(y*D^2) )*log( (Y - Y_k_1)/(Y - Y_k) ) +
-                               ( Y*y[l]/(Y - Y_k_1 ) )*( 1*( l == k ) - ( (y*d)*(l > k)/(Y - Y_k) ) ) * ( 1/(D*y) - 1/(Y + A_k) ) ) [ k > 1 & k < n ]
+    u <- incvar[i]
 
-    v_l[l] <- sum( u_l )
+    - ( N - H_y[i] )*( Tot - K_y[i] ) / ( N * H_y[i] * K_y[i] ) -
+      (1/N^2) * sum( w * ( Tot - K_y ) / K_y ) -
+      (u/N) * sum( w * (N - H_y) / (H_y * K_y) ) +
+      sum( w * ( ( Tot - K_y ) / ( H_y^2 * K_y ) ) * ( incvar >= u ) ) +
+      (Tot*u/N) * sum( w * ( ( N - H_y ) / ( H_y * K_y^2 ) ) * ( u >= incvar ) )
 
   }
 
-  v_l <- v_l[ order(ordy) ]
+  z_if <- 1/design$prob
+  z_if <- z_if[ordincvar]
+  z_if[ z_if != 0 ] <- as.numeric( lapply(1:length(incvar), function(x) lin_zenga(i = x ) ) )
+  z_if <- z_if[ order(ordincvar) ]
 
-  v <- 1/design$prob
-  v[ v!= 0 ] <- v_l
-
-  variance <- survey::svyrecvar(v/design$prob, design$cluster,
-                                design$strata, design$fpc, postStrata = design$postStrata)
+  variance <- survey::svyrecvar( z_if/design$prob, design$cluster,
+                                 design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- "cvystat"
@@ -218,7 +201,7 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
 svyzenga.svyrep.design <- function(formula, design, na.rm=FALSE, ...) {
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
 
   if(na.rm){
@@ -238,72 +221,8 @@ svyzenga.svyrep.design <- function(formula, design, na.rm=FALSE, ...) {
 
   }
 
-  # Auxiliary functions:
-  Y_fn <- function( x, weights, desl = 0, ordered = FALSE ) {
-    x <- x[weights != 0 ]
-    weights <- weights[weights != 0 ]
-    ordx <- order(x)
-
-    x <- x[ ordx ]
-    weights <- weights[ ordx ]
-
-    result <- cumsum(weights * x)
-
-    if (desl != 0) {
-      result <- c( rep(0,desl), result[ seq( 1, length(result) - desl, 1 ) ] )
-    }
-
-    if (ordered) {
-      return( result )
-    }
-
-    result[order(ordx)]
-
-  }
-
-  D_fn <- function( x, weights, desl = 0, ordered = FALSE ) {
-    x <- x[weights != 0 ]
-    weights <- weights[weights != 0 ]
-    ordx <- order(x)
-
-    x <- x[ ordx ]
-    weights <- weights[ ordx ]
-
-    result <- cumsum(weights)
-
-    if (desl != 0) {
-      result <- c( rep(0,desl), result[ seq( 1, length(result) - desl, 1 ) ] )
-    }
-
-    if (ordered) {
-      return( result )
-    }
-
-    result[order(ordx)]
-
-  }
-
-
-  A_fn <- function( x, weights, ordered = FALSE ) {
-
-    x <- x[weights != 0 ]
-    weights <- weights[weights != 0 ]
-    ordx <- order(x)
-
-    x <- x[ ordx ]
-    weights <- weights[ ordx ]
-
-    result <- D_fn(x,weights,1) * x - Y_fn(x,weights,1)
-
-    if (ordered) {
-      return(result)
-    }
-
-    result[ order(ordx) ]
-
-  }
-
   calc.zenga <- function( x, weights ) {
+
     x <- x[weights != 0 ]
     weights <- weights[weights != 0 ]
     ordx <- order(x)
@@ -311,14 +230,14 @@ svyzenga.svyrep.design <- function(formula, design, na.rm=FALSE, ...) {
     x <- x[ ordx ]
     weights <- weights[ ordx ]
 
-    z_1 <- ( sum(weights*x)/(sum(weights) * x[1] ) - 1) * log( sum(weights*x)/(sum(weights*x) - Y_fn(x,weights,0,TRUE)[1]) )
-    z_n <- (1 - sum(weights*x)/(sum(weights)*x[length(x)])) * log(D_fn(x,weights,0,TRUE)[length(x)]/D_fn(x,weights,1,TRUE)[length(x)])
-    z <- (A_fn(x,weights)/(sum(weights*x)+A_fn(x,weights))) * log(D_fn(x,weights)/D_fn(x,weights,1)) +
-      ( sum(weights * x)/(sum(weights) * x) - sum(weights*x)/(sum(weights*x)+A_fn(x,weights) ) ) *
-      log( (sum(weights * x) - Y_fn(x,weights,1))/(sum(weights * x) - Y_fn(x,weights,0)) )
-    z[1] <- z_1
-    z[length(z)] <- z_n
-    return(sum(z))
+    N <- sum(weights)
+    Tot <- sum(weights * x)
+    H_y <- cumsum(weights)
+    K_y <- Tot - ( cumsum(weights * x) - weights*x )
+    # K_y <- Tot - cumsum(weights * incvar)
+
+
+    1 - sum(  weights * ( N - H_y )*( Tot - K_y ) / ( N * H_y * K_y ) )
 
   }
 
@@ -358,7 +277,7 @@ svyzenga.DBIsvydesign <-
       full_design <- attr( design , "full_design" )
 
       full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                                updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+                                       updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 
       attr( design , "full_design" ) <- full_design
 
@@ -367,7 +286,7 @@ svyzenga.DBIsvydesign <-
     }
 
     design$variables <- getvars(formula, design$db$connection, design$db$tablename,
-                                         updates = design$updates, subset = design$subset)
+                                updates = design$updates, subset = design$subset)
 
     NextMethod("svyzenga", design)
   }

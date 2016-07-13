@@ -116,6 +116,9 @@ dbDisconnect( conn , shutdown = TRUE )
 Guilherme Jacob, Djalma Pessoa and Anthony Damico
 }
 \references{
+Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
+Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
+
 Matti Langel (2012). Measuring inequality in finite population sampling.
 PhD thesis: Universite de Neuchatel,
 URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
