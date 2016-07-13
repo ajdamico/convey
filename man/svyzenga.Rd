@@ -34,7 +34,7 @@ Estimate the Zenga index, a measure of inequality
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 }
 \examples{
-\dontrun{
+
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -70,6 +70,7 @@ svyzenga(~py010n, subset( des_eusilc_rep, py010n > 0 | is.na(py010n)), na.rm = T
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
+\dontrun{
 
 # database-backed design
 library(MonetDBLite)
