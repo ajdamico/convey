@@ -173,17 +173,20 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
 			this_w_sum = sum( w ) 
 		)
 
-	zenga_df <-
-		transform(
-			zenga_df ,
-
-			line1 = - ( this_N - this_H_y )*( this_Tot - this_K_y ) / ( this_N * this_H_y * this_K_y ) ,
-			line2 = -	(1/this_N^2) * sum( w * ( Tot - K_y ) / K_y ) ,
-			line3 = - (this_incvar/this_N) * sum( w * (this_N - this_H_y) / (this_H_y * this_K_y) ) ,
-			line4 = rev( cumsum( rev( this_w * ( ( this_Tot - this_K_y ) / ( this_H_y ^ 2 * this_K_y ) ) ) ) ) ,
-			line5 = ( this_Tot * this_incvar / this_N ) * cumsum( this_w * ( ( this_N - this_H_y ) / ( this_H_y * this_K_y ^ 2 ) ) )
-			
-		)
+	zenga_df[ , 'line1' ] <- 
+		- ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] )*( zenga_df[ , 'this_Tot' ] - zenga_df[ , 'this_K_y' ] ) / ( zenga_df[ , 'this_N' ] * zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ] )
+		
+	zenga_df[ , 'line2' ] <-
+		- ( 1 / zenga_df[ , 'this_N' ]^2 ) * sum( w * ( zenga_df[ , 'Tot' ] - zenga_df[ , 'K_y' ] ) / zenga_df[ , 'K_y' ] )
+		
+	zenga_df[ , 'line3' ] <-
+		- ( zenga_df[ , 'this_incvar' ] / zenga_df[ , 'this_N' ] ) * sum( w * ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] ) / ( zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ] ) )
+		
+	zenga_df[ , 'line4' ] <-
+		rev( cumsum( rev( zenga_df[ , 'this_w' ] * ( ( zenga_df[ , 'this_Tot' ] - zenga_df[ , 'this_K_y' ] ) / ( zenga_df[ , 'this_H_y' ]^2 * zenga_df[ , 'this_K_y' ] ) ) ) ) ) 
+		
+	zenga_df[ , 'line5' ] <-
+		( zenga_df[ , 'this_Tot' ] * zenga_df[ , 'this_incvar' ] / zenga_df[ , 'this_N' ] ) * cumsum( zenga_df[ , 'this_w' ] * ( ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] ) / ( zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ]^2 ) ) )
 		
 	my_outvec <- rowSums( zenga_df[ , paste0( 'line' , 1:5 ) ] )
 
