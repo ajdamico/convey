@@ -160,21 +160,41 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
   rval <- 1 - sum(  w * ( N - H_y )*( Tot - K_y ) / ( N * H_y * K_y ) )
   # sum( w/N -  w * ( N - H_y )*( Tot - K_y ) / ( N * H_y * K_y ) )
 
-  lin_zenga <- function(i) {
+  
+  
+	zenga_df <- 
+		data.frame( 
+			this_incvar = incvar ,
+			this_N = N ,
+			this_H_y = H_y ,
+			this_K_y = K_y ,
+			this_Tot = Tot , 
+			this_w = w ,
+			this_w_sum = sum( w ) 
+		)
 
-    u <- incvar[i]
+	zenga_df[ , 'line1' ] <- 
+		- ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] )*( zenga_df[ , 'this_Tot' ] - zenga_df[ , 'this_K_y' ] ) / ( zenga_df[ , 'this_N' ] * zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ] )
+		
+	zenga_df[ , 'line2' ] <-
+		- ( 1 / zenga_df[ , 'this_N' ]^2 ) * sum( w * ( zenga_df[ , 'this_Tot' ] - zenga_df[ , 'this_K_y' ] ) / zenga_df[ , 'this_K_y' ] )
+		
+	zenga_df[ , 'line3' ] <-
+		- ( zenga_df[ , 'this_incvar' ] / zenga_df[ , 'this_N' ] ) * sum( w * ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] ) / ( zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ] ) )
+		
+	zenga_df[ , 'line4' ] <-
+		rev( cumsum( rev( zenga_df[ , 'this_w' ] * ( ( zenga_df[ , 'this_Tot' ] - zenga_df[ , 'this_K_y' ] ) / ( zenga_df[ , 'this_H_y' ]^2 * zenga_df[ , 'this_K_y' ] ) ) ) ) ) 
+		
+	zenga_df[ , 'line5' ] <-
+		( zenga_df[ , 'this_Tot' ] * zenga_df[ , 'this_incvar' ] / zenga_df[ , 'this_N' ] ) * cumsum( zenga_df[ , 'this_w' ] * ( ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] ) / ( zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ]^2 ) ) )
+		
+	my_outvec <- rowSums( zenga_df[ , paste0( 'line' , 1:5 ) ] )
 
-    - ( N - H_y[i] )*( Tot - K_y[i] ) / ( N * H_y[i] * K_y[i] ) -
-      (1/N^2) * sum( w * ( Tot - K_y ) / K_y ) -
-      (u/N) * sum( w * (N - H_y) / (H_y * K_y) ) +
-      sum( w * ( ( Tot - K_y ) / ( H_y^2 * K_y ) ) * ( incvar >= u ) ) +
-      (Tot*u/N) * sum( w * ( ( N - H_y ) / ( H_y * K_y^2 ) ) * ( u >= incvar ) )
-
-  }
-
+  
+ 
   z_if <- 1/design$prob
   z_if <- z_if[ordincvar]
-  z_if[ z_if != 0 ] <- as.numeric( lapply(1:length(incvar), function(x) lin_zenga(i = x ) ) )
+  z_if[ z_if != 0 ] <- as.numeric( my_outvec )
   z_if <- z_if[ order(ordincvar) ]
 
   variance <- survey::svyrecvar( z_if/design$prob, design$cluster,
