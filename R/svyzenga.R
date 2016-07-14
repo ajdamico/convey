@@ -177,7 +177,7 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
 		- ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] )*( zenga_df[ , 'this_Tot' ] - zenga_df[ , 'this_K_y' ] ) / ( zenga_df[ , 'this_N' ] * zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ] )
 		
 	zenga_df[ , 'line2' ] <-
-		- ( 1 / zenga_df[ , 'this_N' ]^2 ) * sum( w * ( zenga_df[ , 'Tot' ] - zenga_df[ , 'K_y' ] ) / zenga_df[ , 'K_y' ] )
+		- ( 1 / zenga_df[ , 'this_N' ]^2 ) * sum( w * ( zenga_df[ , 'this_Tot' ] - zenga_df[ , 'this_K_y' ] ) / zenga_df[ , 'this_K_y' ] )
 		
 	zenga_df[ , 'line3' ] <-
 		- ( zenga_df[ , 'this_incvar' ] / zenga_df[ , 'this_N' ] ) * sum( w * ( zenga_df[ , 'this_N' ] - zenga_df[ , 'this_H_y' ] ) / ( zenga_df[ , 'this_H_y' ] * zenga_df[ , 'this_K_y' ] ) )
