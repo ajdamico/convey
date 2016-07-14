@@ -48,7 +48,7 @@ Estimate ratio of the total income received by the highest earners to the total 
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 }
 \examples{
-\dontrun{
+
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -74,6 +74,7 @@ svyqsr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
+\dontrun{
 
 # database-backed design
 library(MonetDBLite)
