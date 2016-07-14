@@ -297,12 +297,9 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
   se <- sqrt(se)
 
-  CI.L <- NULL
-  CI.U <- NULL
-  for (i in seq_along(se) ) {
-    CI.L[i] <- L.p[i] - se[i] * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
-    CI.U[i] <- L.p[i] + se[i] * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
-  }
+
+  CI.L <- L.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
+  CI.U <- L.p + se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
 
   cis <- structure( rbind( CI.L,CI.U ), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
 
@@ -312,17 +309,17 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   class(rval) <- "svyquantile"
 
   if ( plot ) {
-  
+
 	plot_dots <- list( ... )
-	
+
 	# remove `deff` argument sent by svyby
 	if( 'deff' %in% names( plot_dots ) ) plot_dots$deff <- NULL
-  
+
     if ( !add ) do.call( svylorenzplot_wrap , plot_dots )
 
     if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
     abline( 0 , 1 , ylim = c( 0 , 1 ) , plot_dots )
-	
+
     if( empirical ) {
 		lines_dots <- plot_dots
 		lines_dots$x <- E_p
@@ -330,32 +327,32 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 		lines_dots$col = curve.col
 		do.call( svylorenzlines_wrap , lines_dots )
 	}
-	
+
 	points_dots <- plot_dots
 	points_dots$x <- quantiles
 	points_dots$y <- L.p
 	points_dots$col <- curve.col
-	
+
 	do.call( svylorenzpoints_wrap , points_dots )
 
     if (ci) {
       X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
       Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-	  
+
 	  polygon_dots <- plot_dots
 	  polygon_dots$x <- X.Vec
 	  polygon_dots$y <- Y.Vec
 	  polygon_dots$col <- adjustcolor( curve.col, alpha.f = .2)
 	  polygon_dots$border <- NA
-	  
+
       do.call( svylorenzpolygon_wrap , polygon_dots )
 
     }
 
   }
-  
+
   return(rval)
-  
+
 }
 
 
@@ -496,15 +493,15 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   if ( plot ) {
 
 	plot_dots <- list( ... )
-	
+
 	# remove `deff` argument sent by svyby
 	if( 'deff' %in% names( plot_dots ) ) plot_dots$deff <- NULL
-  
+
     if ( !add ) do.call( svylorenzplot_wrap , plot_dots )
 
     if( any( c( 'xlim' , 'ylim' , 'col' ) %in% names( list( ... ) ) ) ) stop( "xlim=, ylim=, and col= parameters are fixed within `svylorenz`.  use curve.col= to change the line color" )
     abline( 0 , 1 , ylim = c( 0 , 1 ) , plot_dots )
-	
+
     if( empirical ) {
 		lines_dots <- plot_dots
 		lines_dots$x <- E_p
@@ -512,24 +509,24 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 		lines_dots$col = curve.col
 		do.call( svylorenzlines_wrap , lines_dots )
 	}
-	
+
 	points_dots <- plot_dots
 	points_dots$x <- quantiles
 	points_dots$y <- L.p
 	points_dots$col <- curve.col
-	
+
 	do.call( svylorenzpoints_wrap , points_dots )
 
     if (ci) {
       X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
       Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
-	  
+
 	  polygon_dots <- plot_dots
 	  polygon_dots$x <- X.Vec
 	  polygon_dots$y <- Y.Vec
 	  polygon_dots$col <- adjustcolor( curve.col, alpha.f = .2)
 	  polygon_dots$border <- NA
-	  
+
       do.call( svylorenzpolygon_wrap , polygon_dots )
 
     }
