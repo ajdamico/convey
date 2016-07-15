@@ -127,11 +127,11 @@ svyrmpg.survey.design <-
 			if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
 		}
 
-		ARPT <- svyarpt (formula = formula, full_design, order = order, percent = percent, na.rm = na.rm )
+		ARPT <- svyarpt(formula = formula, full_design, order = order, percent = percent, na.rm = na.rm )
 		arpt <- coef(ARPT)
 		linarpt <- attr(ARPT, "lin")
 
-		POORMED <- svypoormed (formula = formula, design = design, order = order, percent = percent, na.rm = na.rm)
+		POORMED <- svypoormed(formula = formula, design = design, order = order, percent = percent, na.rm = na.rm)
 		medp <- coef(POORMED)
 		linmedp <- attr(POORMED, "lin")
 

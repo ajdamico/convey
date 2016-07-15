@@ -115,7 +115,9 @@ svypoormed.survey.design <-
 		}
 
 		w <- 1 / design$prob
-		ind <- names(design$prob)
+
+		if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+		
 		N <- sum(w)
 
 		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
@@ -127,7 +129,9 @@ svypoormed.survey.design <-
 		}
 
 		wf <- 1 / full_design$prob
-		ncom<- names(full_design$prob)
+
+		if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+
 		htot <- h_fun(incvec, wf)
 
 		ARPT <- svyarpt(formula = formula, full_design, order = order, percent = percent, na.rm = na.rm)

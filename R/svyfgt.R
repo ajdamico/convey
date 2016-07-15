@@ -162,7 +162,9 @@ svyfgt.survey.design <-
     }
 
     w <- 1/design$prob
-    ind <- names(design$prob)
+
+	if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+
     N <- sum(w)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
@@ -178,8 +180,10 @@ svyfgt.survey.design <-
     }
 
     wf <- 1/full_design$prob
-    ncom <- names(full_design$prob)
-    htot <- h_fun(incvec, wf)
+
+	if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+
+	htot <- h_fun(incvec, wf)
     if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else
     ID <- 1 * ( ncom %in% ind )
 
