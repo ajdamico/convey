@@ -68,23 +68,23 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 # linearized design
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep( des_eusilc )
-svyzengacurve( ~eqincome , des_eusilc, seq(0,1,.05), alpha = .01 )
+svyzengacurve( ~eqincome , des_eusilc,  alpha = .01 )
 
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
-svyzengacurve( ~eqincome , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
+svyzengacurve( ~eqincome , des_eusilc_rep,  alpha = .01 )
 
 
 # linearized design using a variable with missings
-svyzengacurve( ~py010n , des_eusilc, seq(0,1,.05), alpha = .01 )
-svyzengacurve( ~py010n , des_eusilc, seq(0,1,.05), alpha = .01, na.rm = TRUE )
+svyzengacurve( ~py010n , des_eusilc, alpha = .01 )
+svyzengacurve( ~py010n , des_eusilc, alpha = .01, na.rm = TRUE )
 # demonstration of `curve.col=` and `add=` parameters
-svyzengacurve( ~eqincome , des_eusilc, seq(0,1,.05), alpha = .05 , add = TRUE , curve.col = 'green' )
+svyzengacurve( ~eqincome , des_eusilc,  alpha = .05 , add = TRUE , curve.col = 'green' )
 # replicate-weighted design using a variable with missings
-svyzengacurve( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
-svyzengacurve( ~py010n , des_eusilc_rep, seq(0,1,.05), alpha = .01, na.rm = TRUE )
+svyzengacurve( ~py010n , des_eusilc_rep, alpha = .01 )
+svyzengacurve( ~py010n , des_eusilc_rep, alpha = .01, na.rm = TRUE )
 
 
 # library(MonetDBLite) is only available on 64-bit machines,
@@ -109,12 +109,13 @@ dbd_eusilc <-
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
-svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.05), alpha = .01 )
+svyzengacurve( ~eqincome , dbd_eusilc, alpha = .01 )
 
-# highlithing the difference between the quantile-based curve and the empirical version:
-svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.5), empirical = TRUE, ci = FALSE, curve.col = "green" )
-svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.5), alpha = .01, add = TRUE )
+# highlighting the difference between the quantile-based curve and the empirical version:
+svyzengacurve( ~eqincome , dbd_eusilc, empirical = TRUE, ci = FALSE, curve.col = "green" )
+svyzengacurve( ~eqincome , dbd_eusilc, alpha = .01, add = TRUE )
 legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
+
 # as the number of quantiles increases, the difference between the curves gets smaller
 svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
 svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.01), alpha = .01, add = TRUE )
