@@ -1,10 +1,18 @@
 context("svyrenyi output survey.design and svyrep.design")
 
-for ( this_eps in c( 0.5 , 1 , 2 ) ){
+library(vardpoor)
+library(survey)
+data(api)
+data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
-	library(vardpoor)
-	library(survey)
-	data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
+for ( this_eps in c( 0.5 , 1 , 2 ) ){
+	
+	
+	dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
+	test_that("svyrenyi works on unweighted designs",{
+		svyrenyi(~api00, design=dstrat1, epsilon = this_eps)
+	})
+
 
 	des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 	des_eusilc <- convey_prep(des_eusilc)

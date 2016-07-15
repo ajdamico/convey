@@ -1,6 +1,15 @@
 context("Svyisq output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
+
+
+data(api)
+dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
+test_that("svyisq works on unweighted designs",{
+	svyisq(~api00, design=dstrat1, alpha=.2)
+})
+
+
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)

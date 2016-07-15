@@ -1,6 +1,16 @@
 context("Gpg output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
+
+
+data(api)
+dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
+dstrat1 <- update( dstrat1 , sex = ifelse( both == 'Yes' , 'male' , 'female' ) )
+test_that("svygpg works on unweighted designs",{
+	svygpg(~api00, design=dstrat1, ~sex)
+})
+
+
 data(ses) ; names( ses ) <- gsub( "size" , "size_" , tolower( names( ses ) ) )
 des_ses <- svydesign(id=~1, weights=~weights, data=ses)
 des_ses <- convey_prep(des_ses)

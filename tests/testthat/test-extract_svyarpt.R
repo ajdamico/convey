@@ -1,6 +1,15 @@
 context("Arpt output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
+
+
+
+dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
+test_that("svyarpt works on unweighted designs",{
+	svyarpt(~api00, design=dstrat1)
+})
+
+
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)

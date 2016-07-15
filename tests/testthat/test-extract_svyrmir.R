@@ -1,6 +1,14 @@
 context("Svyrmir output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
+
+data(api)
+dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
+test_that("svyrmir works on unweighted designs",{
+	svyrmir(~api00, design=dstrat1, age = ~emer)
+})
+
+
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
