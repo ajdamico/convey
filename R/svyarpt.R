@@ -115,8 +115,8 @@ svyarpt.survey.design <-
 			else incvar[nas] <- 0
 		}
 
-		ind<- names(design$prob)
-
+		if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+		
 		w <- 1/design$prob
 
 		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
@@ -129,7 +129,8 @@ svyarpt.survey.design <-
 			else incvec[nas] <- 0
 		}
 
-		ncom <- names(full_design$prob)
+		if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+		
 		wf <- 1/full_design$prob
 		htot <- h_fun(incvec, wf)
 		q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = order,

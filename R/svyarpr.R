@@ -115,7 +115,8 @@ svyarpr.survey.design <-
 			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
 		}
 
-		ind <- names(design$prob)
+		if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+		
 		w <- 1/design$prob
 		N <- sum(w)
 
@@ -130,7 +131,10 @@ svyarpr.survey.design <-
 			if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
 		}
 
-		ncom <- names(full_design$prob)
+		
+		if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+		
+		
 		wf <- 1/full_design$prob
 		htot <- h_fun(incvec, wf)
 
