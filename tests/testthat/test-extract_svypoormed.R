@@ -5,9 +5,11 @@ library(survey)
 
 data(api)
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
-test_that("svypoormed works on unweighted designs",{
-	svypoormed(~api00, design=dstrat1)
-})
+expect_error(svypoormed(~api00, design=dstrat1),"the set of poor people is empty" )
+
+# test_that("svypoormed works on unweighted designs",{
+# 	svypoormed(~api00, design=dstrat1)
+# })
 
 
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
