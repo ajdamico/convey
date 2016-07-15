@@ -117,7 +117,7 @@ svypoormed.survey.design <-
 		w <- 1 / design$prob
 
 		if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
-		
+
 		N <- sum(w)
 
 		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
@@ -150,7 +150,7 @@ svypoormed.survey.design <-
 
 			linarpt <- attr(ARPT, "lin")
 			nome <- terms.formula(formula)[[2]]
-
+if(sum(incvar <= arpt)==0) stop ("the set of poor people is empty.")
 			dsub <- eval(substitute(subset(design, subset=(incvar <= arpt)),list(incvar = nome, arpt = arpt)))
 
 			medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm)
