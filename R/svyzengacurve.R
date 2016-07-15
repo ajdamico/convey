@@ -91,14 +91,14 @@
 #' svyzengacurve( ~eqincome , dbd_eusilc, alpha = .01 )
 #'
 #' # highlighting the difference between the quantile-based curve and the empirical version:
-#' svyzengacurve( ~eqincome , dbd_eusilc, empirical = TRUE, ci = FALSE, curve.col = "green" )
-#' svyzengacurve( ~eqincome , dbd_eusilc, alpha = .01, add = TRUE )
-#' legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
+#' svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.1), empirical = TRUE, curve.col = "green" )
+#' svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.1), alpha = .01, add = TRUE )
+#' legend( "bottomleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 #'
 #' # as the number of quantiles increases, the difference between the curves gets smaller
-#' svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.01), empirical = TRUE, ci = FALSE, curve.col = "green" )
+#' svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.01), empirical = TRUE, curve.col = "green" )
 #' svyzengacurve( ~eqincome , dbd_eusilc, seq(0,1,.01), alpha = .01, add = TRUE )
-#' legend( "topleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
+#' legend( "bottomleft", c("Quantile-based", "Empirical"), lwd = c(1,1), col = c("red", "green"))
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
