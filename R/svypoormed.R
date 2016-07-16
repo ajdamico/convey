@@ -150,8 +150,10 @@ svypoormed.survey.design <-
 
 			linarpt <- attr(ARPT, "lin")
 			nome <- terms.formula(formula)[[2]]
-if(sum(incvar <= arpt)==0) stop ("the set of poor people is empty.")
+
 			dsub <- eval(substitute(subset(design, subset=(incvar <= arpt)),list(incvar = nome, arpt = arpt)))
+
+			if( nrow( dsub ) == 0 ) stop( paste("zero records in the set of poor people.  determine the poverty threshold by running svyarpt on ~",nome ) )
 
 			medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm)
 

@@ -6,7 +6,7 @@ library(survey)
 data(api)
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
 
-expect_error(svyrmpg(~api00, design=dstrat1), "the set of poor people is empty")
+expect_error(svyrmpg(~api00, design=dstrat1))
 
 test_that("svyrmpg works on unweighted designs",{
 	svyrmpg(~api00, design=dstrat1, percent=1)
