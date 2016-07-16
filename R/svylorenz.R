@@ -446,7 +446,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   if(na.rm){
     nas<-is.na(incvar)
     design<-design[!nas,]
-    df <- model.frame(design)
+    #df <- model.frame(design)
     incvar <- incvar[!nas]
   }
 
