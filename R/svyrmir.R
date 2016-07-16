@@ -133,7 +133,7 @@ svyrmir.survey.design  <-
 		age.name <- terms.formula(age)[[2]]
 		dsub1 <- eval(substitute(subset(design, subset = (age < agelim)),list(age = age.name, agelim = agelim)))
 
-		if( nrow( dsub1 ) == 0 ) stop( "zero records in the set of non-elderly people" ) )
+		if( nrow( dsub1 ) == 0 ) stop( "zero records in the set of non-elderly people" )
 			
 		q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm)
 		q_alpha1 <- as.vector(q_alpha1)
@@ -143,7 +143,7 @@ svyrmir.survey.design  <-
 		linquant1 <- -( 1 / ( N * Fprime ) ) * ( ( incvar <= q_alpha1 ) - order )
 		dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
 
-		if( nrow( dsub2 ) == 0 ) stop( "zero records in the set of elderly people" ) )
+		if( nrow( dsub2 ) == 0 ) stop( "zero records in the set of elderly people" )
 		
 		q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm)
 		q_alpha2 <- as.vector(q_alpha2)
