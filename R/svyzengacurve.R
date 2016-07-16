@@ -434,18 +434,15 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
   if(na.rm){
     nas<-is.na(incvar)
     design<-design[!nas,]
-    df <- model.frame(design)
+    #df <- model.frame(design)
     incvar <- incvar[!nas]
   }
 
   if ( any(incvar <= 0, na.rm = TRUE) ) { warning( "The function is defined for strictly positive incomes only.")
-    nps <- incvar <= 0
-    nps[ is.na(nps) ] <- 0
-    design <- design[ nps == 0 ]
-    if (length(nps) > length(design$prob)) {
-      incvar <- incvar[nps == 0]
-    } else { incvar[nps > 0] <- 0 }
-
+    nps <- incvar <= 0 & !is.na(incvar)
+    design<-design[!nps,]
+    #df <- model.frame(design)
+    incvar <- incvar[!nps]
   }
 
   ws <- weights(design, "sampling")
@@ -453,18 +450,6 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
   rval <- t( matrix( data = Z.p, dimnames = list( as.character( quantiles ) ) ) )
   ww <- weights(design, "analysis")
   qq <- apply(ww, 2, function(wi) lapply_z.p_calc(x = incvar, qs = quantiles, weights = wi ) )
-
-  if ( any(is.na(qq))) {
-    variance <- as.matrix(NA)
-    cis <- array( rbind(rep(NA, length(quantiles)),rep(NA, length(quantiles))), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
-    rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
-    rval <- list(quantiles = rval, CIs = cis)
-    attr(rval, "SE") <- rep(NA, length(quantiles))
-    class(rval) <- "svyquantile"
-
-    return(rval)
-
-  }
 
   variance <- apply( qq, 1, function(x) survey::svrVar(x, design$scale, design$rscales, mse = design$mse, coef = rval) )
   se <- sqrt(variance)
