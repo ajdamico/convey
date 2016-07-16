@@ -3,9 +3,9 @@ library(convey)
 
 no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z } 
 
-# , svyzengacurve , svylorenz , svyqsr , svyrmir
+# svyqsr , svyrmir
 
-all_funs <- list( svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg )
+all_funs <- list( svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz )
 
 
 for( n in c( 50 , 1000 ) ){
@@ -91,13 +91,7 @@ for( n in c( 50 , 1000 ) ){
 					(
 						( identical( svyrmpg , FUN ) | identical( svypoormed , FUN ) ) & 
 						coef( svyarpt( this_formula , lin_des ) ) < min( dist_frame[ , as.character( this_formula )[2]] ) 
-					) # |
-					# ( 
-						# ( n < 100 ) &
-						# ( identical( svyrmir , FUN ) | identical( svyrmpg , FUN ) | identical( svypoormed , FUN ) ) & 
-						# ( identical( this_formula , ~beta_100_300 ) | identical( this_formula , ~beta_050_050 ) ) & 
-						# this_prefix == 'binom' 
-					# )
+					)
 				){
 					
 					expect_error( do.call( FUN , lin_params_list ) )
@@ -112,15 +106,15 @@ for( n in c( 50 , 1000 ) ){
 						
 						# result should give some non-missing number
 						expect_that( coef( lin_res ) , is.numeric )  
-						expect_that( coef( lin_res ) , function( w ) !is.na( w ) )  
+						expect_that( coef( lin_res ) , function( w ) all( !is.na( w ) ) )  
 						
 						# coefficients should be equal
 						expect_equal( coef( lin_res ) , coef( rep_res ) )
 						
-						# difference between SEs for the designs should be less than 10% of the coef
+						# difference between SEs for the designs should be less than 25% of the coef
 						# but only for larger designs, since small ones can be unstable
-						if ( n > 50 & ( coef( lin_res ) * .5 > SE( lin_res ) ) ){
-							expect_lte( abs( SE( lin_res ) - SE( rep_res ) ) , coef( lin_res ) * 0.10 )
+						if ( n > 50 & all( coef( lin_res ) * .5 > SE( lin_res ) ) ){
+							expect_true( all( abs( SE( lin_res ) - SE( rep_res ) ) <= coef( lin_res ) * 0.25 ) )
 						}
 						
 					})
