@@ -3,9 +3,9 @@ library(convey)
 
 no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z } 
 
-# svyqsr , svyrmir
+# svyrmir
 
-all_funs <- list( svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz )
+all_funs <- list( svyqsr , svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz )
 
 
 for( n in c( 50 , 1000 ) ){
@@ -91,6 +91,10 @@ for( n in c( 50 , 1000 ) ){
 					(
 						( identical( svyrmpg , FUN ) | identical( svypoormed , FUN ) ) & 
 						coef( svyarpt( this_formula , lin_des ) ) < min( dist_frame[ , as.character( this_formula )[2]] ) 
+					) |
+					(
+						identical( svyqsr , FUN ) &
+						identical( this_formula , ~pois1 )
 					)
 				){
 					

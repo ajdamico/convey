@@ -50,11 +50,11 @@
 #' svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
 #'
 #' # linearized design using a variable with missings
-#' svyqsr( ~ py010n , design = des_eusilc )
-#' svyqsr( ~ py010n , design = des_eusilc , na.rm = TRUE )
+#' svyqsr( ~ db090 , design = des_eusilc )
+#' svyqsr( ~ db090 , design = des_eusilc , na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
-#' svyqsr( ~ py010n , design = des_eusilc_rep )
-#' svyqsr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+#' svyqsr( ~ db090 , design = des_eusilc_rep )
+#' svyqsr( ~ db090 , design = des_eusilc_rep , na.rm = TRUE )
 #'
 #' # library(MonetDBLite) is only available on 64-bit machines,
 #' # so do not run this block of code in 32-bit R
@@ -124,6 +124,8 @@ svyqsr.survey.design <-
 		attributes(totS20) <- NULL
 		S20 <- list(value= coef(S20), lin=attr(S20,"lin"))
 
+		if( S20$value == 0 ) stop( paste0( "division by zero. the alpha=" , alpha , " percentile cannot be zero or svyqsr would return Inf" ) )
+		
 		# Linearization of S80
 		S80 <- svyisq(formula = formula, design = design, 1 - alpha, na.rm=na.rm)
 		qS80 <- attr(S80, "quantile")
@@ -188,9 +190,12 @@ svyqsr.svyrep.design <-
 				S20 <- sum(poor * w)
 				c( quant_sup, quant_inf, S80, S20, S80/S20)
 			}
-
+			
 		ws <- weights(design, "sampling")
 		Qsr_val <- ComputeQsr(incvar, ws, alpha = alpha)
+		
+		if( Qsr_val[4] == 0 ) stop( paste0( "division by zero. the alpha=" , alpha , " percentile cannot be zero or svyqsr would return Inf" ) )
+
 		rval <- Qsr_val[5]
 
 		ww <- weights(design, "analysis")

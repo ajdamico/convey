@@ -66,11 +66,11 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
 
 # linearized design using a variable with missings
-svyqsr( ~ py010n , design = des_eusilc )
-svyqsr( ~ py010n , design = des_eusilc , na.rm = TRUE )
+svyqsr( ~ db090 , design = des_eusilc )
+svyqsr( ~ db090 , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
-svyqsr( ~ py010n , design = des_eusilc_rep )
-svyqsr( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
+svyqsr( ~ db090 , design = des_eusilc_rep )
+svyqsr( ~ db090 , design = des_eusilc_rep , na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
