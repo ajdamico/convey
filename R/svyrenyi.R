@@ -151,7 +151,7 @@ svyrenyi.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
   if ( is.na(rval) ){
     variance <- as.matrix(NA)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- "cvystat"
+    class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "renyi divergence measure"
     attr(rval,"epsilon")<- epsilon
@@ -173,7 +173,7 @@ svyrenyi.survey.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
   }
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-  class(rval) <- "cvystat"
+  class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "renyi divergence measure"
   attr(rval,"epsilon")<- epsilon
@@ -233,7 +233,7 @@ svyrenyi.svyrep.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
   if ( any(is.na(qq))) {
     variance <- as.matrix(NA)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- "cvystat"
+    class(rval) <- c( "cvystat" , "svrepstat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "renyi divergence measure"
 
@@ -245,7 +245,7 @@ svyrenyi.svyrep.design <- function ( formula, design, epsilon = 1, na.rm = FALSE
     variance <- as.matrix( variance )
   }
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-  class(rval) <- "cvystat"
+  class(rval) <- c( "cvystat" , "svrepstat" )
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "renyi divergence measure"
   attr(rval,"epsilon")<- epsilon

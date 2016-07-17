@@ -126,7 +126,7 @@ svyisq.survey.design <-
 		variance <- survey::svyrecvar(isqalpha/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svystat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "isq"
 		attr(rval, "lin") <- isqalpha
@@ -170,7 +170,7 @@ svyisq.svyrep.design <-
 		variance <- as.matrix( variance )
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svrepstat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "isq"
 		attr(rval, "lin") <- NA

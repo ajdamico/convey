@@ -164,7 +164,7 @@ svyrmir.survey.design  <-
 		variance <- survey::svyrecvar(lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svystat" )
 		attr( rval , "var" ) <- variance
 		attr(rval, "lin") <- lin
 		attr( rval , "statistic" ) <- "rmir"
@@ -218,7 +218,7 @@ svyrmir.svyrep.design <-
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svrepstat" )
 		attr( rval , "var" ) <- variance
 		attr(rval, "lin") <- NA
 		attr( rval , "statistic" ) <- "rmir"

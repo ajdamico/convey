@@ -143,7 +143,7 @@ svygpg.survey.design <-
 		variance <- survey::svyrecvar(infun/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svystat" )
 		attr( rval , "var" ) <- variance
 		attr(rval, "lin") <- infun
 		attr( rval , "statistic" ) <- "gpg"
@@ -213,7 +213,7 @@ svygpg.svyrep.design <-
 		variance <- as.matrix( variance )
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svrepstat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "gpg"
 

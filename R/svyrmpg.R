@@ -147,7 +147,7 @@ svyrmpg.survey.design <-
 		variance <- survey::svyrecvar(infun/full_design$prob, full_design$cluster,full_design$strata, full_design$fpc,postStrata = full_design$postStrata)
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svystat" )
 		attr( rval , "var" ) <- variance
 		attr(rval, "lin") <- infun
 		attr( rval , "statistic" ) <- "rmpg"
@@ -220,7 +220,7 @@ svyrmpg.svyrep.design <-
 		variance <- as.matrix( variance )
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svrepstat" )
 		attr( rval , "var" ) <- variance
 		attr(rval, "lin") <- NA
 		attr( rval , "statistic" ) <- "rmpg"

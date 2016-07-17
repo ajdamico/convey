@@ -141,7 +141,7 @@ svypoormed.survey.design <-
 
 			rval <- NA
 			variance <- NA
-			class(rval) <- "cvystat"
+			class(rval) <- c( "cvystat" , "svystat" )
 			attr( rval , "var" ) <- variance
 			attr(rval, "lin") <- NA
 			attr( rval , "statistic" ) <- "poormed"
@@ -179,7 +179,7 @@ svypoormed.survey.design <-
 			variance <- survey::svyrecvar(linmedp/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
 
 			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-			class(rval) <- "cvystat"
+			class(rval) <- c( "cvystat" , "svystat" )
 			attr( rval , "var" ) <- variance
 			attr(rval, "lin") <- linmedp
 			attr( rval , "statistic" ) <- "poormed"
@@ -257,7 +257,7 @@ svypoormed.svyrep.design <-
 		variance <- as.matrix( variance )
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- "cvystat"
+		class(rval) <- c( "cvystat" , "svrepstat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "poormed"
 
