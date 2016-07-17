@@ -37,7 +37,7 @@ test_that("output svyiqalpha",{
   expect_is(coef(b2),"numeric")
   expect_equal(coef(a1), coef(b1))
   expect_equal(coef(a2), coef(b2))
-  expect_is(SE(a1),"numeric")
+  expect_is(SE(a1),"matrix")
   expect_is(SE(a2), "numeric")
   expect_is(SE(b1),"numeric")
   expect_is(SE(b2),"numeric")
