@@ -126,7 +126,7 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
   rval <- value
   variance <- survey::svyrecvar(lin/design$prob, design$cluster,
     design$strata, design$fpc, postStrata = design$postStrata)
-  class(rval) <- "cvystat"
+  class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "lin") <- lin
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "cdf"
