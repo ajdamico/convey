@@ -122,6 +122,8 @@
 svyfgt <-
 	function(formula, design,  ...) {
 
+		if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
+	
 		if( !is.na( list(...)[["g"]] ) && !( ( list(...)[["g"]] == 0 ) | ( list(...)[["g"]] >= 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or >=1 to estimate the poverty index" )
 
 		if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.' )
