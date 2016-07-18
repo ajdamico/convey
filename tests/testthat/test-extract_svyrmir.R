@@ -76,7 +76,7 @@ if( .Machine$sizeof.pointer > 4 ){
 
 
 	c1 <- svyrmir( ~ eqincome , design = dbd_eusilc , age = ~age )
-	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyrmir , age = ~age )
+	c2 <- svyby(~ eqincome, by = ~hsize, design = subset(dbd_eusilc,hsize<8), FUN = svyrmir , age = ~age )
 
 	dbRemoveTable( conn , 'eusilc' )
 
