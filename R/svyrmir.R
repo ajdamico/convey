@@ -131,13 +131,7 @@ svyrmir.survey.design  <-
     N <- sum(w)
     h <- h_fun(incvar,w)
     age.name <- terms.formula(age)[[2]]
-    if( "DBIsvydesign" %in% class( design ) ){
-		dsub1 <- eval(substitute(subset(design, subset = age < agelim ) ) )
-		dsub1$variables <- getvars(formula, dsub1$db$connection,dsub1$db$tablename, updates = dsub1$updates, subset = dsub1$subset)
-	} else {
-		dsub1 <- eval(substitute(subset(design, subset = (age < agelim)),list(age = age.name, agelim = agelim)))
-	}
-	
+    dsub1 <- eval(substitute(subset(design, subset = (age < agelim)),list(age = age.name, agelim = agelim)))
     if( nrow( dsub1 ) == 0 ) stop( "zero records in the set of non-elderly people" )
     ind1<- names(design$prob) %in% names(dsub1$prob)
     h1<- h_fun(incvar*ind1, w*ind1)
@@ -149,14 +143,8 @@ svyrmir.survey.design  <-
     linquant1 <- -( 1 / ( N1 * Fprime1 ) ) *ind1* ( ( incvar <= q_alpha1 ) - order )
 
 
-	if( "DBIsvydesign" %in% class( design ) ){
-		dsub2 <- eval(substitute(subset(design, subset = age >= agelim ) ) )
-		dsub2$variables <- getvars(formula, dsub2$db$connection,dsub2$db$tablename, updates = dsub2$updates, subset = dsub2$subset)
-	} else {
-		dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
-	}
-	
-		
+    dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
+
     if( nrow( dsub2 ) == 0 ) stop( "zero records in the set of elderly people" )
 
     ind2<- names(design$prob) %in% names(dsub2$prob)
