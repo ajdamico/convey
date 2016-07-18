@@ -276,6 +276,9 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
     E_p <- ( 2*cumsum(w[w != 0]) - w[w != 0] ) / ( 2*sum(w[w != 0]) )
     E_L.p <- cumsum(w[w != 0]*incvar[w != 0])/sum(w[w != 0]*incvar[w != 0])
     E_Z.p <- (E_p - E_L.p) / (E_p - E_p*E_L.p)
+    E_p <- E_p[ E_Z.p > 0 ]
+    E_Z.p <- E_Z.p[ E_Z.p > 0 ]
+
   }
 
   var <- NULL
@@ -461,6 +464,8 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
     E_p <- ( 2*cumsum(ws[ws != 0]) - ws[ws != 0] ) / ( 2*sum(ws[ws != 0]) )
     E_L.p <- cumsum(ws[ws != 0]*incvar[ws != 0])/sum(ws[ws != 0]*incvar[ws != 0])
     E_Z.p <- (E_p - E_L.p) / (E_p - E_p*E_L.p)
+    E_p <- E_p[ E_Z.p > 0 ]
+    E_Z.p <- E_Z.p[ E_Z.p > 0 ]
   }
 
   CI.L <- as.numeric( Z.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE ) )
