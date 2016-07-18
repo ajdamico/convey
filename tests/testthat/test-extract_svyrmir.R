@@ -19,11 +19,11 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 a1 <- svyrmir( ~eqincome , design = des_eusilc , age = ~age )
 
-a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyrmir, age = ~age )
+a2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 8 ), FUN = svyrmir, age = ~age )
 
 b1 <- svyrmir( ~eqincome , design = des_eusilc_rep , age = ~age )
 
-b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyrmir, age = ~age )
+b2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc_rep, hsize < 8 ), FUN = svyrmir, age = ~age )
 
 
 test_that("output svyrmir",{
@@ -42,11 +42,11 @@ test_that("output svyrmir",{
   expect_lte(confint(b1)[1], coef(b1))
   expect_gte(confint(b1)[2], coef(b1))
 
-  expect_equal(sum(confint(a2)[1:8,1]<= coef(a2)[1:8]),length(coef(a2)[1:8]))
-  expect_equal(sum(confint(a2)[1:8,2]>= coef(a2)[1:8]),length(coef(a2)[1:8]))
+  expect_equal(sum(confint(a2)[1:7,1]<= coef(a2)[1:7]),length(coef(a2)[1:7]))
+  expect_equal(sum(confint(a2)[1:7,2]>= coef(a2)[1:7]),length(coef(a2)[1:7]))
 
-  expect_equal(sum(confint(b2)[1:8,1]<= coef(b2)[1:8]),length(coef(b2)[1:8]))
-  expect_equal(sum(confint(b2)[1:8,2]>= coef(b2)[1:8]),length(coef(b2)[1:8]))
+  expect_equal(sum(confint(b2)[1:7,1]<= coef(b2)[1:7]),length(coef(b2)[1:7]))
+  expect_equal(sum(confint(b2)[1:7,2]>= coef(b2)[1:7]),length(coef(b2)[1:7]))
 })
 
 
