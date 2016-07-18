@@ -75,13 +75,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyrmir( ~eqincome , design = dbd_eusilc , age = ~age )
@@ -104,75 +104,82 @@ svyrmir <-
 
 #' @rdname svyrmir
 #' @export
-svyrmir.survey.design  <-
-	function(formula, design, age, agelim = 65, order=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
+svyrmir.survey.design1  <-
+  function(formula, design, age, agelim = 65, order=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-		agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
-		x <- cbind(incvar,agevar)
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    agevar <- model.frame(age, design$variables, na.action = na.pass)[[1]]
+    x <- cbind(incvar,agevar)
 
-		if(na.rm){
+    if(na.rm){
 
-			nas<-rowSums(is.na(x))
-			design<-design[nas==0,]
+      nas<-rowSums(is.na(x))
+      design<-design[nas==0,]
 
-			if (length(nas) > length(design$prob)){
-				incvar <- incvar[nas == 0]
-				agevar <- agevar[nas==0]
-			} else{
-				incvar[nas > 0] <- 0
-				agevar[nas > 0] <- 0
-			}
-		}
+      if (length(nas) > length(design$prob)){
+        incvar <- incvar[nas == 0]
+        agevar <- agevar[nas==0]
+      } else{
+        incvar[nas > 0] <- 0
+        agevar[nas > 0] <- 0
+      }
+    }
+    if( is.null( names( design$prob ) ) ) names(design$prob) <- as.character( seq( length( design$prob ) ) )
+    w <- 1/design$prob
+    N <- sum(w)
+    h <- h_fun(incvar,w)
+    age.name <- terms.formula(age)[[2]]
+    dsub1 <- eval(substitute(subset(design, subset = (age < agelim)),list(age = age.name, agelim = agelim)))
+    if( nrow( dsub1 ) == 0 ) stop( "zero records in the set of non-elderly people" )
+    ind1<- names(design$prob) %in% names(dsub1$prob)
+    h1<- h_fun(incvar*ind1, w*ind1)
+    q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm)
+    q_alpha1 <- as.vector(q_alpha1)
 
-		w <- 1/design$prob
-		N <- sum(w)
-		h <- h_fun(incvar,w)
-		age.name <- terms.formula(age)[[2]]
-		dsub1 <- eval(substitute(subset(design, subset = (age < agelim)),list(age = age.name, agelim = agelim)))
+    Fprime1 <- densfun(formula = formula, design = dsub1, q_alpha1, h=h1, FUN = "F", na.rm=na.rm)
+    N1 <- sum(w*ind1)
+    linquant1 <- -( 1 / ( N1 * Fprime1 ) ) *ind1* ( ( incvar <= q_alpha1 ) - order )
 
-		if( nrow( dsub1 ) == 0 ) stop( "zero records in the set of non-elderly people" )
-			
-		q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm)
-		q_alpha1 <- as.vector(q_alpha1)
 
-		Fprime <- densfun(formula = formula, design = design, q_alpha1, h=h, FUN = "F", na.rm=na.rm)
+    dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
 
-		linquant1 <- -( 1 / ( N * Fprime ) ) * ( ( incvar <= q_alpha1 ) - order )
-		dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
+    if( nrow( dsub2 ) == 0 ) stop( "zero records in the set of elderly people" )
 
-		if( nrow( dsub2 ) == 0 ) stop( "zero records in the set of elderly people" )
-		
-		q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm)
-		q_alpha2 <- as.vector(q_alpha2)
+    ind2<- names(design$prob) %in% names(dsub2$prob)
+    h2<- h_fun(incvar*ind2, w*ind2)
 
-		Fprime <- densfun(formula = formula, design = design, q_alpha2, h=h, FUN = "F", na.rm=na.rm)
+    q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm)
+    q_alpha2 <- as.vector(q_alpha2)
 
-		linquant2 <- -( 1 / ( N * Fprime ) ) * ( ( incvar <= q_alpha2 ) - order )
-		# linearize ratio of medians
+    Fprime2 <- densfun(formula = formula, design = dsub2, q_alpha2, h=h2, FUN = "F", na.rm=na.rm)
+    N2 <- sum(w*ind2)
 
-		MED1 <- list(value = q_alpha1 , lin = linquant1 )
-		MED2 <- list(value = q_alpha2 , lin = linquant2 )
-		list_all<- list(MED1=MED1, MED2=MED2)
+    linquant2 <- -( 1 / ( N2 * Fprime2 ) ) *ind2* ( ( incvar <= q_alpha2 ) - order )
+    # linearize ratio of medians
 
-		RMED <- contrastinf(quote(MED2/MED1),list_all)
-		rval <- as.vector(RMED$value)
-		lin <- RMED$lin
+    MED1 <- list(value = q_alpha1 , lin = linquant1 )
+    MED2 <- list(value = q_alpha2 , lin = linquant2 )
+    list_all<- list(MED1=MED1, MED2=MED2)
 
-		variance <- survey::svyrecvar(lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
+    RMED <- contrastinf(quote(MED2/MED1),list_all)
+    rval <- as.vector(RMED$value)
+    lin <- RMED$lin
 
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svystat" )
-		attr( rval , "var" ) <- variance
-		attr(rval, "lin") <- lin
-		attr( rval , "statistic" ) <- "rmir"
-		if (med_old) attr( rval, "med_old") <- q_alpha2
-		if (med_young) attr( rval, "med_young") <- q_alpha1
+    variance <- survey::svyrecvar(lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
-		rval
-	}
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- c( "cvystat" , "svystat" )
+    attr( rval , "var" ) <- variance
+    attr(rval, "lin") <- lin
+    attr( rval , "statistic" ) <- "rmir"
+    if (med_old) attr( rval, "med_old") <- q_alpha2
+    if (med_young) attr( rval, "med_young") <- q_alpha1
+
+    rval
+  }
+
 
 #' @rdname svyrmir
 #' @export
