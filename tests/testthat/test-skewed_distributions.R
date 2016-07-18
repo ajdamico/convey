@@ -3,9 +3,7 @@ library(convey)
 
 no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z } 
 
-# svyrmir
-
-all_funs <- list( svyqsr , svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz )
+all_funs <- list( svyrmir , svyqsr , svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz )
 
 
 for( n in c( 50 , 1000 ) ){
