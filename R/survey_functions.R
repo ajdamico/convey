@@ -123,3 +123,50 @@ model.frame.svyrep.design<-function(formula,...){
   formula$variables
 }
 
+
+
+
+
+# lumley's survey subset functions were not written
+# to work inside of other survey functions,
+# because each survey function is expected to getvars()
+# for all necessary columns for the current analysis.
+# therefore, if we need to `subset` within a function
+# then we will need custom functions that preserve the
+# additional columns with an extended getvars() call
+
+
+# only defined for `survey.design` and `DBIsvydesign` objects
+within_function_subset <-
+	function(x, subset, ...) {
+		UseMethod("within_function_subset", x)
+	}
+# within_function_subset for `survey.design` objects
+# is the same as survey:::subset.survey.design
+within_function_subset.survey.design <-
+	function (x, subset, ...) {
+		e <- substitute(subset)
+		r <- eval(e, x$variables, parent.frame())
+		r <- r & !is.na(r)
+		x <- x[r, ]
+		x$call <- sys.call(-1)
+		x
+	}
+
+# this is the edit that preserves getvars() columns
+within_function_subset.DBIsvydesign <-
+	function (x, subset, ...){
+		e <- substitute(subset)
+		
+		vars_to_keep <- unique( c( all.vars(e) , names( x$variables ) ) )
+		
+		x$variables <- getvars(make.formula(vars_to_keep), x$db$connection, 
+			x$db$tablename, updates = x$updates, subset = x$subset)
+			
+		r <- eval(e, x$variables, parent.frame())
+		r <- r & !is.na(r)
+		x <- x[r, ]
+		x$call <- sys.call(-1)
+		x
+	}
+

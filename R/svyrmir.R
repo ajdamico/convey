@@ -131,9 +131,16 @@ svyrmir.survey.design  <-
     N <- sum(w)
     h <- h_fun(incvar,w)
     age.name <- terms.formula(age)[[2]]
-    dsub1 <- eval(substitute(subset(design, subset = (age < agelim)),list(age = age.name, agelim = agelim)))
+	
+    dsub1 <- eval( substitute( within_function_subset( design , subset = age < agelim ) , list( age = age.name, agelim = agelim ) ) )
     if( nrow( dsub1 ) == 0 ) stop( "zero records in the set of non-elderly people" )
-    ind1<- names(design$prob) %in% names(dsub1$prob)
+    
+	if( "DBIsvydesign" %in% class( dsub1 ) ) {
+		ind1<- names(design$prob) %in% which(dsub1$prob!=Inf)
+	} else{
+		ind1<- names(design$prob) %in% names(dsub1$prob)
+	}
+
     h1<- h_fun(incvar*ind1, w*ind1)
     q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm)
     q_alpha1 <- as.vector(q_alpha1)
@@ -143,11 +150,16 @@ svyrmir.survey.design  <-
     linquant1 <- -( 1 / ( N1 * Fprime1 ) ) *ind1* ( ( incvar <= q_alpha1 ) - order )
 
 
-    dsub2 <- eval(substitute(subset(design, subset = (age >= agelim)),list(age=age.name, agelim = agelim)))
-
+    dsub2 <- eval( substitute( within_function_subset( design , subset = age >= agelim ) , list( age = age.name, agelim = agelim ) ) )
+    
     if( nrow( dsub2 ) == 0 ) stop( "zero records in the set of elderly people" )
 
-    ind2<- names(design$prob) %in% names(dsub2$prob)
+	if( "DBIsvydesign" %in% class( dsub2 ) ) {
+		ind2<- names(design$prob) %in% which(dsub2$prob!=Inf)
+	} else{
+		ind2<- names(design$prob) %in% names(dsub2$prob)
+	}
+
     h2<- h_fun(incvar*ind2, w*ind2)
 
     q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm)
