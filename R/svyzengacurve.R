@@ -233,8 +233,8 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
 
   w <- 1/design$prob
 
-  if ( any( incvar[w != 0] <= 0, na.rm = TRUE ) ) { warning( "The function is defined for strictly positive incomes only.")
-    nps <- incvar <= 0
+  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) { warning( "The function is defined for non-negative incomes only.")
+    nps <- incvar < 0
     design <- design[nps == 0 ]
     if (length(nps) > length(design$prob))
       incvar <- incvar[nps == 0]
@@ -440,8 +440,8 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
     incvar <- incvar[!nas]
   }
 
-  if ( any(incvar <= 0, na.rm = TRUE) ) { warning( "The function is defined for strictly positive incomes only.")
-    nps <- incvar <= 0 & !is.na(incvar)
+  if ( any(incvar < 0, na.rm = TRUE) ) { warning( "The function is defined for non-negative incomes only.")
+    nps <- incvar < 0 & !is.na(incvar)
     design<-design[!nps,]
     #df <- model.frame(design)
     incvar <- incvar[!nps]
