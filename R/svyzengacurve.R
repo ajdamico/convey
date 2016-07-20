@@ -283,7 +283,7 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
   var <- NULL
   for ( i in seq_along(p) ) {
 
-    lin_wtd.psum <- incvar * H_fn( p[i] * sum(w) - cumsum( w ) - w ) + ( p[i] - 1*( incvar < p.quant[i] ) ) * p.quant[i]
+    lin_wtd.psum <- incvar * H_fn( ( p[i] * sum(w) - cumsum( w ) - w ) / w ) + ( p[i] - 1*( incvar < p.quant[i] ) ) * p.quant[i]
     epsilon_p <- p[i]*(Y - Yp_tilde[i])
     lambda_p <- p[i]*Y - Yp_tilde[i]
 

@@ -257,45 +257,29 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   }
 
   N <- sum( w )
-  se <- NULL
+  var <- NULL
   for ( pc in quantiles ) {
     i <- match( pc, quantiles )
-    pc
 
-    if ( pc > 0 & pc < 1 ) {
+    quant <- wtd.qtl( x = incvar, q = pc, weights = w )
+    s.quant <- L.p[i]
 
-      quant <- wtd.qtl( x = incvar, q = pc, weights = w )
-      s.quant <- L.p[i]
+    v_k <- NULL
+    #u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
+    v_k <- incvar * H_fn( ( pc * sum(w) - cumsum( w ) - w ) / w ) + ( pc - 1*(incvar < quant) )*quant
+    u_i <- 1/design$prob
+    u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
+    #u_i <- ( v_k - s.quant * incvar ) / sum( w * incvar )
+    u_i <- u_i[ sort(ordincvar) ]
 
-      v_k <- NULL
-      #u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
-      v_k <- incvar * H_fn( pc * sum(w) - cumsum( c(0,w[-length(w)]) ) ) + ( pc - 1*(incvar < quant) )*quant
-      u_i <- 1/design$prob
-      u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
-      #u_i <- ( v_k - s.quant * incvar ) / sum( w * incvar )
-      u_i <- u_i[ sort(ordincvar) ]
+    var[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
 
-      se[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
-
-      rm(quant, s.quant)
-
-    } else if ( pc == 0 ) {
-
-      L.p[i] <- 0
-
-      se[i] <- 0
-
-    } else if ( pc == 1 ) {
-
-      L.p[i] <- 1
-
-      se[i] <- 0
-    }
+    rm(quant, s.quant)
 
     rm( i, pc )
 
   }
-  se <- sqrt(se)
+  se <- sqrt(var)
 
 
   CI.L <- L.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
