@@ -444,6 +444,17 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   ww <- weights(design, "analysis")
   qq <- apply(ww, 2, function(wi) lapply_wtd.psum(x = incvar, qs = quantiles, weights = wi ) )
 
+  if ( any(is.na(qq))) {
+    variance <- as.matrix(NA)
+    cis <- array( rbind(rep(NA, length(quantiles)),rep(NA, length(quantiles))), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
+    rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
+    rval <- list(quantiles = rval, CIs = cis)
+    attr(rval, "SE") <- rep(NA, length(quantiles))
+    class(rval) <- "svyquantile"
+
+    return(rval)
+  }
+
   variance <- apply( qq, 1, function(x) survey::svrVar(x, design$scale, design$rscales, mse = design$mse, coef = rval) )
   variance[c(1, length(quantiles))] <- 0
   se <- sqrt(variance)
