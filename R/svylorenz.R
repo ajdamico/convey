@@ -262,6 +262,10 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     i <- match( pc, quantiles )
 
     quant <- wtd.qtl( x = incvar, q = pc, weights = w )
+    if ( pc == 0 ) {
+      # quant <- min( incvar[w != 0] )
+      quant <- 0
+    }
     s.quant <- L.p[i]
 
     v_k <- NULL
