@@ -1,4 +1,4 @@
-#' @importFrom stats approxfun coef deriv model.frame model.matrix na.pass printCoefmat qnorm terms terms.formula update weights
+#' @importFrom stats approxfun coef deriv model.frame model.matrix na.pass printCoefmat qnorm terms terms.formula update weights formula
 #' @importFrom methods is
 
 # each of the functions below are from the survey library v3.30-3
