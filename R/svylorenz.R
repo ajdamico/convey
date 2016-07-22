@@ -277,7 +277,8 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     u_i <- u_i[ sort(ordincvar) ]
 
     var[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
-
+    if ( pc == 1 ) { var[i] <- 0 }
+    
     rm(quant, s.quant)
 
     rm( i, pc )
