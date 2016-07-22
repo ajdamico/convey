@@ -160,7 +160,7 @@ within_function_subset.DBIsvydesign <-
 		
 		vars_to_keep <- unique( c( all.vars(e) , names( x$variables ) ) )
 		
-		x$variables <- getvars(formula(paste("~", paste(vars_to_keep, collapse = "+"))), x$db$connection, 
+		x$variables <- getvars(as.formula(paste("~", paste(vars_to_keep, collapse = "+"))), x$db$connection, 
 			x$db$tablename, updates = x$updates, subset = x$subset)
 			
 		r <- eval(e, x$variables, parent.frame())
