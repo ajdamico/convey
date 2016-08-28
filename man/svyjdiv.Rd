@@ -94,7 +94,7 @@ Guilherme Jacob
 }
 \references{
 Nicholas Rohde (2016). J-divergence measurements of economic inequality.
-J. R. Statist. Soc. A, v. 179, Part 3 (2016), pp. 847– 870.
+J. R. Statist. Soc. A, v. 179, Part 3 (2016), pp. 847-870.
 URL \url{http://onlinelibrary.wiley.com/doi/10.1111/rssa.12153/abstract}.
 
 Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
