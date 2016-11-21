@@ -7,22 +7,22 @@
 \alias{svygeidec.svyrep.design}
 \title{Generalized entropy index Decomposition}
 \usage{
-svygeidec(formula, by.formula, design, ...)
+svygeidec(formula, design, by.formula, ...)
 
-\method{svygeidec}{survey.design}(formula, by.formula, design, epsilon = 1,
+\method{svygeidec}{survey.design}(formula, design, by.formula, epsilon = 1,
   na.rm = FALSE, ...)
 
-\method{svygeidec}{svyrep.design}(formula, by.formula, design, epsilon = 1,
+\method{svygeidec}{svyrep.design}(formula, design, by.formula, epsilon = 1,
   na.rm = FALSE, ...)
 
-\method{svygeidec}{DBIsvydesign}(formula, design, ...)
+\method{svygeidec}{DBIsvydesign}(formula, design, by.formula, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{by.formula}{a formula specifying the group variable}
-
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
+
+\item{by.formula}{a formula specifying the group variable}
 
 \item{...}{future expansion}
 
@@ -55,36 +55,38 @@ des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 # linearized design
-svygeidec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0), epsilon = 0 )
-svygeidec( ~eqincome , ~rb090 , des_eusilc, epsilon = .5 )
-svygeidec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0), epsilon = 1 )
-svygeidec( ~eqincome , ~rb090 , des_eusilc, epsilon = 2 )
+svygeidec( ~eqincome , subset(des_eusilc, eqincome > 0) , ~rb090 , epsilon = 0 )
+svygeidec( ~eqincome , des_eusilc , ~rb090 , epsilon = .5 )
+svygeidec( ~eqincome , subset(des_eusilc, eqincome > 0) , ~rb090 , epsilon = 1 )
+svygeidec( ~eqincome , des_eusilc , ~rb090 , epsilon = 2 )
 
 # replicate-weighted design
-svygeidec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0), epsilon = 0 )
-svygeidec( ~eqincome , ~rb090 , des_eusilc_rep, epsilon = .5 )
-svygeidec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
-svygeidec( ~eqincome , ~rb090 , des_eusilc_rep, epsilon = 2 )
+svygeidec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) , ~rb090 , epsilon = 0 )
+svygeidec( ~eqincome , des_eusilc_rep , ~rb090 , epsilon = .5 )
+svygeidec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) , ~rb090 , epsilon = 1 )
+svygeidec( ~eqincome , des_eusilc_rep , ~rb090 , epsilon = 2 )
 
 # linearized design using a variable with missings
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , des_eusilc, epsilon = .5 )
-svygeidec( ~py010n , ~rb090 , des_eusilc, epsilon = .5, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , des_eusilc, epsilon = 2 )
-svygeidec( ~py010n , ~rb090 , des_eusilc, epsilon = 2, na.rm = TRUE )
+sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))
+svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 0 )
+svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 0, na.rm = TRUE )
+svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = .5 )
+svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = .5, na.rm = TRUE )
+svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 1 )
+svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 1, na.rm = TRUE )
+svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = 2 )
+svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = 2, na.rm = TRUE )
 
 # replicate-weighted design using a variable with missings
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0 )
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , des_eusilc_rep, epsilon = .5 )
-svygeidec( ~py010n , ~rb090 , des_eusilc_rep, epsilon = .5, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
-svygeidec( ~py010n , ~rb090 , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , des_eusilc_rep, epsilon = 2 )
-svygeidec( ~py010n , ~rb090 , des_eusilc_rep, epsilon = 2, na.rm = TRUE )
+sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
+svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 0 )
+svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 0, na.rm = TRUE )
+svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = .5 )
+svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = .5, na.rm = TRUE )
+svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 1 )
+svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 1, na.rm = TRUE )
+svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = 2 )
+svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = 2, na.rm = TRUE )
 
 
 # library(MonetDBLite) is only available on 64-bit machines,
@@ -111,20 +113,21 @@ dbd_eusilc <-
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
 # database-backed linearized design
-svygeidec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0), epsilon = 0 )
-svygeidec( ~eqincome , ~rb090 , dbd_eusilc, epsilon = .5 )
-svygeidec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0), epsilon = 1 )
-svygeidec( ~eqincome , ~rb090 , dbd_eusilc, epsilon = 2 )
+svygeidec( ~eqincome , subset(dbd_eusilc, eqincome > 0) , ~rb090 , epsilon = 0 )
+svygeidec( ~eqincome , dbd_eusilc , ~rb090 , epsilon = .5 )
+svygeidec( ~eqincome , subset(dbd_eusilc, eqincome > 0) , ~rb090 , epsilon = 1 )
+svygeidec( ~eqincome , dbd_eusilc , ~rb090 , epsilon = 2 )
 
 # database-backed linearized design using a variable with missings
-svygeidec( ~py010n , ~rb090 , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
-svygeidec( ~py010n , ~rb090 , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , dbd_eusilc, epsilon = .5 )
-svygeidec( ~py010n , ~rb090 , dbd_eusilc, epsilon = .5, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-svygeidec( ~py010n , ~rb090 , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-svygeidec( ~py010n , ~rb090 , dbd_eusilc, epsilon = 2 )
-svygeidec( ~py010n , ~rb090 , dbd_eusilc, epsilon = 2, na.rm = TRUE )
+sub_dbd_eusilc <- subset(dbd_eusilc, py010n > 0 | is.na(py010n))
+svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 0 )
+svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 0, na.rm = TRUE )
+svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = .5 )
+svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = .5, na.rm = TRUE )
+svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 1 )
+svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 1, na.rm = TRUE )
+svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = 2 )
+svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = 2, na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )
 
