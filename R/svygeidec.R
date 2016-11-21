@@ -145,21 +145,20 @@ svygeidec.survey.design <-
 
     if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
+    w <- 1/design$prob
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <- model.frame( by.formula, design$variables, na.action = na.pass)[,]
 
-    w <- 1/design$prob
     if (na.rm) {
-      nas <- ( is.na(incvar) | is.na(grpvar ) )
+      nas <- ( is.na(incvar) | is.na(grpvar ) ) & w > 0
       design <- design[nas == 0, ]
-      incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-      grpvar <- model.frame( by.formula, design$variables, na.action = na.pass)[,]
+      w <- 1/design$prob
     }
 
-    w <- 1/design$prob
+
     if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
-    if ( any( is.na(incvar) | is.na(grpvar ) ) ) {
+    if ( any( ( is.na(incvar) | is.na(grpvar ) ) & w > 0 ) ) {
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -252,7 +251,7 @@ svygeidec.survey.design <-
       grp.U_0.lin[,i] <- rep(1, length(incvar))
       grp.U_0.lin[ w_i == 0, i ] <- 0
 
-      grp.U_1[i] <- sum( incvar * w_i )
+      grp.U_1[i] <- sum( incvar[ w_i > 0 ] * w_i[ w_i > 0 ] )
       grp.U_1.lin[,i] <- incvar
       grp.U_1.lin[ w_i == 0, i ] <- 0
 
@@ -267,7 +266,7 @@ svygeidec.survey.design <-
 
 
       U_1_i <- list( value = grp.U_1[i] , lin = grp.U_1.lin[,i] )
-      U_1 <- list( value = sum( incvar * w ) , lin = incvar )
+      U_1 <- list( value = sum( incvar[ w > 0 ] * w[ w > 0 ] ) , lin = incvar )
       list_all <- list( U_0_i = U_0_i, U_0 = U_0, U_1_i = U_1_i, U_1 = U_1 )
       grp.est <- contrastinf( quote( (U_0_i / U_0) * ( U_1_i / U_0_i ) / ( U_1 / U_0 ) ) , list_all )
       grp.g[i] <- grp.est$value
