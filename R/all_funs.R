@@ -203,6 +203,19 @@ coef.cvystat <- function(object, ...) {
 }
 
 
+# cvydstat print method
+#' @export
+print.cvydstat <- function(x, ...) {
+
+  vv <- attr(x, "var")
+  m <- cbind(x[[1]], sqrt(vv))
+  colnames(m) <- c(attr(x, "statistic"), "SE")
+
+  printCoefmat(m)
+
+}
+
+
 #' prepare svydesign and svyrep.design objects for the convey package
 #'
 #' stores the full survey design (needed for convey functions that use a global poverty threshold) within the design.  this function must be run immediately after the full design object creation with \code{svydesign} or \code{svrepdesign}
@@ -252,7 +265,7 @@ convey_prep <- function(design) {
     if (!is.null(attr(design, "full_design")))stop("convey_prep has already been run on this design")
 
 	if( as.character( design$call )[1] == 'subset' ) warning("this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.")
-	
+
     # store the full design within one of the attributes of the design
     attr(design, "full_design") <- design
 
