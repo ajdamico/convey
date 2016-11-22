@@ -70,23 +70,15 @@ svygeidec( ~eqincome , des_eusilc_rep , ~rb090 , epsilon = 2 )
 sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))
 svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 0 )
 svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 0, na.rm = TRUE )
-svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = .5 )
-svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = .5, na.rm = TRUE )
 svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 1 )
 svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 1, na.rm = TRUE )
-svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = 2 )
-svygeidec( ~py010n , des_eusilc , ~rb090 , epsilon = 2, na.rm = TRUE )
 
 # replicate-weighted design using a variable with missings
 sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
 svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 0 )
 svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 0, na.rm = TRUE )
-svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = .5 )
-svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = .5, na.rm = TRUE )
 svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 1 )
 svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 1, na.rm = TRUE )
-svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = 2 )
-svygeidec( ~py010n , des_eusilc_rep , ~rb090 , epsilon = 2, na.rm = TRUE )
 
 
 # library(MonetDBLite) is only available on 64-bit machines,
