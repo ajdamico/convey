@@ -204,7 +204,6 @@ coef.cvystat <- function(object, ...) {
 
 
 # cvydstat print method
-#' @export
 print.cvydstat <- function(x, ...) {
 
   vv <- attr(x, "var")
