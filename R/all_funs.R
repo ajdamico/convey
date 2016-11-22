@@ -182,6 +182,18 @@ print.cvystat <- function(x, ...) {
 }
 
 
+# cvydstat print method
+print.cvydstat <- function(x, ...) {
+
+  vv <- attr(x, "var")
+  m <- cbind(x[[1]], sqrt(vv))
+  colnames(m) <- c(attr(x, "statistic"), "SE")
+
+  printCoefmat(m)
+
+}
+
+
 # cvystat vcov method
 #' @export
 vcov.cvystat <- function (object, ...)
@@ -200,18 +212,6 @@ coef.cvystat <- function(object, ...) {
 	attr(object, "quantile") <- NULL
 	attr(object, "epsilon") <- NULL
     unclass(object)
-}
-
-
-# cvydstat print method
-print.cvydstat <- function(x, ...) {
-
-  vv <- attr(x, "var")
-  m <- cbind(x[[1]], sqrt(vv))
-  colnames(m) <- c(attr(x, "statistic"), "SE")
-
-  printCoefmat(m)
-
 }
 
 

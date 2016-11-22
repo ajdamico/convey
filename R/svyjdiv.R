@@ -106,7 +106,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
 
   w <- 1/design$prob
 
-  if ( any(incvar[w != 0] <= 0) ){
+  if ( any(incvar[w != 0] <= 0) ) {
     warning("The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
     nps <- incvar <= 0
     design <- design[!nps]
@@ -116,7 +116,17 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
   w <- 1/design$prob
 
   rval <- NULL
-  rval <- calc.jdiv( x = incvar, weights = w )
+
+  U_0 <- list( value = sum( w ), lin = rep( 1, length( incvar ) ) )
+  U_1 <- list( value = sum( w * incvar ), lin = incvar )
+  T_0 <- list( value = sum( w * log( incvar ) ), lin = log( incvar ) )
+  T_1 <- list( value = sum( w * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
+  Y_AVG <- contrastinf( quote( U_1 / U_0 ), list(  U_0 = U_0, U_1 = U_1 ) )
+
+  list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1, Y_AVG = Y_AVG )
+  estimate <- contrastinf( quote( ( 1 / U_1 ) * ( T_1 - ( Y_AVG * T_0 ) - ( log( Y_AVG ) * U_1 - Y_AVG * log( Y_AVG ) * U_0 ) ) ) , list_all )
+
+  rval <- estimate$value
 
   if ( is.na(rval) ) {
     variance <- as.matrix(NA)
@@ -127,13 +137,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
     return(rval)
   }
 
-  mu_1 <- U_fn( incvar, w, 1 )
-  mu_0 <- U_fn( incvar, w, 0 )
-  z <- log( incvar ) * ( ( incvar / mu_1 ) - ( 1 / mu_0 ) ) - incvar * T_fn( incvar, w, 1 ) / mu_1^2 + T_fn( incvar, w, 0 ) / mu_0^2
-
-  z[w == 0] <- 0
-
-  variance <- survey::svyrecvar(z/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
+  variance <- survey::svyrecvar( estimate$lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- c( "cvystat" , "svystat" )
@@ -143,6 +147,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
   rval
 
 }
+
 
 #' @rdname svyjdiv
 #' @export
@@ -243,4 +248,3 @@ calc.jdiv <-  function( x, weights ) {
   return( sum( jdiv * weights ) / sum( weights ) )
 
 }
-
