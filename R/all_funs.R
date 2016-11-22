@@ -349,4 +349,3 @@ svyby.convey.design <-
 
 		survey::svyby(formula,by,design,...)
 	}
-
