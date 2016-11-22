@@ -121,15 +121,21 @@ svyjdivdec.survey.design <-
     grpvar <- model.frame( by.formula, design$variables, na.action = na.pass)[,]
 
     if (na.rm) {
-      nas <- ( is.na(incvar) | is.na(grpvar ) ) & w > 0
+      nas <- ( is.na(incvar) | is.na(grpvar ) )
       design <- design[nas == 0, ]
       w <- 1/design$prob
+      incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
+      grpvar <- model.frame( by.formula, design$variables, na.action = na.pass)[,]
     }
 
 
-    if ( any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( "The J-divergence index is defined for strictly positive incomes only." )
+    if ( any( incvar[ w != 0 ] <= 0, na.rm = TRUE) ) stop( "The J-divergence index is defined for strictly positive incomes only." )
 
-    if ( any( ( is.na(incvar) | is.na(grpvar ) ) & w > 0 ) ) {
+    incvar <- incvar[ w > 0 ]
+    grpvar <- grpvar[ w > 0 ]
+    w <- w[ w > 0 ]
+
+    if ( any( any( is.na(incvar) | is.na(grpvar ) ) & (w > 0) ) ) {
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -155,7 +161,9 @@ svyjdivdec.survey.design <-
     estimate <- contrastinf( quote( ( 1 / U_1 ) * ( T_1 - ( Y_AVG * T_0 ) - ( log( Y_AVG ) * U_1 - Y_AVG * log( Y_AVG ) * U_0 ) ) ) , list_all )
 
     ttl.jdiv <- estimate$value
-    ttl.jdiv.lin <- estimate$lin
+    ttl.jdiv.lin <- 1/design$prob
+    ttl.jdiv.lin[ ttl.jdiv.lin > 0 ] <- estimate$lin
+
 
     ttl.variance <- survey::svyrecvar( ttl.jdiv.lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
 
@@ -192,7 +200,10 @@ svyjdivdec.survey.design <-
     }
 
     wtn.theilt <- sum( grp.theilt.wtd )
-    wtn.theilt.lin <- apply( grp.theilt.wtd.lin, 1, sum )
+    w_teste <- 1/design$prob
+    w_teste[ w_teste > 0 ] <- apply( grp.theilt.wtd.lin, 1, sum )
+    wtn.theilt.lin <- w_teste ; rm( w_teste )
+
 
     # Theil L index:
     grp.theill <- NULL
@@ -225,7 +236,9 @@ svyjdivdec.survey.design <-
     }
 
     wtn.theill <- sum( grp.theill.wtd )
-    wtn.theill.lin <- apply( grp.theill.wtd.lin, 1, sum )
+    w_teste <- 1/design$prob
+    w_teste[ w_teste > 0 ] <- apply( grp.theill.wtd.lin, 1, sum )
+    wtn.theill.lin <- w_teste ; rm( w_teste )
 
     # Within component:
     within.jdiv <- wtn.theilt + wtn.theill
@@ -257,7 +270,9 @@ svyjdivdec.survey.design <-
     }
 
     btn.theilt <- sum( grp.theilt.btn )
-    btn.theilt.lin <- apply( grp.theilt.btn.lin, 1, sum )
+    w_teste <- 1/design$prob
+    w_teste[ w_teste > 0 ] <- apply( grp.theilt.btn.lin, 1, sum )
+    btn.theilt.lin <- w_teste ; rm( w_teste )
 
 
     # Theil L index:
@@ -283,7 +298,9 @@ svyjdivdec.survey.design <-
     }
 
     btn.theill <- sum( grp.theill.btn )
-    btn.theill.lin <- apply( grp.theill.btn.lin, 1, sum )
+    w_teste <- 1/design$prob
+    w_teste[ w_teste > 0 ] <- apply( grp.theill.btn.lin, 1, sum )
+    btn.theill.lin <- w_teste ; rm( w_teste )
 
     # Between component:
     between.jdiv <- btn.theilt + btn.theill
