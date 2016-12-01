@@ -1,0 +1,321 @@
+#' Amato index
+#'
+#' Estimate the Amato index, a measure of inequality.
+#'
+#' @param formula a formula specifying the income variable.
+#' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
+#' @param standardized If \code{standardized = TRUE}, returns the standardized Amato index, i.e., a linear tranformation of the amato index.
+#' @param na.rm Should cases with missing values be dropped?
+#' @param ... future expansion
+#'
+#' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+#'
+#' The Amato index is the length of the Lorenz curve.
+#'
+#' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
+#'
+#' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @seealso \code{\link{svygini}}
+#'
+#' @references Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
+#' Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
+#'
+#' Barry C. Arnold (2012). On the Amato inequality index.
+#' Statistics & Probability Letters, v. 82, n. 8, August 2012, pp. 1504-1506, ISSN 0167-7152.
+#' URL \url{http://dx.doi.org/10.1016/j.spl.2012.04.020.}.
+#'
+#' @keywords survey
+#'
+#' @examples
+#' library(survey)
+#' library(vardpoor)
+#' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
+#'
+#' # linearized design
+#' des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
+#' des_eusilc <- convey_prep(des_eusilc)
+#'
+#' # replicate-weighted design
+#' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
+#' des_eusilc_rep <- convey_prep(des_eusilc_rep)
+#'
+#'
+#' # variable without missing values
+#' svyamato(~eqincome, des_eusilc)
+#' svyamato(~eqincome, des_eusilc_rep)
+#'
+#' # subsetting:
+#' svyamato(~eqincome, subset( des_eusilc, db040 == "Styria"))
+#' svyamato(~eqincome, subset( des_eusilc_rep, db040 == "Styria"))
+#'
+#' # variable with with missings
+#' svyamato(~py010n, des_eusilc )
+#' svyamato(~py010n, des_eusilc_rep )
+#'
+#' svyamato(~py010n, des_eusilc, na.rm = TRUE )
+#' svyamato(~py010n, des_eusilc_rep, na.rm = TRUE )
+#'
+#' # library(MonetDBLite) is only available on 64-bit machines,
+#' # so do not run this block of code in 32-bit R
+#' \dontrun{
+#'
+#' # database-backed design
+#' library(MonetDBLite)
+#' library(DBI)
+#' dbfolder <- tempdir()
+#' conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+#' dbWriteTable( conn , 'eusilc' , eusilc )
+#'
+#' dbd_eusilc <-
+#' 	svydesign(
+#' 		ids = ~rb030 ,
+#' 		strata = ~db040 ,
+#' 		weights = ~rb050 ,
+#' 		data="eusilc",
+#' 		dbname=dbfolder,
+#' 		dbtype="MonetDBLite"
+#' 	)
+#'
+#' dbd_eusilc <- convey_prep( dbd_eusilc )
+#'
+#'
+#' # variable without missing values
+#' svyamato(~eqincome, dbd_eusilc)
+#'
+#' # subsetting:
+#' svyamato(~eqincome, subset( dbd_eusilc, db040 == "Styria"))
+#'
+#' # variable with with missings
+#' svyamato(~py010n, dbd_eusilc )
+#'
+#' svyamato(~py010n, dbd_eusilc, na.rm = TRUE )
+#'
+#'
+#' dbRemoveTable( conn , 'eusilc' )
+#'
+#' dbDisconnect( conn , shutdown = TRUE )
+#'
+#' }
+#'
+#' @export
+svyamato <- function(formula, design, ...) {
+
+  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  UseMethod("svyamato", design)
+
+}
+
+#' @rdname svyamato
+#' @export
+svyamato.survey.design <- function( formula, design, standardized = F, na.rm = FALSE, ... ) {
+
+  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+  w <- 1/design$prob
+
+  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) { warning( "The function is defined for non-negative incomes only.")
+    nps <- incvar < 0
+    design <- design[nps == 0 ]
+    if (length(nps) > length(design$prob))
+      incvar <- incvar[nps == 0]
+    else incvar[nps > 0] <- 0
+  }
+
+  if (na.rm) {
+    nas <- is.na(incvar)
+    design <- design[nas == 0, ]
+    if (length(nas) > length(design$prob))
+      incvar <- incvar[nas == 0]
+    else incvar[nas > 0] <- 0
+  }
+
+  w <- 1/design$prob
+
+  ordincvar <- order(incvar)
+  w <- w[ ordincvar ]
+  incvar <- incvar[ ordincvar ]
+
+  incvar <- incvar[ w != 0 ]
+  w <- w[ w != 0 ]
+
+  if ( any( is.na(incvar) ) ) {
+    rval <- as.numeric(NA)
+    variance <- as.matrix(NA)
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- c( "cvystat" , "svystat" )
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "amato"
+    return(rval)
+
+  }
+
+  N <- sum(w)
+  Tot <- sum(w * incvar)
+  # K_y <- Tot - cumsum(w * incvar)
+
+
+  rval <- sum( w * ( 1 / N^2 + incvar^2 / Tot^2 )^.5 )
+
+  amato_df <-
+    data.frame(
+      this_incvar = incvar ,
+      this_N = N ,
+      this_Tot = Tot ,
+      this_w = w ,
+      this_w_sum = sum( w )
+    )
+
+
+  amato_df[ , 'line1' ] <-
+    ( 1 / amato_df[ , 'this_N' ]^2 + amato_df[ , 'this_incvar' ]^2 / amato_df[ , 'this_Tot' ]^2 )^.5
+
+  amato_df[ , 'line2' ] <-
+    - ( 1 / amato_df[ , 'this_N' ]^3 ) *
+    sum( amato_df[ , 'this_w' ] * ( 1 / amato_df[ , 'this_N' ]^2 + ( amato_df[ , 'this_incvar' ] / amato_df[ , 'this_N' ] )^2 )^-.5 )
+
+  amato_df[ , 'line3' ] <-
+    - ( amato_df[ , 'this_incvar' ] / amato_df[ , 'this_Tot' ]^3 ) *
+    sum( ( ( 1 / amato_df[ , 'this_N' ]^2 ) + ( amato_df[ , 'this_incvar' ] / amato_df[ , 'this_N' ] )^2 )^-.5 *
+           amato_df[ , 'this_incvar' ]^2 * amato_df[ , 'this_w' ] )
+
+  my_outvec <- rowSums( amato_df[ , paste0( 'line' , 1:3 ) ] )
+
+
+
+  z_if <- 1/design$prob
+  z_if <- z_if[ordincvar]
+  z_if[ z_if != 0 ] <- as.numeric( my_outvec )
+  z_if <- z_if[ order(ordincvar) ]
+
+  variance <- survey::svyrecvar( z_if/design$prob, design$cluster,
+                                 design$strata, design$fpc, postStrata = design$postStrata)
+
+
+  if ( standardized ) {
+
+    rval <- ( rval - sqrt(2) ) / ( 2 - sqrt(2) )
+    variance <- variance / ( 2 - sqrt(2) )^2
+
+    }
+
+  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+  class(rval) <- c( "cvystat" , "svystat" )
+  attr(rval, "var") <- variance
+
+  if ( standardized ) {
+    attr(rval, "statistic") <- "standardized amato index"
+  } else {
+    attr(rval, "statistic") <- "amato index"
+    }
+
+  return( rval )
+
+}
+
+#' @rdname svyamato
+#' @export
+svyamato.svyrep.design <- function(formula, design, standardized = F, na.rm=FALSE, ...) {
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+
+
+  if(na.rm){
+    nas<-is.na(incvar)
+    design<-design[!nas,]
+    df <- model.frame(design)
+    incvar <- incvar[!nas]
+  }
+
+  if ( any(incvar < 0, na.rm = TRUE) ) { warning( "The function is defined for non-negative incomes only.")
+    nps <- incvar < 0
+    nps[ is.na(nps) ] <- 0
+    design <- design[ nps == 0 ]
+    if (length(nps) > length(design$prob)) {
+      incvar <- incvar[nps == 0]
+    } else { incvar[nps > 0] <- 0 }
+
+  }
+
+  calc.amato <- function( x, weights ) {
+
+    x <- x[weights != 0 ]
+    weights <- weights[weights != 0 ]
+    ordx <- order(x)
+
+    x <- x[ ordx ]
+    weights <- weights[ ordx ]
+
+    N <- sum(weights)
+    Tot <- sum(weights * x)
+
+    sum( weights * ( 1 / N^2 + x^2 / Tot^2 )^.5 )
+
+  }
+
+  ws <- weights(design, "sampling")
+  rval <- calc.amato( x = incvar, weights = ws )
+  ww <- weights(design, "analysis")
+  qq <- apply(ww, 2, function(wi) calc.amato(incvar, wi))
+  if ( any(is.na(qq))) {
+    variance <- as.matrix(NA)
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- c( "cvystat" , "svrepstat" )
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "amato"
+    return(rval)
+
+  } else {
+    variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+
+    variance <- as.matrix( variance )
+  }
+
+  if ( standardized ) {
+
+    rval <- ( rval - sqrt(2) ) / ( 2 - sqrt(2) )
+    variance <- variance / ( 2 - sqrt(2) )^2
+
+  }
+
+  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+  class(rval) <- c( "cvystat" , "svrepstat" )
+  attr(rval, "var") <- variance
+
+  if ( standardized ) {
+    attr(rval, "statistic") <- "standardized amato index"
+  } else {
+    attr(rval, "statistic") <- "amato index"
+  }
+
+  return(rval)
+
+}
+
+#' @rdname svyamato
+#' @export
+svyamato.DBIsvydesign <-
+  function (formula, design, ...) {
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
+                                       updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <- getvars(formula, design$db$connection, design$db$tablename,
+                                updates = design$updates, subset = design$subset)
+
+    NextMethod("svyamato", design)
+  }
