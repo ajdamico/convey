@@ -68,10 +68,10 @@ svyafc(~eqincome+hy050n, design = subset( des_eusilc, db040 == "Styria"), k = .5
 svyafc(~eqincome+hy050n, design = subset( des_eusilc_rep, db040 == "Styria"), k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
 
 # including factor variable with missings
-svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = F )
-svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = T )
-svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = F )
-svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = T )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = FALSE )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = TRUE )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = FALSE )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
@@ -104,8 +104,8 @@ svyafc(~eqincome+hy050n, design = dbd_eusilc, k = .5, g = 0, cutoffs = list( 100
 svyafc(~eqincome+hy050n, design = subset( dbd_eusilc, db040 == "Styria"), k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
 
 # including factor variable with missings
-svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = F )
-svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = T )
+svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = FALSE )
+svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )
 
