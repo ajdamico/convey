@@ -242,6 +242,24 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
   cen.depr.sums <- w
   rm(w)
 
+  if ( g == 0 ) {
+    w <- 1/design$prob
+    w[ w > 0 ] <- ( depr.sums >= k )
+    h_i <- w
+    rm(w)
+
+    h_est <- survey::svymean( h_i, design )
+
+    w <- 1/design$prob
+    w[ w > 0 ] <- multi.cut
+    multi.cut <- w
+    rm(w)
+
+    a_est <- survey::svyratio( multi.cut, h_i, design )
+
+
+  }
+
   estimate <- survey::svymean( cen.depr.sums , design )
   #survey::svymean(cen.dep.matrix,design)
 
@@ -252,6 +270,9 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
   attr(rval, "statistic") <- "alkire-foster"
   attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
   attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
+  if ( g == 0 ) {
+    attr(rval, "extra") <- matrix( c( h_est[1], a_est[[1]], attr( h_est, "var" )[1]^.5, a_est[[2]]^.5 ), nrow = 2, ncol = 2, dimnames = list( c("H", "A"), c( "coef", "SE" ) ) )
+  }
 
   return( rval )
 
@@ -367,6 +388,23 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
 
     }
 
+  if ( g == 0 ) {
+    w <- weights(design, "sampling" )
+    w[ w > 0 ] <- ( depr.sums >= k )
+    h_i <- w
+    rm(w)
+
+    h_est <- survey::svymean( h_i, design )
+
+    w <- weights(design, "sampling" )
+    w[ w > 0 ] <- multi.cut
+    multi.cut <- w
+    rm(w)
+
+    a_est <- survey::svyratio( multi.cut, h_i, design )
+
+  }
+
   w <- weights(design, "sampling" )
   w[ w != 0 ] <- cen.depr.sums
   cen.depr.sums <- w
@@ -382,6 +420,9 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
   attr(rval, "statistic") <- "alkire-foster"
   attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
   attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
+  if ( g == 0 ) {
+    attr(rval, "extra") <- matrix( c( h_est[1], a_est[[1]], attr( h_est, "var" )[1]^.5, a_est[[2]]^.5 ), nrow = 2, ncol = 2, dimnames = list( c("H", "A"), c( "coef", "SE" ) ) )
+  }
 
   return( rval )
 
