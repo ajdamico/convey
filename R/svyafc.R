@@ -210,14 +210,14 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
 
     cut.value <- cutoffs[[i]]
 
-    if ( is.numeric( cut.value ) ) {
+    if ( var.class[ i ] == "numeric" ) {
       cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )^g
     } else {
       cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
     }
 
   }
-  
+
   cen.dep.matrix[ multi.cut == 0, ] <- 0
 
   # Sum of censored deprivations:
@@ -311,7 +311,7 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
 
     cut.value <- cutoffs[[i]]
 
-    if ( is.numeric( cut.value ) ) {
+    if ( var.class[ i ] == "numeric" ) {
       #dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )
       dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
     } else {
