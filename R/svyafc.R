@@ -149,8 +149,7 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
   if ( any( is.na(ach.matrix) ) ) {
 
     rval <- as.numeric(NA)
-    variance <- as.matrix(NA)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
+    variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "alkire-foster"
@@ -204,6 +203,7 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
     }
 
   }
+  
   cen.dep.matrix[ multi.cut == 0, ] <- 0
 
   # Sum of censored deprivations:
@@ -212,8 +212,7 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
 
   if ( any( is.na(cen.depr.sums) ) ) {
     rval <- as.numeric(NA)
-    variance <- as.matrix(NA)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
+    variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "alkire-foster"
@@ -232,9 +231,8 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
   estimate <- survey::svymean( cen.depr.sums , design )
   #survey::svymean(cen.dep.matrix,design)
 
-  rval <- estimate[[1]]
+  rval <- estimate
   variance <- attr( estimate, "var" )
-  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
   class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "alkire-foster"
@@ -283,8 +281,7 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
 
   if ( any( is.na(ach.matrix) ) ) {
     rval <- as.numeric(NA)
-    variance <- as.matrix(NA)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
+    variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "alkire-foster"
@@ -346,8 +343,7 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
   if ( any( is.na(cen.depr.sums) ) ){
 
     rval <- as.numeric(NA)
-    variance <- as.matrix(NA)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
+    variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "alkire-foster"
@@ -365,9 +361,8 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
   estimate <- survey::svymean(cen.depr.sums,design)
   #survey::svymean(cen.dep.matrix,design)
 
-  rval <- estimate[[1]]
+  rval <- estimate
   variance <- attr( estimate, "var" )
-  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
   class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "alkire-foster"
