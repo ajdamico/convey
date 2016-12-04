@@ -5,7 +5,7 @@
 #' @param formula a formula specifying the variables. Variables can be numeric or ordered factors.
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param g a scalar defining the exponent of the indicator.
-#' @param cutoff a list defining each variable's deprivation limit.
+#' @param cutoffs a list defining each variable's deprivation limit.
 #' @param k a scalar defining the multimensional cutoff.
 #' @param dimw a vector defining the weight of each dimension in the multidimensional deprivation sum.
 #' @param na.rm Should cases with missing values be dropped?

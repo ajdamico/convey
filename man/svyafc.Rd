@@ -27,13 +27,13 @@ svyafc(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL,
 
 \item{g}{a scalar defining the exponent of the indicator.}
 
+\item{cutoffs}{a list defining each variable's deprivation limit.}
+
 \item{dimw}{a vector defining the weight of each dimension in the multidimensional deprivation sum.}
 
 \item{...}{future expansion}
 
 \item{na.rm}{Should cases with missing values be dropped?}
-
-\item{cutoff}{a list defining each variable's deprivation limit.}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
