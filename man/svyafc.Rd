@@ -58,19 +58,26 @@ des_eusilc <- update(des_eusilc, pb220a = ordered( pb220a ) )
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
+# cutoffs
+cos <- list( 10000, 5000 )
+
 # variables without missing values
-svyafc(~eqincome+hy050n, design = des_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
-svyafc(~eqincome+hy050n, design = des_eusilc_rep, k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
+svyafc( ~ eqincome + hy050n , design = des_eusilc , k = .5 , g = 0, cutoffs = cos )
+svyafc( ~ eqincome + hy050n , design = des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 
 # subsetting:
-svyafc(~eqincome+hy050n, design = subset( des_eusilc, db040 == "Styria"), k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
-svyafc(~eqincome+hy050n, design = subset( des_eusilc_rep, db040 == "Styria"), k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
+sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
+sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
+
+svyafc( ~ eqincome + hy050n , design = sub_des_eusilc , k = .5, g = 0, cutoffs = cos )
+svyafc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , k = .5, g = 0, cutoffs = cos )
 
 # including factor variable with missings
-svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = FALSE )
-svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = TRUE )
-svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = FALSE )
-svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = TRUE )
+cos <- list( 10000, 5000, "EU" )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
