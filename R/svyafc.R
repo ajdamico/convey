@@ -32,7 +32,6 @@
 #'
 #' @examples
 #' library(survey)
-#' library(convey)
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
