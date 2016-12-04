@@ -230,8 +230,8 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
   cen.depr.sums <- w
   rm(w)
 
-  estimate <- svymean(cen.depr.sums,design)
-  #svymean(cen.dep.matrix,design)
+  estimate <- survey::svymean( cen.depr.sums , design )
+  #survey::svymean(cen.dep.matrix,design)
 
   rval <- coef(estimate)
   variance <- matrix( SE(estimate)^2 )
@@ -364,8 +364,8 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
   cen.depr.sums <- w
   rm(w)
 
-  estimate <- svymean(cen.depr.sums,design)
-  #svymean(cen.dep.matrix,design)
+  estimate <- survey::svymean(cen.depr.sums,design)
+  #survey::svymean(cen.dep.matrix,design)
 
   rval <- coef(estimate)
   variance <- as.matrix( SE(estimate)^2 )
