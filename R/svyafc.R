@@ -233,8 +233,8 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
   estimate <- survey::svymean( cen.depr.sums , design )
   #survey::svymean(cen.dep.matrix,design)
 
-  rval <- coef(estimate)
-  variance <- matrix( SE(estimate)^2 )
+  rval <- estimate[[1]]
+  variance <- attr( estimate, "var" )
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
   class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "var") <- variance
@@ -344,18 +344,17 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
   cen.depr.sums <- rowSums( cen.dep.matrix * dimw )
   rm( cen.dep.matrix, ach.matrix ) ; gc()
 
-  if ( any( is.na(cen.depr.sums) ) )
+  if ( any( is.na(cen.depr.sums) ) ){
 
-    if ( any( is.na(incvar) ) ) {
-      rval <- as.numeric(NA)
-      variance <- as.matrix(NA)
-      colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
-      class(rval) <- c( "cvystat" , "svystat" )
-      attr(rval, "var") <- variance
-      attr(rval, "statistic") <- "alkire-foster"
-      attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
-      attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
-      return(rval)
+    rval <- as.numeric(NA)
+    variance <- as.matrix(NA)
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
+    class(rval) <- c( "cvystat" , "svystat" )
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "alkire-foster"
+    attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
+    attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
+    return(rval)
 
     }
 
@@ -367,8 +366,8 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
   estimate <- survey::svymean(cen.depr.sums,design)
   #survey::svymean(cen.dep.matrix,design)
 
-  rval <- coef(estimate)
-  variance <- as.matrix( SE(estimate)^2 )
+  rval <- estimate[[1]]
+  variance <- attr( estimate, "var" )
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- "multidim"
   class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "var") <- variance
