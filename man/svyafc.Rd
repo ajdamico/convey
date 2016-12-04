@@ -103,15 +103,22 @@ dbd_eusilc <-
 dbd_eusilc <- convey_prep( dbd_eusilc )
 dbd_eusilc <- update( dbd_eusilc, pb220a = ordered( pb220a ) )
 
+# cutoffs
+cos <- list( 10000 , 5000 )
+
 # variables without missing values
-svyafc(~eqincome+hy050n, design = dbd_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
+svyafc(~eqincome+hy050n, design = dbd_eusilc, k = .5, g = 0, cutoffs = cos )
 
 # subsetting:
-svyafc(~eqincome+hy050n, design = subset( dbd_eusilc, db040 == "Styria"), k = .5, g = 0, cutoffs = list( 10000, 5000 ), na.rm = FALSE )
+sub_dbd_eusilc <- subset( dbd_eusilc, db040 == "Styria")
+svyafc(~eqincome+hy050n, design = sub_dbd_eusilc, k = .5, g = 0, cutoffs = cos )
+
+# cutoffs
+cos <- list( 10000, 5000, "EU" )
 
 # including factor variable with missings
-svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = FALSE )
-svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = list( 10000, 5000, "EU" ), na.rm = TRUE )
+svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+svyafc(~eqincome+hy050n+pb220a, dbd_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )
 
