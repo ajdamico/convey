@@ -7,14 +7,14 @@
 \alias{svyafcdec.svyrep.design}
 \title{Alkire-Foster multimensional poverty decompostition}
 \usage{
-svyafcdec(formula, design, by.formula, k = NULL, g = NULL, cutoffs = NULL,
+svyafcdec(formula, design, by.formula, g = NULL, cutoffs = NULL, k = NULL,
   dimw = NULL, ...)
 
-\method{svyafcdec}{survey.design}(formula, design, k = NULL, g = NULL,
-  cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{survey.design}(formula, design, by.formula, g = NULL,
+  cutoffs = NULL, k = NULL, dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{svyrep.design}(formula, design, by.formula, k = NULL,
-  g = NULL, cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{svyrep.design}(formula, design, by.formula, g = NULL,
+  cutoffs = NULL, k = NULL, dimw = NULL, na.rm = FALSE, ...)
 
 \method{svyafcdec}{DBIsvydesign}(formula, design, by.formula, ...)
 }
@@ -25,11 +25,11 @@ svyafcdec(formula, design, by.formula, k = NULL, g = NULL, cutoffs = NULL,
 
 \item{by.formula}{a formula defining the group variable for decomposition.}
 
-\item{k}{a scalar defining the multimensional cutoff.}
-
 \item{g}{a scalar defining the exponent of the indicator.}
 
 \item{cutoffs}{a list defining each variable's deprivation limit.}
+
+\item{k}{a scalar defining the multimensional cutoff.}
 
 \item{dimw}{a vector defining the weight of each dimension in the multidimensional deprivation sum.}
 
