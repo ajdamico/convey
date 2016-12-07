@@ -184,7 +184,6 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
     cut.value <- cutoffs[[i]]
 
     if ( is.numeric( cut.value ) ) {
-      #dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )
       dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
     } else {
       dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
@@ -214,7 +213,6 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
     cut.value <- cutoffs[[i]]
 
     if ( var.class[ i ] == "numeric" ) {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )^g
       cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )^g
     } else {
       cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
@@ -340,7 +338,6 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
     cut.value <- cutoffs[[i]]
 
     if ( var.class[ i ] == "numeric" ) {
-      #dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )
       dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
     } else {
       dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
@@ -370,7 +367,6 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
     cut.value <- cutoffs[[i]]
 
     if ( is.numeric( cut.value ) ) {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )^g
       cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )^g
     } else {
       cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
