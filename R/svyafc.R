@@ -8,7 +8,6 @@
 #' @param cutoffs a list defining each variable's deprivation limit.
 #' @param k a scalar defining the multimensional cutoff.
 #' @param dimw a vector defining the weight of each dimension in the multidimensional deprivation sum.
-#' @param cdf adds the cumulative distribution function of the weighted deprivation sums. Defaults to \code{FALSE}.
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... future expansion
 #'
@@ -114,7 +113,7 @@
 #' }
 #'
 #' @export
-svyafc <- function(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL, cdf = FALSE, na.rm = FALSE, ...) {
+svyafc <- function(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...) {
 
   if ( k <= 0 | k > 1 ) { stop( "This functions is only defined for k in (0,1]." ) }
   if ( g < 0 ) { stop( "This function is undefined for g < 0." ) }
@@ -127,7 +126,7 @@ svyafc <- function(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = N
 
 #' @rdname svyafc
 #' @export
-svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL, cdf = FALSE, na.rm = FALSE, ... ) {
+svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL, na.rm = FALSE, ... ) {
 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -206,7 +205,7 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  #rm(dep.matrix) ; gc()
+  rm(dep.matrix) ; gc()
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -279,24 +278,13 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
     attr(rval, "extra") <- matrix( c( h_est[1], a_est[[1]], attr( h_est, "var" )[1]^.5, a_est[[2]]^.5 ), nrow = 2, ncol = 2, dimnames = list( c("H", "A"), c( "coef", "SE" ) ) )
   }
 
-  if (cdf) {
-
-    depr.sums <- rowSums( dep.matrix * dimw )
-    design$variables <- cbind( design$variables, depr.sums )
-    kcdf <- survey::svycdf( ~depr.sums, design )
-    names( kcdf ) <- "deprivation sums"
-    attr( kcdf, "call" ) <- quote( svycdf( ~`deprivation sums`, design ) )
-    attr( rval, "cdf" ) <- kcdf
-
-  }
-
   return( rval )
 
 }
 
 #' @rdname svyafc
 #' @export
-svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL, cdf = FALSE, na.rm=FALSE, ...) {
+svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL, na.rm=FALSE, ...) {
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
@@ -373,7 +361,7 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  #rm(dep.matrix) ; gc()
+  rm(dep.matrix) ; gc()
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -444,18 +432,7 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
     attr(rval, "extra") <- matrix( c( h_est[1], a_est[[1]], attr( h_est, "var" )[1]^.5, a_est[[2]]^.5 ), nrow = 2, ncol = 2, dimnames = list( c("H", "A"), c( "coef", "SE" ) ) )
   }
 
-  if ( cdf ) {
-
-    depr.sums <- rowSums( dep.matrix * dimw )
-    design$variables <- cbind( design$variables, depr.sums )
-    kcdf <- survey::svycdf( ~depr.sums, design )
-    names( kcdf ) <- "deprivation sums"
-    attr( kcdf, "call" ) <- quote( svycdf( ~`deprivation sums`, design ) )
-    attr( rval, "cdf" ) <- kcdf
-
-  }
-
-  return( rval )
+ return( rval )
 
 }
 

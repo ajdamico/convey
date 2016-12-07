@@ -8,13 +8,13 @@
 \title{Alkire-Foster multimensional poverty class}
 \usage{
 svyafc(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL,
-  cdf = FALSE, na.rm = FALSE, ...)
+  na.rm = FALSE, ...)
 
 \method{svyafc}{survey.design}(formula, design, k = NULL, g = NULL,
-  cutoffs = NULL, dimw = NULL, cdf = FALSE, na.rm = FALSE, ...)
+  cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
 
 \method{svyafc}{svyrep.design}(formula, design, k = NULL, g = NULL,
-  cutoffs = NULL, dimw = NULL, cdf = FALSE, na.rm = FALSE, ...)
+  cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
 
 \method{svyafc}{DBIsvydesign}(formula, design, ...)
 }
@@ -30,8 +30,6 @@ svyafc(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL,
 \item{cutoffs}{a list defining each variable's deprivation limit.}
 
 \item{dimw}{a vector defining the weight of each dimension in the multidimensional deprivation sum.}
-
-\item{cdf}{adds the cumulative distribution function of the weighted deprivation sums. Defaults to \code{FALSE}.}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
