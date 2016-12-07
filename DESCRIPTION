@@ -18,6 +18,6 @@ LazyData: true
 Suggests:
 	testthat, knitr, rmarkdown, IC2, vardpoor, DBI, RODBC, MonetDBLite
 Remotes: 
-	hannesmuehleisen/MonetDBLite
+	url::https://github.com/hannesmuehleisen/MonetDBLite/archive/Dec2016Lite-R.zip
 VignetteBuilder: knitr
 RoxygenNote: 5.0.1
