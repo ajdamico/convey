@@ -22,7 +22,7 @@
 #' Analysis' by Maasoumi, E. In: Handbook of income inequality measurement., ed. J.
 #' Silber, Boston, Dordrecht and London: Kluwer Academic, p. 477-484.
 #'
-#' María Ana Lugo (2007). Comparing multidimensional indices of inequality: Methods and application.
+#' Maria Ana Lugo (2007). Comparing multidimensional indices of inequality: Methods and application.
 #' In: Research on Economic Inequality. Emerald, p. 213-236.
 #'
 #' @keywords survey
