@@ -7,14 +7,14 @@
 \alias{svybmi.svyrep.design}
 \title{Bourguignon (1999) multimensional inequality indices}
 \usage{
-svybmi(formula, design, alpha = 0.5, beta = -2, cutoffs = NULL,
-  dimw = NULL, na.rm = FALSE, ...)
+svybmi(formula, design, alpha = 0.5, beta = -2, dimw = NULL,
+  na.rm = FALSE, ...)
 
 \method{svybmi}{survey.design}(formula, design, alpha = 0.5, beta = -2,
-  cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
+  dimw = NULL, na.rm = FALSE, ...)
 
 \method{svybmi}{svyrep.design}(formula, design, alpha = 0.5, beta = -2,
-  cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
+  dimw = NULL, na.rm = FALSE, ...)
 
 \method{svybmi}{DBIsvydesign}(formula, design, ...)
 }
