@@ -118,8 +118,11 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(nac.matrix),
                       dimnames = list( c("var.class"), colnames( nac.matrix ) ) )
 
-  if ( any( !( var.class %in% c( "numeric" ) ) ) ) {
+  if ( any( !( var.class %in% c( "numeric", "integer" ) ) ) ) {
     stop( "This function is only applicable to variables of type 'numeric'." )
+  }
+  if ( any( ( var.class == "integer" ) ) ) {
+    stop( "At least one of the variables is an integer.\nCoerce your column to numeric with as.numeric if you are sure it's what you want." )
   }
 
   w <- 1/design$prob
@@ -263,8 +266,11 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(nac.matrix),
                       dimnames = list( c("var.class"), colnames( nac.matrix ) ) )
 
-  if ( any( !( var.class %in% c( "numeric" ) ) ) ) {
+  if ( any( !( var.class %in% c( "numeric", "integer" ) ) ) ) {
     stop( "This function is only applicable to variables of type 'numeric'." )
+  }
+  if ( any( ( var.class == "integer" ) ) ) {
+    stop( "At least one of the variables is an integer.\nCoerce your column to numeric with as.numeric if you are sure it's what you want." )
   }
 
   w <- weights( design, "sampling" )

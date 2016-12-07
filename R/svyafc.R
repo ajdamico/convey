@@ -137,8 +137,11 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
                       dimnames = list( c("var.class"), colnames( ach.matrix ) ) )
 
-  if ( any( !( var.class %in% c( "numeric", "ordered" ) ) ) ) {
+  if ( any( !( var.class %in% c( "numeric", "integer", "ordered" ) ) ) ) {
     stop( "This function is only applicable to variables of types 'numeric' or 'ordered factor'." )
+  }
+  if ( any( ( var.class == "integer" ) ) ) {
+    stop( "At least one of the variables is an integer.\nCoerce your column to numeric with as.numeric if you are sure it's what you want." )
   }
 
   w <- 1/design$prob
@@ -302,8 +305,11 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
                       dimnames = list( c("var.class"), colnames( ach.matrix ) ) )
 
-  if ( any( !( var.class %in% c( "numeric", "ordered" ) ) ) ) {
+  if ( any( !( var.class %in% c( "numeric", "integer", "ordered" ) ) ) ) {
     stop( "This function is only applicable to variables of types 'numeric' or 'ordered factor'." )
+  }
+  if ( any( ( var.class == "integer" ) ) ) {
+    stop( "At least one of the variables is an integer.\nCoerce your column to numeric with as.numeric if you are sure it's what you want." )
   }
 
   w <- weights(design, "sampling" )
