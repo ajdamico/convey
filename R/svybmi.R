@@ -1,3 +1,4 @@
+#'
 #' Bourguignon (1999) multimensional inequality indices
 #'
 #' Estimate indices from the Bourguignon (1999) class, a class of multidimensional inequality measures.
