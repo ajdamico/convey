@@ -18,7 +18,7 @@
 #'
 #' @seealso \code{\link{svyfgt}}
 #'
-#' @references François Bourguignon (1999). Comment to 'Multidimensioned Approaches to Welfare
+#' @references Francois Bourguignon (1999). Comment to 'Multidimensioned Approaches to Welfare
 #' Analysis' by Maasoumi, E. In: Handbook of income inequality measurement., ed. J.
 #' Silber, Boston, Dordrecht and London: Kluwer Academic, p. 477-484.
 #'
