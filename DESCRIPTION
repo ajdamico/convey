@@ -4,7 +4,7 @@ Version: 0.2.0
 Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("aut","cre")),
             person("Anthony", "Damico", email= "ajdamico@gmail.com", role= "aut"),
             person("Guilherme", "Jacob", email= "guilhermejacob91@gmail.com", role= "aut"))
-URL: https://github.com/djalmapessoa/convey
+URL: https://guilhermejacob.github.io/context/
 BugReports: https://github.com/djalmapessoa/convey/issues
 Description: Variance estimation on indicators of income concentration and
     poverty using linearized or replication-based survey designs. Wrapper around the
@@ -19,5 +19,4 @@ Suggests:
 	testthat, knitr, rmarkdown, IC2, vardpoor, DBI, RODBC, MonetDBLite
 Remotes: 
 	url::https://github.com/hannesmuehleisen/MonetDBLite/archive/Dec2016Lite-R.zip
-VignetteBuilder: knitr
 RoxygenNote: 5.0.1
