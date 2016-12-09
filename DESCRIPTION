@@ -17,6 +17,4 @@ License: GPL-3
 LazyData: true
 Suggests:
 	testthat, knitr, rmarkdown, IC2, vardpoor, DBI, RODBC, MonetDBLite
-Remotes: 
-	url::https://github.com/hannesmuehleisen/MonetDBLite/archive/Dec2016Lite-R.zip
 RoxygenNote: 5.0.1
