@@ -30,7 +30,10 @@
 #'
 #' @seealso \code{\link{svyquantile}}
 #'
-#' @references Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. PhD thesis. URL \url{http://doc.rero.ch/record/29204}.
+#' @references Marcella Polisicchio and Francesco Porro (2011). A Comparison Between Lorenz L(P) Curve
+#' and Zenga I(P) Curve. Statistica Applicata, v. 21, n. 3-4, 289-301.
+#'
+#' Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. PhD thesis. URL \url{http://doc.rero.ch/record/29204}.
 #'
 #' Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 #' linearization and residual techniques. Survey Methodology, 25, 193-203,
