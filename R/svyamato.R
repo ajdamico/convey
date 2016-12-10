@@ -199,7 +199,7 @@ svyamato.svyrep.design <- function(formula, design, standardized = FALSE, na.rm=
     N <- sum(weights)
     Tot <- sum(weights * x)
 
-    sum( w * ( 1 / N^2 + x^2 / Tot^2 )^.5 )
+    sum( weights * ( 1 / N^2 + x^2 / Tot^2 )^.5 )
   }
 
   ws <- weights(design, "sampling")

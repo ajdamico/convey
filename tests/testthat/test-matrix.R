@@ -23,8 +23,8 @@ for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyamato" , "svyqsr" , "sv
 	if( identical( FUN , svyrenyi ) ) final_fun <- function( ... ) FUN( ... , epsilon = 0.5 )
 	if( identical( FUN , svygpg ) ) final_fun <- function( ... ) FUN( ... , sex = ~ rb090 )
 	if( identical( FUN , svygei ) ) final_fun <- function( ... ) FUN( ... , epsilon = 0.5 )
-	
-	
+
+
 	this_df <-
 		data.frame(
 			function_name = this_fun ,
@@ -35,7 +35,7 @@ for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyamato" , "svyqsr" , "sv
 		)
 
 	rownames( this_df ) <- NULL
-		
+
 	out <- rbind( out , this_df )
 }
 
@@ -56,7 +56,7 @@ this_df <-
 	)
 
 rownames( this_df ) <- NULL
-	
+
 out <- rbind( out , this_df )
 
 lin_bmi <- svybmi( ~ eqincome + hy050n , design = des_eusilc , alpha = .5 , beta = .5 , na.rm = FALSE )
@@ -72,7 +72,7 @@ this_df <-
 	)
 
 rownames( this_df ) <- NULL
-	
+
 out <- rbind( out , this_df )
 
 out$measure_of_uncertainty <- "standard error"
@@ -87,12 +87,12 @@ this_df <-
 		coef_lin = zc_lin$quantiles[5] ,
 		se_lin = zc_lin$quantiles[5] - zc_lin$CIs[9] ,
 		coef_rep = zc_rep$quantiles[5] ,
-		se_rep = zc_rep$quantiles[5] - zc_rep$CIs[9] , 
+		se_rep = zc_rep$quantiles[5] - zc_rep$CIs[9] ,
 		measure_of_uncertainty = "confidence interval length at median"
 	)
 
 rownames( this_df ) <- NULL
-	
+
 out <- rbind( out , this_df )
 
 
@@ -108,12 +108,12 @@ for( j in seq( length( afc_lin ) - 1 ) ){
 			coef_lin = afc_rep[[j+1]][1,1] ,
 			se_lin = afc_rep[[j+1]][1,2] ,
 			coef_rep = afc_lin[[j+1]][1,1] ,
-			se_rep = afc_lin[[j+1]][1,2] , 
+			se_rep = afc_lin[[j+1]][1,2] ,
 			measure_of_uncertainty = "standard error"
 		)
 
 	rownames( this_df ) <- NULL
-		
+
 	out <- rbind( out , this_df )
 
 }
@@ -129,12 +129,12 @@ this_df <-
 		coef_lin = lor_lin$quantiles[5] ,
 		se_lin = lor_lin$quantiles[5] - lor_lin$CIs[9] ,
 		coef_rep = lor_rep$quantiles[5] ,
-		se_rep = lor_rep$quantiles[5] - lor_rep$CIs[9] , 
+		se_rep = lor_rep$quantiles[5] - lor_rep$CIs[9] ,
 		measure_of_uncertainty = "confidence interval length at median"
 	)
 
 rownames( this_df ) <- NULL
-	
+
 out <- rbind( out , this_df )
 
 
@@ -149,12 +149,12 @@ for( i in 1:3 ){
 			coef_lin = div_lin$eqincome[i] ,
 			se_lin = attr(div_lin,'var')[i] ,
 			coef_rep = div_rep$eqincome[i] ,
-			se_rep = attr(div_rep,'var')[i] , 
+			se_rep = attr(div_rep,'var')[i] ,
 			measure_of_uncertainty = "variance"
 		)
 
 	rownames( this_df ) <- NULL
-		
+
 	out <- rbind( out , this_df )
 
 }
@@ -170,12 +170,12 @@ for( i in 1:3 ){
 			coef_lin = dec_lin$eqincome[i] ,
 			se_lin = attr(dec_lin,'var')[i] ,
 			coef_rep = dec_rep$eqincome[i] ,
-			se_rep = attr(dec_rep,'var')[i] , 
+			se_rep = attr(dec_rep,'var')[i] ,
 			measure_of_uncertainty = "variance"
 		)
 
 	rownames( this_df ) <- NULL
-		
+
 	out <- rbind( out , this_df )
 
 }
@@ -191,14 +191,14 @@ print( out )
 test_that("coef and SE matrix values make sense",{
 
 		# test that coefficients for all functions are equal!
-		# isTRUE( expect_true( all.equal( out$linearized_coefficient , out$replication_coefficient ) ) )
+		 isTRUE( expect_true( all.equal( out$linearized_coefficient , out$replication_coefficient ) ) )
 
 		# test that the difference between the measure of uncertainty is a small fraction of replication designs
-		# expect_true( all( abs( out$replication_mou - out$linearized_mou ) / out$replication_coefficient < 0.05 ) )
+		 expect_true( all( abs( out$replication_mou - out$linearized_mou ) / out$replication_coefficient < 0.05 ) )
 
 		# test that the difference between the measure of uncertainty is a small fraction of linearized designs
-		# expect_true( all( abs( out$replication_mou - out$linearized_mou ) / out$linearized_coefficient < 0.05 ) )
-		
+		 expect_true( all( abs( out$replication_mou - out$linearized_mou ) / out$linearized_coefficient < 0.05 ) )
+
 	}
 )
 
