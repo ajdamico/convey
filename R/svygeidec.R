@@ -3,8 +3,8 @@
 #' Estimates the group decomposition of the generalized entropy index
 #'
 #' @param formula a formula specifying the income variable
+#' @param by a formula specifying the group variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
-#' @param by.formula a formula specifying the group variable
 #' @param epsilon a parameter that determines the sensivity towards inequality in the top of the distribution. Defaults to epsilon = 1.
 #' @param na.rm Should cases with missing values be dropped? Observations containing missing values in income or group variables will be dropped.
 #' @param ... future expansion
@@ -44,30 +44,30 @@
 #' des_eusilc_rep <- convey_prep(des_eusilc_rep)
 #'
 #' # linearized design
-#' svygeidec( ~eqincome , subset(des_eusilc, eqincome > 0) , ~rb090 , epsilon = 0 )
-#' svygeidec( ~eqincome , des_eusilc , ~rb090 , epsilon = .5 )
-#' svygeidec( ~eqincome , subset(des_eusilc, eqincome > 0) , ~rb090 , epsilon = 1 )
-#' svygeidec( ~eqincome , des_eusilc , ~rb090 , epsilon = 2 )
+#' svygeidec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0) , epsilon = 0 )
+#' svygeidec( ~eqincome , ~rb090 , des_eusilc , epsilon = .5 )
+#' svygeidec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0) , epsilon = 1 )
+#' svygeidec( ~eqincome , ~rb090 , des_eusilc , epsilon = 2 )
 #'
 #' # replicate-weighted design
-#' svygeidec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) , ~rb090 , epsilon = 0 )
-#' svygeidec( ~eqincome , des_eusilc_rep , ~rb090 , epsilon = .5 )
-#' svygeidec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) , ~rb090 , epsilon = 1 )
-#' svygeidec( ~eqincome , des_eusilc_rep , ~rb090 , epsilon = 2 )
+#' svygeidec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) , epsilon = 0 )
+#' svygeidec( ~eqincome , ~rb090 , des_eusilc_rep , epsilon = .5 )
+#' svygeidec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) , epsilon = 1 )
+#' svygeidec( ~eqincome , ~rb090 , des_eusilc_rep , epsilon = 2 )
 #'
 #' # linearized design using a variable with missings
 #' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))
-#' svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 0 )
-#' svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 0, na.rm = TRUE )
-#' svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 1 )
-#' svygeidec( ~py010n , sub_des_eusilc , ~rb090 , epsilon = 1, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 0 )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 0, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 1 )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 1, na.rm = TRUE )
 #'
 #' # replicate-weighted design using a variable with missings
 #' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
-#' svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 0 )
-#' svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 0, na.rm = TRUE )
-#' svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 1 )
-#' svygeidec( ~py010n , sub_des_eusilc_rep , ~rb090 , epsilon = 1, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0 )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 1 )
+#' svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 1, na.rm = TRUE )
 #'
 #'
 #' \dontrun{
@@ -92,21 +92,21 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' # database-backed linearized design
-#' svygeidec( ~eqincome , subset(dbd_eusilc, eqincome > 0) , ~rb090 , epsilon = 0 )
-#' svygeidec( ~eqincome , dbd_eusilc , ~rb090 , epsilon = .5 )
-#' svygeidec( ~eqincome , subset(dbd_eusilc, eqincome > 0) , ~rb090 , epsilon = 1 )
-#' svygeidec( ~eqincome , dbd_eusilc , ~rb090 , epsilon = 2 )
+#' svygeidec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0) , epsilon = 0 )
+#' svygeidec( ~eqincome , ~rb090 , dbd_eusilc , epsilon = .5 )
+#' svygeidec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0) , epsilon = 1 )
+#' svygeidec( ~eqincome , ~rb090 , dbd_eusilc , epsilon = 2 )
 #'
 #' # database-backed linearized design using a variable with missings
 #' sub_dbd_eusilc <- subset(dbd_eusilc, py010n > 0 | is.na(py010n))
-#' svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 0 )
-#' svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 0, na.rm = TRUE )
-#' svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = .5 )
-#' svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = .5, na.rm = TRUE )
-#' svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 1 )
-#' svygeidec( ~py010n , sub_dbd_eusilc , ~rb090 , epsilon = 1, na.rm = TRUE )
-#' svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = 2 )
-#' svygeidec( ~py010n , dbd_eusilc , ~rb090 , epsilon = 2, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 0 )
+#' svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 0, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , dbd_eusilc , epsilon = .5 )
+#' svygeidec( ~py010n , ~rb090 , dbd_eusilc , epsilon = .5, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 1 )
+#' svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 1, na.rm = TRUE )
+#' svygeidec( ~py010n , ~rb090 , dbd_eusilc , epsilon = 2 )
+#' svygeidec( ~py010n , ~rb090 , dbd_eusilc , epsilon = 2, na.rm = TRUE )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -116,11 +116,11 @@
 #'
 #' @export
 svygeidec <-
-  function( formula, design,  ...) {
+  function( formula, by, design,  ...) {
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-    if( length( attr( terms.formula( by.formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `by.formula=` argument" )
+    if( length( attr( terms.formula( by ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `by=` argument" )
 
     if( 'epsilon' %in% names( list(...) ) && list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
 
@@ -131,13 +131,13 @@ svygeidec <-
 #' @rdname svygeidec
 #' @export
 svygeidec.survey.design <-
-  function ( formula, design, by.formula, epsilon = 1, na.rm = FALSE, ... ) {
+  function ( formula, by, design, epsilon = 1, na.rm = FALSE, ... ) {
 
     if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
     w <- 1/design$prob
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-    grpvar <- model.frame( by.formula, design$variables, na.action = na.pass)[,]
+    grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
 
     if (na.rm) {
       nas <- ( is.na(incvar) | is.na(grpvar ) ) & w > 0
@@ -155,7 +155,7 @@ svygeidec.survey.design <-
       attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
-      attr(rval,"group")<- as.character( by.formula )[[2]]
+      attr(rval,"group")<- as.character( by )[[2]]
       class(rval) <- c( "cvydstat" )
 
       return(rval)
@@ -415,7 +415,7 @@ svygeidec.survey.design <-
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
-    attr(rval,"group")<- as.character( by.formula )[[2]]
+    attr(rval,"group")<- as.character( by )[[2]]
     class(rval) <- c( "cvydstat" )
     rval
 
@@ -425,12 +425,12 @@ svygeidec.survey.design <-
 #' @rdname svygeidec
 #' @export
 svygeidec.svyrep.design <-
-  function( formula, design, by.formula, epsilon = 1, na.rm=FALSE, ...) {
+  function( formula, by, design, epsilon = 1, na.rm=FALSE, ...) {
 
     if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-    grpvar <- model.frame( by.formula, design$variables, na.action = na.pass)[,]
+    grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
 
     if(na.rm){
       nas<-is.na(incvar) | is.na(grpvar)
@@ -451,7 +451,7 @@ svygeidec.svyrep.design <-
       attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
-      attr(rval,"group")<- as.character( by.formula )[[2]]
+      attr(rval,"group")<- as.character( by )[[2]]
       class(rval) <- c( "cvydstat" )
 
       return(rval)
@@ -544,7 +544,7 @@ svygeidec.svyrep.design <-
       attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
-      attr(rval,"group")<- as.character( by.formula )[[2]]
+      attr(rval,"group")<- as.character( by )[[2]]
       class(rval) <- c( "cvydstat" )
 
       return(rval)
@@ -565,7 +565,7 @@ svygeidec.svyrep.design <-
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
-    attr(rval,"group")<- as.character( by.formula )[[2]]
+    attr(rval,"group")<- as.character( by )[[2]]
     class(rval) <- c( "cvydstat" )
     rval
 
@@ -575,7 +575,7 @@ svygeidec.svyrep.design <-
 #' @rdname svygeidec
 #' @export
 svygeidec.DBIsvydesign <-
-	function (formula, design, by.formula, ...) {
+	function (formula, design, by, ...) {
 
 
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){
@@ -586,7 +586,7 @@ svygeidec.DBIsvydesign <-
 				cbind(
 					getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-					getvars(by.formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+					getvars(by, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 				)
 
 
@@ -601,7 +601,7 @@ svygeidec.DBIsvydesign <-
 			cbind(
 				getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-				getvars(by.formula, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+				getvars(by, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
 			)
 
 		NextMethod("svygeidec", design)
