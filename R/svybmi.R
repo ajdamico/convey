@@ -171,8 +171,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   }
 
-  U_x <- list( value = sum( w[ w > 0 ] * indiv.welfare[ w > 0 ] ) , lin = indiv.welfare )
-  aggr.pop <- list( value = sum( w[ w > 0 ] ), lin = rep( 1 , length( nac.matrix[ , 1 ] ) ) )
+  U_x <- list( value = sum( w[ w > 0 ] * indiv.welfare[ w > 0 ] ) , lin = indiv.welfare * ( w > 0 ) )
+  aggr.pop <- list( value = sum( w[ w > 0 ] ), lin = rep( 1 , length( nac.matrix[ , 1 ] ) ) * ( w > 0 ) )
 
   U_x <- contrastinf( quote( U_x / aggr.pop ) , list( U_x = U_x, aggr.pop = aggr.pop ) )
 
@@ -185,7 +185,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       if ( beta != 0 ) {
 
-        aggr.nac <- list( value = sum( w[ w > 0 ] * nac.matrix[ w > 0 , i ] ), lin = nac.matrix[ , i ] )
+        aggr.nac <- list( value = sum( w[ w > 0 ] * nac.matrix[ w > 0 , i ] ), lin = nac.matrix[ , i ] * ( w > 0 ) )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -193,7 +193,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       } else {
 
-        aggr.nac <- list( value = sum( nac.matrix[ w > 0 , i ] * w[ w > 0 ] ), lin = nac.matrix[ , i ] )
+        aggr.nac <- list( value = sum( nac.matrix[ w > 0 , i ] * w[ w > 0 ] ), lin = nac.matrix[ , i ] * ( w > 0 ) )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -205,8 +205,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       if ( beta != 0 ) {
 
-        aggr.nac <- list( value = sum( w[ w > 0 ] * nac.matrix[ w > 0 , i ] ), lin = nac.matrix[ , i ] )
-        aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
+        aggr.nac <- list( value = sum( w[ w > 0 ] * nac.matrix[ w > 0 , i ] ), lin = nac.matrix[ , i ] * ( w > 0 ) )
+        aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) * ( w > 0 ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
         aggr.mu_iter <- contrastinf( quote( aggr.dimw * ( aggr.nac / aggr.pop )^aggr.beta ), list_all )
@@ -252,11 +252,11 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 #' @rdname svybmi
 #' @export
 svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw = NULL, na.rm = FALSE , ...) {
-  
+
   if ( alpha <= 0 | alpha > 1 ) stop( "This function is only defined for alpha in (0,1]." )
   if ( beta >= 1 ) stop( "This function is only defined for beta < 1." )
 
-  
+
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   nac.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
@@ -328,8 +328,8 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     ww <- weights( design, "analysis" )
 
     qq <- apply( ww, 2, function(wi) {
-      1 - ( sum( wi [ w > 0 ] * indiv.welfare [ w > 0 ] ) / sum( wi [ w > 0 ] ) ) /
-        sum( ( dimw * ( colSums( wi [ w > 0 ] * nac.matrix [ w > 0, ] ) / sum( wi [ w > 0 ] ) )^( 1 / beta ) )^( alpha / beta ) )
+      1 - ( sum( wi [ wi > 0 ] * indiv.welfare [ wi > 0 ] ) / sum( wi [ wi > 0 ] ) ) /
+        sum( ( dimw * ( colSums( wi [ wi > 0 ] * nac.matrix [ wi > 0, ] ) / sum( wi [ wi > 0 ] ) )^( beta ) )^( alpha / beta ) )
     } )
 
   } else {
@@ -340,8 +340,8 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     ww <- weights( design, "analysis" )
 
     qq <- apply( ww, 2, function(wi) {
-      1 - ( sum( wi [ w > 0 ] * indiv.welfare [ w > 0 ] ) / sum( wi [ w > 0 ] ) ) /
-        prod( ( colSums( wi [ w > 0 ] * nac.matrix [ w > 0, ] ) / sum( wi [ w > 0 ] ) )^( dimw ) )^( alpha )
+      1 - ( sum( wi [ wi > 0 ] * indiv.welfare [ wi > 0 ] ) / sum( wi [ wi > 0 ] ) ) /
+        prod( ( colSums( wi [ wi > 0 ] * nac.matrix [ wi > 0, ] ) / sum( wi [ wi > 0 ] ) )^( dimw ) )^( alpha )
       } )
 
   }
