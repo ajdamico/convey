@@ -12,6 +12,7 @@ for( n in c( 50 , 1000 ) ){
 
 	dist_frame <-
 		data.frame( 
+			wt_binom_two = as.numeric( rbinom( n , 1 , .5 ) ) ,
 			wt_binom = rbinom( n , 1 , .5 ) ,
 			wt_unif = runif( n ) ,
 			beta_050_050 = rbeta( n , 0.5 , 0.5 ) ,
@@ -52,9 +53,18 @@ for( n in c( 50 , 1000 ) ){
 
 				}
 
-				lin_params_list <- list( this_formula , lin_des )
-				rep_params_list <- list( this_formula , rep_des )
+				if( any( unlist( lapply( list( svybmi ) , function( z ) identical( z , FUN ) ) ) ) ){
 				
+					lin_params_list <- list( this_formula = as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , lin_des )
+					rep_params_list <- list( this_formula = as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , rep_des )
+				
+				
+				} else {
+					
+					lin_params_list <- list( this_formula , lin_des )
+					rep_params_list <- list( this_formula , rep_des )
+				
+				}
 					
 				
 				if( identical( FUN , svyfgt ) ){
@@ -85,10 +95,15 @@ for( n in c( 50 , 1000 ) ){
 					
 				}
 		
+				if( this_prefix == 'unwtd' ) wt_vec <- seq( nrow( dist_frame ) )
+				if( this_prefix == 'binom' ) wt_vec <- which( dist_frame$wt_binom > 0 )
+				if( this_prefix == 'unif' ) wt_vec <- which( dist_frame$wt_unif > 0 )
+				
+		
 				if( 
 					(
 						( identical( svyrmpg , FUN ) | identical( svypoormed , FUN ) ) & 
-						coef( svyarpt( this_formula , lin_des ) ) < min( dist_frame[ , as.character( this_formula )[2]] ) 
+						coef( svyarpt( this_formula , lin_des ) ) < min( dist_frame[ wt_vec , as.character( this_formula )[2]] ) 
 					) |
 					(
 						identical( svyqsr , FUN ) &
