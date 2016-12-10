@@ -116,7 +116,7 @@ svyamato.survey.design <- function( formula, design, standardized = FALSE , na.r
   w <- 1/design$prob
 
   if ( any( incvar[w != 0] < 0, na.rm = TRUE ) )  stop( "The Amato Index is defined for non-negative numeric variables only." )
-  
+
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
@@ -126,10 +126,6 @@ svyamato.survey.design <- function( formula, design, standardized = FALSE , na.r
   }
 
   w <- 1/design$prob
-
-  ordincvar <- order(incvar)
-  w <- w[ ordincvar ]
-  incvar <- incvar[ ordincvar ]
 
   incvar <- incvar[ w != 0 ]
   w <- w[ w != 0 ]
@@ -147,45 +143,15 @@ svyamato.survey.design <- function( formula, design, standardized = FALSE , na.r
 
   N <- sum(w)
   Tot <- sum(w * incvar)
-  # K_y <- Tot - cumsum(w * incvar)
-
 
   rval <- sum( w * ( 1 / N^2 + incvar^2 / Tot^2 )^.5 )
 
-  amato_df <-
-    data.frame(
-      this_incvar = incvar ,
-      this_N = N ,
-      this_Tot = Tot ,
-      this_w = w ,
-      this_w_sum = sum( w )
-    )
+  z <- 1/design$prob
+  z[ z > 0 ]  <- sqrt( ( 1 / N^2 + incvar / Tot^2 ) ) +
+    ( -1 / N^3 ) * sum( w * ( 1 / N^2 + incvar^2 / Tot^2 )^-.5 ) +
+    ( - incvar / Tot^3 ) * sum( w * incvar^2 * ( 1 / N^2 + incvar^2 / Tot^2 )^-.5 )
 
-
-  amato_df[ , 'line1' ] <-
-    ( 1 / amato_df[ , 'this_N' ]^2 + amato_df[ , 'this_incvar' ]^2 / amato_df[ , 'this_Tot' ]^2 )^.5
-
-  amato_df[ , 'line2' ] <-
-    - ( 1 / amato_df[ , 'this_N' ]^3 ) *
-    sum( amato_df[ , 'this_w' ] * ( 1 / amato_df[ , 'this_N' ]^2 + ( amato_df[ , 'this_incvar' ] / amato_df[ , 'this_N' ] )^2 )^-.5 )
-
-  amato_df[ , 'line3' ] <-
-    - ( amato_df[ , 'this_incvar' ] / amato_df[ , 'this_Tot' ]^3 ) *
-    sum( ( ( 1 / amato_df[ , 'this_N' ]^2 ) + ( amato_df[ , 'this_incvar' ] / amato_df[ , 'this_N' ] )^2 )^-.5 *
-           amato_df[ , 'this_incvar' ]^2 * amato_df[ , 'this_w' ] )
-
-  my_outvec <- rowSums( amato_df[ , paste0( 'line' , 1:3 ) ] )
-
-
-
-  z_if <- 1/design$prob
-  z_if <- z_if[ordincvar]
-  z_if[ z_if != 0 ] <- as.numeric( my_outvec )
-  z_if <- z_if[ order(ordincvar) ]
-
-  variance <- survey::svyrecvar( z_if/design$prob, design$cluster,
-                                 design$strata, design$fpc, postStrata = design$postStrata)
-
+  variance <- survey::svyrecvar( z / design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
 
   if ( standardized ) {
 
@@ -224,21 +190,16 @@ svyamato.svyrep.design <- function(formula, design, standardized = FALSE, na.rm=
   }
 
   if ( any(incvar < 0, na.rm = TRUE) ) stop( "The Amato Index is defined for non-negative numeric variables only." )
-  
+
   calc.amato <- function( x, weights ) {
 
     x <- x[weights != 0 ]
     weights <- weights[weights != 0 ]
-    ordx <- order(x)
-
-    x <- x[ ordx ]
-    weights <- weights[ ordx ]
 
     N <- sum(weights)
     Tot <- sum(weights * x)
 
-    sum( weights * ( 1 / N^2 + x^2 / Tot^2 )^.5 )
-
+    sum( w * ( 1 / N^2 + x^2 / Tot^2 )^.5 )
   }
 
   ws <- weights(design, "sampling")
