@@ -124,12 +124,7 @@
 #' }
 #'
 #' @export
-svyafcdec <- function(formula, design, by.formula, g = NULL, cutoffs = NULL, k = NULL, dimw = NULL, ...) {
-
-  if ( k <= 0 | k > 1 ) { stop( "This functions is only defined for k in (0,1]." ) }
-  if ( g < 0 ) { stop( "This function is undefined for g < 0." ) }
-  if ( is.null( cutoffs ) ) { stop( "No dimensional cutoffs defined." ) }
-  if ( !is.list( cutoffs ) ) { stop( "The parameter 'cutoffs' has to be a list." ) }
+svyafcdec <- function(formula, design, ...) {
 
   UseMethod("svyafcdec", design)
 
@@ -137,7 +132,11 @@ svyafcdec <- function(formula, design, by.formula, g = NULL, cutoffs = NULL, k =
 
 #' @rdname svyafcdec
 #' @export
-svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cutoffs = NULL, k = NULL, dimw = NULL, na.rm = FALSE, ... ) {
+svyafcdec.survey.design <- function( formula, design, by.formula, g , cutoffs , k , dimw = NULL, na.rm = FALSE, ... ) {
+
+  if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
+  if ( g < 0 ) stop( "This function is undefined for g < 0." )
+  if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -325,7 +324,13 @@ svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cuto
 
 #' @rdname svyafcdec
 #' @export
-svyafcdec.svyrep.design <- function( formula, design, by.formula, g = NULL, cutoffs = NULL, k = NULL, dimw = NULL, na.rm=FALSE, ...) {
+svyafcdec.svyrep.design <- function( formula, design, by.formula, g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
+    
+  if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
+  if ( g < 0 ) stop( "This function is undefined for g < 0." )
+  if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
+
+  
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]

@@ -7,14 +7,13 @@
 \alias{svyafcdec.svyrep.design}
 \title{Alkire-Foster multimensional poverty decompostition}
 \usage{
-svyafcdec(formula, design, by.formula, g = NULL, cutoffs = NULL, k = NULL,
-  dimw = NULL, ...)
+svyafcdec(formula, design, ...)
 
-\method{svyafcdec}{survey.design}(formula, design, by.formula, g = NULL,
-  cutoffs = NULL, k = NULL, dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{survey.design}(formula, design, by.formula, g, cutoffs, k,
+  dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{svyrep.design}(formula, design, by.formula, g = NULL,
-  cutoffs = NULL, k = NULL, dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{svyrep.design}(formula, design, by.formula, g, cutoffs, k,
+  dimw = NULL, na.rm = FALSE, ...)
 
 \method{svyafcdec}{DBIsvydesign}(formula, design, by.formula, ...)
 }
@@ -22,6 +21,8 @@ svyafcdec(formula, design, by.formula, g = NULL, cutoffs = NULL, k = NULL,
 \item{formula}{a formula specifying the variables. Variables can be numeric or ordered factors.}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
+
+\item{...}{future expansion}
 
 \item{by.formula}{a formula defining the group variable for decomposition.}
 
@@ -32,8 +33,6 @@ svyafcdec(formula, design, by.formula, g = NULL, cutoffs = NULL, k = NULL,
 \item{k}{a scalar defining the multimensional cutoff.}
 
 \item{dimw}{a vector defining the weight of each dimension in the multidimensional deprivation sum.}
-
-\item{...}{future expansion}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 }
