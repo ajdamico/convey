@@ -7,14 +7,13 @@
 \alias{svyafc.svyrep.design}
 \title{Alkire-Foster multimensional poverty class}
 \usage{
-svyafc(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL,
+svyafc(formula, design, ...)
+
+\method{svyafc}{survey.design}(formula, design, k, g, cutoffs, dimw = NULL,
   na.rm = FALSE, ...)
 
-\method{svyafc}{survey.design}(formula, design, k = NULL, g = NULL,
-  cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
-
-\method{svyafc}{svyrep.design}(formula, design, k = NULL, g = NULL,
-  cutoffs = NULL, dimw = NULL, na.rm = FALSE, ...)
+\method{svyafc}{svyrep.design}(formula, design, k, g, cutoffs, dimw = NULL,
+  na.rm = FALSE, ...)
 
 \method{svyafc}{DBIsvydesign}(formula, design, ...)
 }
@@ -22,6 +21,8 @@ svyafc(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL,
 \item{formula}{a formula specifying the variables. Variables can be numeric or ordered factors.}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
+
+\item{...}{future expansion}
 
 \item{k}{a scalar defining the multimensional cutoff.}
 
@@ -32,8 +33,6 @@ svyafc(formula, design, k = NULL, g = NULL, cutoffs = NULL, dimw = NULL,
 \item{dimw}{a vector defining the weight of each dimension in the multidimensional deprivation sum.}
 
 \item{na.rm}{Should cases with missing values be dropped?}
-
-\item{...}{future expansion}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
