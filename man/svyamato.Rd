@@ -9,10 +9,10 @@
 \usage{
 svyamato(formula, design, ...)
 
-\method{svyamato}{survey.design}(formula, design, standardized = F,
+\method{svyamato}{survey.design}(formula, design, standardized = FALSE,
   na.rm = FALSE, ...)
 
-\method{svyamato}{svyrep.design}(formula, design, standardized = F,
+\method{svyamato}{svyrep.design}(formula, design, standardized = FALSE,
   na.rm = FALSE, ...)
 
 \method{svyamato}{DBIsvydesign}(formula, design, ...)

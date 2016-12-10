@@ -107,7 +107,7 @@ svyamato <- function(formula, design, ...) {
 
 #' @rdname svyamato
 #' @export
-svyamato.survey.design <- function( formula, design, standardized = F, na.rm = FALSE, ... ) {
+svyamato.survey.design <- function( formula, design, standardized = FALSE , na.rm = FALSE, ... ) {
 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -210,7 +210,7 @@ svyamato.survey.design <- function( formula, design, standardized = F, na.rm = F
 
 #' @rdname svyamato
 #' @export
-svyamato.svyrep.design <- function(formula, design, standardized = F, na.rm=FALSE, ...) {
+svyamato.svyrep.design <- function(formula, design, standardized = FALSE, na.rm=FALSE, ...) {
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
