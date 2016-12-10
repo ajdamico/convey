@@ -7,8 +7,7 @@
 \alias{svybmi.svyrep.design}
 \title{Bourguignon (1999) multimensional inequality indices}
 \usage{
-svybmi(formula, design, alpha = 0.5, beta = -2, dimw = NULL,
-  na.rm = FALSE, ...)
+svybmi(formula, design, ...)
 
 \method{svybmi}{survey.design}(formula, design, alpha = 0.5, beta = -2,
   dimw = NULL, na.rm = FALSE, ...)
@@ -23,6 +22,8 @@ svybmi(formula, design, alpha = 0.5, beta = -2, dimw = NULL,
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{...}{future expansion}
+
 \item{alpha}{a scalar defining the exponent of the indicator.}
 
 \item{beta}{a scalar defining the exponent of the indicator.}
@@ -30,8 +31,6 @@ svybmi(formula, design, alpha = 0.5, beta = -2, dimw = NULL,
 \item{dimw}{a vector defining the weight of each dimension in the multidimensional deprivation sum.}
 
 \item{na.rm}{Should cases with missing values be dropped?}
-
-\item{...}{future expansion}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
