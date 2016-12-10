@@ -117,14 +117,8 @@ svyamato.survey.design <- function( formula, design, standardized = F, na.rm = F
 
   w <- 1/design$prob
 
-  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) { warning( "The function is defined for non-negative incomes only.")
-    nps <- incvar < 0
-    design <- design[nps == 0 ]
-    if (length(nps) > length(design$prob))
-      incvar <- incvar[nps == 0]
-    else incvar[nps > 0] <- 0
-  }
-
+  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) )  stop( "The Amato Index is defined for non-negative numeric variables only." )
+  
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
@@ -231,16 +225,8 @@ svyamato.svyrep.design <- function(formula, design, standardized = F, na.rm=FALS
     incvar <- incvar[!nas]
   }
 
-  if ( any(incvar < 0, na.rm = TRUE) ) { warning( "The function is defined for non-negative incomes only.")
-    nps <- incvar < 0
-    nps[ is.na(nps) ] <- 0
-    design <- design[ nps == 0 ]
-    if (length(nps) > length(design$prob)) {
-      incvar <- incvar[nps == 0]
-    } else { incvar[nps > 0] <- 0 }
-
-  }
-
+  if ( any(incvar < 0, na.rm = TRUE) ) stop( "The Amato Index is defined for non-negative numeric variables only." )
+  
   calc.amato <- function( x, weights ) {
 
     x <- x[weights != 0 ]

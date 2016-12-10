@@ -156,12 +156,8 @@ svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cuto
 
   w <- 1/design$prob
 
-  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) {
-    warning( "The function is defined for non-negative numeric variables only.")
-    nps <- apply( ach.matrix[ , var.class == "numeric" ] < 0, 1, function( x ) any( x, na.rm = FALSE ) )
-    nps[ is.na(nps) ] <- FALSE
-    design <- design[nps == 0 ]
-  }
+  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty decompostition is defined for non-negative numeric variables only." )
+  
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(by.formula, design$variables, na.action = na.pass)[,]
@@ -354,13 +350,8 @@ svyafcdec.svyrep.design <- function( formula, design, by.formula, g = NULL, cuto
 
   ws <- weights(design, "sampling")
 
-  if ( any( ach.matrix[ ws != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) {
-    warning( "The function is defined for non-negative numeric variables only.")
-    nps <- apply( ach.matrix[ , var.class == "numeric" ] < 0, 1, function( x ) any( x, na.rm = FALSE ) )
-    nps[ is.na(nps) ] <- FALSE
-    design <- design[nps == 0 ]
-  }
-
+  if ( any( ach.matrix[ ws != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty decompostition is defined for non-negative numeric variables only." )
+  
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(by.formula, design$variables, na.action = na.pass)[,]
 

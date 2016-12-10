@@ -128,13 +128,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   w <- 1/design$prob
 
-  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) {
-    warning( "The function is defined for non-negative numeric variables only.")
-    nps <- apply( nac.matrix[ , var.class == "numeric" ] < 0, 1, function( x ) any( x, na.rm = FALSE ) )
-    nps[ is.na(nps) ] <- FALSE
-    design <- design[nps == 0 ]
-    w <- 1/design$prob
-  }
+  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Bourguignon multimensional inequality index is defined for non-negative numeric variables only." )
+
 
   if (na.rm) {
     nas <- apply( nac.matrix, 1, function(x) any( is.na(x) ) )
@@ -276,13 +271,8 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   w <- weights( design, "sampling" )
 
-  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) {
-    warning( "The function is defined for non-negative numeric variables only.")
-    nps <- apply( nac.matrix[ , var.class == "numeric" ] < 0, 1, function( x ) any( x, na.rm = FALSE ) )
-    nps[ is.na(nps) ] <- FALSE
-    design <- design[nps == 0 ]
-    w <- weights( design, "sampling" )
-  }
+  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Bourguignon multimensional inequality index is defined for non-negative numeric variables only." )
+
 
   if (na.rm) {
     nas <- apply( nac.matrix, 1, function(x) any( is.na(x) ) )

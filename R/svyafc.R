@@ -145,14 +145,8 @@ svyafc.survey.design <- function( formula, design, k = NULL, g = NULL, cutoffs =
 
   w <- 1/design$prob
 
-  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) {
-    warning( "The function is defined for non-negative numeric variables only.")
-    nps <- apply( ach.matrix[ , var.class == "numeric" ] < 0, 1, function( x ) any( x, na.rm = FALSE ) )
-    nps[ is.na(nps) ] <- FALSE
-    design <- design[nps == 0 ]
-    w <- 1/design$prob
-  }
-
+  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty class is defined for non-negative numeric variables only.")
+  
   if (na.rm) {
     nas <- apply( ach.matrix, 1, function(x) any( is.na(x) ) )
     design <- design[nas == 0, ]
@@ -300,13 +294,7 @@ svyafc.svyrep.design <- function(formula, design, k = NULL, g = NULL, cutoffs = 
 
   w <- weights(design, "sampling" )
 
-  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) {
-    warning( "The function is defined for non-negative numeric variables only.")
-    nps <- apply( ach.matrix[ , var.class == "numeric" ] < 0, 1, function( x ) any( x, na.rm = FALSE ) )
-    nps[ is.na(nps) ] <- FALSE
-    design <- design[nps == 0 ]
-    w <- weights(design, "sampling" )
-  }
+  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty class is defined for non-negative numeric variables only.")
 
   if (na.rm) {
     nas <- apply( ach.matrix, 1, function(x) any( is.na(x) ) )

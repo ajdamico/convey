@@ -106,12 +106,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
 
   w <- 1/design$prob
 
-  if ( any(incvar[w != 0] <= 0) ) {
-    warning("The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
-    nps <- incvar <= 0
-    design <- design[!nps]
-    if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[ nps ] <- 0
-  }
+  if ( any(incvar[w != 0] <= 0) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
 
   w <- 1/design$prob
 
@@ -166,14 +161,7 @@ svyjdiv.svyrep.design <- function ( formula, design, na.rm = FALSE, ... ) {
 
   ws <- weights(design, "sampling")
 
-  if ( any( incvar[ws != 0] <= 0, na.rm = TRUE ) ) {
-    warning("The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
-    nps <- incvar <= 0
-    nps[ is.na(nps) ] <- FALSE
-    design <- design[!nps]
-    if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[ nps ] <- 0
-    ws <- weights(design, "sampling")
-  }
+  if ( any( incvar[ws != 0] <= 0, na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
 
   rval <- calc.jdiv( x = incvar, weights = ws )
   if ( is.na(rval) ) {

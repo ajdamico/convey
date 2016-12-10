@@ -114,14 +114,9 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
 
   w <- 1/design$prob
 
-  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) { warning( "The function is defined for non-negative incomes only.")
-    nps <- incvar < 0
-    design <- design[nps == 0 ]
-    if (length(nps) > length(design$prob))
-      incvar <- incvar[nps == 0]
-    else incvar[nps > 0] <- 0
-  }
-
+  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) stop( "The Zenga index is defined for non-negative numeric variables only.")
+  
+  
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
@@ -224,15 +219,7 @@ svyzenga.svyrep.design <- function(formula, design, na.rm=FALSE, ...) {
     incvar <- incvar[!nas]
   }
 
-  if ( any(incvar < 0, na.rm = TRUE) ) { warning( "The function is defined for non-negative incomes only.")
-    nps <- incvar < 0
-    nps[ is.na(nps) ] <- 0
-    design <- design[ nps == 0 ]
-    if (length(nps) > length(design$prob)) {
-      incvar <- incvar[nps == 0]
-    } else { incvar[nps > 0] <- 0 }
-
-  }
+  if ( any(incvar < 0, na.rm = TRUE) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
 
   calc.zenga <- function( x, weights ) {
 

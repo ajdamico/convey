@@ -166,12 +166,7 @@ svyatk.survey.design <-
 			return(rval)
 		}
 
-		if ( any(incvar[w != 0] <= 0) ){
-			warning("The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
-			nps <- incvar <= 0
-			design <- design[!nps]
-			if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[ nps ] <- 0
-		}
+		if ( any(incvar[w != 0] <= 0) ) stop( "The Atkinson Index is defined for strictly positive variables only.  Negative and zero values not allowed." )
 
 		w <- 1/design$prob
 
@@ -252,15 +247,7 @@ svyatk.svyrep.design <-
 
 		ws <- weights(design, "sampling")
 
-		if ( any( incvar[ws != 0] <= 0, na.rm = TRUE ) ) {
-
-			warning( "The function is defined for strictly positive incomes only.  Discarding observations with zero or negative incomes.")
-			nps <- incvar <= 0
-			nps[ is.na(nps) ] <- TRUE
-			design <- design[ !nps ]
-			if (length(nps) > length(design$prob)) incvar <- incvar[ !nps ] else incvar[ nps ] <- 0
-
-		}
+		if ( any( incvar[ws != 0] <= 0, na.rm = TRUE ) ) stop( "The Atkinson Index is defined for strictly positive variables only.  Negative and zero values not allowed." )
 
 		ws <- weights(design, "sampling")
 		rval <- calc.atkinson( x = incvar, weights = ws, epsilon = epsilon)

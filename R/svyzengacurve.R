@@ -236,17 +236,8 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
 
   w <- 1/design$prob
 
-  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) { warning( "The function is defined for non-negative incomes only.")
-    nps <- incvar < 0
-    design <- design[nps == 0 ]
-    if (length(nps) > length(design$prob))
-      incvar <- incvar[nps == 0]
-    else incvar[nps > 0] <- 0
-
-    w <- 1/design$prob
-
-  }
-
+  if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
+  
   domain <- w != 0
 
   ordincvar<-order(incvar)
@@ -443,12 +434,8 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
     incvar <- incvar[!nas]
   }
 
-  if ( any(incvar < 0, na.rm = TRUE) ) { warning( "The function is defined for non-negative incomes only.")
-    nps <- incvar < 0 & !is.na(incvar)
-    design<-design[!nps,]
-    #df <- model.frame(design)
-    incvar <- incvar[!nps]
-  }
+  if ( any(incvar < 0, na.rm = TRUE) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
+  
 
   ws <- weights(design, "sampling")
   Z.p <- t( as.matrix( lapply_z.p_calc(x = incvar, q = quantiles, weights = ws ) ) )
