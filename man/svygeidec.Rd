@@ -7,7 +7,7 @@
 \alias{svygeidec.svyrep.design}
 \title{Generalized entropy index Decomposition}
 \usage{
-svygeidec(formula, design, by.formula, ...)
+svygeidec(formula, design, ...)
 
 \method{svygeidec}{survey.design}(formula, design, by.formula, epsilon = 1,
   na.rm = FALSE, ...)
@@ -22,9 +22,9 @@ svygeidec(formula, design, by.formula, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
-\item{by.formula}{a formula specifying the group variable}
-
 \item{...}{future expansion}
+
+\item{by.formula}{a formula specifying the group variable}
 
 \item{epsilon}{a parameter that determines the sensivity towards inequality in the top of the distribution. Defaults to epsilon = 1.}
 
