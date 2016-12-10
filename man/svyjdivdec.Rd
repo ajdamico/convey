@@ -66,8 +66,6 @@ sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
 svyjdivdec( ~py010n , sub_des_eusilc_rep , ~rb090 )
 svyjdivdec( ~py010n , sub_des_eusilc_rep , ~rb090 , na.rm = TRUE )
 
-# library(MonetDBLite) is only available on 64-bit machines,
-# so do not run this block of code in 32-bit R
 \dontrun{
 
 # database-backed design

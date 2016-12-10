@@ -90,8 +90,6 @@ k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep, by.formula = ~rb090 ,
 k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
-# library(MonetDBLite) is only available on 64-bit machines,
-# so do not run this block of code in 32-bit R
 \dontrun{
 
 # database-backed design

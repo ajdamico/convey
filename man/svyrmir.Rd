@@ -75,8 +75,6 @@ svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age )
 svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, na.rm = TRUE )
 
 
-# library(MonetDBLite) is only available on 64-bit machines,
-# so do not run this block of code in 32-bit R
 \dontrun{
 
 # database-backed design
