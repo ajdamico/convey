@@ -155,7 +155,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     dimw = rep( 1 / ncol( nac.matrix ), ncol( nac.matrix ) )
   }
   if ( sum( dimw ) != 1 ) {
-    warning( "sum(dimw) != 1. Normalizing dimension weights.")
+    warning( paste( "sum(dimw) != 1. Normalizing dimension weights to" , paste( as.character( dimw / sum( dimw ) ) , collapse = " ; " ) ) )
     dimw = dimw / sum( dimw )
   }
   indiv.welfare <- apply( nac.matrix, 1, function(x) aggregator( mat = x, dimw = dimw, alpha = alpha, beta = beta ) )
@@ -298,7 +298,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     dimw = rep( 1 / ncol( nac.matrix ), ncol( nac.matrix ) )
   }
   if ( sum( dimw ) != 1 ) {
-    warning( "sum(dimw) != 1. Normalizing dimension weights.")
+    warning( paste( "sum(dimw) != 1. Normalizing dimension weights to" , paste( as.character( dimw / sum( dimw ) ) , collapse = " ; " ) ) )
     dimw = dimw / sum( dimw )
   }
   indiv.welfare <- apply( nac.matrix, 1, function(x) aggregator( mat = x, dimw = dimw, alpha = alpha, beta = beta ) )
