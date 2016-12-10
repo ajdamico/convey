@@ -96,10 +96,7 @@
 #' }
 #'
 #' @export
-svybmi <- function( formula, design, alpha = .5, beta = -2, dimw = NULL, na.rm = FALSE, ...) {
-
-  if ( alpha <= 0 | alpha >= 1 ) { stop( "This function is only defined for alpha in (0,1]." ) }
-  if ( alpha <= 0 | alpha >= 1 ) { stop( "This function is only defined for beta < 1." ) }
+svybmi <- function( formula, design, ...) {
 
   UseMethod("svybmi", design)
 
@@ -108,6 +105,9 @@ svybmi <- function( formula, design, alpha = .5, beta = -2, dimw = NULL, na.rm =
 #' @rdname svybmi
 #' @export
 svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw = NULL, na.rm = FALSE, ...) {
+
+  if ( alpha <= 0 | alpha > 1 ) stop( "This function is only defined for alpha in (0,1]." )
+  if ( beta >= 1 ) stop( "This function is only defined for beta < 1." )
 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -252,6 +252,11 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 #' @rdname svybmi
 #' @export
 svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw = NULL, na.rm = FALSE , ...) {
+  
+  if ( alpha <= 0 | alpha > 1 ) stop( "This function is only defined for alpha in (0,1]." )
+  if ( beta >= 1 ) stop( "This function is only defined for beta < 1." )
+
+  
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   nac.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
