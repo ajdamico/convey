@@ -26,7 +26,7 @@ b1 <- svyrmir( ~eqincome , design = des_eusilc_rep , age = ~age )
 b2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc_rep, hsize < 8 ), FUN = svyrmir, age = ~age )
 
 se_dif1 <- abs(SE(a1)-SE(b1))
-se_diff2 <- max(abs(SE(a2)-SE(b2))/SE(a2))
+se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
 
 test_that("output svyrmir",{
