@@ -106,7 +106,7 @@ test_that("subsets equal svyby",{
   expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_rep))[1])
 
   # coefficients of variation should be within five percent
-  cv_dif <- 100*abs(cv(sub_des)-cv(sby_rep)[1])
+  cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
   expect_lte(cv_dif,5)
 })
 

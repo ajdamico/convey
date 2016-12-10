@@ -29,6 +29,9 @@ b1 <- svyiqalpha( ~eqincome , design = des_eusilc_rep , alpha = .20 )
 b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyiqalpha, alpha = .20 )
 
 
+cv_dif1 <- abs(cv(a1)-cv(b1))
+cv_diff2 <- max(abs(SE(a2)/coef(a2)-SE(b2)/coef(b2)))
+
 
 test_that("output svyiqalpha",{
   expect_is(coef(a1),"numeric")
@@ -37,6 +40,8 @@ test_that("output svyiqalpha",{
   expect_is(coef(b2),"numeric")
   expect_equal(coef(a1), coef(b1))
   expect_equal(coef(a2), coef(b2))
+  expect_lte(cv_dif1, coef(a1) * 0.05 ) # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
+  expect_lte(cv_diff2, max( coef(a2) ) * 0.1 ) # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
   expect_is(SE(a1),"matrix")
   expect_is(SE(a2), "numeric")
   expect_is(SE(b1),"numeric")
@@ -110,7 +115,7 @@ test_that("subsets equal svyby",{
 	expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_rep))[1])
 
 	# coefficients of variation should be within five percent
-	cv_dif <- 100*abs(cv(sub_des)-cv(sby_rep)[1])
+	cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
 	expect_lte(cv_dif,5)
 })
 

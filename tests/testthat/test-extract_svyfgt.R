@@ -34,8 +34,8 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 		b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyfgt,g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
 
-		cv_dif1 <- 100*abs(cv(a1)-cv(b1))
-		cv_diff2 <- 100*max(abs(cv(a2)[1:6]-cv(b2)[1:6]))
+		se_dif1 <- abs(SE(a1)-SE(b1))
+		se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
 		test_that("output svyfgt",{
 			expect_is(coef(a1),"numeric")
@@ -44,8 +44,8 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			expect_is(coef(b2),"numeric")
 			expect_equal(coef(a1), coef(b1))
 			expect_equal(coef(a2), coef(b2))
-			expect_lte(cv_dif1,5)
-			expect_lte(cv_diff2,5)
+			expect_lte(se_dif1, coef(a1) * 0.05 ) # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
+			expect_lte(se_diff2, max( coef(a2) ) * 0.1 ) # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
 			expect_is(SE(a1),"matrix")
 			expect_is(SE(a2), "numeric")
 			expect_is(SE(b1),"numeric")
@@ -115,7 +115,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_rep))[1])
 
 			# coefficients of variation should be within five percent
-			cv_dif <- 100*abs(cv(sub_des)-cv(sby_rep)[1])
+			cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
 
 			expect_lte(cv_dif,5)
 		})

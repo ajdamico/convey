@@ -25,12 +25,17 @@ b1 <- svyrmir( ~eqincome , design = des_eusilc_rep , age = ~age )
 
 b2 <- svyby(~eqincome, by = ~hsize, design = subset( des_eusilc_rep, hsize < 8 ), FUN = svyrmir, age = ~age )
 
+se_dif1 <- abs(SE(a1)-SE(b1))
+se_diff2 <- max(abs(SE(a2)-SE(b2))/SE(a2))
+
 
 test_that("output svyrmir",{
   expect_is(coef(a1),"numeric")
   expect_is(coef(a2), "numeric")
   expect_is(coef(b1),"numeric")
   expect_is(coef(b2),"numeric")
+  expect_lte(se_dif1, coef(a1) * 0.05 ) # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
+  expect_lte(se_diff2, max( coef(a2) ) * 0.1 ) # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
   expect_equal(coef(a1), coef(b1))
   expect_equal(coef(a2), coef(b2))
   expect_is(SE(a1),"matrix")
@@ -105,7 +110,7 @@ test_that("subsets equal svyby",{
 	expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_rep))[1])
 
 	# coefficients of variation should be within five percent
-	cv_dif <- 100*abs(cv(sub_des)-cv(sby_rep)[1])
+	cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
 	expect_lte(cv_dif,5)
 })
 
