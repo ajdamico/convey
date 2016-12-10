@@ -12,7 +12,7 @@ for( n in c( 50 , 1000 ) ){
 
 	dist_frame <-
 		data.frame( 
-			wt_binom_two = as.numeric( rbinom( n , 1 , .5 ) ) ,
+			wt_binom_two = rbinom( n , 1 , .5 ) ,
 			wt_binom = rbinom( n , 1 , .5 ) ,
 			wt_unif = runif( n ) ,
 			beta_050_050 = rbeta( n , 0.5 , 0.5 ) ,
@@ -25,6 +25,9 @@ for( n in c( 50 , 1000 ) ){
 			sex = ifelse( rbinom( n , 1 , 0.5 ) , "male" , "female" ) ,
 			age = sample( 0:99 , n , replace = TRUE )
 		)
+		
+	dist_frame[ -which( names( dist_frame ) == 'sex' ) ] <- sapply( dist_frame[ -which( names( dist_frame ) == 'sex' ) ] , as.numeric )
+		
 
 	for( FUN in all_funs ){
 
@@ -53,10 +56,10 @@ for( n in c( 50 , 1000 ) ){
 
 				}
 
-				if( any( unlist( lapply( list( svybmi ) , function( z ) identical( z , FUN ) ) ) ) ){
+				if( any( unlist( lapply( list( svybmi , svyafc ) , function( z ) identical( z , FUN ) ) ) ) ){
 				
-					lin_params_list <- list( this_formula = as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , lin_des )
-					rep_params_list <- list( this_formula = as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , rep_des )
+					lin_params_list <- list( as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , lin_des )
+					rep_params_list <- list( as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , rep_des )
 				
 				
 				} else {
@@ -71,6 +74,13 @@ for( n in c( 50 , 1000 ) ){
 					
 					lin_params_list <- c( lin_params_list , list( g=0, type_thresh= "abs", abs_thresh=10000 ) )
 					rep_params_list <- c( rep_params_list , list( g=0, type_thresh= "abs", abs_thresh=10000 ) )
+					
+				}
+		
+				if( identical( FUN , svyafc ) ){
+					
+					lin_params_list <- c( lin_params_list , list( k = .5 , g = 0, cutoffs = list( 10000, 5000 ) ) )
+					rep_params_list <- c( rep_params_list , list( k = .5 , g = 0, cutoffs = list( 10000, 5000 ) ) )
 					
 				}
 		
@@ -131,7 +141,7 @@ for( n in c( 50 , 1000 ) ){
 						# difference between SEs for the designs should be less than 25% of the coef
 						# but only for larger designs, since small ones can be unstable
 						if ( n > 50 & all( coef( lin_res ) * .5 > SE( lin_res ) ) ){
-							expect_true( all( abs( SE( lin_res ) - SE( rep_res ) ) <= coef( lin_res ) * 0.25 ) )
+							expect_true( all( abs( SE( lin_res ) - SE( rep_res ) ) <= max( coef( lin_res ) ) * 0.3 ) )
 						}
 						
 					})
