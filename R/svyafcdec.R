@@ -521,7 +521,7 @@ svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw
 #' @rdname svyafcdec
 #' @export
 svyafcdec.DBIsvydesign <-
-  function (formula, design, by, ...) {
+  function (formula, by, design, ...) {
 
     if (!( "logical" %in% class(attr(design, "full_design"))) ){
 

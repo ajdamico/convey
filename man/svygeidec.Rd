@@ -15,7 +15,7 @@ svygeidec(formula, by, design, ...)
 \method{svygeidec}{svyrep.design}(formula, by, design, epsilon = 1,
   na.rm = FALSE, ...)
 
-\method{svygeidec}{DBIsvydesign}(formula, design, by, ...)
+\method{svygeidec}{DBIsvydesign}(formula, by, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}

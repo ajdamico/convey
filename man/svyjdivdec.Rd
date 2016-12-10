@@ -13,7 +13,7 @@ svyjdivdec(formula, by, design, ...)
 
 \method{svyjdivdec}{svyrep.design}(formula, by, design, na.rm = FALSE, ...)
 
-\method{svyjdivdec}{DBIsvydesign}(formula, design, by, ...)
+\method{svyjdivdec}{DBIsvydesign}(formula, by, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
@@ -49,10 +49,10 @@ des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 # linearized design
-svyjdivdec( ~eqincome , subset(des_eusilc, eqincome > 0) , ~rb090 )
+svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0) )
 
 # replicate-weighted design
-svyjdivdec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) , ~rb090 )
+svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
 
 # linearized design using a variable with missings
 sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))

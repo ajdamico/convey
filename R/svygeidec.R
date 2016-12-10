@@ -575,7 +575,7 @@ svygeidec.svyrep.design <-
 #' @rdname svygeidec
 #' @export
 svygeidec.DBIsvydesign <-
-	function (formula, design, by, ...) {
+	function (formula, by, design, ...) {
 
 
 		if (!( "logical" %in% class(attr(design, "full_design"))) ){

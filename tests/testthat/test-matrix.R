@@ -97,8 +97,8 @@ out <- rbind( out , this_df )
 
 
 
-afc_lin <- svyafcdec( ~eqincome+hy050n , design = des_eusilc , by.formula = ~rb090 , k = .5 , g = 0, cutoffs = cos )
-afc_rep <- svyafcdec( ~eqincome+hy050n , design = des_eusilc_rep , by.formula = ~rb090 , k = .5 , g = 0, cutoffs = cos )
+afc_lin <- svyafcdec( ~eqincome+hy050n , by = ~rb090 , design = des_eusilc , k = .5 , g = 0, cutoffs = cos )
+afc_rep <- svyafcdec( ~eqincome+hy050n , by = ~rb090 , design = des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 
 for( j in seq( length( afc_lin ) - 1 ) ){
 
@@ -138,8 +138,8 @@ rownames( this_df ) <- NULL
 out <- rbind( out , this_df )
 
 
-div_lin <- svyjdivdec( ~eqincome , subset(des_eusilc, eqincome > 0) , ~rb090 )
-div_rep <- svyjdivdec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) , ~rb090 )
+div_lin <- svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0) )
+div_rep <- svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
 
 for( i in 1:3 ){
 
@@ -159,8 +159,8 @@ for( i in 1:3 ){
 
 }
 
-dec_lin <- svygeidec( ~eqincome , des_eusilc , ~rb090 , epsilon = .5 )
-dec_rep <- svygeidec( ~eqincome , des_eusilc_rep , ~rb090 , epsilon = .5 )
+dec_lin <- svygeidec( ~eqincome , ~rb090 , des_eusilc , epsilon = .5 )
+dec_rep <- svygeidec( ~eqincome , ~rb090 , des_eusilc_rep , epsilon = .5 )
 
 for( i in 1:3 ){
 

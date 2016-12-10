@@ -15,7 +15,7 @@ svyafcdec(formula, by, design, ...)
 \method{svyafcdec}{svyrep.design}(formula, by, design, g, cutoffs, k,
   dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{DBIsvydesign}(formula, design, by, ...)
+\method{svyafcdec}{DBIsvydesign}(formula, by, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the variables. Variables can be numeric or ordered factors.}
