@@ -5,9 +5,9 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-des_eusilc <- convey_prep(des_eusilc)
+des_eusilc <- subset( convey_prep(des_eusilc) , eqincome > 0 )
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
-des_eusilc_rep <- convey_prep(des_eusilc_rep)
+des_eusilc_rep <- subset( convey_prep(des_eusilc_rep) , eqincome > 0 )
 
 out <- NULL
 
