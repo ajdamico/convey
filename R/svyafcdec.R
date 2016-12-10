@@ -155,7 +155,6 @@ svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cuto
   w <- 1/design$prob
 
   if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty decompostition is defined for non-negative numeric variables only." )
-  
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(by.formula, design$variables, na.action = na.pass)[,]
@@ -174,13 +173,7 @@ svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cuto
   for ( i in seq_along(cutoffs) ) {
 
     cut.value <- cutoffs[[i]]
-
-    if ( is.numeric( cut.value ) ) {
-      #dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    } else {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    }
+    dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
 
   }
 
@@ -267,8 +260,8 @@ svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cuto
     for (i in seq_along( levels( grpvar ) ) ) {
 
       w_i <- w * ( grpvar == levels( grpvar )[ i ] )
-      U_1_i <- list( value = sum( cen.depr.sums[ w_i > 0 ] * w_i[ w_i > 0 ] ), lin = cen.depr.sums * w_i )
-      U_0_i <- list( value = sum( w_i[ w_i > 0 ] ), lin = w_i )
+      U_1_i <- list( value = sum( cen.depr.sums[ w_i > 0 ] * w_i[ w_i > 0 ] ), lin = cen.depr.sums * ( grpvar == levels( grpvar )[ i ] ) )
+      U_0_i <- list( value = sum( w_i[ w_i > 0 ] ), lin = 1 * ( grpvar == levels( grpvar )[ i ] ) )
 
       list_all <- list( U_0 = U_0, U_1 = U_1, U_0_i = U_0_i, U_1_i = U_1_i )
 
@@ -278,10 +271,9 @@ svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cuto
       grp.pctg.estm_var[ i ] <- survey::svyrecvar( estimate$lin*w_i, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 
       estimate <- contrastinf( quote( ( U_0_i /U_0 ) * ( U_1_i / U_0_i ) / ( U_1 / U_0 ) ), list_all )
-
       grp.pctg.cont[ i ] <- estimate$value
       estimate$lin[ is.na( estimate$lin ) ] <- 0
-      grp.pctg.cont_var[ i ] <- survey::svyrecvar( estimate$lin*w_i, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+      grp.pctg.cont_var[ i ] <- survey::svyrecvar( estimate$lin*w, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 
     }
   }
@@ -292,13 +284,13 @@ svyafcdec.survey.design <- function( formula, design, by.formula, g = NULL, cuto
   for ( i in 1:ncol(cen.dep.matrix) ) {
     wj <- list( value = dimw[i], lin = rep( 0, length( cen.depr.sums ) ) )
 
-    H_0 <- list( value = sum( cen.dep.matrix[ w > 0 , i ] * w[ w > 0 ] ), lin = cen.dep.matrix[ , i ] )
+    H_0 <- list( value = sum( cen.dep.matrix[ w > 0 , i ] * w[ w > 0 ] ), lin = cen.dep.matrix[ , i ] * ( w > 0 ) )
     list_all <- list( U_0 = U_0, U_1 = U_1, H_0 = H_0, wj = wj )
     estimate <- contrastinf( quote( wj * ( H_0 / U_0 ) / ( U_1 / U_0 ) ), list_all )
 
     dim.contr[ i ] <- estimate$value
     estimate$lin[ is.na( estimate$lin ) ] <- 0
-    dim.contr_var[ i ] <- survey::svyrecvar( estimate$lin*w, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+    dim.contr_var[ i ] <- survey::svyrecvar( estimate$lin*w, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
 
   }
 
@@ -349,7 +341,7 @@ svyafcdec.svyrep.design <- function( formula, design, by.formula, g = NULL, cuto
   ws <- weights(design, "sampling")
 
   if ( any( ach.matrix[ ws != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty decompostition is defined for non-negative numeric variables only." )
-  
+
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(by.formula, design$variables, na.action = na.pass)[,]
 
@@ -365,16 +357,8 @@ svyafcdec.svyrep.design <- function( formula, design, by.formula, g = NULL, cuto
   # Deprivation Matrix
   dep.matrix <- ach.matrix
   for ( i in seq_along(cutoffs) ) {
-
     cut.value <- cutoffs[[i]]
-
-    if ( is.numeric( cut.value ) ) {
-      #dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    } else {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    }
-
+    dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
   }
 
   # Unweighted count of deprivations:
