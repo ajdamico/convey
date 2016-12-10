@@ -42,20 +42,20 @@ data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep(des_eusilc)
 
-svyjdiv( ~eqincome , design = des_eusilc )
+svyjdiv( ~eqincome , design = subset( des_eusilc , eqincome > 0 ) )
 
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-svyjdiv( ~eqincome , design = des_eusilc_rep )
+svyjdiv( ~eqincome , design = subset( des_eusilc_rep , eqincome > 0 ) )
 
 # linearized design using a variable with missings
-svyjdiv( ~py010n , design = des_eusilc )
-svyjdiv( ~py010n , design = des_eusilc, na.rm = TRUE )
+svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ) )
+svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ), na.rm = TRUE )
 # replicate-weighted design using a variable with missings
-svyjdiv( ~py010n , design = des_eusilc_rep )
-svyjdiv( ~py010n , design = des_eusilc_rep, na.rm = TRUE )
+svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) )
+svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) , na.rm = TRUE )
 
 # library(MonetDBLite) is only available on 64-bit machines,
 # so do not run this block of code in 32-bit R
@@ -80,7 +80,7 @@ dbd_eusilc <-
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
-svyjdiv( ~eqincome , design = dbd_eusilc )
+svyjdiv( ~eqincome , design = subset( dbd_eusilc , eqincome > 0 ) )
 
 dbRemoveTable( conn , 'eusilc' )
 
