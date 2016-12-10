@@ -3,7 +3,7 @@ library(convey)
 
 no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z } 
 
-all_funs <- list( svyrmir , svyqsr , svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz )
+all_funs <- list( svyrmir , svyqsr , svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz , svybmi , svyjdiv , svyamato , svyafc )
 
 
 for( n in c( 50 , 1000 ) ){
@@ -45,8 +45,8 @@ for( n in c( 50 , 1000 ) ){
 		
 				# function-specific parameters here
 				
-				if( identical( FUN , svygei ) | identical( FUN , svyrenyi ) ){
-		
+				if( any( unlist( lapply( list( svygei , svyrenyi , svyafc , svyamato , svybmi , svyatk , svyjdiv , svyzenga ) , function( z ) identical( z , FUN ) ) ) ) ){
+				
 					lin_des <- subset( lin_des , no.na( lin_des$variables[ , as.character( this_formula )[2] ] > 0 ) )
 					rep_des <- subset( rep_des , no.na( rep_des$variables[ , as.character( this_formula )[2] ] > 0 ) ) 
 
