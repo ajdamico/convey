@@ -62,11 +62,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 
 
 
-		# library(MonetDBLite) is only available on 64-bit machines,
-		# so do not run this block of code in 32-bit R
-		if( .Machine$sizeof.pointer > 4 ){
-
-
 			# database-backed design
 			library(MonetDBLite)
 			library(DBI)
@@ -97,8 +92,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 				expect_equal(SE(a2), SE(c2))
 			})
 
-		}
-
 		# compare subsetted objects to svyby objects
 		sub_des <- svyfgt( ~eqincome , design = subset( des_eusilc , hsize == 1), g=0, type_thresh= this_thresh, abs_thresh=10000 )
 		sby_des <- svyby( ~eqincome, by = ~hsize, design = des_eusilc, FUN = svyfgt , g=0, type_thresh= this_thresh, abs_thresh=10000)
@@ -121,9 +114,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 		})
 
 
-		# library(MonetDBLite) is only available on 64-bit machines,
-		# so do not run this block of code in 32-bit R
-		if( .Machine$sizeof.pointer > 4 ){
 
 
 			# create a hacky database-backed svrepdesign object
@@ -168,8 +158,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 			})
 
 			dbRemoveTable( conn , 'eusilc' )
-
-		}
 	}
 }
 

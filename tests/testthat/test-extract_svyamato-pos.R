@@ -14,7 +14,6 @@ test_that("svyamato works on unweighted designs",{
 
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
-
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep_save <- des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
@@ -58,10 +57,6 @@ test_that("output svyamato",{
 })
 
 
-# library(MonetDBLite) is only available on 64-bit machines,
-# so do not run this block of code in 32-bit R
-if( .Machine$sizeof.pointer > 4 ){
-
 	 # database-backed design
 	library(MonetDBLite)
 	library(DBI)
@@ -78,7 +73,6 @@ if( .Machine$sizeof.pointer > 4 ){
 			dbname=dbfolder,
 			dbtype="MonetDBLite"
 		)
-
 	dbd_eusilc <- convey_prep( dbd_eusilc )
 
 	dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
@@ -94,7 +88,6 @@ if( .Machine$sizeof.pointer > 4 ){
 	  expect_equal(SE(a1), SE(c1))
 	  expect_equal(SE(a2), SE(c2)[2:1])
 	})
-}
 
 
 # compare subsetted objects to svyby objects
@@ -122,10 +115,6 @@ test_that("subsets equal svyby",{
 
 # second run of database-backed designs #
 
-# library(MonetDBLite) is only available on 64-bit machines,
-# so do not run this block of code in 32-bit R
-if( .Machine$sizeof.pointer > 4 ){
-
 	# database-backed design
 	library(MonetDBLite)
 	library(DBI)
@@ -145,22 +134,7 @@ if( .Machine$sizeof.pointer > 4 ){
 
 	dbd_eusilc <- convey_prep( dbd_eusilc )
 
-
-
-
-
-
-
 	dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
-
-
-
-
-
-
-
-
-
 
 	# create a hacky database-backed svrepdesign object
 	# mirroring des_eusilc_rep_save
@@ -178,20 +152,6 @@ if( .Machine$sizeof.pointer > 4 ){
 		)
 
 	dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	dbd_eusilc_rep <- subset( dbd_eusilc_rep , eqincome > 0 )
 
@@ -219,7 +179,4 @@ if( .Machine$sizeof.pointer > 4 ){
 		expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[2])
 		expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[2])
 	})
-
-
-}
 

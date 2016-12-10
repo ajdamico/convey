@@ -69,8 +69,6 @@
 #' svyzengacurve( ~py010n , des_eusilc_rep, alpha = .01, na.rm = TRUE )
 #'
 #'
-#' # library(MonetDBLite) is only available on 64-bit machines,
-#' # so do not run this block of code in 32-bit R
 #'
 #' # database-backed design
 #' library(MonetDBLite)

@@ -54,10 +54,6 @@ test_that("output svyrmpg",{
 })
 
 
-# library(MonetDBLite) is only available on 64-bit machines,
-# so do not run this block of code in 32-bit R
-if( .Machine$sizeof.pointer > 4 ){
-
 	# database-backed design
 	library(MonetDBLite)
 	library(DBI)
@@ -88,8 +84,6 @@ if( .Machine$sizeof.pointer > 4 ){
 	  expect_equal(SE(a2), SE(c2))
 	})
 
-}
-
 # compare subsetted objects to svyby objects
 sub_des <- svyrmpg( ~eqincome , design = subset( des_eusilc , hsize == 1) )
 sby_des <- svyby( ~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 8 ) , FUN = svyrmpg)
@@ -114,10 +108,6 @@ test_that("subsets equal svyby",{
 
 
 # second run of database-backed designs #
-
-# library(MonetDBLite) is only available on 64-bit machines,
-# so do not run this block of code in 32-bit R
-if( .Machine$sizeof.pointer > 4 ){
 
   # database-backed design
   library(MonetDBLite)
@@ -179,7 +169,4 @@ if( .Machine$sizeof.pointer > 4 ){
     expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[1])
     expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
   })
-
-
-}
 
