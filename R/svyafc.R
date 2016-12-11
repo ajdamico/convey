@@ -1,4 +1,4 @@
-#' Alkire-Foster multimensional poverty class
+#' Alkire-Foster multidimensional poverty class
 #'
 #' Estimate indices from the Alkire-Foster class, a class of poverty measures.
 #'
@@ -6,7 +6,7 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param g a scalar defining the exponent of the indicator.
 #' @param cutoffs a list defining each variable's deprivation limit.
-#' @param k a scalar defining the multimensional cutoff.
+#' @param k a scalar defining the multidimensional cutoff.
 #' @param dimw a vector defining the weight of each dimension in the multidimensional deprivation sum.
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... future expansion
@@ -142,8 +142,8 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 
   w <- 1/design$prob
 
-  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty class is defined for non-negative numeric variables only.")
-  
+  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multidimensional poverty class is defined for non-negative numeric variables only.")
+
   if (na.rm) {
     nas <- apply( ach.matrix, 1, function(x) any( is.na(x) ) )
     design <- design[nas == 0, ]
@@ -296,7 +296,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
 
   w <- weights(design, "sampling" )
 
-  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty class is defined for non-negative numeric variables only.")
+  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multidimensional poverty class is defined for non-negative numeric variables only.")
 
   if (na.rm) {
     nas <- apply( ach.matrix, 1, function(x) any( is.na(x) ) )

@@ -1,5 +1,5 @@
 #'
-#' Bourguignon (1999) multimensional inequality indices
+#' Bourguignon (1999) multidimensional inequality indices
 #'
 #' Estimate indices from the Bourguignon (1999) class, a class of multidimensional inequality measures.
 #'
@@ -126,7 +126,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   w <- 1/design$prob
 
-  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Bourguignon multimensional inequality index is defined for non-negative numeric variables only." )
+  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Bourguignon multidimensional inequality index is defined for non-negative numeric variables only." )
 
 
   if (na.rm) {
@@ -274,7 +274,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   w <- weights( design, "sampling" )
 
-  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Bourguignon multimensional inequality index is defined for non-negative numeric variables only." )
+  if ( any( nac.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Bourguignon multidimensional inequality index is defined for non-negative numeric variables only." )
 
 
   if (na.rm) {

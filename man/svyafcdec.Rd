@@ -5,7 +5,7 @@
 \alias{svyafcdec.DBIsvydesign}
 \alias{svyafcdec.survey.design}
 \alias{svyafcdec.svyrep.design}
-\title{Alkire-Foster multimensional poverty decompostition}
+\title{Alkire-Foster multidimensional poverty decompostition}
 \usage{
 svyafcdec(formula, by, design, ...)
 
@@ -30,7 +30,7 @@ svyafcdec(formula, by, design, ...)
 
 \item{cutoffs}{a list defining each variable's deprivation limit.}
 
-\item{k}{a scalar defining the multimensional cutoff.}
+\item{k}{a scalar defining the multidimensional cutoff.}
 
 \item{dimw}{a vector defining the weight of each dimension in the multidimensional deprivation sum.}
 
@@ -76,13 +76,13 @@ svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc_rep , k = .5 , g = 0, c
 
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc, 
+svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep, 
+svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep, 
+svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 \dontrun{
@@ -116,14 +116,14 @@ svyafcdec( ~eqincome+hy050n , ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = co
 # subsetting:
 sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 
-svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc , 
+svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc ,
 		k = .5 , g = 0, cutoffs = cos )
 
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
 svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc, 
+svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )

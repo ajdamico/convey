@@ -5,7 +5,7 @@
 \alias{svyafc.DBIsvydesign}
 \alias{svyafc.survey.design}
 \alias{svyafc.svyrep.design}
-\title{Alkire-Foster multimensional poverty class}
+\title{Alkire-Foster multidimensional poverty class}
 \usage{
 svyafc(formula, design, ...)
 
@@ -24,7 +24,7 @@ svyafc(formula, design, ...)
 
 \item{...}{future expansion}
 
-\item{k}{a scalar defining the multimensional cutoff.}
+\item{k}{a scalar defining the multidimensional cutoff.}
 
 \item{g}{a scalar defining the exponent of the indicator.}
 

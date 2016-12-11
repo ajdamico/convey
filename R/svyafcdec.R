@@ -1,4 +1,4 @@
-#' Alkire-Foster multimensional poverty decompostition
+#' Alkire-Foster multidimensional poverty decompostition
 #'
 #' Decomposition of indices from the Alkire-Foster class
 #'
@@ -7,7 +7,7 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param g a scalar defining the exponent of the indicator.
 #' @param cutoffs a list defining each variable's deprivation limit.
-#' @param k a scalar defining the multimensional cutoff.
+#' @param k a scalar defining the multidimensional cutoff.
 #' @param dimw a vector defining the weight of each dimension in the multidimensional deprivation sum.
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... future expansion
@@ -62,13 +62,13 @@
 #'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc, 
+#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 #' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep, 
+#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep, 
+#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' \dontrun{
@@ -102,14 +102,14 @@
 #' # subsetting:
 #' sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 #'
-#' svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc , 
+#' svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc ,
 #' 		k = .5 , g = 0, cutoffs = cos )
 #'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
 #' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc, 
+#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
@@ -148,7 +148,7 @@ svyafcdec.survey.design <- function( formula, by, design, g , cutoffs , k , dimw
 
   w <- 1/design$prob
 
-  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty decompostition is defined for non-negative numeric variables only." )
+  if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multidimensional poverty decompostition is defined for non-negative numeric variables only." )
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]
@@ -320,12 +320,12 @@ svyafcdec.survey.design <- function( formula, by, design, g , cutoffs , k , dimw
 #' @rdname svyafcdec
 #' @export
 svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
-    
+
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
 
-  
+
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
@@ -340,7 +340,7 @@ svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw
 
   ws <- weights(design, "sampling")
 
-  if ( any( ach.matrix[ ws != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multimensional poverty decompostition is defined for non-negative numeric variables only." )
+  if ( any( ach.matrix[ ws != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multidimensional poverty decompostition is defined for non-negative numeric variables only." )
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]

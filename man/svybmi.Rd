@@ -5,7 +5,7 @@
 \alias{svybmi.DBIsvydesign}
 \alias{svybmi.survey.design}
 \alias{svybmi.svyrep.design}
-\title{Bourguignon (1999) multimensional inequality indices}
+\title{Bourguignon (1999) multidimensional inequality indices}
 \usage{
 svybmi(formula, design, ...)
 
