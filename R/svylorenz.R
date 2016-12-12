@@ -156,8 +156,7 @@ svylorenzpolygon_wrap <-
 #' @export
 svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ... ) {
 
-	if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
+  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   # quantile function:
   wtd.qtl <- function (x, q = .5, weights = NULL ) {
@@ -170,13 +169,16 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     x <- x[ordx]
     weights <- weights[ordx]
 
+    x_1 <- c(0,x[-length(x)])
     N <- sum(weights)
     wsum <- cumsum(weights)
     wsum_1 <- c(0,wsum[-length(wsum)])
+    alpha_k <- wsum / N
 
-    k <- which( ( wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
+    k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
-    return( x[k] )
+    #return( x[k] )
+    return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[ k ] ) / weights[ k ] )
 
   }
 
@@ -276,7 +278,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
     var[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
     if ( pc == 1 ) { var[i] <- 0 }
-    
+
     rm(quant, s.quant)
 
     rm( i, pc )
@@ -297,10 +299,10 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
   if ( plot ) {
 
-	plot_dots <- list( ... )
+    plot_dots <- list( ... )
 
-	# remove `deff` argument sent by svyby
-	if( 'deff' %in% names( plot_dots ) ) plot_dots$deff <- NULL
+    # remove `deff` argument sent by svyby
+    if( 'deff' %in% names( plot_dots ) ) plot_dots$deff <- NULL
 
     if ( !add ) do.call( svylorenzplot_wrap , plot_dots )
 
@@ -308,29 +310,29 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     abline( 0 , 1 , ylim = c( 0 , 1 ) , plot_dots )
 
     if( empirical ) {
-		lines_dots <- plot_dots
-		lines_dots$x <- E_p
-		lines_dots$y <- E_L.p
-		lines_dots$col = curve.col
-		do.call( svylorenzlines_wrap , lines_dots )
-	}
+      lines_dots <- plot_dots
+      lines_dots$x <- E_p
+      lines_dots$y <- E_L.p
+      lines_dots$col = curve.col
+      do.call( svylorenzlines_wrap , lines_dots )
+    }
 
-	points_dots <- plot_dots
-	points_dots$x <- quantiles
-	points_dots$y <- L.p
-	points_dots$col <- curve.col
+    points_dots <- plot_dots
+    points_dots$x <- quantiles
+    points_dots$y <- L.p
+    points_dots$col <- curve.col
 
-	do.call( svylorenzpoints_wrap , points_dots )
+    do.call( svylorenzpoints_wrap , points_dots )
 
     if (ci) {
       X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
       Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
 
-	  polygon_dots <- plot_dots
-	  polygon_dots$x <- X.Vec
-	  polygon_dots$y <- Y.Vec
-	  polygon_dots$col <- adjustcolor( curve.col, alpha.f = .2)
-	  polygon_dots$border <- NA
+      polygon_dots <- plot_dots
+      polygon_dots$x <- X.Vec
+      polygon_dots$y <- Y.Vec
+      polygon_dots$col <- adjustcolor( curve.col, alpha.f = .2)
+      polygon_dots$border <- NA
 
       do.call( svylorenzpolygon_wrap , polygon_dots )
 
@@ -347,7 +349,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 #' @export
 svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ...) {
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
   # quantile function:
   wtd.qtl <- function (x, q = .5, weights = NULL ) {
@@ -368,6 +370,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
     k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
+    #return{ x[k] }
     return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[k] ) / weights[k] )
 
   }
@@ -478,10 +481,10 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
   if ( plot ) {
 
-	plot_dots <- list( ... )
+    plot_dots <- list( ... )
 
-	# remove `deff` argument sent by svyby
-	if( 'deff' %in% names( plot_dots ) ) plot_dots$deff <- NULL
+    # remove `deff` argument sent by svyby
+    if( 'deff' %in% names( plot_dots ) ) plot_dots$deff <- NULL
 
     if ( !add ) do.call( svylorenzplot_wrap , plot_dots )
 
@@ -489,29 +492,29 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     abline( 0 , 1 , ylim = c( 0 , 1 ) , plot_dots )
 
     if( empirical ) {
-		lines_dots <- plot_dots
-		lines_dots$x <- E_p
-		lines_dots$y <- E_L.p
-		lines_dots$col = curve.col
-		do.call( svylorenzlines_wrap , lines_dots )
-	}
+      lines_dots <- plot_dots
+      lines_dots$x <- E_p
+      lines_dots$y <- E_L.p
+      lines_dots$col = curve.col
+      do.call( svylorenzlines_wrap , lines_dots )
+    }
 
-	points_dots <- plot_dots
-	points_dots$x <- quantiles
-	points_dots$y <- L.p
-	points_dots$col <- curve.col
+    points_dots <- plot_dots
+    points_dots$x <- quantiles
+    points_dots$y <- L.p
+    points_dots$col <- curve.col
 
-	do.call( svylorenzpoints_wrap , points_dots )
+    do.call( svylorenzpoints_wrap , points_dots )
 
     if (ci) {
       X.Vec <- as.numeric( c(quantiles, tail(quantiles, 1), rev(quantiles), quantiles[1]) )
       Y.Vec <- as.numeric( c( CI.L, tail(CI.U, 1), rev(CI.U), CI.L[1] ) )
 
-	  polygon_dots <- plot_dots
-	  polygon_dots$x <- X.Vec
-	  polygon_dots$y <- Y.Vec
-	  polygon_dots$col <- adjustcolor( curve.col, alpha.f = .2)
-	  polygon_dots$border <- NA
+      polygon_dots <- plot_dots
+      polygon_dots$x <- X.Vec
+      polygon_dots$y <- Y.Vec
+      polygon_dots$col <- adjustcolor( curve.col, alpha.f = .2)
+      polygon_dots$border <- NA
 
       do.call( svylorenzpolygon_wrap , polygon_dots )
 
@@ -533,7 +536,7 @@ svylorenz.DBIsvydesign <- function (formula, design, ...)
     full_design <- attr( design , "full_design" )
 
     full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                              updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+                                     updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 
     attr( design , "full_design" ) <- full_design
 
@@ -542,7 +545,7 @@ svylorenz.DBIsvydesign <- function (formula, design, ...)
   }
 
   design$variables <- getvars(formula, design$db$connection, design$db$tablename,
-                                       updates = design$updates, subset = design$subset)
+                              updates = design$updates, subset = design$subset)
 
   NextMethod("svylorenz", design)
 
