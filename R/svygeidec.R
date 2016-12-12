@@ -122,7 +122,7 @@ svygeidec <-
 
     if( length( attr( terms.formula( by ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `by=` argument" )
 
-    if( 'epsilon' %in% names( list(...) ) && list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
+    #if( 'epsilon' %in% names( list(...) ) && list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
 
     UseMethod("svygeidec", design)
 
@@ -146,7 +146,7 @@ svygeidec.survey.design <-
     }
 
 
-    if ( epsilon %in% c(0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
+    if ( epsilon %in% c(-1,0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
     if ( any( ( is.na(incvar) | is.na(grpvar ) ) & w > 0 ) ) {
 
@@ -442,7 +442,7 @@ svygeidec.svyrep.design <-
 
     ws <- weights(design, "sampling")
 
-    if ( epsilon %in% c(0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
+    if ( epsilon %in% c(-1,0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
     if ( any( is.na(incvar) | is.na(grpvar) ) ) {
 
