@@ -274,10 +274,8 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
       quant <- wtd.qtl( x = incvar, q = pc, weights = w )
       s.quant <- L.p[i]
 
-      u_i <- NULL
-      u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
-      u_i[ w == 0 ] <- NA
-      u_i[ w == 0 ] <- 0
+      u_i <- 1/design$prob
+      u_i[ u_i > 0 ] <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
       u_i <- u_i[ sort(ordincvar) ]
 
       var[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
@@ -435,22 +433,32 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   }
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  ordincvar <- order( incvar )
 
   if(na.rm){
     nas<-is.na(incvar)
     design<-design[!nas,]
-    #df <- model.frame(design)
-    incvar <- incvar[!nas]
   }
 
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   ws <- weights(design, "sampling")
   ww <- weights(design, "analysis")
+
+  ordincvar <- order( incvar )
 
   ws <- ws[ ordincvar ]
   ww <- ww[ ordincvar, ]
   incvar <- incvar[ ordincvar ]
 
+  if ( any( is.na( incvar [ ws > 0 ] ) ) ) {
+    variance <- as.matrix(NA)
+    cis <- array( rbind(rep(NA, length(quantiles)),rep(NA, length(quantiles))), dim = c(2, length(quantiles)), dimnames = list( c( "(lower", "upper)" ), as.character(quantiles) ) )
+    rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
+    rval <- list(quantiles = rval, CIs = cis)
+    attr(rval, "SE") <- rep(NA, length(quantiles))
+    class(rval) <- "svyquantile"
+
+    return(rval)
+  }
 
   L.p <- t( as.matrix( lapply_wtd.psum( x = incvar, qs = quantiles, weights = ws ) ) )
   rval <- t( matrix( data = L.p, dimnames = list( as.character( quantiles ) ) ) )
