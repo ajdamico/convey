@@ -165,10 +165,6 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     x <- x[indices]
     weights <- weights[indices]
 
-    ordx <- order(x)
-    x <- x[ordx]
-    weights <- weights[ordx]
-
     x_1 <- c(0,x[-length(x)])
     N <- sum(weights)
     wsum <- cumsum(weights)
@@ -177,21 +173,23 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
     k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
-    #return( x[k] )
-    return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[ k ] ) / weights[ k ] )
+    return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[k] ) / weights[k] )
+
+  }
+
+  # partial sum (1st definition):
+  wtd.psum <- function (x, q = .5, weights = NULL ) {
+    indices <- weights != 0
+    x <- x[indices]
+    weights <- weights[indices]
+
+    x_thres <- wtd.qtl(x = x, q = q, weights = weights )
+
+    return( sum( weights * x * 1 * (x <= x_thres) ) )
 
   }
 
   # partial sum (2nd definition)
-  H_fn <- function(x) {
-    y <- NULL
-    y[ x < 0 ] <- 0
-    y[ (0 <= x) & (x < 1) ] <- x[ (0 <= x) & (x < 1) ]
-    y[ x >= 1 ] <- 1
-
-    return(y)
-  }
-
   wtd.psum <- function (x, q = .5, weights = NULL ) {
 
     indices <- weights != 0
@@ -207,6 +205,15 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
     t_k <- ( (q * N) - wsum_1 ) / weights
+
+    H_fn <- function(x) {
+      y <- NULL
+      y[ x < 0 ] <- 0
+      y[ (0 <= x) & (x < 1) ] <- x[ (0 <= x) & (x < 1) ]
+      y[ x >= 1 ] <- 1
+
+      return(y)
+    }
 
     return( sum( weights * x * H_fn(t_k) ) )
 
@@ -260,26 +267,35 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   var <- NULL
   for ( pc in quantiles ) {
     i <- match( pc, quantiles )
+    pc
 
-    quant <- wtd.qtl( x = incvar, q = pc, weights = w )
-    if ( pc == 0 ) {
-      # quant <- min( incvar[w != 0] )
-      quant <- 0
+    if ( pc > 0 & pc < 1 ) {
+
+      quant <- wtd.qtl( x = incvar, q = pc, weights = w )
+      s.quant <- L.p[i]
+
+      u_i <- NULL
+      u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
+      u_i[ w == 0 ] <- NA
+      u_i[ w == 0 ] <- 0
+      u_i <- u_i[ sort(ordincvar) ]
+
+      var[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
+
+      rm(quant, s.quant)
+
+    } else if ( pc == 0 ) {
+
+      L.p[i] <- 0
+
+      var[i] <- 0
+
+    } else if ( pc == 1 ) {
+
+      L.p[i] <- 1
+
+      var[i] <- 0
     }
-    s.quant <- L.p[i]
-
-    v_k <- NULL
-    #u_i <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
-    v_k <- incvar * H_fn( ( pc * sum(w) - cumsum( w ) - w ) / w ) + ( pc - 1*(incvar < quant) )*quant
-    u_i <- 1/design$prob
-    u_i[ u_i != 0 ] <- ( v_k - s.quant * incvar ) / sum( w * incvar )
-    #u_i <- ( v_k - s.quant * incvar ) / sum( w * incvar )
-    u_i <- u_i[ sort(ordincvar) ]
-
-    var[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
-    if ( pc == 1 ) { var[i] <- 0 }
-
-    rm(quant, s.quant)
 
     rm( i, pc )
 
@@ -358,10 +374,6 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     x <- x[indices]
     weights <- weights[indices]
 
-    ordx <- order(x)
-    x <- x[ordx]
-    weights <- weights[ordx]
-
     x_1 <- c(0,x[-length(x)])
     N <- sum(weights)
     wsum <- cumsum(weights)
@@ -370,7 +382,6 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
     k <- which( (wsum_1 < (q * N) ) & ( (q * N) <= wsum) )
 
-    #return{ x[k] }
     return( x_1[ k ] + ( x[k] - x_1[k] ) * ( (q * N) - wsum_1[k] ) / weights[k] )
 
   }
@@ -380,10 +391,6 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     indices <- weights != 0
     x <- x[indices]
     weights <- weights[indices]
-
-    ordx <- order(x)
-    x <- x[ordx]
-    weights <- weights[ordx]
 
     x_thres <- wtd.qtl(x = x, q = q, weights = weights )
 
@@ -397,10 +404,6 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     indices <- weights != 0
     x <- x[indices]
     weights <- weights[indices]
-
-    ordx <- order(x)
-    x <- x[ordx]
-    weights <- weights[ordx]
 
     x_1 <- c(0,x[-length(x)])
     N <- sum(weights)
@@ -432,6 +435,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   }
 
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+  ordincvar <- order( incvar )
 
   if(na.rm){
     nas<-is.na(incvar)
@@ -441,9 +445,15 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   }
 
   ws <- weights(design, "sampling")
-  L.p <- t( as.matrix( lapply_wtd.psum(x = incvar, qs = quantiles, weights = ws ) ) )
-  rval <- t( matrix( data = L.p, dimnames = list( as.character( quantiles ) ) ) )
   ww <- weights(design, "analysis")
+
+  ws <- ws[ ordincvar ]
+  ww <- ww[ ordincvar, ]
+  incvar <- incvar[ ordincvar ]
+
+
+  L.p <- t( as.matrix( lapply_wtd.psum( x = incvar, qs = quantiles, weights = ws ) ) )
+  rval <- t( matrix( data = L.p, dimnames = list( as.character( quantiles ) ) ) )
   qq <- apply(ww, 2, function(wi) lapply_wtd.psum(x = incvar, qs = quantiles, weights = wi ) )
 
   if ( any(is.na(qq))) {
