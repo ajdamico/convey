@@ -114,10 +114,9 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
   U_1 <- list( value = sum( w * incvar ), lin = incvar )
   T_0 <- list( value = sum( w * log( incvar ) ), lin = log( incvar ) )
   T_1 <- list( value = sum( w * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
-  Y_AVG <- contrastinf( quote( U_1 / U_0 ), list(  U_0 = U_0, U_1 = U_1 ) )
 
-  list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1, Y_AVG = Y_AVG )
-  estimate <- contrastinf( quote( ( 1 / U_1 ) * ( T_1 - ( Y_AVG * T_0 ) - ( log( Y_AVG ) * U_1 - Y_AVG * log( Y_AVG ) * U_0 ) ) ) , list_all )
+  list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1 )
+  estimate <- contrastinf( quote( ( T_1 / U_1 ) - ( T_0 / U_0 ) ) , list_all )
 
   rval <- estimate$value
 
