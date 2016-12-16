@@ -10,7 +10,7 @@
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
-#' If \code{epsilon == 0} or \code{epsilon == 1}, the logarithm in the function only allows for strictly positive variables.
+#' This measure only allows for strictly positive variables.
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -43,35 +43,35 @@
 #'
 #' # linearized design
 #' svygei( ~eqincome , subset(des_eusilc, eqincome > 0), epsilon = 0 )
-#' svygei( ~eqincome , des_eusilc, epsilon = .5 )
+#' svygei( ~eqincome , subset(des_eusilc, eqincome > 0), epsilon = .5 )
 #' svygei( ~eqincome , subset(des_eusilc, eqincome > 0), epsilon = 1 )
-#' svygei( ~eqincome , des_eusilc, epsilon = 2 )
+#' svygei( ~eqincome , subset(des_eusilc, eqincome > 0), epsilon = 2 )
 #'
 #' # replicate-weighted design
 #' svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 0 )
-#' svygei( ~eqincome , des_eusilc_rep, epsilon = .5 )
+#' svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = .5 )
 #' svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
-#' svygei( ~eqincome , des_eusilc_rep, epsilon = 2 )
+#' svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 2 )
 #'
 #' # linearized design using a variable with missings
 #' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
 #' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
-#' svygei( ~py010n , des_eusilc, epsilon = .5 )
-#' svygei( ~py010n , des_eusilc, epsilon = .5, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5, na.rm = TRUE )
 #' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
 #' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-#' svygei( ~py010n , des_eusilc, epsilon = 2 )
-#' svygei( ~py010n , des_eusilc, epsilon = 2, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 2 )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 2, na.rm = TRUE )
 #'
 #' # replicate-weighted design using a variable with missings
 #' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0 )
 #' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
-#' svygei( ~py010n , des_eusilc_rep, epsilon = .5 )
-#' svygei( ~py010n , des_eusilc_rep, epsilon = .5, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5, na.rm = TRUE )
 #' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
 #' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-#' svygei( ~py010n , des_eusilc_rep, epsilon = 2 )
-#' svygei( ~py010n , des_eusilc_rep, epsilon = 2, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 2 )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 2, na.rm = TRUE )
 #'
 #'
 #' \dontrun{

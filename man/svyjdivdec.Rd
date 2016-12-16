@@ -27,13 +27,15 @@ svyjdivdec(formula, by, design, ...)
 \item{na.rm}{Should cases with missing values be dropped? Observations containing missing values in income or group variables will be dropped.}
 }
 \value{
-Object of class "\code{cvydstat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
+Object of class "\code{cvydstat}", which are vectors with a "\code{var}" attribute giving the variance-covariance matrix and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
 Estimates the group decomposition of the generalized entropy index
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+
+This measure only allows for strictly positive variables.
 }
 \examples{
 library(survey)
