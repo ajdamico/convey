@@ -153,17 +153,13 @@ svyjdivdec.survey.design <-
     U_1 <- list( value = sum( w * incvar ), lin = incvar )
     T_0 <- list( value = sum( w * log( incvar ) ), lin = log( incvar ) )
     T_1 <- list( value = sum( w * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
-    Y_AVG <- contrastinf( quote( U_1 / U_0 ), list(  U_0 = U_0, U_1 = U_1 ) )
 
-    list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1, Y_AVG = Y_AVG )
-    estimate <- contrastinf( quote( ( 1 / U_1 ) * ( T_1 - ( Y_AVG * T_0 ) - ( log( Y_AVG ) * U_1 - Y_AVG * log( Y_AVG ) * U_0 ) ) ) , list_all )
+    list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1 )
+    estimate <- contrastinf( quote( ( T_1 / U_1 ) - ( T_0 / U_0 ) ) , list_all )
 
     ttl.jdiv <- estimate$value
     ttl.jdiv.lin <- 1/design$prob
     ttl.jdiv.lin[ ttl.jdiv.lin > 0 ] <- estimate$lin
-
-
-    ttl.variance <- survey::svyrecvar( ttl.jdiv.lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
 
     # within:
 
@@ -241,7 +237,6 @@ svyjdivdec.survey.design <-
     # Within component:
     within.jdiv <- wtn.theilt + wtn.theill
     within.jdiv.lin <- wtn.theilt.lin + wtn.theill.lin
-    within.variance <- survey::svyrecvar( within.jdiv.lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
 
     # between:
 
@@ -303,8 +298,6 @@ svyjdivdec.survey.design <-
     # Between component:
     between.jdiv <- btn.theilt + btn.theill
     between.jdiv.lin <- btn.theilt.lin + btn.theill.lin
-    between.variance <- survey::svyrecvar( between.jdiv.lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
-
 
     estimates <- matrix( c( ttl.jdiv, within.jdiv, between.jdiv ), dimnames = list( c( "total", "within", "between" ) ) )[,]
 
@@ -456,21 +449,12 @@ svyjdivdec.svyrep.design <-
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
+      attr(rval, "var") <- matrix( rep(NA,9), dimnames = list( c( c( "total", "within", "between" ), "total", "within", "between" ) ), ncol = 3 )[1:3,1:3]
       attr(rval, "statistic") <- "j-divergence decomposition"
       attr(rval,"group")<- as.character( by )[[2]]
       class(rval) <- c( "cvydstat" )
 
       return(rval)
-
-    } else {
-
-      variance <- c(
-        survey::svrVar( qq.ttl.jdiv, design$scale, design$rscales, mse = design$mse, coef = ttl.jdiv),
-        survey::svrVar( qq.within.jdiv, design$scale, design$rscales, mse = design$mse, coef = within.jdiv),
-        survey::svrVar( qq.between.jdiv, design$scale, design$rscales, mse = design$mse, coef = between.jdiv)
-      )
-      variance <- matrix( variance, dimnames = list( c( "total", "within", "between" ) ) )[,]
 
     }
 
