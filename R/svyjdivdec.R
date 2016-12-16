@@ -459,7 +459,7 @@ svyjdivdec.svyrep.design <-
     }
 
     qq.matrix <- matrix( c( qq.ttl.jdiv, qq.within.jdiv, qq.between.jdiv ), ncol = 3, dimnames = list( NULL, c( "total", "within", "between" ) ) )
-    variance <- survey::svrVar( qq.matrix, design$scale, design$rscales, mse = design$mse, coef = matrix( ttl.gei, wtn.gei, btw.gei ) )
+    variance <- survey::svrVar( qq.matrix, design$scale, design$rscales, mse = design$mse, coef = matrix( ttl.jdiv, within.jdiv, between.jdiv ) )
 
     rval <- list( estimate = matrix( c( ttl.jdiv, within.jdiv, between.jdiv ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

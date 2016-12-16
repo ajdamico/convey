@@ -547,15 +547,6 @@ svygeidec.svyrep.design <-
 
       return(rval)
 
-    } else {
-
-      variance <- c(
-        survey::svrVar( qq.ttl.gei, design$scale, design$rscales, mse = design$mse, coef = rval[1]),
-        survey::svrVar( qq.wtn.gei, design$scale, design$rscales, mse = design$mse, coef = rval[2]),
-        survey::svrVar( qq.btw.gei, design$scale, design$rscales, mse = design$mse, coef = rval[3])
-      )
-      variance <- matrix( variance, dimnames = list( c( "total", "within", "between" ) ) )[,]
-
     }
 
     qq.matrix <- matrix( c( qq.ttl.gei, qq.wtn.gei, qq.btw.gei ), ncol = 3, dimnames = list( NULL, c( "total", "within", "between" ) ) )
