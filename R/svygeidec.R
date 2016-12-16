@@ -146,7 +146,7 @@ svygeidec.survey.design <-
     }
 
 
-    if ( epsilon %in% c(-1,0,1) & any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
+    if ( any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
     if ( any( ( is.na(incvar) | is.na(grpvar ) ) & w > 0 ) ) {
 
@@ -441,7 +441,7 @@ svygeidec.svyrep.design <-
 
     ws <- weights(design, "sampling")
 
-    if ( epsilon %in% c(-1,0,1) & any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
+    if ( any( incvar[ ws != 0 ] <= 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
 
     if ( any( is.na(incvar) | is.na(grpvar) ) ) {
 
