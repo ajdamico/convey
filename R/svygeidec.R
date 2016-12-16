@@ -400,6 +400,7 @@ svygeidec.survey.design <-
     } else {
       btw.gei <- sum( wtd.gei ) - (epsilon^2 - epsilon)^-1
     }
+
     between.lin <- apply(wtd.gei.lin,1,sum)
 
     estimates <- matrix( c( ttl.gei, wtn.gei, btw.gei ), dimnames = list( c( "total", "within", "between" ) ) )[,]
