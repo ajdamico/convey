@@ -54,24 +54,24 @@
 #' svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 2 )
 #'
 #' # linearized design using a variable with missings
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5, na.rm = TRUE )
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 2 )
-#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = 2, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0 )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = .5 )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = .5, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 1 )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 1, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 2 )
+#' svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 2, na.rm = TRUE )
 #'
 #' # replicate-weighted design using a variable with missings
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0 )
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 )
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5, na.rm = TRUE )
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1 )
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 2 )
-#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = 2, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 0 )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 0, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = .5 )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = .5, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 1 )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 1, na.rm = TRUE )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 2 )
+#' svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 2, na.rm = TRUE )
 #'
 #'
 #' \dontrun{
@@ -102,12 +102,12 @@
 #' svygei( ~eqincome , dbd_eusilc, epsilon = 2 )
 #'
 #' # database-backed linearized design using a variable with missings
-#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0 )
-#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 0, na.rm = TRUE )
+#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0 )
+#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0, na.rm = TRUE )
 #' svygei( ~py010n , dbd_eusilc, epsilon = .5 )
 #' svygei( ~py010n , dbd_eusilc, epsilon = .5, na.rm = TRUE )
-#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1 )
-#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n)), epsilon = 1, na.rm = TRUE )
+#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 1 )
+#' svygei( ~py010n , subset(dbd_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 1, na.rm = TRUE )
 #' svygei( ~py010n , dbd_eusilc, epsilon = 2 )
 #' svygei( ~py010n , dbd_eusilc, epsilon = 2, na.rm = TRUE )
 #'
@@ -135,14 +135,14 @@ svygei <-
 svygei.survey.design <-
 	function ( formula, design, epsilon = 1, na.rm = FALSE, ... ) {
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+		if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
 		if (na.rm) {
 			nas <- is.na(incvar)
 			design <- design[nas == 0, ]
-			if (length(nas) > length(design$prob)) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
+			if (length(nas) > length(design$prob) ) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
 		}
 
 		w <- 1/design$prob
@@ -216,7 +216,7 @@ svygei.survey.design <-
 svygei.svyrep.design <-
 	function(formula, design, epsilon = 1,na.rm=FALSE, ...) {
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+		if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
 		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
@@ -237,9 +237,9 @@ svygei.svyrep.design <-
 
 		ww <- weights(design, "analysis")
 
-		qq <- apply(ww, 2, function(wi) calc.gei(incvar, wi, epsilon = epsilon))
+		qq <- apply(ww, 2, function(wi) calc.gei(incvar, wi, epsilon = epsilon) )
 
-		if ( any(is.na(qq))) {
+		if ( any(is.na(qq) ) ) {
 
 			variance <- as.matrix(NA)
 			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -270,7 +270,7 @@ svygei.svyrep.design <-
 svygei.DBIsvydesign <-
 		function (formula, design, ...) {
 
-		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+		if (!( "logical" %in% class(attr(design, "full_design") ) ) ){
 
 			full_design <- attr( design , "full_design" )
 

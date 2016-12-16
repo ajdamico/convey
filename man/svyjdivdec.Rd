@@ -57,12 +57,12 @@ svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0) )
 svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
 
 # linearized design using a variable with missings
-sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))
+sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc )
 svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc , na.rm = TRUE )
 
 # replicate-weighted design using a variable with missings
-sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
+sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
 svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep )
 svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep , na.rm = TRUE )
 

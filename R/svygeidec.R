@@ -56,14 +56,14 @@
 #' svygeidec( ~eqincome , ~rb090 , subset( des_eusilc_rep, eqincome > 0 ) , epsilon = 2 )
 #'
 #' # linearized design using a variable with missings
-#' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))
+#' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 #' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 0 )
 #' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 0, na.rm = TRUE )
 #' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 1 )
 #' svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 1, na.rm = TRUE )
 #'
 #' # replicate-weighted design using a variable with missings
-#' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
+#' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
 #' svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0 )
 #' svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0, na.rm = TRUE )
 #' svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 1 )
@@ -98,7 +98,7 @@
 #' svygeidec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0) , epsilon = 2 )
 #'
 #' # database-backed linearized design using a variable with missings
-#' sub_dbd_eusilc <- subset(dbd_eusilc, py010n > 0 | is.na(py010n))
+#' sub_dbd_eusilc <- subset(dbd_eusilc, py010n > 0 | is.na(py010n) )
 #' svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 0 )
 #' svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 0, na.rm = TRUE )
 #' svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = .5 )
@@ -133,7 +133,7 @@ svygeidec <-
 svygeidec.survey.design <-
   function ( formula, by, design, epsilon = 1, na.rm = FALSE, ... ) {
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
     w <- 1/design$prob
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
@@ -234,7 +234,7 @@ svygeidec.survey.design <-
       grp.gei[i] <- calc.gei( x = incvar, weights = w_i, epsilon = epsilon )
 
       grp.U_0[i] <- sum( w_i )
-      grp.U_0.lin[,i] <- rep(1, length(incvar))
+      grp.U_0.lin[,i] <- rep(1, length(incvar) )
       grp.U_0.lin[ w_i == 0, i ] <- 0
 
       grp.U_1[i] <- sum( incvar[ w_i > 0 ] * w_i[ w_i > 0 ] )
@@ -359,7 +359,7 @@ svygeidec.survey.design <-
       w_i <- w
       w_i[ grpvar != levels(grpvar)[i] ] <- 0
 
-      ngrp <- length(levels(grpvar))
+      ngrp <- length(levels(grpvar) )
 
       g_i <- list( value = grp.g[i] , lin = grp.g.lin[,i] )
       p_i <- list( value = grp.p[i] , lin = grp.p.lin[,i] )
@@ -426,7 +426,7 @@ svygeidec.survey.design <-
 svygeidec.svyrep.design <-
   function( formula, by, design, epsilon = 1, na.rm=FALSE, ...) {
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+    if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
@@ -466,7 +466,7 @@ svygeidec.svyrep.design <-
 
     # total
     ttl.gei <- calc.gei( x = incvar, weights = ws, epsilon = epsilon)
-    qq.ttl.gei <- apply(ww, 2, function(wi) calc.gei(incvar, wi, epsilon = epsilon))
+    qq.ttl.gei <- apply(ww, 2, function(wi) calc.gei(incvar, wi, epsilon = epsilon) )
 
     # within
     within.gei.fun <- function(f.data) {
@@ -497,7 +497,7 @@ svygeidec.svyrep.design <-
 
     }
 
-    wtn.gei <- within.gei.fun( f.data = data.frame(incvar, grpvar, ws = ws))
+    wtn.gei <- within.gei.fun( f.data = data.frame(incvar, grpvar, ws = ws) )
     qq.wtn.gei <- apply( ww, 2, function(wi) within.gei.fun( f.data = data.frame(incvar, grpvar, ws =  wi ) ) )
 
     # between:
@@ -533,7 +533,7 @@ svygeidec.svyrep.design <-
         )
 
     }
-    btw.gei <- between.gei.fun( f.data = data.frame(incvar, grpvar, ws = ws))
+    btw.gei <- between.gei.fun( f.data = data.frame(incvar, grpvar, ws = ws) )
     qq.btw.gei <- apply( ww, 2, function(wi) between.gei.fun( f.data = data.frame(incvar, grpvar, ws =  wi ) ) )
 
     if ( any(is.na( c( qq.ttl.gei, qq.wtn.gei, qq.btw.gei ) ) ) ) {
@@ -572,7 +572,7 @@ svygeidec.DBIsvydesign <-
 	function (formula, by, design, ...) {
 
 
-		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+		if (!( "logical" %in% class(attr(design, "full_design") ) ) ){
 
 			full_design <- attr( design , "full_design" )
 

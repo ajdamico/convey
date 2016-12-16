@@ -53,12 +53,12 @@
 #' svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
 #'
 #' # linearized design using a variable with missings
-#' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))
+#' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc , na.rm = TRUE )
 #'
 #' # replicate-weighted design using a variable with missings
-#' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
+#' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep , na.rm = TRUE )
 #'
@@ -114,7 +114,7 @@ svyjdivdec <-
 svyjdivdec.survey.design <-
   function ( formula, by, design, na.rm = FALSE, ... ) {
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
     w <- 1/design$prob
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
@@ -335,7 +335,7 @@ svyjdivdec.svyrep.design <-
 
     }
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+    if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
@@ -479,7 +479,7 @@ svyjdivdec.DBIsvydesign <-
   function (formula, by, design, ...) {
 
 
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+    if (!( "logical" %in% class(attr(design, "full_design") ) ) ){
 
       full_design <- attr( design , "full_design" )
 

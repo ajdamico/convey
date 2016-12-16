@@ -67,14 +67,14 @@ svygeidec( ~eqincome , ~rb090 , subset( des_eusilc_rep, eqincome > 0 ) , epsilon
 svygeidec( ~eqincome , ~rb090 , subset( des_eusilc_rep, eqincome > 0 ) , epsilon = 2 )
 
 # linearized design using a variable with missings
-sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n))
+sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 0 )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 0, na.rm = TRUE )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 1 )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 1, na.rm = TRUE )
 
 # replicate-weighted design using a variable with missings
-sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n))
+sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0 )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0, na.rm = TRUE )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 1 )
@@ -109,7 +109,7 @@ svygeidec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0) , epsilon = 1 )
 svygeidec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0) , epsilon = 2 )
 
 # database-backed linearized design using a variable with missings
-sub_dbd_eusilc <- subset(dbd_eusilc, py010n > 0 | is.na(py010n))
+sub_dbd_eusilc <- subset(dbd_eusilc, py010n > 0 | is.na(py010n) )
 svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 0 )
 svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = 0, na.rm = TRUE )
 svygeidec( ~py010n , ~rb090 , sub_dbd_eusilc , epsilon = .5 )
