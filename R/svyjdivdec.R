@@ -307,11 +307,13 @@ svyjdivdec.survey.design <-
 
 
     estimates <- matrix( c( ttl.jdiv, within.jdiv, between.jdiv ), dimnames = list( c( "total", "within", "between" ) ) )[,]
-    variance <- matrix( c( ttl.variance, within.variance, between.variance ), dimnames = list( c( "total", "within", "between" ) ) )[,]
+
+    lin.matrix <- matrix( data = c(ttl.jdiv.lin, within.jdiv.lin, between.jdiv.lin), ncol = 3, dimnames = list( NULL, c( "total", "within", "between" ) ) )
+    variance <- survey::svyrecvar( lin.matrix/design$prob , design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
     rval <- list( estimate = estimates )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- variance[1:3,1:3]
     attr(rval, "statistic") <- "j-divergence decomposition"
     attr(rval,"group")<- as.character( by )[[2]]
     class(rval) <- c( "cvydstat" )
@@ -472,9 +474,12 @@ svyjdivdec.svyrep.design <-
 
     }
 
+    qq.matrix <- matrix( c( qq.ttl.jdiv, qq.within.jdiv, qq.between.jdiv ), ncol = 3, dimnames = list( NULL, c( "total", "within", "between" ) ) )
+    variance <- survey::svrVar( qq.matrix, design$scale, design$rscales, mse = design$mse, coef = matrix( ttl.gei, wtn.gei, btw.gei ) )
+
     rval <- list( estimate = matrix( c( ttl.jdiv, within.jdiv, between.jdiv ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- variance[1:3, 1:3]
     attr(rval, "statistic") <- "j-divergence decomposition"
     attr(rval,"group")<- as.character( by )[[2]]
     class(rval) <- c( "cvydstat" )

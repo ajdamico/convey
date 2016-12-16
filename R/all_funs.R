@@ -186,10 +186,13 @@ print.cvystat <- function(x, ...) {
 print.cvydstat <- function(x, ...) {
 
   vv <- attr(x, "var")
-  m <- cbind(x[[1]], sqrt(vv))
-  colnames(m) <- c(attr(x, "statistic"), "SE")
 
-  printCoefmat(m)
+  m <- matrix( x[[1]], nrow = 1 )
+  m <- rbind( m , matrix( sqrt( diag(vv) ), nrow = 1 ) )
+
+  dimnames(m) <- list( c( "coef", "SE" ), c( "total", "within", "between" ) )
+
+  printCoefmat(m, digits = 5)
 
 }
 

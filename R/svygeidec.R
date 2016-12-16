@@ -192,8 +192,6 @@ svygeidec.survey.design <-
 
       ttl.lin [ w == 0 ] <- 0
 
-      ttl.variance <- survey::svyrecvar( ttl.lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-
     } else {
 
       ttl.lin <-
@@ -213,8 +211,6 @@ svygeidec.survey.design <-
         incvar^(epsilon)
 
       ttl.lin[ w == 0 ] <- 0
-
-      ttl.variance <- survey::svyrecvar( ttl.lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 
     }
 
@@ -354,7 +350,7 @@ svygeidec.survey.design <-
     }
 
     wtn.gei <- sum(wtd.gei)
-    wtn.variance <- survey::svyrecvar( apply(wtd.gei.lin,1,sum) /design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+    within.lin <- apply(wtd.gei.lin,1,sum)
 
     # between:
     btw.gei <- NULL
@@ -404,11 +400,12 @@ svygeidec.survey.design <-
     } else {
       btw.gei <- sum( wtd.gei ) - (epsilon^2 - epsilon)^-1
     }
-    btw.variance <- survey::svyrecvar( apply(wtd.gei.lin,1,sum) /design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-
+    between.lin <- apply(wtd.gei.lin,1,sum)
 
     estimates <- matrix( c( ttl.gei, wtn.gei, btw.gei ), dimnames = list( c( "total", "within", "between" ) ) )[,]
-    variance <- matrix( c( ttl.variance, wtn.variance, btw.variance ), dimnames = list( c( "total", "within", "between" ) ) )[,]
+
+    lin.matrix <- matrix( data = c(ttl.lin, within.lin, between.lin), ncol = 3, dimnames = list( NULL, c( "total", "within", "between" ) ) )
+    variance <- survey::svyrecvar( lin.matrix/design$prob , design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
 
     rval <- list( estimate = estimates )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -416,7 +413,8 @@ svygeidec.survey.design <-
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
     attr(rval,"group")<- as.character( by )[[2]]
-    class(rval) <- c( "cvydstat" )
+    class(rval) <- "cvydstat"
+
     rval
 
   }
@@ -452,7 +450,7 @@ svygeidec.svyrep.design <-
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
       attr(rval,"group")<- as.character( by )[[2]]
-      class(rval) <- c( "cvydstat" )
+      class(rval) <- "cvydstat"
 
       return(rval)
 
@@ -560,13 +558,17 @@ svygeidec.svyrep.design <-
 
     }
 
+    qq.matrix <- matrix( c( qq.ttl.gei, qq.wtn.gei, qq.btw.gei ), ncol = 3, dimnames = list( NULL, c( "total", "within", "between" ) ) )
+    variance <- survey::svrVar( qq.matrix, design$scale, design$rscales, mse = design$mse, coef = matrix( ttl.gei, wtn.gei, btw.gei ) )
+
     rval <- list( estimate = matrix( c( ttl.gei, wtn.gei, btw.gei ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- variance[1:3,1:3]
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
     attr(rval,"group")<- as.character( by )[[2]]
-    class(rval) <- c( "cvydstat" )
+    class(rval) <- "cvydstat"
+
     rval
 
   }
