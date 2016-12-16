@@ -444,7 +444,6 @@ svyjdivdec.svyrep.design <-
     between.jdiv <- sum(grp.avg.theill + grp.avg.theilt)
     qq.between.jdiv <- apply( qq.grp.avg.theill + qq.grp.avg.theilt, 1, sum )
 
-
     if ( any(is.na( c( qq.ttl.jdiv, qq.within.jdiv, qq.between.jdiv ) ) ) ) {
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
