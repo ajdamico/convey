@@ -353,55 +353,9 @@ svygeidec.survey.design <-
     within.lin <- apply(wtd.gei.lin,1,sum)
 
     # between:
-    btw.gei <- NULL
-    wtd.gei.lin <- matrix( NA, nrow = length(incvar), ncol = length( levels( grpvar ) ) )
-    for ( i in seq_along( levels(grpvar) ) ) {
-      w_i <- w
-      w_i[ grpvar != levels(grpvar)[i] ] <- 0
+    btw.gei <- ttl.gei - wtn.gei
+    between.lin <- ttl.lin - within.lin
 
-      ngrp <- length(levels(grpvar) )
-
-      g_i <- list( value = grp.g[i] , lin = grp.g.lin[,i] )
-      p_i <- list( value = grp.p[i] , lin = grp.p.lin[,i] )
-
-       if ( epsilon == 0 ) {
-
-         list_all <- list( g_i = g_i, p_i = p_i )
-         grp.est <- contrastinf( quote( p_i * log( ( g_i / p_i )^-1 ) ) , list_all )
-         wtd.gei[i] <- grp.est$value
-         wtd.gei.lin[ , i ] <- grp.est$lin
-         wtd.gei.lin[ w_i == 0 , i ] <- 0
-         rm(grp.est)
-
-       } else if ( epsilon == 1 ) {
-
-         list_all <- list( g_i = g_i, p_i = p_i )
-         grp.est <- contrastinf( quote( g_i * log( g_i / p_i ) ) , list_all )
-         wtd.gei[i] <- grp.est$value
-         wtd.gei.lin[ , i ] <- grp.est$lin
-         wtd.gei.lin[ w_i == 0 , i ] <- 0
-         rm(grp.est)
-
-       } else {
-
-         list_all <- list( g_i = g_i, p_i = p_i, epsilon = list( value = epsilon , lin = rep( 0, length( incvar ) ) ) )
-         grp.est <- contrastinf( quote( (epsilon^2 - epsilon)^-1 * p_i * ( g_i / p_i )^epsilon ) , list_all )
-         wtd.gei[i] <- grp.est$value
-         wtd.gei.lin[ , i ] <- grp.est$lin
-         wtd.gei.lin[ w_i == 0 , i ] <- 0
-         rm(grp.est)
-
-       }
-
-    }
-
-    if ( epsilon %in% 0:1 ) {
-      btw.gei <- sum( wtd.gei )
-    } else {
-      btw.gei <- sum( wtd.gei ) - (epsilon^2 - epsilon)^-1
-    }
-
-    between.lin <- apply(wtd.gei.lin,1,sum)
 
     estimates <- matrix( c( ttl.gei, wtn.gei, btw.gei ), dimnames = list( c( "total", "within", "between" ) ) )[,]
 
