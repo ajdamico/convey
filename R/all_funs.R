@@ -156,6 +156,7 @@ T_fn <-
 
 
 # cvystat print method
+#' @export
 print.cvystat <- function(x, ...) {
 
     vv <- attr(x, "var")
@@ -206,6 +207,7 @@ coef.cvystat <- function(object, ...) {
 
 
 # cvydstat print method
+#' @export
 print.cvydstat <- function(x, ...) {
 
   vv <- attr(x, "var")
