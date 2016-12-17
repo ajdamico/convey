@@ -159,26 +159,32 @@ T_fn <-
 #' @export
 print.cvystat <- function(x, ...) {
 
-    vv <- attr(x, "var")
+  vv <- attr(x, "var")
 
-    if (is.matrix(vv)) {
-        m <- cbind(x, sqrt(diag(vv)))
-    } else {
+  if ( attr( x, "statistic" ) == "alkire-foster" ) {
 
-        m <- cbind(x, sqrt(vv))
+    m <- matrix( data = c( x[1] , sqrt(vv) ) , ncol = 2, dimnames = list( NULL, c( "alkire-foster", "SE" ) ) )
 
-    }
-    nattr <- length(names(attributes(x)))
-    if (nattr>5) {
-      for(i in 6:nattr)
-      {m <- cbind(m, attr(x, names(attributes(x)[i])))}
-      colnames(m) <- c(attr(x, "statistic"), "SE", names(attributes(x))[6:nattr])
-    }
-    else {
-      colnames(m) <- c(attr(x, "statistic"), "SE")
-    }
+    return( printCoefmat(m) )
+  }
 
-    printCoefmat(m)
+  if (is.matrix(vv)) {
+    m <- cbind(x, sqrt(diag(vv)))
+  } else {
+    m <- cbind(x, sqrt(vv))
+  }
+
+  nattr <- length(names(attributes(x)))
+  if (nattr>5) {
+    for(i in 6:nattr)
+    {m <- cbind(m, attr(x, names(attributes(x)[i])))}
+    colnames(m) <- c(attr(x, "statistic"), "SE", names(attributes(x))[6:nattr])
+  }
+  else {
+    colnames(m) <- c(attr(x, "statistic"), "SE")
+  }
+
+  printCoefmat(m)
 
 }
 

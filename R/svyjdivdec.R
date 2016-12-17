@@ -139,7 +139,7 @@ svyjdivdec.survey.design <-
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
+      attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "j-divergence decomposition"
       attr(rval,"group")<- as.character( by )[[2]]
       class(rval) <- c( "cvydstat" )
@@ -300,7 +300,7 @@ svyjdivdec.svyrep.design <-
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
+      attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "j-divergence decomposition"
       attr(rval,"group")<- as.character( by )[[2]]
       class(rval) <- c( "cvydstat" )
@@ -359,49 +359,10 @@ svyjdivdec.svyrep.design <-
     qq.within.jdiv <- apply( qq.grp.wtd.theilt + qq.grp.wtd.theill, 1, sum )
 
     # Between:
+    between.jdiv <- ttl.jdiv - within.jdiv
+    qq.between.jdiv <- qq.ttl.jdiv - qq.within.jdiv
 
-    # Theil T index:
-    grp.avg.theilt <- NULL
-    qq.grp.avg.theilt <- matrix( NA, nrow = length(qq.ttl.jdiv), ncol = length( levels( grpvar ) ) )
-    for ( i in seq_along( levels(grpvar) ) ) {
-      ind <- 1*( grpvar == levels(grpvar)[i] )
 
-      grp.avg.theilt[i] <- ( sum( ws * ind * incvar ) / sum( ws * incvar ) ) * ( log( sum( ws * ind * incvar ) / sum( ws * ind ) ) - log( sum( ws * incvar ) / sum( ws ) ) )
-      qq.grp.avg.theilt[,i] <- apply( ww, 2, function(wi) {
-        ( sum( wi * ind * incvar ) / sum( wi * incvar ) ) * ( log( sum( wi * ind * incvar ) / sum( wi * ind ) ) - log( sum( wi * incvar ) / sum( wi ) ) )
-      } )
-
-    }
-
-    # Theil L index:
-    grp.avg.theill <- NULL
-    qq.grp.avg.theill <- matrix( NA, nrow = length(qq.ttl.jdiv), ncol = length( levels( grpvar ) ) )
-    for ( i in seq_along( levels(grpvar) ) ) {
-      ind <- 1*( grpvar == levels(grpvar)[i] )
-
-      grp.avg.theill[i] <- -( sum( ws * ind ) / sum( ws ) ) * ( log( sum( ws * ind * incvar ) / sum( ws * ind ) ) - log( sum( ws * incvar ) / sum( ws ) ) )
-      qq.grp.avg.theill[,i] <- apply( ww, 2, function(wi) {
-        -( sum( wi * ind ) / sum( wi ) ) * ( log( sum( wi * ind * incvar ) / sum( wi * ind ) ) - log( sum( wi * incvar ) / sum( wi ) ) )
-      } )
-
-    }
-
-    # Between Component:
-    between.jdiv <- sum(grp.avg.theill + grp.avg.theilt)
-    qq.between.jdiv <- apply( qq.grp.avg.theill + qq.grp.avg.theilt, 1, sum )
-
-    if ( any(is.na( c( qq.ttl.jdiv, qq.within.jdiv, qq.between.jdiv ) ) ) ) {
-
-      rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
-      names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      attr(rval, "var") <- matrix( rep(NA,9), dimnames = list( c( c( "total", "within", "between" ), "total", "within", "between" ) ), ncol = 3 )[1:3,1:3]
-      attr(rval, "statistic") <- "j-divergence decomposition"
-      attr(rval,"group")<- as.character( by )[[2]]
-      class(rval) <- c( "cvydstat" )
-
-      return(rval)
-
-    }
 
     qq.matrix <- matrix( c( qq.ttl.jdiv, qq.within.jdiv, qq.between.jdiv ), ncol = 3, dimnames = list( NULL, c( "total", "within", "between" ) ) )
     variance <- survey::svrVar( qq.matrix, design$scale, design$rscales, mse = design$mse, coef = matrix( ttl.jdiv, within.jdiv, between.jdiv ) )

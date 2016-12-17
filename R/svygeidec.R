@@ -152,7 +152,7 @@ svygeidec.survey.design <-
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
+      attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
       attr(rval,"group")<- as.character( by )[[2]]
@@ -401,7 +401,7 @@ svygeidec.svyrep.design <-
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
+      attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
       attr(rval,"group")<- as.character( by )[[2]]
@@ -455,46 +455,14 @@ svygeidec.svyrep.design <-
     qq.wtn.gei <- apply( ww, 2, function(wi) within.gei.fun( f.data = data.frame(incvar, grpvar, ws =  wi ) ) )
 
     # between:
-    between.gei.fun <- function(f.data) {
-
-      tt.mu <- sum( f.data[,1] * f.data[,3] ) / sum( f.data[,3] )
-      tt.bw <- sum( f.data[,3] )
-
-      grp.avg.gei <- by( data = f.data, INDICES = f.data[,2],
-                         function(data = f.data) {
-
-                           grp.mu <- sum(data[,1] * data[,3]) / sum( data[,3] )
-                           grp.p <- sum(data[,3])/tt.bw
-                           grp.g <- grp.p * grp.mu / tt.mu
-
-                           if (epsilon == 0) {
-                             return( grp.p * log( ( grp.g / grp.p )^-1 ) )
-                           } else if (epsilon == 1) {
-                             return( grp.g * log( grp.g / grp.p ) )
-                           } else {
-                             return( grp.p * (grp.g / grp.p )^epsilon )
-                           }
-
-                         },
-                         simplify = FALSE )
-
-      return(
-        if (epsilon %in% 0:1) {
-          sum( as.numeric(grp.avg.gei ) )
-        } else {
-          ( epsilon^2 - epsilon )^-1 * ( sum( as.numeric(grp.avg.gei ) ) - 1 )
-        }
-        )
-
-    }
-    btw.gei <- between.gei.fun( f.data = data.frame(incvar, grpvar, ws = ws) )
-    qq.btw.gei <- apply( ww, 2, function(wi) between.gei.fun( f.data = data.frame(incvar, grpvar, ws =  wi ) ) )
+    btw.gei <- ttl.gei - wtn.gei
+    qq.btw.gei <- qq.ttl.gei - qq.wtn.gei
 
     if ( any(is.na( c( qq.ttl.gei, qq.wtn.gei, qq.btw.gei ) ) ) ) {
 
       rval <- list( estimate = matrix( c( NA, NA, NA ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      attr(rval, "var") <- matrix( c(NA,NA,NA), dimnames = list( c( "total", "within", "between" ) ) )[,]
+      attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
       attr(rval,"group")<- as.character( by )[[2]]
