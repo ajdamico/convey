@@ -241,65 +241,8 @@ svyjdivdec.survey.design <-
     within.jdiv.lin <- wtn.theilt.lin + wtn.theill.lin
 
     # between:
-
-    # Theil T index:
-    grp.theilt.btn <- NULL
-    grp.theilt.btn.lin <- matrix( NA, nrow = length(incvar), ncol = length( levels( grpvar ) ) )
-
-    for ( i in seq_along( levels(grpvar) ) ) {
-      w_i <- w
-      w_i[ grpvar != levels(grpvar)[i] ] <- 0
-
-      U_0_i <- list( value = sum( w_i ), lin = rep( 1, length( incvar ) ) )
-      U_1_i <- list( value = sum( w_i * incvar ), lin = incvar )
-      T_0_i <- list( value = sum( w_i * log( incvar ) ), lin = log( incvar ) )
-      T_1_i <- list( value = sum( w_i * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
-
-      list_all <- list(  U_0 = U_0, U_1 = U_1, U_0_i = U_0_i, U_1_i = U_1_i, T_0_i = T_0_i, T_1_i = T_1_i )
-      estimate <- contrastinf( quote( ( U_1_i / U_1 ) * ( log( U_1_i / U_0_i ) - log( U_1 / U_0 ) ) ) , list_all )
-
-      grp.theilt.btn[i] <- estimate$value
-      grp.theilt.btn.lin[,i] <- estimate$lin * ( w_i != 0 )
-
-      rm( i, w_i, estimate )
-    }
-
-    btn.theilt <- sum( grp.theilt.btn )
-    w_teste <- 1/design$prob
-    w_teste[ w_teste > 0 ] <- apply( grp.theilt.btn.lin, 1, sum )
-    btn.theilt.lin <- w_teste ; rm( w_teste )
-
-
-    # Theil L index:
-    grp.theill.btn <- NULL
-    grp.theill.btn.lin <- matrix( NA, nrow = length(incvar), ncol = length( levels( grpvar ) ) )
-
-    for ( i in seq_along( levels(grpvar) ) ) {
-      w_i <- w
-      w_i[ grpvar != levels(grpvar)[i] ] <- 0
-
-      U_0_i <- list( value = sum( w_i ), lin = rep( 1, length( incvar ) ) )
-      U_1_i <- list( value = sum( w_i * incvar ), lin = incvar )
-      T_0_i <- list( value = sum( w_i * log( incvar ) ), lin = log( incvar ) )
-      T_1_i <- list( value = sum( w_i * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
-
-      list_all <- list(  U_0 = U_0, U_1 = U_1, U_0_i = U_0_i, U_1_i = U_1_i, T_0_i = T_0_i, T_1_i = T_1_i )
-      estimate <- contrastinf( quote( -( U_0_i / U_0 ) * ( log( U_1_i / U_0_i ) - log( U_1 / U_0 ) ) ) , list_all )
-
-      grp.theill.btn[i] <- estimate$value
-      grp.theill.btn.lin[,i] <- estimate$lin * ( w_i != 0 )
-
-      rm( i, w_i, estimate )
-    }
-
-    btn.theill <- sum( grp.theill.btn )
-    w_teste <- 1/design$prob
-    w_teste[ w_teste > 0 ] <- apply( grp.theill.btn.lin, 1, sum )
-    btn.theill.lin <- w_teste ; rm( w_teste )
-
-    # Between component:
-    between.jdiv <- btn.theilt + btn.theill
-    between.jdiv.lin <- btn.theilt.lin + btn.theill.lin
+    between.jdiv <- ttl.jdiv - within.jdiv
+    between.jdiv.lin <- ttl.jdiv.lin - within.jdiv.lin
 
     estimates <- matrix( c( ttl.jdiv, within.jdiv, between.jdiv ), dimnames = list( c( "total", "within", "between" ) ) )[,]
 
@@ -311,7 +254,8 @@ svyjdivdec.survey.design <-
     attr(rval, "var") <- variance[1:3,1:3]
     attr(rval, "statistic") <- "j-divergence decomposition"
     attr(rval,"group")<- as.character( by )[[2]]
-    class(rval) <- c( "cvydstat" )
+    class(rval) <- "cvydstat"
+
     rval
 
   }
