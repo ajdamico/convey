@@ -182,21 +182,6 @@ print.cvystat <- function(x, ...) {
 }
 
 
-# cvydstat print method
-print.cvydstat <- function(x, ...) {
-
-  vv <- attr(x, "var")
-
-  m <- matrix( x[[1]], nrow = 1 )
-  m <- rbind( m , matrix( sqrt( diag(vv) ), nrow = 1 ) )
-
-  dimnames(m) <- list( c( "coef", "SE" ), c( "total", "within", "between" ) )
-
-  printCoefmat(m, digits = 5)
-
-}
-
-
 # cvystat vcov method
 #' @export
 vcov.cvystat <- function (object, ...)
@@ -216,6 +201,39 @@ coef.cvystat <- function(object, ...) {
 	attr(object, "epsilon") <- NULL
     unclass(object)
 }
+
+
+
+
+# cvydstat print method
+print.cvydstat <- function(x, ...) {
+
+  vv <- attr(x, "var")
+
+  m <- matrix( x[[1]], nrow = 1 )
+  m <- rbind( m , matrix( sqrt( diag(vv) ), nrow = 1 ) )
+
+  dimnames(m) <- list( c( "coef", "SE" ), c( "total", "within", "between" ) )
+
+  printCoefmat(m, digits = 5)
+
+}
+
+# cvydstat vcov method
+#' @export
+vcov.cvydstat <- function (object, ...)
+{
+  as.matrix(attr(object, "var"))
+}
+
+# cvydstat coef method
+#' @export
+coef.cvydstat <- function(object, ...) {
+
+  object[[1]]
+
+}
+
 
 
 #' prepare svydesign and svyrep.design objects for the convey package
