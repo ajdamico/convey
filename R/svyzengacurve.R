@@ -252,7 +252,7 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
     rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
     rval <- list(quantiles = rval, CIs = cis)
     attr(rval, "SE") <- rep(NA, length(quantiles))
-    class(rval) <- "svyquantile"
+    class(rval) <- c( "cvyquantile" , "svyquantile" )
 
     return(rval)
   }
@@ -298,7 +298,7 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
   rval <- t( matrix( data = Z.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
-  class(rval) <- "svyquantile"
+  class(rval) <- c( "cvyquantile" , "svyquantile" )
 
   if ( plot ) {
 
@@ -462,7 +462,7 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
   rval <- t( matrix( data = Z.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
   attr(rval, "SE") <- se
-  class(rval) <- "svyquantile"
+  class(rval) <- c( "cvyquantile" , "svyquantile" )
 
 
   if ( plot ) {

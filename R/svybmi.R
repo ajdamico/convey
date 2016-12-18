@@ -311,7 +311,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
     rval <- as.numeric(NA)
     variance <- as.numeric(NA)
-    class(rval) <- c( "cvystat" , "svystat" )
+    class(rval) <- c( "cvystat" , "svrepstat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "bourguignon"
     attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
@@ -349,7 +349,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
   variance <- as.matrix( variance )
 
-  class(rval) <- c( "cvystat" , "svystat" )
+  class(rval) <- c( "cvystat" , "svrepstat" )
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "bourguignon"
   attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )

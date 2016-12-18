@@ -142,7 +142,7 @@ svyjdivdec.survey.design <-
       attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "j-divergence decomposition"
       attr(rval,"group")<- as.character( by )[[2]]
-      class(rval) <- c( "cvydstat" )
+      class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
       return(rval)
 
@@ -254,7 +254,7 @@ svyjdivdec.survey.design <-
     attr(rval, "var") <- variance[1:3,1:3]
     attr(rval, "statistic") <- "j-divergence decomposition"
     attr(rval,"group")<- as.character( by )[[2]]
-    class(rval) <- "cvydstat"
+    class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
     rval
 
@@ -303,7 +303,7 @@ svyjdivdec.svyrep.design <-
       attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "j-divergence decomposition"
       attr(rval,"group")<- as.character( by )[[2]]
-      class(rval) <- c( "cvydstat" )
+      class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
 
       return(rval)
 
@@ -372,7 +372,7 @@ svyjdivdec.svyrep.design <-
     attr(rval, "var") <- variance[1:3, 1:3]
     attr(rval, "statistic") <- "j-divergence decomposition"
     attr(rval,"group")<- as.character( by )[[2]]
-    class(rval) <- c( "cvydstat" )
+    class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
     rval
 
   }

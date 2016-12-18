@@ -156,7 +156,7 @@ svygeidec.survey.design <-
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
       attr(rval,"group")<- as.character( by )[[2]]
-      class(rval) <- c( "cvydstat" )
+      class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
       return(rval)
 
@@ -368,7 +368,7 @@ svygeidec.survey.design <-
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
     attr(rval,"group")<- as.character( by )[[2]]
-    class(rval) <- "cvydstat"
+    class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
     rval
 
@@ -405,7 +405,7 @@ svygeidec.svyrep.design <-
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
       attr(rval,"group")<- as.character( by )[[2]]
-      class(rval) <- "cvydstat"
+      class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
 
       return(rval)
 
@@ -466,7 +466,7 @@ svygeidec.svyrep.design <-
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
       attr(rval,"group")<- as.character( by )[[2]]
-      class(rval) <- c( "cvydstat" )
+      class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
 
       return(rval)
 
