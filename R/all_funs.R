@@ -156,6 +156,7 @@ T_fn <-
 
 
 # cvystat print method
+#' @method print cvystat
 #' @export
 print.cvystat <- function(x, ...) {
 
@@ -213,6 +214,7 @@ coef.cvystat <- function(object, ...) {
 
 
 # cvydstat print method
+#' @method print cvydstat
 #' @export
 print.cvydstat <- function(x, ...) {
 
@@ -228,6 +230,7 @@ print.cvydstat <- function(x, ...) {
 }
 
 # cvydstat vcov method
+#' @method vcov cvydstat
 #' @export
 vcov.cvydstat <- function (object, ...)
 {
@@ -235,6 +238,7 @@ vcov.cvydstat <- function (object, ...)
 }
 
 # cvydstat coef method
+#' @method coef cvydstat
 #' @export
 coef.cvydstat <- function(object, ...) {
 
