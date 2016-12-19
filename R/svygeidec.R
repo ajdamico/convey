@@ -477,7 +477,7 @@ svygeidec.svyrep.design <-
 
     rval <- list( estimate = matrix( c( ttl.gei, wtn.gei, btw.gei ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    attr(rval, "var") <- variance[1:3,1:3]
+    attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
     attr(rval,"group")<- as.character( by )[[2]]

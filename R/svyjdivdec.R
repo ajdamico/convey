@@ -369,10 +369,11 @@ svyjdivdec.svyrep.design <-
 
     rval <- list( estimate = matrix( c( ttl.jdiv, within.jdiv, between.jdiv ), dimnames = list( c( "total", "within", "between" ) ) )[,] )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    attr(rval, "var") <- variance[1:3, 1:3]
+    #attr(rval, "var") <- variance[1:3, 1:3]
+    attr(rval, "var") <- variance
     attr(rval, "statistic") <- "j-divergence decomposition"
     attr(rval,"group")<- as.character( by )[[2]]
-    class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
+    class(rval) <- c( "cvydstat" )
     rval
 
   }
