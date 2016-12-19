@@ -246,6 +246,15 @@ coef.cvydstat <- function(object, ...) {
 
 }
 
+# cvydstat SE method
+#' @method SE cvydstat
+#' @export
+SE.cvydstat <- function (object, ...) {
+    vv <- as.matrix(attr(object, "var"))
+    if (!is.null(dim(object)) && length(object) == length(vv)) 
+        sqrt(vv)
+    else sqrt(diag(vv))
+}
 
 
 #' prepare svydesign and svyrep.design objects for the convey package
