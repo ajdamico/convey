@@ -7,7 +7,7 @@
 #' @param order income quantile order, usually .5
 #' @param percent fraction of the quantile, usually .60
 #' @param na.rm Should cases with missing values be dropped?
-#' @param ... future expansion
+#' @param ... arguments passed on to `svyarpt`
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -136,7 +136,7 @@ svyarpr.survey.design <-
 		wf <- 1/full_design$prob
 		htot <- h_fun(incvec, wf)
 
-		ARPT <- svyarpt(formula = formula, design=full_design, order = order, percent = percent, na.rm = na.rm)
+		ARPT <- svyarpt(formula = formula, design=full_design, order = order, percent = percent, na.rm = na.rm,...)
 		arptv <- coef(ARPT)
 		arptlin <- attr(ARPT, "lin")
 

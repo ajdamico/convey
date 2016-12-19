@@ -11,7 +11,7 @@
 #' @param na.rm Should cases with missing values be dropped?
 #' @param med_old return the median income of people older than agelim
 #' @param med_young return the median income of people younger than agelim
-#' @param ... future expansion
+#' @param ... arguments passed on to `survey::svyquantile`
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -140,7 +140,7 @@ svyrmir.survey.design  <-
 	}
 
     h1<- h_fun(incvar*ind1, w*ind1)
-    q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm)
+    q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm,...)
     q_alpha1 <- as.vector(q_alpha1)
 
     Fprime1 <- densfun(formula = formula, design = dsub1, q_alpha1, h=h1, FUN = "F", na.rm=na.rm)
@@ -160,7 +160,7 @@ svyrmir.survey.design  <-
 
     h2<- h_fun(incvar*ind2, w*ind2)
 
-    q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm)
+    q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm,...)
     q_alpha2 <- as.vector(q_alpha2)
 
     Fprime2 <- densfun(formula = formula, design = dsub2, q_alpha2, h=h2, FUN = "F", na.rm=na.rm)

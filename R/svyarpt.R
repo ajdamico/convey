@@ -7,7 +7,7 @@
 #' @param order income quantile order, usually .50 (median)
 #' @param percent fraction of the quantile, usually .60
 #' @param na.rm Should cases with missing values be dropped?
-#' @param ... future expansion
+#' @param ... arguments passed on to `survey::svyquantile`
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -132,7 +132,7 @@ svyarpt.survey.design <-
 		wf <- 1/full_design$prob
 		htot <- h_fun(incvec, wf)
 		q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = order,
-		method = "constant", na.rm = na.rm)
+		method = "constant", na.rm = na.rm,...)
 		q_alpha <- as.vector(q_alpha)
 		rval <- percent * q_alpha
 		Fprime <- densfun(formula = formula, design = design, q_alpha, h=htot, FUN = "F", na.rm=na.rm)
