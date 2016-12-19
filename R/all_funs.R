@@ -247,7 +247,7 @@ coef.cvydstat <- function(object, ...) {
 }
 
 # cvydstat SE method
-#' @method SE cvydstat
+#' @importFrom survey SE
 #' @export
 SE.cvydstat <- function (object, ...) {
     vv <- as.matrix(attr(object, "var"))
