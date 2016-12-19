@@ -4,7 +4,7 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
-#' @param order income quantile order, usually .50 (median)
+#' @param quantiles income quantile quantiles, usually .50 (median)
 #' @param percent fraction of the quantile, usually .60
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... arguments passed on to `survey::svyquantile`
@@ -95,7 +95,7 @@ svyarpt <-
 #' @rdname svyarpt
 #' @export
 svyarpt.survey.design <-
-	function(formula, design, order = 0.5, percent = 0.6,  na.rm = FALSE,...) {
+	function(formula, design, quantiles = 0.5, percent = 0.6,  na.rm = FALSE,...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -131,7 +131,7 @@ svyarpt.survey.design <-
 		
 		wf <- 1/full_design$prob
 		htot <- h_fun(incvec, wf)
-		q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = order,
+		q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = quantiles,
 		method = "constant", na.rm = na.rm,...)
 		q_alpha <- as.vector(q_alpha)
 		rval <- percent * q_alpha
@@ -139,7 +139,7 @@ svyarpt.survey.design <-
 		N <- sum(w)
 		if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else
 		  ID <- 1 * ( ncom %in% ind )
-		linquant<- -(1/(N * Fprime)) * ID*((incvec <= q_alpha) - order)
+		linquant<- -(1/(N * Fprime)) * ID*((incvec <= q_alpha) - quantiles)
 		lin <- percent * linquant
 
 		variance <- survey::svyrecvar(lin/full_design$prob, full_design$cluster,
@@ -156,7 +156,7 @@ svyarpt.survey.design <-
 #' @rdname svyarpt
 #' @export
 svyarpt.svyrep.design <-
-	function(formula, design, order = 0.5, percent = 0.6, na.rm = FALSE, ...) {
+	function(formula, design, quantiles = 0.5, percent = 0.6, na.rm = FALSE, ...) {
 
 		if (is.null(attr(design, "full_design")))
 		stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
@@ -177,11 +177,11 @@ svyarpt.svyrep.design <-
 		}
 
 		w <- weights(design, "sampling")
-		quant_val <- computeQuantiles(incvar, w, p = order)
+		quant_val <- computeQuantiles(incvar, w, p = quantiles)
 		quant_val <- as.vector(quant_val)
 		rval <- percent * quant_val
 		ww <- weights(design, "analysis")
-		qq <- apply(ww, 2, function(wi) 0.6 * computeQuantiles(incvar, wi, p = order))
+		qq <- apply(ww, 2, function(wi) 0.6 * computeQuantiles(incvar, wi, p = quantiles))
 		if(anyNA(qq))variance <- NA
 		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 

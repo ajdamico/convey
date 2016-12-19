@@ -17,11 +17,11 @@ des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 a1 <- svyarpt(~eqincome, design = des_eusilc, 0.5, 0.6)
-a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyarpt, order = 0.5, percent = 0.6,deff = FALSE)
+a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyarpt, quantiles = 0.5, percent = 0.6,deff = FALSE)
 
 b1 <- svyarpt(~eqincome, design = des_eusilc_rep, 0.5, 0.6)
 
-b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyarpt, order = 0.5, percent = 0.6,deff = FALSE)
+b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyarpt, quantiles = 0.5, percent = 0.6,deff = FALSE)
 
 cv_dif1 <- abs(cv(a1)-cv(b1))
 cv_diff2 <- max(abs(cv(a2)-cv(b2)))
@@ -70,7 +70,7 @@ test_that("output svyarpt",{
 
 
 	c1 <- svyarpt( ~ eqincome , design = dbd_eusilc )
-	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyarpt, order = 0.5, percent = 0.6,deff = FALSE)
+	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyarpt, quantiles = 0.5, percent = 0.6,deff = FALSE)
 
 	dbRemoveTable( conn , 'eusilc' )
 

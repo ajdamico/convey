@@ -9,11 +9,11 @@
 \usage{
 svyarpr(formula, design, ...)
 
-\method{svyarpr}{survey.design}(formula, design, order = 0.5, percent = 0.6,
-  na.rm = FALSE, ...)
+\method{svyarpr}{survey.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, ...)
 
-\method{svyarpr}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
-  na.rm = FALSE, ...)
+\method{svyarpr}{svyrep.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, ...)
 
 \method{svyarpr}{DBIsvydesign}(formula, design, ...)
 }
@@ -24,7 +24,7 @@ svyarpr(formula, design, ...)
 
 \item{...}{arguments passed on to `svyarpt`}
 
-\item{order}{income quantile order, usually .5}
+\item{quantiles}{income quantile, usually .50 (median)}
 
 \item{percent}{fraction of the quantile, usually .60}
 

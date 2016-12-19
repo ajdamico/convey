@@ -7,7 +7,7 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param age formula defining the variable age
 #' @param agelim the age cutpoint, the default is 65
-#' @param order income quantile order, usually .5
+#' @param quantiles income quantile, usually .5 (median)
 #' @param na.rm Should cases with missing values be dropped?
 #' @param med_old return the median income of people older than agelim
 #' @param med_young return the median income of people younger than agelim
@@ -103,7 +103,7 @@ svyrmir <-
 #' @rdname svyrmir
 #' @export
 svyrmir.survey.design  <-
-  function(formula, design, age, agelim = 65, order=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
+  function(formula, design, age, agelim = 65, quantiles=0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...){
 
     if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -140,12 +140,12 @@ svyrmir.survey.design  <-
 	}
 
     h1<- h_fun(incvar*ind1, w*ind1)
-    q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = order,method = "constant", na.rm = na.rm,...)
+    q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = quantiles,method = "constant", na.rm = na.rm,...)
     q_alpha1 <- as.vector(q_alpha1)
 
     Fprime1 <- densfun(formula = formula, design = dsub1, q_alpha1, h=h1, FUN = "F", na.rm=na.rm)
     N1 <- sum(w*ind1)
-    linquant1 <- -( 1 / ( N1 * Fprime1 ) ) *ind1* ( ( incvar <= q_alpha1 ) - order )
+    linquant1 <- -( 1 / ( N1 * Fprime1 ) ) *ind1* ( ( incvar <= q_alpha1 ) - quantiles )
 
 
     dsub2 <- eval( substitute( within_function_subset( design , subset = age >= agelim ) , list( age = age.name, agelim = agelim ) ) )
@@ -160,13 +160,13 @@ svyrmir.survey.design  <-
 
     h2<- h_fun(incvar*ind2, w*ind2)
 
-    q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = order, method = "constant", na.rm = na.rm,...)
+    q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = quantiles, method = "constant", na.rm = na.rm,...)
     q_alpha2 <- as.vector(q_alpha2)
 
     Fprime2 <- densfun(formula = formula, design = dsub2, q_alpha2, h=h2, FUN = "F", na.rm=na.rm)
     N2 <- sum(w*ind2)
 
-    linquant2 <- -( 1 / ( N2 * Fprime2 ) ) *ind2* ( ( incvar <= q_alpha2 ) - order )
+    linquant2 <- -( 1 / ( N2 * Fprime2 ) ) *ind2* ( ( incvar <= q_alpha2 ) - quantiles )
     # linearize ratio of medians
 
     MED1 <- list(value = q_alpha1 , lin = linquant1 )
@@ -194,7 +194,7 @@ svyrmir.survey.design  <-
 #' @rdname svyrmir
 #' @export
 svyrmir.svyrep.design <-
-	function(formula, design, age, agelim = 65, order = 0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...) {
+	function(formula, design, age, agelim = 65, quantiles = 0.5, na.rm=FALSE, med_old = FALSE, med_young = FALSE,...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
@@ -212,22 +212,22 @@ svyrmir.svyrep.design <-
 		}
 
 		ComputeRmir <-
-			function(x, w, order, age, agelim) {
+			function(x, w, quantiles, age, agelim) {
 				indb <- age < agelim
-				quant_below <- computeQuantiles(x[indb], w[indb], p = order)
+				quant_below <- computeQuantiles(x[indb], w[indb], p = quantiles)
 				inda <-  age >= agelim
-				quant_above <- computeQuantiles(x[inda], w[inda], p = order)
+				quant_above <- computeQuantiles(x[inda], w[inda], p = quantiles)
 				c(quant_above, quant_below, quant_above/quant_below)
 			}
 
 		ws <- weights(design, "sampling")
 
-		Rmir_val <- ComputeRmir(x = incvar, w = ws, order = order, age= agevar, agelim = agelim)
+		Rmir_val <- ComputeRmir(x = incvar, w = ws, quantiles = quantiles, age= agevar, agelim = agelim)
 
 		rval <- Rmir_val[3]
 
 		ww <- weights(design, "analysis")
-		qq <- apply(ww, 2, function(wi) ComputeRmir(incvar, wi, order = order, age= agevar, agelim = agelim)[3])
+		qq <- apply(ww, 2, function(wi) ComputeRmir(incvar, wi, quantiles = quantiles, age= agevar, agelim = agelim)[3])
 		if(anyNA(qq))variance <- NA
 		else 	variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 

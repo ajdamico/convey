@@ -10,10 +10,12 @@
 svyrmir(formula, design, ...)
 
 \method{svyrmir}{survey.design}(formula, design, age, agelim = 65,
-  order = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
+  quantiles = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE,
+  ...)
 
 \method{svyrmir}{svyrep.design}(formula, design, age, agelim = 65,
-  order = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE, ...)
+  quantiles = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE,
+  ...)
 
 \method{svyrmir}{DBIsvydesign}(formula, design, age, ...)
 }
@@ -28,7 +30,7 @@ svyrmir(formula, design, ...)
 
 \item{agelim}{the age cutpoint, the default is 65}
 
-\item{order}{income quantile order, usually .5}
+\item{quantiles}{income quantile, usually .5 (median)}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 

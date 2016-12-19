@@ -10,11 +10,11 @@
 svyfgt(formula, design, ...)
 
 \method{svyfgt}{survey.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, order = 0.5, na.rm = FALSE,
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
   thresh = FALSE, ...)
 
 \method{svyfgt}{svyrep.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, order = 0.5, na.rm = FALSE,
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
   thresh = FALSE, ...)
 
 \method{svyfgt}{DBIsvydesign}(formula, design, ...)
@@ -29,13 +29,13 @@ svyfgt(formula, design, ...)
 \item{g}{If g=0 estimates the headcount ratio. Measures with g=1 or g=2 also have a natural interpretation}
 
 \item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
-of abs_thresh; if "relq" it is given by percent times the order quantile; if "relm" it is percent times the mean.}
+of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.}
 
 \item{abs_thresh}{poverty threshold value if type_thresh is "abs"}
 
 \item{percent}{the multiple of the the quantile or mean used in the poverty threshold definition}
 
-\item{order}{the quantile order used used in the poverty threshold definition}
+\item{quantiles}{the quantile used used in the poverty threshold definition}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 

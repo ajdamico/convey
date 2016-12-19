@@ -9,11 +9,13 @@
 \usage{
 svyrmpg(formula, design, ...)
 
-\method{svyrmpg}{survey.design}(formula, design, order = 0.5, percent = 0.6,
-  na.rm = FALSE, thresh = FALSE, poor_median = FALSE, ...)
+\method{svyrmpg}{survey.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, thresh = FALSE, poor_median = FALSE,
+  ...)
 
-\method{svyrmpg}{svyrep.design}(formula, design, order = 0.5, percent = 0.6,
-  na.rm = FALSE, thresh = FALSE, poor_median = FALSE, ...)
+\method{svyrmpg}{svyrep.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, thresh = FALSE, poor_median = FALSE,
+  ...)
 
 \method{svyrmpg}{DBIsvydesign}(formula, design, ...)
 }
@@ -24,7 +26,7 @@ svyrmpg(formula, design, ...)
 
 \item{...}{future expansion}
 
-\item{order}{income quantile order, usually .5}
+\item{quantiles}{income quantile, usually .5 (median)}
 
 \item{percent}{fraction of the quantile, usually .60}
 

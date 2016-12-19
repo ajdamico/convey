@@ -5,7 +5,7 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
-#' @param order income quantile order, usually .5
+#' @param quantiles income quantile, usually .5 (median)
 #' @param percent fraction of the quantile, usually .60
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... arguments passed on to `survey::svyquantile`
@@ -96,7 +96,7 @@ svypoormed <-
 #' @rdname svypoormed
 #' @export
 svypoormed.survey.design <-
-	function(formula, design, order = 0.5, percent = 0.6, na.rm=FALSE, ...) {
+	function(formula, design, quantiles = 0.5, percent = 0.6, na.rm=FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -132,7 +132,7 @@ svypoormed.survey.design <-
 
 		htot <- h_fun(incvec, wf)
 
-		ARPT <- svyarpt(formula = formula, full_design, order = order, percent = percent, na.rm = na.rm)
+		ARPT <- svyarpt(formula = formula, full_design, quantiles = quantiles, percent = percent, na.rm = na.rm)
 		arpt <- coef(ARPT)
 
 		if(is.na(arpt)){
@@ -157,7 +157,7 @@ svypoormed.survey.design <-
 
 			medp <- as.vector(medp)
 
-			ARPR <- svyarpr(formula=formula, design= design, order, percent, na.rm = na.rm)
+			ARPR <- svyarpr(formula=formula, design= design, quantiles, percent, na.rm = na.rm)
 
 			Fprimemedp <- densfun(formula = formula, design = design, medp, h = htot, FUN = "F", na.rm = na.rm)
 
@@ -191,7 +191,7 @@ svypoormed.survey.design <-
 #' @rdname svypoormed
 #' @export
 svypoormed.svyrep.design <-
-	function(formula, design, order = 0.5, percent = 0.6,na.rm=FALSE, ...) {
+	function(formula, design, quantiles = 0.5, percent = 0.6,na.rm=FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
@@ -227,8 +227,8 @@ svypoormed.svyrep.design <-
 		ind <- row.names(df)
 
 		ComputePoormed <-
-			function( xf , wf , ind , order , percent ){
-				tresh <- percent * computeQuantiles(xf, wf, p = order)
+			function( xf , wf , ind , quantiles , percent ){
+				tresh <- percent * computeQuantiles(xf, wf, p = quantiles)
 				x<-xf[ind]
 				w<- wf[ind]
 				indpoor <- (x <= tresh)
@@ -237,7 +237,7 @@ svypoormed.svyrep.design <-
 			}
 
 		ws <- weights(design, "sampling")
-		rval <- ComputePoormed(xf = incvec, wf=wsf, ind= ind, order = order, percent = percent)
+		rval <- ComputePoormed(xf = incvec, wf=wsf, ind= ind, quantiles = quantiles, percent = percent)
 
 		wwf <- weights(full_design, "analysis")
 		qq <-
@@ -246,7 +246,7 @@ svypoormed.svyrep.design <-
 				2,
 				function(wi){
 					names(wi)<- row.names(df_full)
-					ComputePoormed(incvec, wi, ind=ind, order = order,percent = percent)
+					ComputePoormed(incvec, wi, ind=ind, quantiles = quantiles,percent = percent)
 				}
 			)
 

@@ -34,7 +34,7 @@ vardestd<-unlist(vardpoor_arptd$value$threshold)
 varsed<-sapply(data.frame(vardpoor_arptd$lin)[,2:10],function(t) SE_lin2(t,des_eusilc))
 attributes (varsed) <- NULL
 # library convey
-fun_arptd <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyarpt, order = 0.5,percent = 0.6,deff = FALSE)
+fun_arptd <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyarpt, quantiles = 0.5,percent = 0.6,deff = FALSE)
 convestd<- coef(fun_arptd)
 attributes(convestd) <- NULL
 convsed<- SE(fun_arptd)

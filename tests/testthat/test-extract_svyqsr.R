@@ -73,7 +73,7 @@ test_that("output svyqsr",{
 
 
 	c1 <- svyqsr( ~ eqincome , design = dbd_eusilc )
-	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyqsr, order = 0.5, percent = 0.6,deff = FALSE)
+	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyqsr, quantiles = 0.5, percent = 0.6,deff = FALSE)
 
 	dbRemoveTable( conn , 'eusilc' )
 
