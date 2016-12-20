@@ -45,6 +45,5 @@ test_that("compare results convey vs vardpoor",{
   expect_equal(varse, convse)
   expect_equal(vardestd, convestd)
   
-  # currently fails
-  # expect_equal(varsed, convsed )
+  expect_equal(varsed, convsed )
 })
