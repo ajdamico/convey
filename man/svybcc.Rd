@@ -61,22 +61,22 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 cos <- list( 10000, 5000 )
 
 # variables without missing values
-svybcc( ~ eqincome + hy050n , design = des_eusilc , theta = .5 , alpha = 1, cutoffs = cos )
-svybcc( ~ eqincome + hy050n , design = des_eusilc_rep , theta = .5 , alpha = 1, cutoffs = cos )
+svybcc( ~ eqincome + hy050n , design = des_eusilc , cutoffs = cos )
+svybcc( ~ eqincome + hy050n , design = des_eusilc_rep , cutoffs = cos )
 
 # subsetting:
 sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
 
-svybcc( ~ eqincome + hy050n , design = sub_des_eusilc , theta = .5 , alpha = 1, cutoffs = cos )
-svybcc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , theta = .5 , alpha = 1, cutoffs = cos )
+svybcc( ~ eqincome + hy050n , design = sub_des_eusilc , cutoffs = cos )
+svybcc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , cutoffs = cos )
 
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
-svybcc(~eqincome+hy050n+pb220a, des_eusilc, theta = .5 , alpha = 1, cutoffs = cos, na.rm = FALSE )
-svybcc(~eqincome+hy050n+pb220a, des_eusilc, theta = .5 , alpha = 1, cutoffs = cos, na.rm = TRUE )
-svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, theta = .5 , alpha = 1, cutoffs = cos, na.rm = FALSE )
-svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, theta = .5 , alpha = 1, cutoffs = cos, na.rm = TRUE )
+svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = FALSE )
+svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = TRUE )
+svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = FALSE )
+svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = TRUE )
 
 \dontrun{
 
@@ -104,18 +104,18 @@ dbd_eusilc <- update( dbd_eusilc, pb220a = ordered( pb220a ) )
 cos <- list( 10000 , 5000 )
 
 # variables without missing values
-svybcc(~eqincome+hy050n, design = dbd_eusilc, theta = .5 , alpha = 1, cutoffs = cos )
+svybcc(~eqincome+hy050n, design = dbd_eusilc, cutoffs = cos )
 
 # subsetting:
 sub_dbd_eusilc <- subset( dbd_eusilc, db040 == "Styria")
-svybcc(~eqincome+hy050n, design = sub_dbd_eusilc, theta = .5 , alpha = 1, cutoffs = cos )
+svybcc(~eqincome+hy050n, design = sub_dbd_eusilc, cutoffs = cos )
 
 # cutoffs
 cos <- list( 10000, 5000, "EU" )
 
 # including factor variable with missings
-svybcc(~eqincome+hy050n+pb220a, dbd_eusilc, theta = .5 , alpha = 1, cutoffs = cos, na.rm = FALSE )
-svybcc(~eqincome+hy050n+pb220a, dbd_eusilc, theta = .5 , alpha = 1, cutoffs = cos, na.rm = TRUE )
+svybcc(~eqincome+hy050n+pb220a, dbd_eusilc, cutoffs = cos, na.rm = FALSE )
+svybcc(~eqincome+hy050n+pb220a, dbd_eusilc, cutoffs = cos, na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )
 
@@ -128,7 +128,7 @@ dbDisconnect( conn , shutdown = TRUE )
 Guilherme Jacob, Djalma Pessoa and Anthony Damico
 }
 \references{
-François Bourguignon and Satya R. Chakravarty (2003). The measurement of multidimensional poverty.
+Francois Bourguignon and Satya R. Chakravarty (2003). The measurement of multidimensional poverty.
 Journal of Economic Inequality, v. 1, n. 1, April 2003, pp. 1-25.
 URL \url{http://dx.doi.org/10.1023/A:1023913831342}.
 
@@ -136,7 +136,7 @@ Maria Casilda Lasso de la Vega, Ana Urrutia and Henar Diez (2009). The Bourguign
 Working Papers 109, ECINEQ, Society for the Study of Economic Inequality.
 }
 \seealso{
-\code{\link{svyfgt}}
+\code{\link{svyafc}}
 }
 \keyword{survey}
 
