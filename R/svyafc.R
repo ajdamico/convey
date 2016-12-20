@@ -156,17 +156,23 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 
   if ( any( is.na(ach.matrix) ) ) {
 
+    if ( is.null(dimw) ) {
+      dimw = rep( 1 / ncol(var.class), length(var.class) )
+    }
+
     rval <- as.numeric(NA)
     variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "alkire-foster"
-    attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
+    dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
+    dimtable[,2] <- as.numeric( dimtable[,2] )
+    attr(rval, "dimensions") <- dimtable
     attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
+
     return(rval)
 
   }
-
 
   # Deprivation Matrix
   dep.matrix <- ach.matrix
@@ -217,18 +223,25 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
   cen.depr.sums <- rowSums( cen.dep.matrix * dimw )
   rm( cen.dep.matrix, ach.matrix ) ; gc()
 
-  if ( any( is.na(cen.depr.sums) ) ) {
+  if ( any( is.na(ach.matrix) ) ) {
+
+    if ( is.null(dimw) ) {
+      dimw = rep( 1 / ncol(var.class), length(var.class) )
+    }
+
     rval <- as.numeric(NA)
     variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "alkire-foster"
-    attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
+    dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
+    dimtable[,2] <- as.numeric( dimtable[,2] )
+    attr(rval, "dimensions") <- dimtable
     attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
+
     return(rval)
 
   }
-
 
   w <- 1/design$prob
   w[ w > 0 ] <- cen.depr.sums
@@ -315,7 +328,9 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "alkire-foster"
-    attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
+    dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
+    dimtable[,2] <- as.numeric( dimtable[,2] )
+    attr(rval, "dimensions") <- dimtable
     attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
     return(rval)
 
@@ -412,7 +427,9 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   class(rval) <- c( "cvystat" , "svrepstat" )
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "alkire-foster"
-  attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
+  dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
+  dimtable[,2] <- as.numeric( dimtable[,2] )
+  attr(rval, "dimensions") <- dimtable
   attr(rval, "parameters") <- matrix( c( g, k ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "g=", "k=" ) ) )
   if ( g == 0 ) {
     attr(rval, "extra") <- matrix( c( h_est[1], a_est[[1]], attr( h_est, "var" )[1]^.5, a_est[[2]]^.5 ), nrow = 2, ncol = 2, dimnames = list( c("H", "A"), c( "coef", "SE" ) ) )
