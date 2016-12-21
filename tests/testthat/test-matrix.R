@@ -106,10 +106,10 @@ for( j in seq( length( afc_lin ) - 1 ) ){
 	this_df <-
 		data.frame(
 			function_name = paste( "svyafcdec" , colnames( afc_lin[[j+1]] )[ 1 ] ) ,
-			coef_lin = afc_rep[[j+1]][1,1] ,
-			se_lin = afc_rep[[j+1]][1,2] ,
-			coef_rep = afc_lin[[j+1]][1,1] ,
-			se_rep = afc_lin[[j+1]][1,2] ,
+			coef_lin = afc_lin[[j+1]][[1]] ,
+			se_lin = afc_lin[[j+1]][[2]] ,
+			coef_rep = afc_rep[[j+1]][[1]] ,
+			se_rep = afc_rep[[j+1]][[2]] ,
 			measure_of_uncertainty = "standard error"
 		)
 
