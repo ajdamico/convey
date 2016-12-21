@@ -244,13 +244,14 @@ svyafcdec.survey.design <- function( formula, by, design, g , cutoffs , k , dimw
 
   # overall alkire-foster index:
   overall <- survey::svymean( cen.depr.sums, design, na.rm = T )
+  attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
   if ( !is.null( levels( grpvar ) ) ) {
     grp.pctg.estm <- NULL
     grp.pctg.estm_var <- NULL
     grp.pctg.cont <- NULL
-    grp.pctg.cont_var <- NULL
+    grp.pctg.cont_lin <- matrix( data = rep( w, length( levels( grpvar ) ) ), nrow = length( w ) )
     for (i in seq_along( levels( grpvar ) ) ) {
 
       w_i <- w * ( grpvar == levels( grpvar )[ i ] )
@@ -267,15 +268,34 @@ svyafcdec.survey.design <- function( formula, by, design, g , cutoffs , k , dimw
       estimate <- contrastinf( quote( ( U_0_i /U_0 ) * ( U_1_i / U_0_i ) / ( U_1 / U_0 ) ), list_all )
       grp.pctg.cont[ i ] <- estimate$value
       estimate$lin[ is.na( estimate$lin ) ] <- 0
-      grp.pctg.cont_var[ i ] <- survey::svyrecvar( estimate$lin*w, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+      grp.pctg.cont_lin[ , i ] <- estimate$lin
 
     }
+
+    grp.pctg.cont_var <- survey::svyrecvar( grp.pctg.cont_lin*w, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
+
+    grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
+    attr( grp.contr.estimate, "names" ) <- levels( grpvar )
+    attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
+    attr( grp.contr.estimate, "statistic") <- "alkire-foster"
+    class( grp.contr.estimate ) <- c( "svystat" )
+
+    grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
+    attr( grp.contr.pct, "names" ) <- levels( grpvar )
+    attr( grp.contr.pct, "var") <- grp.pctg.cont_var
+    attr( grp.contr.pct, "statistic") <- "grp. % contribution"
+    class( grp.contr.pct ) <- c( "svystat" )
+
+    rm( grp.pctg.estm, grp.pctg.estm_var, grp.pctg.cont, grp.pctg.cont_lin, grp.pctg.cont_var )
+    gc()
+
   }
 
   # dimensional decomposition:
   dim.contr <- NULL
-  dim.contr_var <- NULL
+  dim.contr_lin <- matrix( data = rep( w, ncol(cen.dep.matrix) ), nrow = length( w ) )
   for ( i in 1:ncol(cen.dep.matrix) ) {
+
     wj <- list( value = dimw[i], lin = rep( 0, length( cen.depr.sums ) ) )
 
     H_0 <- list( value = sum( cen.dep.matrix[ w > 0 , i ] * w[ w > 0 ] ), lin = cen.dep.matrix[ , i ] * ( w > 0 ) )
@@ -284,33 +304,32 @@ svyafcdec.survey.design <- function( formula, by, design, g , cutoffs , k , dimw
 
     dim.contr[ i ] <- estimate$value
     estimate$lin[ is.na( estimate$lin ) ] <- 0
-    dim.contr_var[ i ] <- survey::svyrecvar( estimate$lin*w, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
+    dim.contr_lin[ , i ] <- estimate$lin
 
   }
 
-  # build result matrices:
+  dim.contr_var <- survey::svyrecvar( dim.contr_lin*w, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
 
-  # overall result:
-  overall.result <- matrix( c( overall[1], sqrt( attr(overall, "var") ) ), nrow = 1, ncol = 2, dimnames = list( "overall", c( "alkire-foster", "SE")) )
+  dim.result <- dim.contr
+  attr( dim.result, "names" ) <- colnames( ach.matrix )
+  attr( dim.result, "var") <- dim.contr_var
+  attr( dim.result, "statistic") <- "dim. % contribution"
+  class( dim.result ) <- c( "svystat" )
 
-  # group breakdown:
-  if ( !is.null( levels( grpvar ) ) ) {
-
-    grp.estim <- matrix( c( grp.pctg.estm, sqrt( grp.pctg.estm_var ) ), nrow = length( levels( grpvar ) ), ncol = 2, dimnames = list( levels( grpvar ), c( "alkire-foster", "SE" ) ) )
-    grp.contr <- matrix( c( grp.pctg.cont, sqrt( grp.pctg.cont_var ) ), nrow = length( levels( grpvar ) ), ncol = 2, dimnames = list( levels( grpvar ), c( "contribution", "SE" ) ) )
-
-  }
-
-  # dimensional breakdown:
-  dim.raw.hc <- matrix( c( as.numeric(raw.hc.ratio), sqrt( diag( attr(raw.hc.ratio, "var") ) ) ), nrow = ncol( cen.dep.matrix ), ncol = 2, dimnames = list( colnames( cen.dep.matrix ), c( "raw headcount", "SE" ) ) )
-  dim.cen.hc <- matrix( c( as.numeric(cen.hc.ratio), sqrt( diag( attr( cen.hc.ratio, "var") ) ) ), nrow = ncol( cen.dep.matrix ), ncol = 2, dimnames = list( colnames( cen.dep.matrix ), c( "cens. headcount", "SE" ) ) )
-  dim.contri <- matrix( c( dim.contr, sqrt( dim.contr_var ) ), nrow = ncol( cen.dep.matrix ), ncol = 2, dimnames = list( colnames( cen.dep.matrix ), c( "contribution", "SE" ) ) )
+  rm( dim.contr, dim.contr_lin, dim.contr_var )
+  gc()
 
   # set up result object:
   if ( is.null( levels( grpvar ) ) ) {
-    rval <- list( overall.result, dim.raw.hc, dim.cen.hc, dim.contri )
+
+    rval <- list( overall, raw.hc.ratio, cen.hc.ratio, dim.result )
+    names( rval ) <- list( "overall", "raw headcount ratio", "censored headcount ratio", "percentual contribution per dimension" )
+
   } else {
-    rval <- list( overall.result, dim.raw.hc, dim.cen.hc, dim.contri, grp.estim, grp.contr )
+
+    rval <- list( overall, raw.hc.ratio, cen.hc.ratio, dim.result, grp.contr.estimate, grp.contr.pct )
+    names( rval ) <- list( "overall", "raw headcount ratio", "censored headcount ratio", "percentual contribution per dimension", "subgroup alkire-foster estimates", "percentual contribution per subgroup" )
+
   }
 
   return( rval )
@@ -435,23 +454,25 @@ svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw
 
   # overall alkire-foster index:
   overall <- survey::svymean( cen.depr.sums, design, na.rm = T )
+  attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
   if ( !is.null( levels( grpvar ) ) ) {
     grp.pctg.estm <- NULL
     grp.pctg.estm_var <- NULL
+    qq.estm <- matrix( NA, ncol = length(levels( grpvar ) ), nrow = ncol( ww ) )
     grp.pctg.cont <- NULL
     grp.pctg.cont_var <- NULL
+    qq.pctg <- matrix( NA, ncol = length(levels( grpvar ) ), nrow = ncol( ww ) )
 
     for ( i in seq_along( levels( grpvar ) ) ) {
 
       grp.pctg.estm[ i ] <- sum( ws * ( grpvar == levels( grpvar )[ i ] ) * cen.depr.sums ) / sum( ws * ( grpvar == levels( grpvar )[ i ] ) )
 
-      qq <- apply( ww, 2, function(wi) {
+      qq.estm[ , i ] <- apply( ww, 2, function(wi) {
         sum( wi * ( grpvar == levels( grpvar )[ i ] ) * cen.depr.sums ) / sum( wi * ( grpvar == levels( grpvar )[ i ] ) )
       } )
 
-      grp.pctg.estm_var[ i ] <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.estm[ i ] )
 
       grp.pctg.cont[ i ] <- ( sum( ws * ( grpvar == levels( grpvar )[ i ] ) ) / sum( ws ) ) *
         ( ( sum( ws * ( grpvar == levels( grpvar )[ i ] ) * cen.depr.sums ) /
@@ -459,7 +480,7 @@ svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw
             ( sum( ws * cen.depr.sums ) /
                 sum( ws ) ) )
 
-      qq <- apply( ww, 2, function(wi) {
+      qq.pctg[ , i ] <- apply( ww, 2, function(wi) {
         ( sum( wi * ( grpvar == levels( grpvar )[ i ] ) ) / sum( wi ) ) *
           ( ( sum( wi * ( grpvar == levels( grpvar )[ i ] ) * cen.depr.sums ) /
                 sum( wi * ( grpvar == levels( grpvar )[ i ] ) ) ) /
@@ -467,51 +488,59 @@ svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw
                   sum( wi ) ) )
       } )
 
-      grp.pctg.cont_var[ i ] <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.cont[ i ] )
-
-
     }
+
+    grp.pctg.estm_var <- survey::svrVar( qq.estm, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.estm )
+    grp.pctg.cont_var <- survey::svrVar( qq.pctg, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.cont )
 
   }
 
+  grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
+  attr( grp.contr.estimate, "names" ) <- levels( grpvar )
+  attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
+  attr( grp.contr.estimate, "statistic") <- "alkire-foster"
+  class( grp.contr.estimate ) <- c( "svrepstat" )
+
+  grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
+  attr( grp.contr.pct, "names" ) <- levels( grpvar )
+  attr( grp.contr.pct, "var") <- grp.pctg.cont_var
+  attr( grp.contr.pct, "statistic") <- "grp. % contribution"
+  class( grp.contr.pct ) <- c( "svrepstat" )
+
   # dimensional decomposition:
   dim.contr <- NULL
+  qq.dim.contr <- matrix( NA, ncol = ncol(cen.dep.matrix), nrow = ncol( ww ) )
   dim.contr_var <- NULL
   for ( i in 1:ncol(cen.dep.matrix) ) {
 
     dim.contr[ i ] <- dimw[i] * ( sum( ws * dep.matrix[,i] ) / sum( ws ) ) / ( sum( ws * cen.depr.sums ) / sum( ws ) )
 
-    qq <- apply( ww, 2, function(wi) {
+    qq.dim.contr[ , i ] <- apply( ww, 2, function(wi) {
       dimw[i] * ( sum( wi * dep.matrix[,i] ) / sum( wi ) ) / ( sum( wi * cen.depr.sums ) / sum( wi ) )
     } )
 
-    dim.contr_var[ i ] <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = dim.contr[ i ] )
-
   }
+  dim.contr_var <- survey::svrVar( qq.dim.contr, design$scale, design$rscales, mse = design$mse, coef = dim.contr )
+
+  dim.result <- dim.contr
+  attr( dim.result, "names" ) <- colnames( ach.matrix )
+  attr( dim.result, "var") <- dim.contr_var
+  attr( dim.result, "statistic") <- "dim. % contribution"
+  class( dim.result ) <- c( "svrepstat" )
 
   # build result matrices:
 
-  # overall result:
-  overall.result <- matrix( c( overall[1], sqrt( attr(overall, "var") ) ), nrow = 1, ncol = 2, dimnames = list( "overall", c( "alkire-foster", "SE")) )
-
-  # group breakdown:
-  if ( !is.null( levels( grpvar ) ) ) {
-
-    grp.estim <- matrix( c( grp.pctg.estm, sqrt( grp.pctg.estm_var ) ), nrow = length( levels( grpvar ) ), ncol = 2, dimnames = list( levels( grpvar ), c( "alkire-foster", "SE" ) ) )
-    grp.contr <- matrix( c( grp.pctg.cont, sqrt( grp.pctg.cont_var ) ), nrow = length( levels( grpvar ) ), ncol = 2, dimnames = list( levels( grpvar ), c( "contribution", "SE" ) ) )
-
-  }
-
-  # dimensional breakdown:
-  dim.raw.hc <- matrix( c( as.numeric(raw.hc.ratio), sqrt( diag( attr(raw.hc.ratio, "var") ) ) ), nrow = ncol( cen.dep.matrix ), ncol = 2, dimnames = list( colnames( cen.dep.matrix ), c( "raw headcount", "SE" ) ) )
-  dim.cen.hc <- matrix( c( as.numeric(cen.hc.ratio), sqrt( diag( attr( cen.hc.ratio, "var") ) ) ), nrow = ncol( cen.dep.matrix ), ncol = 2, dimnames = list( colnames( cen.dep.matrix ), c( "cens. headcount", "SE" ) ) )
-  dim.contri <- matrix( c( dim.contr, sqrt( dim.contr_var ) ), nrow = ncol( cen.dep.matrix ), ncol = 2, dimnames = list( colnames( cen.dep.matrix ), c( "contribution", "SE" ) ) )
-
   # set up result object:
   if ( is.null( levels( grpvar ) ) ) {
-    rval <- list( overall.result, dim.raw.hc, dim.cen.hc, dim.contri )
+
+    rval <- list( overall, raw.hc.ratio, cen.hc.ratio, dim.result )
+    names( rval ) <- list( "overall", "raw headcount ratio", "censored headcount ratio", "percentual contribution per dimension" )
+
   } else {
-    rval <- list( overall.result, dim.raw.hc, dim.cen.hc, dim.contri, grp.estim, grp.contr )
+
+    rval <- list( overall, raw.hc.ratio, cen.hc.ratio, dim.result, grp.contr.estimate, grp.contr.pct )
+    names( rval ) <- list( "overall", "raw headcount ratio", "censored headcount ratio", "percentual contribution per dimension", "subgroup alkire-foster estimates", "percentual contribution per subgroup" )
+
   }
 
   return( rval )
