@@ -156,7 +156,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     warning( paste( "sum(dimw) != 1. Normalizing dimension weights to" , paste( as.character( dimw / sum( dimw ) ) , collapse = " ; " ) ) )
     dimw = dimw / sum( dimw )
   }
-  indiv.welfare <- apply( nac.matrix, 1, function(x) aggregator( mat = x, dimw = dimw, alpha = alpha, beta = beta ) )
+
+  indiv.welfare <- aggregator( mat = nac.matrix, dimw = dimw, alpha = alpha, beta = beta )
 
   if ( any( is.na( indiv.welfare )[ w > 0 ] ) ) {
 
@@ -304,7 +305,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     warning( paste( "sum(dimw) != 1. Normalizing dimension weights to" , paste( as.character( dimw / sum( dimw ) ) , collapse = " ; " ) ) )
     dimw = dimw / sum( dimw )
   }
-  indiv.welfare <- apply( nac.matrix, 1, function(x) aggregator( mat = x, dimw = dimw, alpha = alpha, beta = beta ) )
+  indiv.welfare <- aggregator( mat = nac.matrix, dimw = dimw, alpha = alpha, beta = beta )
 
 
   if ( any( is.na( indiv.welfare )[ w > 0 ] ) ) {
@@ -389,12 +390,10 @@ aggregator <- function( mat, dimw, alpha, beta ) {
 
   if ( beta != 0 ) {
 
-    return( ( sum( ( dimw * mat^beta ) ) )^( alpha / beta ) )
+    return( ( rowSums( sweep( mat^beta, MARGIN=2 , dimw,`*`) )^( alpha / beta ) ) )
 
   } else {
 
-    return( prod( mat^dimw )^alpha )
-
-  }
+    return( apply( sweep( mat, MARGIN=2 , dimw,`^`), 1, prod )^alpha ) }
 
 }

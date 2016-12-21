@@ -189,7 +189,8 @@ svybcc.survey.design <- function( formula, design, theta = .5 , alpha = .5 , cut
   if ( is.null(dimw) ) {
     dimw = rep( 1 / ncol(dep.matrix), ncol(dep.matrix) )
   }
-  depr.scores <- ( rowSums( dep.matrix^theta * dimw )^( 1 / theta ) )^( alpha )
+  # Weighted sum of deprivations:
+  depr.scores <- ( rowSums( sweep( dep.matrix, MARGIN=2 , dimw,`*`) )^( 1 / theta ) )^( alpha )
 
   # calculate the poverty measure
   w <- 1/design$prob
@@ -287,7 +288,7 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
   if ( is.null(dimw) ) {
     dimw = rep( 1 / ncol(dep.matrix), ncol(dep.matrix) )
   }
-  depr.scores <- ( rowSums( dep.matrix^theta * dimw )^( 1 / theta ) )^( alpha )
+  depr.scores <- ( rowSums( sweep( dep.matrix, MARGIN=2 , dimw,`*`) )^( 1 / theta ) )^( alpha )
 
   # calculate the poverty measure
   w <- weights(design, "sampling" )

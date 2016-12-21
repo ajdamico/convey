@@ -121,6 +121,12 @@ svyafc <- function(formula, design, ...) {
 #' @export
 svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL, na.rm = FALSE, ... ) {
 
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+  }
+
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
@@ -197,7 +203,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
   }
 
   # Weighted sum of deprivations:
-  depr.sums <- rowSums( dep.matrix * dimw )
+  depr.sums <- rowSums( sweep( dep.matrix, MARGIN=2 , dimw,`*`) )
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
@@ -271,6 +277,12 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 #' @export
 svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL, na.rm = FALSE, ...) {
 
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+  }
+
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
@@ -342,7 +354,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   }
 
   # Weighted sum of deprivations:
-  depr.sums <- rowSums( dep.matrix * dimw )
+  depr.sums <- rowSums( sweep( dep.matrix, MARGIN=2 , dimw,`*`) )
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )

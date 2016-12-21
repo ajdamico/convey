@@ -132,6 +132,11 @@ svyafcdec.survey.design <- function( formula, by, design, g , cutoffs , k , dimw
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+  }
 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -180,7 +185,7 @@ svyafcdec.survey.design <- function( formula, by, design, g , cutoffs , k , dimw
   }
 
   # Weighted sum of deprivations:
-  depr.sums <- rowSums( dep.matrix * dimw )
+  depr.sums <- rowSums( sweep( dep.matrix, MARGIN=2 , dimw,`*`) )
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
@@ -343,7 +348,11 @@ svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
-
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+  }
 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -389,7 +398,7 @@ svyafcdec.svyrep.design <- function( formula, by, design, g , cutoffs , k , dimw
   }
 
   # Weighted sum of deprivations:
-  depr.sums <- rowSums( dep.matrix * dimw )
+  depr.sums <- rowSums( sweep( dep.matrix, MARGIN=2 , dimw,`*`) )
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
