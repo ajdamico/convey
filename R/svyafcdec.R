@@ -531,19 +531,20 @@ svyafcdec.svyrep.design <- function( formula, groups = ~1 , design, g , cutoffs 
     grp.pctg.estm_var <- survey::svrVar( qq.estm, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.estm )
     grp.pctg.cont_var <- survey::svrVar( qq.pctg, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.cont )
 
+	grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
+	attr( grp.contr.estimate, "names" ) <- levels( grpvar )
+	attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
+	attr( grp.contr.estimate, "statistic") <- "alkire-foster"
+	class( grp.contr.estimate ) <- c( "svrepstat" )
+
+	grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
+	attr( grp.contr.pct, "names" ) <- levels( grpvar )
+	attr( grp.contr.pct, "var") <- grp.pctg.cont_var
+	attr( grp.contr.pct, "statistic") <- "grp. % contribution"
+	class( grp.contr.pct ) <- c( "svrepstat" )
+
+
   }
-
-  grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
-  attr( grp.contr.estimate, "names" ) <- levels( grpvar )
-  attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
-  attr( grp.contr.estimate, "statistic") <- "alkire-foster"
-  class( grp.contr.estimate ) <- c( "svrepstat" )
-
-  grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
-  attr( grp.contr.pct, "names" ) <- levels( grpvar )
-  attr( grp.contr.pct, "var") <- grp.pctg.cont_var
-  attr( grp.contr.pct, "statistic") <- "grp. % contribution"
-  class( grp.contr.pct ) <- c( "svrepstat" )
 
   # dimensional decomposition:
   dim.contr <- NULL
