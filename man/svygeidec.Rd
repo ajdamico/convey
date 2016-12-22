@@ -7,20 +7,20 @@
 \alias{svygeidec.svyrep.design}
 \title{Generalized entropy index Decomposition}
 \usage{
-svygeidec(formula, by, design, ...)
+svygeidec(formula, groups, design, ...)
 
-\method{svygeidec}{survey.design}(formula, by, design, epsilon = 1,
+\method{svygeidec}{survey.design}(formula, groups, design, epsilon = 1,
   na.rm = FALSE, ...)
 
-\method{svygeidec}{svyrep.design}(formula, by, design, epsilon = 1,
+\method{svygeidec}{svyrep.design}(formula, groups, design, epsilon = 1,
   na.rm = FALSE, ...)
 
-\method{svygeidec}{DBIsvydesign}(formula, by, design, ...)
+\method{svygeidec}{DBIsvydesign}(formula, groups, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{by}{a formula specifying the group variable}
+\item{groups}{a formula specifying the group variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
@@ -131,7 +131,7 @@ Guilherme Jacob, Djalma Pessoa and Anthony Damico
 }
 \references{
 Anthony F. Shorrocks (1984). Inequality decomposition
-by population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
+groups population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
 URL \url{http://www.jstor.org/stable/1913511}.
 
 Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy

@@ -7,18 +7,20 @@
 \alias{svyjdivdec.svyrep.design}
 \title{J-Divergence Decomposition}
 \usage{
-svyjdivdec(formula, by, design, ...)
+svyjdivdec(formula, groups, design, ...)
 
-\method{svyjdivdec}{survey.design}(formula, by, design, na.rm = FALSE, ...)
+\method{svyjdivdec}{survey.design}(formula, groups, design, na.rm = FALSE,
+  ...)
 
-\method{svyjdivdec}{svyrep.design}(formula, by, design, na.rm = FALSE, ...)
+\method{svyjdivdec}{svyrep.design}(formula, groups, design, na.rm = FALSE,
+  ...)
 
-\method{svyjdivdec}{DBIsvydesign}(formula, by, design, ...)
+\method{svyjdivdec}{DBIsvydesign}(formula, groups, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{by}{a formula specifying the group variable}
+\item{groups}{a formula specifying the group variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
@@ -107,7 +109,7 @@ Guilherme Jacob, Djalma Pessoa and Anthony Damico
 }
 \references{
 Anthony F. Shorrocks (1984). Inequality decomposition
-by population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
+groups population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
 URL \url{http://www.jstor.org/stable/1913511}.
 
 Nicholas Rohde (2016). J-divergence measurements of economic inequality.

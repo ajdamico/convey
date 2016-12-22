@@ -7,20 +7,20 @@
 \alias{svyafcdec.svyrep.design}
 \title{Alkire-Foster multidimensional poverty decompostition}
 \usage{
-svyafcdec(formula, by, design, ...)
+svyafcdec(formula, groups, design, ...)
 
-\method{svyafcdec}{survey.design}(formula, by, design, g, cutoffs, k,
+\method{svyafcdec}{survey.design}(formula, groups, design, g, cutoffs, k,
   dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{svyrep.design}(formula, by, design, g, cutoffs, k,
+\method{svyafcdec}{svyrep.design}(formula, groups, design, g, cutoffs, k,
   dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{DBIsvydesign}(formula, by, design, ...)
+\method{svyafcdec}{DBIsvydesign}(formula, groups, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the variables. Variables can be numeric or ordered factors.}
 
-\item{by}{a formula defining the group variable for decomposition.}
+\item{groups}{a formula defining the group variable for decomposition.}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
@@ -143,7 +143,7 @@ URL \url{http://dx.doi.org/10.1016/j.jpubeco.2010.11.006}.
 
 Alkire et al. (2015). Multidimensional Poverty Measurement and Analysis. Oxford University Press, 2015.
 
-Daniele Pacifico and Felix Poege (2016). MPI: Stata module to compute the Alkire-Foster multidimensional poverty measures and their decomposition by deprivation indicators and population sub-groups.
+Daniele Pacifico and Felix Poege (2016). MPI: Stata module to compute the Alkire-Foster multidimensional poverty measures and their decomposition groups deprivation indicators and population sub-groups.
 URL \url{http://EconPapers.repec.org/RePEc:boc:bocode:s458120}.
 }
 \seealso{
