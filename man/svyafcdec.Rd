@@ -77,9 +77,9 @@ sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
 svyafcdec( ~ eqincome + hy050n ,  ~1 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
 svyafcdec( ~ eqincome + hy050n ,  ~1 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 
-svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc , 
+svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc ,
 k = .5 , g = 0, cutoffs = cos )
-svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc_rep , 
+svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc_rep ,
 k = .5 , g = 0, cutoffs = cos )
 
 # including factor variable with missings
@@ -128,9 +128,9 @@ dbd_eusilc <- update( dbd_eusilc, pb220a = ordered( pb220a ) )
 cos <- list( 10000 , 5000 )
 
 # variables without missing values
-svyafcdec( ~eqincome+hy050n ,  ~1 , des_eusilc , 
+svyafcdec( ~eqincome+hy050n ,  ~1 , des_eusilc ,
 k = .5 , g = 0, cutoffs = cos )
-svyafcdec( ~eqincome+hy050n ,  ~rb090 , des_eusilc , 
+svyafcdec( ~eqincome+hy050n ,  ~rb090 , des_eusilc ,
 k = .5 , g = 0, cutoffs = cos )
 
 # subsetting:
