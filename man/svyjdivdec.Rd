@@ -7,18 +7,20 @@
 \alias{svyjdivdec.svyrep.design}
 \title{J-Divergence Decomposition}
 \usage{
-svyjdivdec(formula, by, design, ...)
+svyjdivdec(formula, subgroup, design, ...)
 
-\method{svyjdivdec}{survey.design}(formula, by, design, na.rm = FALSE, ...)
+\method{svyjdivdec}{survey.design}(formula, subgroup, design, na.rm = FALSE,
+  ...)
 
-\method{svyjdivdec}{svyrep.design}(formula, by, design, na.rm = FALSE, ...)
+\method{svyjdivdec}{svyrep.design}(formula, subgroup, design, na.rm = FALSE,
+  ...)
 
-\method{svyjdivdec}{DBIsvydesign}(formula, by, design, ...)
+\method{svyjdivdec}{DBIsvydesign}(formula, subgroup, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{by}{a formula specifying the group variable}
+\item{subgroup}{a formula specifying the group variable}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 

@@ -3,7 +3,7 @@
 #' Estimates the group decomposition of the generalized entropy index
 #'
 #' @param formula a formula specifying the income variable
-#' @param by a formula specifying the group variable
+#' @param subgroup a formula specifying the group variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param na.rm Should cases with missing values be dropped? Observations containing missing values in income or group variables will be dropped.
 #' @param ... future expansion
@@ -99,11 +99,11 @@
 #'
 #' @export
 svyjdivdec <-
-  function( formula, by, design, ...) {
+  function( formula, subgroup, design, ...) {
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-    if( length( attr( terms.formula( by ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `by=` argument" )
+    if( length( attr( terms.formula( subgroup ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `subgroup=` argument" )
 
     UseMethod("svyjdivdec", design)
 
@@ -112,20 +112,20 @@ svyjdivdec <-
 #' @rdname svyjdivdec
 #' @export
 svyjdivdec.survey.design <-
-  function ( formula, by, design, na.rm = FALSE, ... ) {
+  function ( formula, subgroup, design, na.rm = FALSE, ... ) {
 
     if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
     w <- 1/design$prob
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-    grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
+    grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
 
     if (na.rm) {
       nas <- ( is.na(incvar) | is.na(grpvar ) )
       design <- design[nas == 0, ]
       w <- 1/design$prob
       incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-      grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
+      grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
     }
 
 
@@ -141,7 +141,7 @@ svyjdivdec.survey.design <-
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
       attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "j-divergence decomposition"
-      attr(rval,"group")<- as.character( by )[[2]]
+      attr(rval,"group")<- as.character( subgroup )[[2]]
       class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
       return(rval)
@@ -253,7 +253,7 @@ svyjdivdec.survey.design <-
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     attr(rval, "var") <- variance[1:3,1:3]
     attr(rval, "statistic") <- "j-divergence decomposition"
-    attr(rval,"group")<- as.character( by )[[2]]
+    attr(rval,"group")<- as.character( subgroup )[[2]]
     class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
     rval
@@ -264,7 +264,7 @@ svyjdivdec.survey.design <-
 #' @rdname svyjdivdec
 #' @export
 svyjdivdec.svyrep.design <-
-  function( formula, by, design, na.rm=FALSE, ...) {
+  function( formula, subgroup, design, na.rm=FALSE, ...) {
 
     # J-divergence measure:
     calc.jdiv <-  function( x, weights ) {
@@ -282,7 +282,7 @@ svyjdivdec.svyrep.design <-
     if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-    grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
+    grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
 
     if(na.rm){
       nas<-is.na(incvar) | is.na(grpvar)
@@ -302,7 +302,7 @@ svyjdivdec.svyrep.design <-
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
       attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "j-divergence decomposition"
-      attr(rval,"group")<- as.character( by )[[2]]
+      attr(rval,"group")<- as.character( subgroup )[[2]]
       class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
 
       return(rval)
@@ -372,7 +372,7 @@ svyjdivdec.svyrep.design <-
     #attr(rval, "var") <- variance[1:3, 1:3]
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "j-divergence decomposition"
-    attr(rval,"group")<- as.character( by )[[2]]
+    attr(rval,"group")<- as.character( subgroup )[[2]]
     class(rval) <- c( "cvydstat" )
     rval
 
@@ -382,7 +382,7 @@ svyjdivdec.svyrep.design <-
 #' @rdname svyjdivdec
 #' @export
 svyjdivdec.DBIsvydesign <-
-  function (formula, by, design, ...) {
+  function (formula, subgroup, design, ...) {
 
 
     if (!( "logical" %in% class(attr(design, "full_design") ) ) ){
@@ -393,7 +393,7 @@ svyjdivdec.DBIsvydesign <-
         cbind(
           getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-          getvars(by, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+          getvars(subgroup, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
         )
 
 
@@ -408,7 +408,7 @@ svyjdivdec.DBIsvydesign <-
       cbind(
         getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-        getvars(by, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+        getvars(subgroup, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
       )
 
     NextMethod("svyjdivdec", design)

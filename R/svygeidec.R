@@ -3,7 +3,7 @@
 #' Estimates the group decomposition of the generalized entropy index
 #'
 #' @param formula a formula specifying the income variable
-#' @param by a formula specifying the group variable
+#' @param subgroup a formula specifying the group variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param epsilon a parameter that determines the sensivity towards inequality in the top of the distribution. Defaults to epsilon = 1.
 #' @param na.rm Should cases with missing values be dropped? Observations containing missing values in income or group variables will be dropped.
@@ -116,11 +116,11 @@
 #'
 #' @export
 svygeidec <-
-  function( formula, by, design,  ...) {
+  function( formula, subgroup, design,  ...) {
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
-    if( length( attr( terms.formula( by ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `by=` argument" )
+    if( length( attr( terms.formula( subgroup ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `subgroup=` argument" )
 
     #if( 'epsilon' %in% names( list(...) ) && list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
 
@@ -131,13 +131,13 @@ svygeidec <-
 #' @rdname svygeidec
 #' @export
 svygeidec.survey.design <-
-  function ( formula, by, design, epsilon = 1, na.rm = FALSE, ... ) {
+  function ( formula, subgroup, design, epsilon = 1, na.rm = FALSE, ... ) {
 
     if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
     w <- 1/design$prob
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-    grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
+    grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
 
     if (na.rm) {
       nas <- ( is.na(incvar) | is.na(grpvar ) ) & w > 0
@@ -155,7 +155,7 @@ svygeidec.survey.design <-
       attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
-      attr(rval,"group")<- as.character( by )[[2]]
+      attr(rval,"group")<- as.character( subgroup )[[2]]
       class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
       return(rval)
@@ -367,7 +367,7 @@ svygeidec.survey.design <-
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
-    attr(rval,"group")<- as.character( by )[[2]]
+    attr(rval,"group")<- as.character( subgroup )[[2]]
     class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
     rval
@@ -378,12 +378,12 @@ svygeidec.survey.design <-
 #' @rdname svygeidec
 #' @export
 svygeidec.svyrep.design <-
-  function( formula, by, design, epsilon = 1, na.rm=FALSE, ...) {
+  function( formula, subgroup, design, epsilon = 1, na.rm=FALSE, ...) {
 
     if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
-    grpvar <- model.frame( by, design$variables, na.action = na.pass)[,]
+    grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
 
     if(na.rm){
       nas<-is.na(incvar) | is.na(grpvar)
@@ -404,7 +404,7 @@ svygeidec.svyrep.design <-
       attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
-      attr(rval,"group")<- as.character( by )[[2]]
+      attr(rval,"group")<- as.character( subgroup )[[2]]
       class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
 
       return(rval)
@@ -465,7 +465,7 @@ svygeidec.svyrep.design <-
       attr(rval, "var") <- matrix( rep(NA,9), ncol = 3, dimnames = list( c( "total", "within", "between" ), c( "total", "within", "between" ) ) )[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval,"epsilon")<- epsilon
-      attr(rval,"group")<- as.character( by )[[2]]
+      attr(rval,"group")<- as.character( subgroup )[[2]]
       class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
 
       return(rval)
@@ -480,7 +480,7 @@ svygeidec.svyrep.design <-
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval,"epsilon")<- epsilon
-    attr(rval,"group")<- as.character( by )[[2]]
+    attr(rval,"group")<- as.character( subgroup )[[2]]
     class(rval) <- "cvydstat"
 
     rval
@@ -491,7 +491,7 @@ svygeidec.svyrep.design <-
 #' @rdname svygeidec
 #' @export
 svygeidec.DBIsvydesign <-
-	function (formula, by, design, ...) {
+	function (formula, subgroup, design, ...) {
 
 
 		if (!( "logical" %in% class(attr(design, "full_design") ) ) ){
@@ -502,7 +502,7 @@ svygeidec.DBIsvydesign <-
 				cbind(
 					getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-					getvars(by, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+					getvars(subgroup, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 				)
 
 
@@ -517,7 +517,7 @@ svygeidec.DBIsvydesign <-
 			cbind(
 				getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-				getvars(by, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+				getvars(subgroup, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
 			)
 
 		NextMethod("svygeidec", design)

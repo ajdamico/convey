@@ -7,20 +7,20 @@
 \alias{svyafcdec.svyrep.design}
 \title{Alkire-Foster multidimensional poverty decompostition}
 \usage{
-svyafcdec(formula, by, design, ...)
+svyafcdec(formula, subgroup, design, ...)
 
-\method{svyafcdec}{survey.design}(formula, by = ~1, design, g, cutoffs, k,
-  dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{survey.design}(formula, subgroup = ~1, design, g, cutoffs,
+  k, dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{svyrep.design}(formula, by = ~1, design, g, cutoffs, k,
-  dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{svyrep.design}(formula, subgroup = ~1, design, g, cutoffs,
+  k, dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{DBIsvydesign}(formula, by = ~1, design, ...)
+\method{svyafcdec}{DBIsvydesign}(formula, subgroup = ~1, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the variables. Variables can be numeric or ordered factors.}
 
-\item{by}{a formula defining the group variable for decomposition.}
+\item{subgroup}{a formula defining the group variable for decomposition.}
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
