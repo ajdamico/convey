@@ -1,4 +1,4 @@
-context("afc output survey.design and svyrep.design")
+context("bcc output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 
@@ -6,10 +6,10 @@ library(survey)
 data(api)
 apistrat[ , sapply( apistrat, is.integer ) ] <- apply( apistrat[ , sapply( apistrat, is.integer ) ], 2, as.numeric )
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
-test_that("svyafc works on unweighted designs",{
-  for ( this_k in c( .5 , 1 ) ){
-    for ( this_g in c( 0 , 1 , 2 ) ) {
-      svyafc( ~api00+pcttest, design=dstrat1, cutoffs = list( 400, 90 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
+test_that("svybcc works on unweighted designs",{
+  for ( this_alpha in 1:2 ){
+    for ( this_theta in 1:2 ) {
+      svybcc( ~api00+pcttest, design=dstrat1, cutoffs = list( 400, 90 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
     }
   }
 })
@@ -23,22 +23,22 @@ des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-for ( this_k in seq( 1/3, 1, 1/3 ) ){
-  for ( this_g in c( 0 , 1 ) ) {
+for ( this_alpha in 1:2 ){
+  for ( this_theta in 1:2 ) {
 
-    a1 <- svyafc( ~eqincome+hy050n, design=des_eusilc, cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
+    a1 <- svybcc( ~eqincome+hy050n, design=des_eusilc, cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
 
-    a2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc, FUN = svyafc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
+    a2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc, FUN = svybcc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
 
-    b1 <- svyafc( ~eqincome+hy050n, design=des_eusilc_rep, cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
+    b1 <- svybcc( ~eqincome+hy050n, design=des_eusilc_rep, cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
 
-    b2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc_rep, FUN = svyafc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
+    b2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc_rep, FUN = svybcc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
 
 
     se_dif1 <- abs(SE(a1)-SE(b1))
     se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
-    test_that("output svyafc",{
+    test_that("output svybcc",{
       expect_is(coef(a1),"numeric")
       expect_is(coef(a2), "numeric")
       expect_is(coef(b1),"numeric")
@@ -82,12 +82,12 @@ for ( this_k in seq( 1/3, 1, 1/3 ) ){
 
     dbd_eusilc <- convey_prep( dbd_eusilc )
 
-    c1 <- svyafc( ~eqincome+hy050n, design=dbd_eusilc, cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
+    c1 <- svybcc( ~eqincome+hy050n, design=dbd_eusilc, cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
 
-    c2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc, FUN = svyafc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
+    c2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc, FUN = svybcc, alpha = this_alpha, theta = this_theta, cutoffs = list( 7000, 3000 ), deff = FALSE)
 
 
-    test_that("database svyafc",{
+    test_that("database svybcc",{
       expect_equal(coef(a1), coef(c1))
       expect_equal(rev(coef(a2)), coef(c2)) # inverted results
       expect_equal(SE(a1), SE(c1))
@@ -95,10 +95,10 @@ for ( this_k in seq( 1/3, 1, 1/3 ) ){
     })
 
     # compare subsetted objects to svyby objects
-    sub_des <- svyafc( ~eqincome+hy050n, design=subset( des_eusilc, rb090 == "male" ), cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
-    sby_des <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc, FUN = svyafc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
-    sub_rep <- svyafc( ~eqincome+hy050n, design=subset( des_eusilc_rep, rb090 == "male" ), cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
-    sby_rep <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc_rep, FUN = svyafc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
+    sub_des <- svybcc( ~eqincome+hy050n, design=subset( des_eusilc, rb090 == "male" ), cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
+    sby_des <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc, FUN = svybcc, alpha = this_alpha, theta = this_theta, cutoffs = list( 7000, 3000 ), deff = FALSE)
+    sub_rep <- svybcc( ~eqincome+hy050n, design=subset( des_eusilc_rep, rb090 == "male" ), cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
+    sby_rep <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc_rep, FUN = svybcc, alpha = this_alpha, theta = this_theta, cutoffs = list( 7000, 3000 ), deff = FALSE)
 
     test_that("subsets equal svyby",{
       expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
@@ -135,10 +135,10 @@ for ( this_k in seq( 1/3, 1, 1/3 ) ){
 
     dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
-    sub_dbd <- svyafc( ~eqincome+hy050n, design=subset( dbd_eusilc, rb090 == "male" ), cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
-    sby_dbd <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc, FUN = svyafc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
-    sub_dbr <- svyafc( ~eqincome+hy050n, design=subset( dbd_eusilc_rep, rb090 == "male" ), cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = NULL, na.rm = FALSE )
-    sby_dbr <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc_rep, FUN = svyafc, g=this_g, k= this_k, cutoffs = list( 7000, 3000 ), deff = FALSE)
+    sub_dbd <- svybcc( ~eqincome+hy050n, design=subset( dbd_eusilc, rb090 == "male" ), cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
+    sby_dbd <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc, FUN = svybcc, alpha = this_alpha, theta = this_theta, cutoffs = list( 7000, 3000 ), deff = FALSE)
+    sub_dbr <- svybcc( ~eqincome+hy050n, design=subset( dbd_eusilc_rep, rb090 == "male" ), cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = NULL, na.rm = FALSE )
+    sby_dbr <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc_rep, FUN = svybcc, alpha = this_alpha, theta = this_theta, cutoffs = list( 7000, 3000 ), deff = FALSE)
 
 
 
