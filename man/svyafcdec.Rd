@@ -9,13 +9,13 @@
 \usage{
 svyafcdec(formula, groups, design, ...)
 
-\method{svyafcdec}{survey.design}(formula, groups, design, g, cutoffs, k,
+\method{svyafcdec}{survey.design}(formula, groups = ~1, design, g, cutoffs, k,
   dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{svyrep.design}(formula, groups, design, g, cutoffs, k,
+\method{svyafcdec}{svyrep.design}(formula, groups = ~1, design, g, cutoffs, k,
   dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafcdec}{DBIsvydesign}(formula, groups, design, ...)
+\method{svyafcdec}{DBIsvydesign}(formula, groups = ~1, design, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the variables. Variables can be numeric or ordered factors.}
@@ -64,25 +64,40 @@ cos <- list( 10000, 5000 )
 
 
 # variables without missing values
-svyafcdec( ~ eqincome + hy050n , ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
-svyafcdec( ~ eqincome + hy050n , ~rb090 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~ eqincome + hy050n , groups = ~1 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~ eqincome + hy050n , groups = ~1 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+
+svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 
 # subsetting:
 sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
 
-svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
-svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+
+svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc_rep,
 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc_rep,
+		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc,
+		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc,
+		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc_rep,
+		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc_rep,
 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 \dontrun{
@@ -111,19 +126,29 @@ dbd_eusilc <- update( dbd_eusilc, pb220a = ordered( pb220a ) )
 cos <- list( 10000 , 5000 )
 
 # variables without missing values
-svyafcdec( ~eqincome+hy050n , ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~eqincome+hy050n , groups = ~1 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+svyafcdec( ~eqincome+hy050n , groups = ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
 
 # subsetting:
 sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 
-svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc ,
+svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc ,
+		k = .5 , g = 0, cutoffs = cos )
+
+svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc ,
 		k = .5 , g = 0, cutoffs = cos )
 
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
+
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , dbd_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , dbd_eusilc,
+		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , dbd_eusilc,
+		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , dbd_eusilc,
 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )

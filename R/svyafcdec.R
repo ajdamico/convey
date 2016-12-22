@@ -50,25 +50,42 @@
 #'
 #'
 #' # variables without missing values
-#' svyafcdec( ~ eqincome + hy050n , ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~ eqincome + hy050n , ~rb090 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+#'
+#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 #'
 #' # subsetting:
 #' sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 #' sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
 #'
-#' svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+#'
+#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc , 
+#'	k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc_rep , 
+#'	k = .5 , g = 0, cutoffs = cos )
 #'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , des_eusilc_rep,
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc_rep,
+#' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+#'
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc,
+#' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc,
+#' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc_rep,
+#' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' \dontrun{
@@ -97,19 +114,31 @@
 #' cos <- list( 10000 , 5000 )
 #'
 #' # variables without missing values
-#' svyafcdec( ~eqincome+hy050n , ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~eqincome+hy050n , groups = ~1 , des_eusilc , 
+#'	k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~eqincome+hy050n , groups = ~rb090 , des_eusilc , 
+#'	k = .5 , g = 0, cutoffs = cos )
 #'
 #' # subsetting:
 #' sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 #'
-#' svyafcdec( ~ eqincome + hy050n , ~rb090 , sub_des_eusilc ,
+#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc ,
+#' 		k = .5 , g = 0, cutoffs = cos )
+#'
+#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc ,
 #' 		k = .5 , g = 0, cutoffs = cos )
 #'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
+#'
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, ~rb090 , dbd_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , dbd_eusilc,
+#' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+#'
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , dbd_eusilc,
+#' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
@@ -119,7 +148,7 @@
 #' }
 #'
 #' @export
-svyafcdec <- function(formula, groups, design, ...) {
+svyafcdec <- function(formula, groups , design, ...) {
 
   UseMethod("svyafcdec", design)
 
@@ -127,11 +156,12 @@ svyafcdec <- function(formula, groups, design, ...) {
 
 #' @rdname svyafcdec
 #' @export
-svyafcdec.survey.design <- function( formula, groups, design, g , cutoffs , k , dimw = NULL, na.rm = FALSE, ... ) {
+svyafcdec.survey.design <- function( formula, groups = ~1 , design, g , cutoffs , k , dimw = NULL, na.rm = FALSE, ... ) {
 
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
+  if( length( cutoffs ) != length( all.vars( formula ) ) ) stop( "number of variables in formula must exactly match cutoffs" )
   if ( !is.null( dimw ) ) {
     if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
     if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
@@ -343,11 +373,12 @@ svyafcdec.survey.design <- function( formula, groups, design, g , cutoffs , k , 
 
 #' @rdname svyafcdec
 #' @export
-svyafcdec.svyrep.design <- function( formula, groups, design, g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
+svyafcdec.svyrep.design <- function( formula, groups = ~1 , design, g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
 
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
+  if( length( cutoffs ) != length( all.vars( formula ) ) ) stop( "number of variables in formula must exactly match cutoffs" )
   if ( !is.null( dimw ) ) {
     if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
     if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
@@ -557,7 +588,7 @@ svyafcdec.svyrep.design <- function( formula, groups, design, g , cutoffs , k , 
 #' @rdname svyafcdec
 #' @export
 svyafcdec.DBIsvydesign <-
-  function (formula, groups, design, ...) {
+  function (formula, groups = ~1 , design, ...) {
 
     if (!( "logical" %in% class(attr(design, "full_design"))) ){
 
