@@ -3,7 +3,7 @@
 #' Decomposition of indices from the Alkire-Foster class
 #'
 #' @param formula a formula specifying the variables. Variables can be numeric or ordered factors.
-#' @param groups a formula defining the group variable for decomposition.
+#' @param by a formula defining the group variable for decomposition.
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param g a scalar defining the exponent of the indicator.
 #' @param cutoffs a list defining each variable's deprivation limit.
@@ -50,42 +50,42 @@
 #'
 #'
 #' # variables without missing values
-#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n ,  ~1 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n ,  ~1 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 #'
-#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , des_eusilc , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 #'
 #' # subsetting:
 #' sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 #' sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
 #'
-#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n ,  ~1 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
+#' svyafcdec( ~ eqincome + hy050n ,  ~1 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 #'
-#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc , 
+#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc , 
 #'	k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc_rep , 
+#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc_rep , 
 #'	k = .5 , g = 0, cutoffs = cos )
 #'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc_rep,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , des_eusilc_rep,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , des_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc_rep,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , des_eusilc_rep,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' \dontrun{
@@ -114,31 +114,31 @@
 #' cos <- list( 10000 , 5000 )
 #'
 #' # variables without missing values
-#' svyafcdec( ~eqincome+hy050n , groups = ~1 , des_eusilc , 
+#' svyafcdec( ~eqincome+hy050n ,  ~1 , des_eusilc , 
 #'	k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~eqincome+hy050n , groups = ~rb090 , des_eusilc , 
+#' svyafcdec( ~eqincome+hy050n ,  ~rb090 , des_eusilc , 
 #'	k = .5 , g = 0, cutoffs = cos )
 #'
 #' # subsetting:
 #' sub_des_eusilc <- subset( des_eusilc, db040 == "Styria")
 #'
-#' svyafcdec( ~ eqincome + hy050n , groups = ~1 , sub_des_eusilc ,
+#' svyafcdec( ~ eqincome + hy050n ,  ~1 , sub_des_eusilc ,
 #' 		k = .5 , g = 0, cutoffs = cos )
 #'
-#' svyafcdec( ~ eqincome + hy050n , groups = ~rb090 , sub_des_eusilc ,
+#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc ,
 #' 		k = .5 , g = 0, cutoffs = cos )
 #'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
 #'
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , dbd_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~1 , dbd_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , dbd_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, groups = ~rb090 , dbd_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , dbd_eusilc,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
@@ -148,7 +148,7 @@
 #' }
 #'
 #' @export
-svyafcdec <- function(formula, groups , design, ...) {
+svyafcdec <- function(formula, by , design, ...) {
 
   UseMethod("svyafcdec", design)
 
@@ -156,7 +156,7 @@ svyafcdec <- function(formula, groups , design, ...) {
 
 #' @rdname svyafcdec
 #' @export
-svyafcdec.survey.design <- function( formula, groups = ~1 , design, g , cutoffs , k , dimw = NULL, na.rm = FALSE, ... ) {
+svyafcdec.survey.design <- function( formula, by = ~1 , design, g , cutoffs , k , dimw = NULL, na.rm = FALSE, ... ) {
 
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
@@ -171,7 +171,7 @@ svyafcdec.survey.design <- function( formula, groups = ~1 , design, g , cutoffs 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
-  grpvar <- model.frame(groups, design$variables, na.action = na.pass)[,]
+  grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
@@ -186,7 +186,7 @@ svyafcdec.survey.design <- function( formula, groups = ~1 , design, g , cutoffs 
   if ( any( ach.matrix[ w != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multidimensional poverty decompostition is defined for non-negative numeric variables only." )
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
-  grpvar <- model.frame(groups, design$variables, na.action = na.pass)[,]
+  grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]
 
   if (na.rm) {
     nas <- apply( cbind( ach.matrix, grpvar ), 1, function(x) any( is.na(x) ) )
@@ -195,7 +195,7 @@ svyafcdec.survey.design <- function( formula, groups = ~1 , design, g , cutoffs 
 
   w <- 1/design$prob
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
-  grpvar <- model.frame(groups, design$variables, na.action = na.pass)[,]
+  grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]
 
   # Deprivation Matrix
   dep.matrix <- ach.matrix
@@ -373,7 +373,7 @@ svyafcdec.survey.design <- function( formula, groups = ~1 , design, g , cutoffs 
 
 #' @rdname svyafcdec
 #' @export
-svyafcdec.svyrep.design <- function( formula, groups = ~1 , design, g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
+svyafcdec.svyrep.design <- function( formula, by = ~1 , design, g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
 
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
@@ -388,7 +388,7 @@ svyafcdec.svyrep.design <- function( formula, groups = ~1 , design, g , cutoffs 
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
-  grpvar <- model.frame(groups, design$variables, na.action = na.pass)[,]
+  grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
   var.class <- matrix( var.class, nrow = 1, ncol = ncol(ach.matrix), dimnames = list( c("var.class"), colnames( ach.matrix ) ) )
@@ -402,7 +402,7 @@ svyafcdec.svyrep.design <- function( formula, groups = ~1 , design, g , cutoffs 
   if ( any( ach.matrix[ ws != 0, var.class == "numeric" ] < 0, na.rm = TRUE ) ) stop( "The Alkire-Foster multidimensional poverty decompostition is defined for non-negative numeric variables only." )
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
-  grpvar <- model.frame(groups, design$variables, na.action = na.pass)[,]
+  grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]
 
   if (na.rm) {
     nas <- apply( cbind( ach.matrix, grpvar ), 1, function(x) any( is.na(x) ) )
@@ -411,7 +411,7 @@ svyafcdec.svyrep.design <- function( formula, groups = ~1 , design, g , cutoffs 
 
   ws <- weights(design, "sampling")
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
-  grpvar <- model.frame(groups, design$variables, na.action = na.pass)[,]
+  grpvar <- model.frame(by, design$variables, na.action = na.pass)[,]
 
   # Deprivation Matrix
   dep.matrix <- ach.matrix
@@ -589,7 +589,7 @@ svyafcdec.svyrep.design <- function( formula, groups = ~1 , design, g , cutoffs 
 #' @rdname svyafcdec
 #' @export
 svyafcdec.DBIsvydesign <-
-  function (formula, groups = ~1 , design, ...) {
+  function (formula, by = ~1 , design, ...) {
 
     if (!( "logical" %in% class(attr(design, "full_design"))) ){
 
@@ -599,7 +599,7 @@ svyafcdec.DBIsvydesign <-
         cbind(
           getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-          getvars(groups, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+          getvars(by, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
         )
 
 
@@ -614,7 +614,7 @@ svyafcdec.DBIsvydesign <-
       cbind(
         getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-        getvars(groups, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+        getvars(by, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
       )
 
     NextMethod("svyafcdec", design)
