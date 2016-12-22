@@ -13,7 +13,7 @@ svysen(formula, design, ...)
   abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
   thresh = FALSE, ...)
 
-\method{svysen}{svyrep.design}(formula, design, g, type_thresh = "abs",
+\method{svysen}{svyrep.design}(formula, design, type_thresh = "abs",
   abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
   thresh = FALSE, ...)
 
@@ -62,32 +62,20 @@ des_eusilc <- convey_prep( des_eusilc )
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
-# headcount ratio, poverty threshold fixed
-svysen(~eqincome, des_eusilc, g=0,  abs_thresh=10000)
-# poverty gap index, poverty threshold fixed
-svysen(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
-# headcount ratio, poverty threshold equal to arpt
-svysen(~eqincome, des_eusilc, g=0, type_thresh= "relq" , thresh = TRUE)
-# poverty gap index, poverty threshold equal to arpt
-svysen(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
-# headcount ratio, poverty threshold equal to .6 times the mean
-svysen(~eqincome, des_eusilc, g=0, type_thresh= "relm", thresh = TRUE)
-# poverty gap index, poverty threshold equal to 0.6 times the mean
-svysen(~eqincome, des_eusilc, g=1, type_thresh= "relm" , thresh = TRUE)
+# poverty threshold fixed
+svysen(~eqincome, des_eusilc, abs_thresh=10000)
+# poverty threshold equal to arpt
+svysen(~eqincome, des_eusilc, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to .6 times the mean
+svysen(~eqincome, des_eusilc, type_thresh= "relm", thresh = TRUE)
 
 #  using svrep.design:
-# headcount ratio, poverty threshold fixed
-svysen(~eqincome, des_eusilc_rep, g=0,  abs_thresh=10000)
-# poverty gap index, poverty threshold fixed
-svysen(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
-# headcount ratio, poverty threshold equal to arpt
-svysen(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq" , thresh = TRUE)
-# poverty gap index, poverty threshold equal to arpt
-svysen(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
-# headcount ratio, poverty threshold equal to .6 times the mean
-svysen(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
-# poverty gap index, poverty threshold equal to 0.6 times the mean
-svysen(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
+# poverty threshold fixed
+svysen(~eqincome, des_eusilc_rep, abs_thresh=10000)
+# poverty threshold equal to arpt
+svysen(~eqincome, des_eusilc_rep, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to .6 times the mean
+svysen(~eqincome, des_eusilc_rep, type_thresh= "relm" , thresh = TRUE)
 
 
 \dontrun{
@@ -113,17 +101,17 @@ dbd_eusilc <-
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
 # headcount ratio, poverty threshold fixed
-svysen(~eqincome, dbd_eusilc, g=0, abs_thresh=10000)
+svysen(~eqincome, dbd_eusilc, abs_thresh=10000)
 # poverty gap index, poverty threshold fixed
-svysen(~eqincome, dbd_eusilc, g=1, abs_thresh=10000)
+svysen(~eqincome, dbd_eusilc, abs_thresh=10000)
 # headcount ratio, poverty threshold equal to arpt
-svysen(~eqincome, dbd_eusilc, g=0, type_thresh= "relq", thresh = TRUE)
+svysen(~eqincome, dbd_eusilc, type_thresh= "relq", thresh = TRUE)
 # poverty gap index, poverty threshold equal to arpt
-svysen(~eqincome, dbd_eusilc, g=1, type_thresh= "relq")
+svysen(~eqincome, dbd_eusilc, type_thresh= "relq")
 # headcount ratio, poverty threshold equal to .6 times the mean
-svysen(~eqincome, dbd_eusilc, g=0, type_thresh= "relm")
+svysen(~eqincome, dbd_eusilc, type_thresh= "relm")
 # poverty gap index, poverty threshold equal to 0.6 times the mean
-svysen(~eqincome, dbd_eusilc, g=1, type_thresh= "relm")
+svysen(~eqincome, dbd_eusilc, type_thresh= "relm")
 
 dbRemoveTable( conn , 'eusilc' )
 

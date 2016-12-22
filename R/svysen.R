@@ -41,32 +41,20 @@
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
-#' # headcount ratio, poverty threshold fixed
-#' svysen(~eqincome, des_eusilc, g=0,  abs_thresh=10000)
-#' # poverty gap index, poverty threshold fixed
-#' svysen(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
-#' # headcount ratio, poverty threshold equal to arpt
-#' svysen(~eqincome, des_eusilc, g=0, type_thresh= "relq" , thresh = TRUE)
-#' # poverty gap index, poverty threshold equal to arpt
-#' svysen(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
-#' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svysen(~eqincome, des_eusilc, g=0, type_thresh= "relm", thresh = TRUE)
-#' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svysen(~eqincome, des_eusilc, g=1, type_thresh= "relm" , thresh = TRUE)
+#' # poverty threshold fixed
+#' svysen(~eqincome, des_eusilc, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svysen(~eqincome, des_eusilc, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to .6 times the mean
+#' svysen(~eqincome, des_eusilc, type_thresh= "relm", thresh = TRUE)
 #'
 #' #  using svrep.design:
-#' # headcount ratio, poverty threshold fixed
-#' svysen(~eqincome, des_eusilc_rep, g=0,  abs_thresh=10000)
-#' # poverty gap index, poverty threshold fixed
-#' svysen(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
-#' # headcount ratio, poverty threshold equal to arpt
-#' svysen(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq" , thresh = TRUE)
-#' # poverty gap index, poverty threshold equal to arpt
-#' svysen(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
-#' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svysen(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
-#' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svysen(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
+#' # poverty threshold fixed
+#' svysen(~eqincome, des_eusilc_rep, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svysen(~eqincome, des_eusilc_rep, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to .6 times the mean
+#' svysen(~eqincome, des_eusilc_rep, type_thresh= "relm" , thresh = TRUE)
 #'
 #'
 #' \dontrun{
@@ -92,17 +80,17 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' # headcount ratio, poverty threshold fixed
-#' svysen(~eqincome, dbd_eusilc, g=0, abs_thresh=10000)
+#' svysen(~eqincome, dbd_eusilc, abs_thresh=10000)
 #' # poverty gap index, poverty threshold fixed
-#' svysen(~eqincome, dbd_eusilc, g=1, abs_thresh=10000)
+#' svysen(~eqincome, dbd_eusilc, abs_thresh=10000)
 #' # headcount ratio, poverty threshold equal to arpt
-#' svysen(~eqincome, dbd_eusilc, g=0, type_thresh= "relq", thresh = TRUE)
+#' svysen(~eqincome, dbd_eusilc, type_thresh= "relq", thresh = TRUE)
 #' # poverty gap index, poverty threshold equal to arpt
-#' svysen(~eqincome, dbd_eusilc, g=1, type_thresh= "relq")
+#' svysen(~eqincome, dbd_eusilc, type_thresh= "relq")
 #' # headcount ratio, poverty threshold equal to .6 times the mean
-#' svysen(~eqincome, dbd_eusilc, g=0, type_thresh= "relm")
+#' svysen(~eqincome, dbd_eusilc, type_thresh= "relm")
 #' # poverty gap index, poverty threshold equal to 0.6 times the mean
-#' svysen(~eqincome, dbd_eusilc, g=1, type_thresh= "relm")
+#' svysen(~eqincome, dbd_eusilc, type_thresh= "relm")
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -113,10 +101,6 @@
 #' @export
 svysen <-
   function(formula, design,  ...) {
-
-    if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
-
-    if( !is.na( list(...)[["g"]] ) && !( ( list(...)[["g"]] == 0 ) | ( list(...)[["g"]] >= 1 ) ) ) stop( "g= must be 0 to estimate the headcount ratio or >=1 to estimate the poverty index" )
 
     if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svysen for more detail.' )
 
@@ -129,7 +113,7 @@ svysen <-
 #' @rdname svysen
 #' @export
 svysen.survey.design <-
-  function(formula, design, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula, design, type_thresh="abs", abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
 
     if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -138,6 +122,11 @@ svysen.survey.design <-
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+
+    if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+    if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+    if (sum(1/design$prob==0) > 0) { ID <- 1*(1/design$prob!=0) } else { ID <- 1 * ( ncom %in% ind ) }
+
 
     # FGT(0)
     rval.fgt0 <- convey::svyfgt( formula = formula, design, type_thresh=type_thresh,  abs_thresh=abs_thresh, g = 0, percent = percent, quantiles = quantiles, na.rm = na.rm, thresh = thresh )
@@ -161,15 +150,19 @@ svysen.survey.design <-
       th <- coef(ARPT)[[1]]
 
       incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+      ID <- ID * (incvar <= th)
       poor.design <- design[ incvar <= th , ]
 
       rval.gini <- svygini( formula = formula, design = poor.design, na.rm = na.rm )
 
       gini <- NULL
       gini$value <- coef(rval.gini)[[1]]
-      gini$lin <- 1 / design$prob
-      gini$lin[ incvar <= th ] <- attr( rval.gini, "lin" )
-      gini$lin[ incvar > th ] = 0
+      if ( length( attr( rval.gini, "lin" ) ) == length( 1 / full_design$prob ) ) {
+        gini$lin <- attr( rval.gini, "lin" )
+      } else {
+        gini$lin <- rep( 0, length( 1 / full_design$prob ) )
+        gini$lin[ as.logical( ID * (incvar <= th) ) ] <- attr( rval.gini, "lin" )
+      }
       rm( rval.gini, poor.design )
 
       sen <- contrastinf( quote( fgt0 * gini + fgt1 * ( 1 - gini) ), list( fgt0 = fgt0, fgt1 = fgt1, gini = gini ) )
@@ -187,9 +180,12 @@ svysen.survey.design <-
 
       gini <- NULL
       gini$value <- coef(rval.gini)[[1]]
-      gini$lin <- 1 / design$prob
-      gini$lin[ incvar <= th ] <- attr( rval.gini, "lin" )
-      gini$lin[ incvar > th ] = 0
+      if ( length( attr( rval.gini, "lin" ) ) == length( 1 / full_design$prob ) ) {
+        gini$lin <- attr( rval.gini, "lin" )
+      } else {
+        gini$lin <- rep( 0, length( 1 / full_design$prob ) )
+        gini$lin[ as.logical( ID * (incvar <= th) ) ] <- attr( rval.gini, "lin" )
+      }
       rm( rval.gini, poor.design )
 
       sen <- contrastinf( quote( fgt0 * gini + fgt1 * ( 1 - gini) ), list( fgt0 = fgt0, fgt1 = fgt1, gini = gini ) )
@@ -206,16 +202,19 @@ svysen.survey.design <-
 
       gini <- NULL
       gini$value <- coef(rval.gini)[[1]]
-      gini$lin <- 1 / design$prob
-      gini$lin[ incvar <= th ] <- attr( rval.gini, "lin" )
-      gini$lin[ incvar > th ] = 0
+      if ( length( attr( rval.gini, "lin" ) ) == length( 1 / full_design$prob ) ) {
+        gini$lin <- attr( rval.gini, "lin" )
+      } else {
+        gini$lin <- rep( 0, length( 1 / full_design$prob ) )
+        gini$lin[ as.logical( ID * (incvar <= th) ) ] <- attr( rval.gini, "lin" )
+      }
       rm( rval.gini, poor.design )
 
       sen <- contrastinf( quote( fgt0 * gini + fgt1 * ( 1 - gini) ), list( fgt0 = fgt0, fgt1 = fgt1, gini = gini ) )
 
     }
 
-    variance <- survey::svyrecvar(sen$lin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+    variance <- survey::svyrecvar( sen$lin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
 
     rval <- sen$value
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -233,11 +232,13 @@ svysen.survey.design <-
 #' @rdname svysen
 #' @export
 svysen.svyrep.design <-
-  function(formula, design, g, type_thresh="abs", abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE,...) {
+  function(formula, design, type_thresh="abs", abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE,...) {
 
     if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
     if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+
+    if( !is.null( abs_thresh ) ) { type_thresh <- "abs" }
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
@@ -400,6 +401,7 @@ svysen.DBIsvydesign <-
         updates = design$updates,
         subset = design$subset
       )
+
 
     NextMethod("svysen", design)
   }
