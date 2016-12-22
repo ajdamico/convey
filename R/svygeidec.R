@@ -116,7 +116,7 @@
 #'
 #' @export
 svygeidec <-
-  function( formula, design, groups = ~ 1 , ...) {
+  function( formula, groups, design,  ...) {
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
@@ -131,7 +131,7 @@ svygeidec <-
 #' @rdname svygeidec
 #' @export
 svygeidec.survey.design <-
-  function ( formula, design, groups , epsilon = 1, na.rm = FALSE, ... ) {
+  function ( formula, groups, design, epsilon = 1, na.rm = FALSE, ... ) {
 
     if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -159,7 +159,7 @@ svygeidec.survey.design <-
       class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
 
       return(rval)
-	
+
     }
 
     grpvar <- interaction( grpvar )
@@ -378,7 +378,7 @@ svygeidec.survey.design <-
 #' @rdname svygeidec
 #' @export
 svygeidec.svyrep.design <-
-  function( formula, design, groups , epsilon = 1, na.rm=FALSE, ...) {
+  function( formula, groups, design, epsilon = 1, na.rm=FALSE, ...) {
 
     if (is.null(attr(design, "full_design") ) ) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
@@ -491,7 +491,7 @@ svygeidec.svyrep.design <-
 #' @rdname svygeidec
 #' @export
 svygeidec.DBIsvydesign <-
-	function (formula, design , groups , ...) {
+	function (formula, groups, design, ...) {
 
 
 		if (!( "logical" %in% class(attr(design, "full_design") ) ) ){
@@ -502,7 +502,7 @@ svygeidec.DBIsvydesign <-
 				cbind(
 					getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-					if( groups != ~ 1 ) getvars(groups, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+					getvars(groups, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
 				)
 
 
@@ -517,7 +517,7 @@ svygeidec.DBIsvydesign <-
 			cbind(
 				getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-				if( groups != ~ 1 ) getvars(groups, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+				getvars(groups, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
 			)
 
 		NextMethod("svygeidec", design)

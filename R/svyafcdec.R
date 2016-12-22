@@ -68,22 +68,22 @@
 #'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
-#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc, 
 #'	k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc,
+#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc, 
 #'	k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep,
+#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep, 
 #' 	k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 #' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep,
 #'	k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
-#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 ,
+#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 , 
 #'	k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 ,
+#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 , 
 #'	k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 ,
+#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 , 
 #'	k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 ,
+#' svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 , 
 #'	k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' \dontrun{
@@ -128,10 +128,8 @@
 #' svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 #' svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
-#' svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc ,
-#'	~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-#' svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc ,
-#'	~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+#' svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , ~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+#' svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , ~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -153,7 +151,6 @@ svyafcdec.survey.design <- function( formula, design, groups = ~ 1 , g , cutoffs
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
-  if( length( cutoffs ) != length( all.vars( formula ) ) ) stop( "number of variables in formula must exactly match cutoffs" )
   if ( !is.null( dimw ) ) {
     if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
     if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
@@ -365,13 +362,11 @@ svyafcdec.survey.design <- function( formula, design, groups = ~ 1 , g , cutoffs
 
 #' @rdname svyafcdec
 #' @export
-svyafcdec.svyrep.design <- function( formula, design, groups = ~ 1 , g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
+svyafcdec.svyrep.design <- function( formula, design, groups = ~1 , g , cutoffs , k , dimw = NULL, na.rm=FALSE, ...) {
 
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
-  if( length( cutoffs ) != length( all.vars( formula ) ) ) stop( "number of variables in formula must exactly match cutoffs" )
-  
   if ( !is.null( dimw ) ) {
     if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
     if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
@@ -591,7 +586,7 @@ svyafcdec.DBIsvydesign <-
         cbind(
           getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-          if( groups != ~ 1 ) getvars(groups, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+          getvars(groups, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
         )
 
 
@@ -606,7 +601,7 @@ svyafcdec.DBIsvydesign <-
       cbind(
         getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-        if( groups != ~ 1 ) getvars(groups, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+        getvars(groups, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
       )
 
     NextMethod("svyafcdec", design)

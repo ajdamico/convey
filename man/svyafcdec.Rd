@@ -82,22 +82,22 @@ svyafcdec( ~ eqincome + hy050n , sub_des_eusilc_rep , ~rb090 , k = .5 , g = 0, c
 
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
-svyafcdec(~eqincome+hy050n+pb220a, des_eusilc,
+svyafcdec(~eqincome+hy050n+pb220a, des_eusilc, 
 k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, des_eusilc,
+svyafcdec(~eqincome+hy050n+pb220a, des_eusilc, 
 k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep,
+svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep, 
 	k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep,
 k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
-svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 ,
+svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 , 
 k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 ,
+svyafcdec(~eqincome+hy050n+pb220a, des_eusilc , ~rb090 , 
 k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 ,
+svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 , 
 k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 ,
+svyafcdec(~eqincome+hy050n+pb220a, des_eusilc_rep , ~rb090 , 
 k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 \dontrun{
@@ -142,10 +142,8 @@ cos <- list( 10000, 5000, "EU" )
 svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
-svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc ,
-~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
-svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc ,
-~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
+svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , ~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
+svyafcdec(~eqincome+hy050n+pb220a, dbd_eusilc , ~rb090 , k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 
 dbRemoveTable( conn , 'eusilc' )
 
