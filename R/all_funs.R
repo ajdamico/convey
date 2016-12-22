@@ -162,9 +162,10 @@ print.cvystat <- function(x, ...) {
 
   vv <- attr(x, "var")
 
-  if ( attr( x, "statistic" ) == "alkire-foster" ) {
+  if ( attr( x, "statistic" ) %in% c( "alkire-foster", "bourguignon-chakravarty" ) ) {
 
-    m <- matrix( data = c( x[1] , sqrt(vv) ) , ncol = 2, dimnames = list( NULL, c( "alkire-foster", "SE" ) ) )
+    statistic <- attr( x, "statistic" )
+    m <- matrix( data = c( x[1] , sqrt(vv) ) , ncol = 2, dimnames = list( NULL, c( statistic, "SE" ) ) )
 
     return( printCoefmat(m) )
   }
