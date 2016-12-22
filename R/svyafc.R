@@ -170,7 +170,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
     variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "alkire-foster"
+    names( rval )[1] <- attr(rval, "statistic") <- "alkire-foster"
     dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
     dimtable[,2] <- as.numeric( dimtable[,2] )
     attr(rval, "dimensions") <- dimtable
@@ -254,7 +254,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
   }
 
   rval <- survey::svymean( cen.depr.sums , design )
-  attr(rval, "statistic") <- "alkire-foster"
+  names( rval )[1] <- attr(rval, "statistic") <- "alkire-foster"
   dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
   dimtable[,2] <- as.numeric( dimtable[,2] )
   attr(rval, "dimensions") <- dimtable
@@ -317,7 +317,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
     variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "alkire-foster"
+    names( rval )[1] <- attr(rval, "statistic") <- "alkire-foster"
     dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
     dimtable[,2] <- as.numeric( dimtable[,2] )
     attr(rval, "dimensions") <- dimtable
@@ -380,7 +380,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
     variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svrepstat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "alkire-foster"
+    names( rval )[1] <- attr(rval, "statistic") <- "alkire-foster"
     dimtable <- as.data.frame(matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
     dimtable[,2] <- as.numeric( dimtable[,2] )
     attr(rval, "dimensions") <- dimtable
@@ -412,7 +412,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   rm(w)
 
   rval <- survey::svymean( cen.depr.sums , design )
-  attr(rval, "statistic") <- "alkire-foster"
+  names( rval )[1] <- attr(rval, "statistic") <- "alkire-foster"
   dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
   dimtable[,2] <- as.numeric( dimtable[,2] )
   attr(rval, "dimensions") <- dimtable
