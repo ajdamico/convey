@@ -63,9 +63,9 @@
 #' svyafcdec( ~ eqincome + hy050n ,  ~1 , sub_des_eusilc , k = .5 , g = 0, cutoffs = cos )
 #' svyafcdec( ~ eqincome + hy050n ,  ~1 , sub_des_eusilc_rep , k = .5 , g = 0, cutoffs = cos )
 #'
-#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc , 
+#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc ,
 #'	k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc_rep , 
+#' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc_rep ,
 #'	k = .5 , g = 0, cutoffs = cos )
 #'
 #' # including factor variable with missings
@@ -114,9 +114,9 @@
 #' cos <- list( 10000 , 5000 )
 #'
 #' # variables without missing values
-#' svyafcdec( ~eqincome+hy050n ,  ~1 , des_eusilc , 
+#' svyafcdec( ~eqincome+hy050n ,  ~1 , des_eusilc ,
 #'	k = .5 , g = 0, cutoffs = cos )
-#' svyafcdec( ~eqincome+hy050n ,  ~rb090 , des_eusilc , 
+#' svyafcdec( ~eqincome+hy050n ,  ~rb090 , des_eusilc ,
 #'	k = .5 , g = 0, cutoffs = cos )
 #'
 #' # subsetting:
@@ -187,6 +187,10 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(subgroup, design$variables, na.action = na.pass)[,]
+
+  if ( class(grpvar) == "labelled" ) {
+    stop( "This function does not support 'labelled' variables. Try factor().")
+  }
 
   if (na.rm) {
     nas <- apply( cbind( ach.matrix, grpvar ), 1, function(x) any( is.na(x) ) )
@@ -388,7 +392,6 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
   if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
-  grpvar <- model.frame(subgroup, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
   var.class <- matrix( var.class, nrow = 1, ncol = ncol(ach.matrix), dimnames = list( c("var.class"), colnames( ach.matrix ) ) )
@@ -403,6 +406,10 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(subgroup, design$variables, na.action = na.pass)[,]
+
+  if ( class(grpvar) == "labelled" ) {
+    stop( "This function does not support 'labelled' variables. Try factor().")
+  }
 
   if (na.rm) {
     nas <- apply( cbind( ach.matrix, grpvar ), 1, function(x) any( is.na(x) ) )

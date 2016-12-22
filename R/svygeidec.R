@@ -139,6 +139,10 @@ svygeidec.survey.design <-
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
 
+    if ( class(grpvar) == "labelled" ) {
+      stop( "This function does not support 'labelled' variables. Try factor().")
+    }
+
     if (na.rm) {
       nas <- ( is.na(incvar) | is.na(grpvar ) ) & w > 0
       design <- design[nas == 0, ]
@@ -384,6 +388,10 @@ svygeidec.svyrep.design <-
 
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
+
+    if ( class(grpvar) == "labelled" ) {
+      stop( "This function does not support 'labelled' variables. Try factor().")
+    }
 
     if(na.rm){
       nas<-is.na(incvar) | is.na(grpvar)
