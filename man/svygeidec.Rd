@@ -7,22 +7,22 @@
 \alias{svygeidec.svyrep.design}
 \title{Generalized entropy index Decomposition}
 \usage{
-svygeidec(formula, groups, design, ...)
+svygeidec(formula, design, groups = ~1, ...)
 
-\method{svygeidec}{survey.design}(formula, groups, design, epsilon = 1,
+\method{svygeidec}{survey.design}(formula, design, groups, epsilon = 1,
   na.rm = FALSE, ...)
 
-\method{svygeidec}{svyrep.design}(formula, groups, design, epsilon = 1,
+\method{svygeidec}{svyrep.design}(formula, design, groups, epsilon = 1,
   na.rm = FALSE, ...)
 
-\method{svygeidec}{DBIsvydesign}(formula, groups, design, ...)
+\method{svygeidec}{DBIsvydesign}(formula, design, groups, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{groups}{a formula specifying the group variable}
-
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
+
+\item{groups}{a formula specifying the group variable}
 
 \item{...}{future expansion}
 

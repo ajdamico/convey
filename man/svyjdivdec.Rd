@@ -7,24 +7,24 @@
 \alias{svyjdivdec.svyrep.design}
 \title{J-Divergence Decomposition}
 \usage{
-svyjdivdec(formula, groups, design, ...)
+svyjdivdec(formula, design, ...)
 
-\method{svyjdivdec}{survey.design}(formula, groups, design, na.rm = FALSE,
-  ...)
+\method{svyjdivdec}{survey.design}(formula, design, groups = ~1,
+  na.rm = FALSE, ...)
 
-\method{svyjdivdec}{svyrep.design}(formula, groups, design, na.rm = FALSE,
-  ...)
+\method{svyjdivdec}{svyrep.design}(formula, design, groups = ~1,
+  na.rm = FALSE, ...)
 
-\method{svyjdivdec}{DBIsvydesign}(formula, groups, design, ...)
+\method{svyjdivdec}{DBIsvydesign}(formula, design, groups = ~1, ...)
 }
 \arguments{
 \item{formula}{a formula specifying the income variable}
 
-\item{groups}{a formula specifying the group variable}
-
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
 \item{...}{future expansion}
+
+\item{groups}{a formula specifying the group variable}
 
 \item{na.rm}{Should cases with missing values be dropped? Observations containing missing values in income or group variables will be dropped.}
 }
