@@ -314,6 +314,11 @@ svysen.svyrep.design <-
           names(wi)<- row.names(df_full)
           wd<-wi[ind]
           incd <- incvec[ind]
+
+          if(type_thresh=='relq') qq.th <- percent * computeQuantiles( incvec, wi, p = quantiles )
+          if(type_thresh=='relm') qq.th <- percent*sum(incvec*wi)/sum(wi)
+          if(type_thresh=='abs') qq.th <- abs_thresh
+
           ComputeFGT(incd, wd, g = 0, th)}
         )
 
@@ -322,6 +327,11 @@ svysen.svyrep.design <-
           names(wi)<- row.names(df_full)
           wd<-wi[ind]
           incd <- incvec[ind]
+
+          if(type_thresh=='relq') qq.th <- percent * computeQuantiles( incvec, wi, p = quantiles )
+          if(type_thresh=='relm') qq.th <- percent*sum(incvec*wi)/sum(wi)
+          if(type_thresh=='abs') qq.th <- abs_thresh
+
           ComputeFGT(incd, wd, g = 1, th)}
         )
 
@@ -330,7 +340,12 @@ svysen.svyrep.design <-
           names(wi)<- row.names(df_full)
           wd<-wi[ind]
           incd <- incvec[ind]
-          wd<- wd *( incd <= th )
+
+          if(type_thresh=='relq') qq.th <- percent * computeQuantiles( incvec, wi, p = quantiles )
+          if(type_thresh=='relm') qq.th <- percent*sum(incvec*wi)/sum(wi)
+          if(type_thresh=='abs') qq.th <- abs_thresh
+
+          wd<- wd *( incd <= qq.th )
           ComputeGini(incd, wd )}
         )
 
