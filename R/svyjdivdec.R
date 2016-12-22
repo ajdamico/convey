@@ -47,20 +47,30 @@
 #' des_eusilc_rep <- convey_prep(des_eusilc_rep)
 #'
 #' # linearized design
-#' svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0) )
+#' svyjdivdec( ~eqincome , subset(des_eusilc, eqincome > 0) )
+#' svyjdivdec( ~eqincome , subset(des_eusilc, eqincome > 0) , ~rb090 )
 #'
 #' # replicate-weighted design
-#' svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
+#' svyjdivdec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) )
+#' svyjdivdec( ~eqincome , subset(des_eusilc_rep, eqincome > 0) , ~rb090 )
 #'
 #' # linearized design using a variable with missings
 #' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
-#' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc )
-#' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc , na.rm = TRUE )
+#'
+#' svyjdivdec( ~py010n , sub_des_eusilc )
+#' svyjdivdec( ~py010n , sub_des_eusilc , na.rm = TRUE )
+#'
+#' svyjdivdec( ~py010n , sub_des_eusilc , ~rb090 )
+#' svyjdivdec( ~py010n , sub_des_eusilc , ~rb090 , na.rm = TRUE )
 #'
 #' # replicate-weighted design using a variable with missings
 #' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
-#' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep )
-#' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep , na.rm = TRUE )
+#'
+#' svyjdivdec( ~py010n , sub_des_eusilc_rep )
+#' svyjdivdec( ~py010n , sub_des_eusilc_rep , na.rm = TRUE )
+#'
+#' svyjdivdec( ~py010n , sub_des_eusilc_rep , ~rb090 )
+#' svyjdivdec( ~py010n , sub_des_eusilc_rep , ~rb090 , na.rm = TRUE )
 #'
 #' \dontrun{
 #'
@@ -84,12 +94,17 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' # database-backed linearized design
-#' svyjdivdec( ~eqincome , ~rb090 , subset(dbd_eusilc, eqincome > 0) )
+#' svyjdivdec( ~eqincome , subset(dbd_eusilc, eqincome > 0) )
+#' svyjdivdec( ~eqincome , subset(dbd_eusilc, eqincome > 0) , ~rb090 )
 #'
 #' # database-backed linearized design using a variable with missings
 #' sub_dbd_eusilc <- subset(dbd_eusilc, py010n > 0 | is.na(py010n) )
-#' svyjdivdec( ~py010n , ~rb090 , sub_dbd_eusilc )
-#' svyjdivdec( ~py010n , ~rb090 , sub_dbd_eusilc , na.rm = TRUE )
+#'
+#' svyjdivdec( ~py010n , sub_dbd_eusilc )
+#' svyjdivdec( ~py010n , sub_dbd_eusilc , na.rm = TRUE )
+#'
+#' svyjdivdec( ~py010n , sub_dbd_eusilc , ~rb090 )
+#' svyjdivdec( ~py010n , sub_dbd_eusilc , ~rb090 , na.rm = TRUE )
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
