@@ -207,7 +207,10 @@ coef.cvystat <- function(object, ...) {
 	attr(object, "lin") <- NULL
 	attr(object, "quantile") <- NULL
 	attr(object, "epsilon") <- NULL
-    unclass(object)
+	attr(object, "dimensions") <- NULL
+	attr(object, "parameters") <- NULL
+	attr(object, "extra") <- NULL
+	  unclass(object)
 }
 
 
@@ -251,7 +254,7 @@ coef.cvydstat <- function(object, ...) {
 #' @export
 SE.cvydstat <- function (object, ...) {
     vv <- as.matrix(attr(object, "var"))
-    if (!is.null(dim(object)) && length(object) == length(vv)) 
+    if (!is.null(dim(object)) && length(object) == length(vv))
         sqrt(vv)
     else sqrt(diag(vv))
 }

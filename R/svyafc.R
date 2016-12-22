@@ -253,13 +253,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 
   }
 
-  estimate <- survey::svymean( cen.depr.sums , design )
-  #survey::svymean(cen.dep.matrix,design)
-
-  rval <- estimate
-  variance <- attr( estimate, "var" )
-  class(rval) <- c( "cvystat" , "svystat" )
-  attr(rval, "var") <- variance
+  rval <- survey::svymean( cen.depr.sums , design )
   attr(rval, "statistic") <- "alkire-foster"
   dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
   dimtable[,2] <- as.numeric( dimtable[,2] )
@@ -268,6 +262,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
   if ( g == 0 ) {
     attr(rval, "extra") <- matrix( c( h_est[1], a_est[[1]], attr( h_est, "var" )[1]^.5, a_est[[2]]^.5 ), nrow = 2, ncol = 2, dimnames = list( c("H", "A"), c( "coef", "SE" ) ) )
   }
+  class(rval) <- c( "cvystat" , "svystat" )
 
   return( rval )
 
@@ -416,13 +411,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   cen.depr.sums <- w
   rm(w)
 
-  estimate <- survey::svymean(cen.depr.sums,design)
-  #survey::svymean(cen.dep.matrix,design)
-
-  rval <- estimate
-  variance <- attr( estimate, "var" )
-  class(rval) <- c( "cvystat" , "svrepstat" )
-  attr(rval, "var") <- variance
+  rval <- survey::svymean( cen.depr.sums , design )
   attr(rval, "statistic") <- "alkire-foster"
   dimtable <- as.data.frame( matrix( c( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], dimw ), nrow = ncol(var.class), ncol = 2, dimnames = list( paste("dimension", 1:ncol(var.class) ), c( "variables", "weight" ) ) ), stringsAsFactors = FALSE )
   dimtable[,2] <- as.numeric( dimtable[,2] )
@@ -431,6 +420,8 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   if ( g == 0 ) {
     attr(rval, "extra") <- matrix( c( h_est[1], a_est[[1]], attr( h_est, "var" )[1]^.5, a_est[[2]]^.5 ), nrow = 2, ncol = 2, dimnames = list( c("H", "A"), c( "coef", "SE" ) ) )
   }
+
+  class(rval) <- c( "cvystat" , "svrepstat" )
 
  return( rval )
 
