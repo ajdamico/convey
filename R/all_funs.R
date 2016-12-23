@@ -162,7 +162,7 @@ print.cvystat <- function(x, ...) {
 
   vv <- attr(x, "var")
 
-  if ( attr( x, "statistic" ) %in% c( "alkire-foster", "bourguignon-chakravarty" ) ) {
+  if ( attr( x, "statistic" ) %in% c( "alkire-foster", "bourguignon-chakravarty", "bourguignon" ) ) {
 
     statistic <- attr( x, "statistic" )
     m <- matrix( data = c( x[1] , sqrt(vv) ) , ncol = 2, dimnames = list( NULL, c( statistic, "SE" ) ) )

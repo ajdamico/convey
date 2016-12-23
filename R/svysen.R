@@ -126,11 +126,12 @@ svysen.survey.design <-
 
     gini <- NULL
     gini$value <- coef(rval.gini)[[1]]
-    if ( length( attr( rval.gini, "lin" ) ) == length( 1 / full_design$prob ) ) {
+    if ( length( attr( rval.gini, "lin" ) ) == length( fgt0$lin ) ) {
       gini$lin <- attr( rval.gini, "lin" )
     } else {
-      gini$lin <- rep( 0, length( 1 / full_design$prob ) )
-      gini$lin[ as.logical( ID * (incvar <= th) ) ] <- attr( rval.gini, "lin" )
+      gini$lin <- 1 * ( fgt0$lin != 0 )
+      gini$lin[ gini$lin == 1 ] <- 1 * ( incvar <= th )
+      gini$lin[ gini$lin == 1 ] <- attr( rval.gini, "lin" )
     }
     rm( rval.gini, poor.design )
 

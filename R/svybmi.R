@@ -135,7 +135,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     w <- 1/design$prob
   }
 
-  nac.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
+  nac.matrix <- model.frame(formula, design$variables, na.action = na.pass) [ w > 0, ]
+  w <- w [ w > 0 ]
 
   # Normalized Achievement Matrix
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
@@ -159,7 +160,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   indiv.welfare <- aggregator( mat = nac.matrix, dimw = dimw, alpha = alpha, beta = beta )
 
-  if ( any( is.na( indiv.welfare )[ w > 0 ] ) ) {
+  if ( any( is.na( indiv.welfare ) ) ) {
 
     rval <- as.numeric(NA)
     variance <- as.numeric(NA)
@@ -172,8 +173,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   }
 
-  U_x <- list( value = sum( w[ w > 0 ] * indiv.welfare[ w > 0 ] ) , lin = indiv.welfare * ( w > 0 ) )
-  aggr.pop <- list( value = sum( w[ w > 0 ] ), lin = rep( 1 , length( nac.matrix[ , 1 ] ) ) * ( w > 0 ) )
+  U_x <- list( value = sum( w * indiv.welfare ) , lin = indiv.welfare )
+  aggr.pop <- list( value = sum( w ), lin = rep( 1 , length( nac.matrix[ , 1 ] ) ) )
 
   U_x <- contrastinf( quote( U_x / aggr.pop ) , list( U_x = U_x, aggr.pop = aggr.pop ) )
 
@@ -186,7 +187,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       if ( beta != 0 ) {
 
-        aggr.nac <- list( value = sum( w[ w > 0 ] * nac.matrix[ w > 0 , i ] ), lin = nac.matrix[ , i ] * ( w > 0 ) )
+        aggr.nac <- list( value = sum( w * nac.matrix[ , i ] ), lin = nac.matrix[ , i ] )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -194,7 +195,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       } else {
 
-        aggr.nac <- list( value = sum( nac.matrix[ w > 0 , i ] * w[ w > 0 ] ), lin = nac.matrix[ , i ] * ( w > 0 ) )
+        aggr.nac <- list( value = sum( nac.matrix[ , i ] * w ), lin = nac.matrix[ , i ] )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -206,8 +207,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       if ( beta != 0 ) {
 
-        aggr.nac <- list( value = sum( w[ w > 0 ] * nac.matrix[ w > 0 , i ] ), lin = nac.matrix[ , i ] * ( w > 0 ) )
-        aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) * ( w > 0 ) )
+        aggr.nac <- list( value = sum( w * nac.matrix[ , i ] ), lin = nac.matrix[ , i ] )
+        aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
         aggr.mu_iter <- contrastinf( quote( aggr.dimw * ( aggr.nac / aggr.pop )^aggr.beta ), list_all )
@@ -216,7 +217,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       } else {
 
-        aggr.nac <- list( value = sum( nac.matrix[ w > 0 , i ] * w[ w > 0 ] ), lin = nac.matrix[ , i ] )
+        aggr.nac <- list( value = sum( nac.matrix[ , i ] * w ), lin = nac.matrix[ , i ] )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -237,14 +238,22 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   }
 
   estimate <- contrastinf( quote( 1 - ( U_x / aggr.mu ) ), list( U_x = U_x, aggr.mu = aggr.mu ) )
+  if ( length(estimate$lin) < length(design$prob) ) {
+    lin <- 1 *( (1/design$prob) > 0 )
+    lin[ lin == 1 ] <- estimate$lin
+    estimate$lin <- lin
+    rm(lin)
+  }
+
   variance <- survey::svyrecvar( estimate$lin / design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
 
   rval <- estimate$value
-  class(rval) <- c( "cvystat" , "svystat" )
+  names( rval )[1] <- attr(rval, "statistic") <- "bourguignon"
   attr(rval, "var") <- variance
-  attr(rval, "statistic") <- "bourguignon"
   attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
   attr(rval, "parameters") <- matrix( c( alpha, beta ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "alpha=", "beta=" ) ) )
+  class(rval) <- c( "cvystat" , "svystat" )
+
 
   rval
 
@@ -314,7 +323,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     variance <- as.numeric(NA)
     class(rval) <- c( "cvystat" , "svrepstat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "bourguignon"
+    names( rval )[1] <- attr(rval, "statistic") <- "bourguignon"
     attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
     attr(rval, "parameters") <- matrix( c( alpha, beta ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "alpha=", "beta=" ) ) )
     return(rval)
@@ -352,7 +361,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   class(rval) <- c( "cvystat" , "svrepstat" )
   attr(rval, "var") <- variance
-  attr(rval, "statistic") <- "bourguignon"
+  names( rval )[1] <- attr(rval, "statistic") <- "bourguignon"
   attr(rval, "dimensions") <- matrix( strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]], nrow = 1, ncol = ncol(var.class), dimnames = list( "variables", paste("dimension", 1:ncol(var.class) ) ) )
   attr(rval, "parameters") <- matrix( c( alpha, beta ), nrow = 1, ncol = 2, dimnames = list( "parameters", c( "alpha=", "beta=" ) ) )
 
