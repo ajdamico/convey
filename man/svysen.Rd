@@ -9,13 +9,11 @@
 \usage{
 svysen(formula, design, ...)
 
-\method{svysen}{survey.design}(formula, design, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svysen}{survey.design}(formula, design, abs_thresh = NULL,
+  na.rm = FALSE, components = FALSE, ...)
 
-\method{svysen}{svyrep.design}(formula, design, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svysen}{svyrep.design}(formula, design, abs_thresh = NULL,
+  na.rm = FALSE, components = FALSE, ...)
 
 \method{svysen}{DBIsvydesign}(formula, design, ...)
 }
@@ -26,18 +24,11 @@ svysen(formula, design, ...)
 
 \item{...}{passed to \code{svyarpr} and \code{svyarpt}}
 
-\item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
-of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.}
-
-\item{abs_thresh}{poverty threshold value if type_thresh is "abs"}
-
-\item{percent}{the multiple of the the quantile or mean used in the poverty threshold definition}
-
-\item{quantiles}{the quantile used used in the poverty threshold definition}
+\item{abs_thresh}{poverty threshold value}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
-\item{thresh}{return the poverty threshold value}
+\item{components}{Keep estimates of FGT(0), FGT(1), Gini index of poor incomes.}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -62,20 +53,11 @@ des_eusilc <- convey_prep( des_eusilc )
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
-# poverty threshold fixed
-svysen(~eqincome, des_eusilc, abs_thresh=10000)
-# poverty threshold equal to arpt
-svysen(~eqincome, des_eusilc, type_thresh= "relq" , thresh = TRUE)
-# poverty threshold equal to .6 times the mean
-svysen(~eqincome, des_eusilc, type_thresh= "relm", thresh = TRUE)
+# using linearized design
+svysen( ~eqincome, des_eusilc, abs_thresh=10000 )
 
-#  using svrep.design:
-# poverty threshold fixed
-svysen(~eqincome, des_eusilc_rep, abs_thresh=10000)
-# poverty threshold equal to arpt
-svysen(~eqincome, des_eusilc_rep, type_thresh= "relq" , thresh = TRUE)
-# poverty threshold equal to .6 times the mean
-svysen(~eqincome, des_eusilc_rep, type_thresh= "relm" , thresh = TRUE)
+# using replicate design:
+svysen( ~eqincome, des_eusilc_rep, abs_thresh = 10000 )
 
 
 \dontrun{
@@ -100,18 +82,8 @@ dbd_eusilc <-
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
-# headcount ratio, poverty threshold fixed
+# linearized SE:
 svysen(~eqincome, dbd_eusilc, abs_thresh=10000)
-# poverty gap index, poverty threshold fixed
-svysen(~eqincome, dbd_eusilc, abs_thresh=10000)
-# headcount ratio, poverty threshold equal to arpt
-svysen(~eqincome, dbd_eusilc, type_thresh= "relq", thresh = TRUE)
-# poverty gap index, poverty threshold equal to arpt
-svysen(~eqincome, dbd_eusilc, type_thresh= "relq")
-# headcount ratio, poverty threshold equal to .6 times the mean
-svysen(~eqincome, dbd_eusilc, type_thresh= "relm")
-# poverty gap index, poverty threshold equal to 0.6 times the mean
-svysen(~eqincome, dbd_eusilc, type_thresh= "relm")
 
 dbRemoveTable( conn , 'eusilc' )
 

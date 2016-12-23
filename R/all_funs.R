@@ -211,6 +211,7 @@ coef.cvystat <- function(object, ...) {
 	attr(object, "dimensions") <- NULL
 	attr(object, "parameters") <- NULL
 	attr(object, "extra") <- NULL
+	attr(object, "components") <- NULL
 	  unclass(object)
 }
 
