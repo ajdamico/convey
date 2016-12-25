@@ -22,6 +22,44 @@ des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
+# database-backed design
+library(MonetDBLite)
+library(DBI)
+dbfolder <- tempdir()
+conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <-
+  svydesign(
+    ids = ~rb030 ,
+    strata = ~db040 ,
+    weights = ~rb050 ,
+    data="eusilc",
+    dbname=dbfolder,
+    dbtype="MonetDBLite"
+  )
+
+dbd_eusilc <- convey_prep( dbd_eusilc )
+
+# create a hacky database-backed svrepdesign object
+# mirroring des_eusilc_rep
+dbd_eusilc_rep <-
+  svrepdesign(
+    weights = ~ rb050,
+    repweights = des_eusilc_rep$repweights ,
+    scale = des_eusilc_rep$scale ,
+    rscales = des_eusilc_rep$rscales ,
+    type = "bootstrap" ,
+    data = "eusilc" ,
+    dbtype = "MonetDBLite" ,
+    dbname = dbfolder ,
+    combined.weights = FALSE
+  )
+
+dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
+
+
+
 for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 	for ( this_g in c( 0 , 1 ) ) {
 
@@ -61,26 +99,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 		})
 
 
-
-			# database-backed design
-			library(MonetDBLite)
-			library(DBI)
-			dbfolder <- tempdir()
-			conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
-			dbWriteTable( conn , 'eusilc' , eusilc )
-
-			dbd_eusilc <-
-				svydesign(
-					ids = ~rb030 ,
-					strata = ~db040 ,
-					weights = ~rb050 ,
-					data="eusilc",
-					dbname=dbfolder,
-					dbtype="MonetDBLite"
-				)
-
-			dbd_eusilc <- convey_prep( dbd_eusilc )
-
 			c1 <- svyfgt(~eqincome, design = dbd_eusilc, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 			c2 <- svyby(~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyfgt, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
@@ -114,25 +132,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 		})
 
 
-
-
-			# create a hacky database-backed svrepdesign object
-			# mirroring des_eusilc_rep
-			dbd_eusilc_rep <-
-				svrepdesign(
-					weights = ~ rb050,
-					repweights = des_eusilc_rep$repweights ,
-					scale = des_eusilc_rep$scale ,
-					rscales = des_eusilc_rep$rscales ,
-					type = "bootstrap" ,
-					data = "eusilc" ,
-					dbtype = "MonetDBLite" ,
-					dbname = dbfolder ,
-					combined.weights = FALSE
-				)
-
-			dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
-
 			sub_dbd <- svyfgt( ~eqincome , design = subset( dbd_eusilc , hsize == 1), g=0, type_thresh= this_thresh, abs_thresh=10000 )
 			sby_dbd <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyfgt ,g=0, type_thresh= this_thresh, abs_thresh=10000)
 			sub_dbr <- svyfgt( ~eqincome , design = subset( dbd_eusilc_rep , hsize == 1), g=0, type_thresh= this_thresh, abs_thresh=10000 )
@@ -157,8 +156,8 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 				expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
 			})
 
-			dbRemoveTable( conn , 'eusilc' )
+
 	}
 }
 
-
+dbRemoveTable( conn , 'eusilc' )
