@@ -22,13 +22,13 @@ svysst(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
-\item{...}{passed to \code{svyarpr} and \code{svyarpt}}
+\item{...}{future expansion}
 
 \item{abs_thresh}{poverty threshold value}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
-\item{components}{Keep estimates of FGT(0), FGT(1), Gini index of poor incomes.}
+\item{components}{Keep estimates of FGT(0), FGT(1), Gini index of poverty gap ratios.}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -109,7 +109,7 @@ Amartya K. Sen (1976). Poverty: An Ordinal Approach to Measurement.
 URL \url{http://www.jstor.org/stable/1912718}.
 }
 \seealso{
-\code{\link{svyarpt}}
+\code{\link{svysen}}, \code{\link{svyfgt}}, \code{\link{svygini}}.
 }
 \keyword{survey}
 

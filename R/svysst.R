@@ -6,8 +6,8 @@
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
 #' @param abs_thresh poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
-#' @param components Keep estimates of FGT(0), FGT(1), Gini index of poor incomes.
-#' @param ... passed to \code{svyarpr} and \code{svyarpt}
+#' @param components Keep estimates of FGT(0), FGT(1), Gini index of poverty gap ratios.
+#' @param ... future expansion
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -15,7 +15,7 @@
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{\link{svyarpt}}
+#' @seealso \code{\link{svysen}}, \code{\link{svyfgt}}, \code{\link{svygini}}.
 #'
 #' @references Anthony F. Shorrocks (1995). Revisiting the Sen Poverty Index.
 #' \emph{Econometrica}, v. 63, n. 5, pp. 1225-230.
@@ -145,6 +145,26 @@ svysst.survey.design <-
     }
     rm( rval.gini, gini.design )
 
+    if ( any( is.na( c( fgt0$value, fgt1$value, gini$value ) ) ) ) {
+
+      sst <- NULL
+      variance <- NA
+
+      rval <- sst$value
+      colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+      class(rval) <- c( "cvystat" , "svystat" )
+      attr(rval, "var") <- variance
+      attr(rval, "statistic") <- names( rval ) <- "sen-shorrocks-thon"
+
+      if ( components ) {
+        component.var <- matrix( rep(NA,16), ncol = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ), c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ) ) )[,]
+        component.est <- matrix( data = rep( NA, 8 ),
+                                 nrow = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ), c( "Estimate", "SE" ) ) )
+        attr(rval, "components") <- list( `Components` = component.est, `C-VCOV` = component.var )
+      }
+
+    }
+
     sst <- contrastinf( quote( fgt0 * fgt1 * ( 1 + gini) ), list( fgt0 = fgt0, fgt1 = fgt1, gini = gini ) )
 
     variance <- survey::svyrecvar( sst$lin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
@@ -153,7 +173,7 @@ svysst.survey.design <-
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "sen-shorrocks-thon"
+    attr(rval, "statistic") <- names( rval ) <- "sen-shorrocks-thon"
 
     if ( components ) {
       lin.matrix <-  matrix( data = c(fgt0$lin, fgt1$lin, gini$lin, sst$lin), ncol = 4, dimnames = list( NULL, c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ) ) )
@@ -272,7 +292,23 @@ svysst.svyrep.design <-
       qq <- qq.fgt0 *  qq.fgt1 * ( 1 + qq.gini )
 
       if(anyNA(qq)) {
-        variance <- NA
+        if ( any( is.na( c( fgt0$value, fgt1$value, gini$value ) ) ) ) {
+
+          variance <- NA
+          rval <- NA
+          colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+          class(rval) <- c( "cvystat" , "svrepstat" )
+          attr(rval, "var") <- variance
+          attr(rval, "statistic") <- names( rval ) <- "sen-shorrocks-thon"
+
+          if ( components ) {
+            component.var <- matrix( rep(NA,16), ncol = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ), c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ) ) )[,]
+            component.est <- matrix( data = rep( NA, 8 ),
+                                     nrow = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ), c( "Estimate", "SE" ) ) )
+            attr(rval, "components") <- list( `Components` = component.est, `C-VCOV` = component.var )
+          }
+
+        }
       } else {
         variance <- survey::svrVar( qq, design$scale, design$rscales, mse = design$mse, coef = sst )
       }
@@ -281,7 +317,7 @@ svysst.svyrep.design <-
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
       class(rval) <- c( "cvystat" , "svrepstat" )
       attr(rval, "var") <- variance
-      attr(rval, "statistic") <- "sen-shorrocks-thon"
+      attr(rval, "statistic") <- names( rval ) <- "sen-shorrocks-thon"
 
       if ( components ) {
         qq.matrix <-  matrix( data = c( qq.fgt0, qq.fgt1, qq.gini, qq ), ncol = 4, dimnames = list( NULL, c( "FGT(0)", "FGT(1)", "Gini(PGR)", "SST" ) ) )

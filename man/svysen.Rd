@@ -22,7 +22,7 @@ svysen(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
-\item{...}{passed to \code{svyarpr} and \code{svyarpt}}
+\item{...}{future expansion}
 
 \item{abs_thresh}{poverty threshold value}
 
@@ -101,7 +101,7 @@ Amartya K. Sen (1976). Poverty: An Ordinal Approach to Measurement.
 URL \url{http://www.jstor.org/stable/1912718}.
 }
 \seealso{
-\code{\link{svyarpt}}
+\code{\link{svysst}}, \code{\link{svyfgt}}, \code{\link{svygini}}.
 }
 \keyword{survey}
 

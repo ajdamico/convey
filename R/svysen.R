@@ -7,7 +7,7 @@
 #' @param abs_thresh poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
 #' @param components Keep estimates of FGT(0), FGT(1), Gini index of poor incomes.
-#' @param ... passed to \code{svyarpr} and \code{svyarpt}
+#' @param ... future expansion
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -15,7 +15,7 @@
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{\link{svyarpt}}
+#' @seealso \code{\link{svysst}}, \code{\link{svyfgt}}, \code{\link{svygini}}.
 #'
 #' @references Amartya K. Sen (1976). Poverty: An Ordinal Approach to Measurement.
 #' \emph{Econometrica}, v. 44, n. 3, pp. 219-231.
@@ -135,6 +135,26 @@ svysen.survey.design <-
     }
     rm( rval.gini, poor.design )
 
+    if ( any( is.na( c( fgt0$value, fgt1$value, gini$value ) ) ) ) {
+
+      sen <- NA
+      variance <- NA
+
+      rval <- sen
+      colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+      class(rval) <- c( "cvystat" , "svystat" )
+      attr(rval, "var") <- variance
+      attr(rval, "statistic") <- names( rval ) <- "sen poverty index"
+
+      if ( components ) {
+        component.var <- matrix( rep(NA,16), ncol = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ), c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ) ) )[,]
+        component.est <- matrix( data = rep( NA, 8 ),
+                                 nrow = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ), c( "Estimate", "SE" ) ) )
+        attr(rval, "components") <- list( `Components` = component.est, `C-VCOV` = component.var )
+      }
+
+    }
+
     sen <- contrastinf( quote( fgt0 * gini + fgt1 * ( 1 - gini) ), list( fgt0 = fgt0, fgt1 = fgt1, gini = gini ) )
 
     variance <- survey::svyrecvar( sen$lin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
@@ -143,7 +163,7 @@ svysen.survey.design <-
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "sen poverty index"
+    attr(rval, "statistic") <- names( rval ) <- "sen poverty index"
 
     if ( components ) {
       lin.matrix <-  matrix( data = c(fgt0$lin, fgt1$lin, gini$lin, sen$lin), ncol = 4, dimnames = list( NULL, c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ) ) )
@@ -262,16 +282,31 @@ svysen.svyrep.design <-
       qq <- ( qq.fgt0 * qq.gini ) + qq.fgt1 * ( 1 - qq.gini )
 
       if(anyNA(qq)) {
+
         variance <- NA
+        rval <- NA
+        colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+        class(rval) <- c( "cvystat" , "svrepstat" )
+        attr(rval, "var") <- variance
+        attr(rval, "statistic") <- names( rval ) <- "sen poverty index"
+
+        if ( components ) {
+          component.var <- matrix( rep(NA,16), ncol = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ), c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ) ) )[,]
+          component.est <- matrix( data = rep( NA, 8 ),
+                                   nrow = 4, dimnames = list( c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ), c( "Estimate", "SE" ) ) )
+          attr(rval, "components") <- list( `Components` = component.est, `C-VCOV` = component.var )
+        }
+
       } else {
         variance <- survey::svrVar( qq, design$scale, design$rscales, mse = design$mse, coef = sen )
-        }
+      }
+
 
       rval <- sen
       names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
       class(rval) <- c( "cvystat" , "svrepstat" )
       attr(rval, "var") <- variance
-      attr(rval, "statistic") <- "sen poverty index"
+      attr(rval, "statistic") <- names( rval ) <- "sen poverty index"
 
       if ( components ) {
         qq.matrix <-  matrix( data = c( qq.fgt0, qq.fgt1, qq.gini, qq ), ncol = 4, dimnames = list( NULL, c( "FGT(0)", "FGT(1)", "Gini(Poor)", "Sen" ) ) )
