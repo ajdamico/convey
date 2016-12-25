@@ -25,6 +25,43 @@ des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
+# database-backed design
+library(MonetDBLite)
+library(DBI)
+dbfolder <- tempdir()
+conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+dbWriteTable( conn , 'eusilc' , eusilc )
+
+dbd_eusilc <-
+  svydesign(
+    ids = ~rb030 ,
+    strata = ~db040 ,
+    weights = ~rb050 ,
+    data="eusilc",
+    dbname=dbfolder,
+    dbtype="MonetDBLite"
+  )
+
+dbd_eusilc <- convey_prep( dbd_eusilc )
+
+# create a hacky database-backed svrepdesign object
+# mirroring des_eusilc_rep
+dbd_eusilc_rep <-
+  svrepdesign(
+    weights = ~ rb050,
+    repweights = des_eusilc_rep$repweights ,
+    scale = des_eusilc_rep$scale ,
+    rscales = des_eusilc_rep$rscales ,
+    type = "bootstrap" ,
+    data = "eusilc" ,
+    dbtype = "MonetDBLite" ,
+    dbname = dbfolder ,
+    combined.weights = FALSE
+  )
+
+dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
+
+
 for (this_dimw in list( NULL, c(.25, .75) )) {
   for ( this_alpha in c(.5, 1) ){
     for ( this_beta in c( -.5, 0, .5 ) ) {
@@ -65,26 +102,6 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
       })
 
 
-
-      # database-backed design
-      library(MonetDBLite)
-      library(DBI)
-      dbfolder <- tempdir()
-      conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
-      dbWriteTable( conn , 'eusilc' , eusilc )
-
-      dbd_eusilc <-
-        svydesign(
-          ids = ~rb030 ,
-          strata = ~db040 ,
-          weights = ~rb050 ,
-          data="eusilc",
-          dbname=dbfolder,
-          dbtype="MonetDBLite"
-        )
-
-      dbd_eusilc <- convey_prep( dbd_eusilc )
-
       c1 <- svybmi( ~eqincome+hy050n, design=dbd_eusilc, alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
 
       c2 <- svyby( ~eqincome+hy050n, by = ~rb090, design=dbd_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
@@ -120,24 +137,6 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
 
 
 
-
-      # create a hacky database-backed svrepdesign object
-      # mirroring des_eusilc_rep
-      dbd_eusilc_rep <-
-        svrepdesign(
-          weights = ~ rb050,
-          repweights = des_eusilc_rep$repweights ,
-          scale = des_eusilc_rep$scale ,
-          rscales = des_eusilc_rep$rscales ,
-          type = "bootstrap" ,
-          data = "eusilc" ,
-          dbtype = "MonetDBLite" ,
-          dbname = dbfolder ,
-          combined.weights = FALSE
-        )
-
-      dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
-
       sub_dbd <- svybmi( ~eqincome+hy050n, design=subset( dbd_eusilc, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
       sby_dbd <- svyby( ~eqincome+hy050n, by = ~rb090, design= dbd_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
       sub_dbr <- svybmi( ~eqincome+hy050n, design=subset( dbd_eusilc_rep, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
@@ -161,8 +160,8 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[2]) # inverted results!
         expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[2]) # inverted results!
       })
-
-      dbRemoveTable( conn , 'eusilc' )
+      }
     }
-  }
 }
+
+dbRemoveTable( conn , 'eusilc' )
