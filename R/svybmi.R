@@ -299,9 +299,9 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
     for ( i in seq_along(var.class) ) {
-      top <- max( nac.matrix[ , i], na.rm = TRUE )
-      bottom <- min( nac.matrix[ , i], na.rm = TRUE )
-      nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
+      top <- max( nac.matrix[ w > 0 , i ], na.rm = TRUE )
+      bottom <- min( nac.matrix[ w > 0 , i ], na.rm = TRUE )
+      nac.matrix[ w > 0 , i ] <- ( nac.matrix[ w > 0 , i ] - bottom ) / ( top - bottom )
     }
 
   }
