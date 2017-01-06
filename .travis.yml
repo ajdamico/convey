@@ -5,3 +5,6 @@ cache: packages
 sudo: required
 apt_packages:
 - unixodbc-dev
+
+r_github_packages:
+ - hannesmuehleisen/MonetDBLite
