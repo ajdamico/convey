@@ -154,7 +154,8 @@ for( n in c( 50 , 1000 ) ){
 
 					test_that(paste( "functions work on weird distributions" , this_prefix , as.character( this_formula )[2] ) ,{
 
-
+						print( paste( "testing functions work on weird distributions" , this_prefix , as.character( this_formula )[2] ) )
+					
 						lin_res <- do.call( FUN , lin_params_list )
 						rep_res <- do.call( FUN , rep_params_list )
 
