@@ -8,3 +8,8 @@ apt_packages:
 
 r_github_packages:
  - hannesmuehleisen/MonetDBLite
+
+script: 
+    - |
+    R CMD build .
+    travis_wait 20 R CMD check convey*tar.gz
