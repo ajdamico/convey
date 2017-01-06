@@ -6,10 +6,12 @@ sudo: required
 apt_packages:
 - unixodbc-dev
 
+script: 
+  - |
+    R CMD build .
+    travis_wait 40 R CMD check googleComputeEngineR*tar.gz
+after_failure:
+- find *Rcheck -name '*.fail' -print -exec cat '{}' \;
+
 r_github_packages:
  - hannesmuehleisen/MonetDBLite
-
-script: 
-    - |
-    R CMD build .
-    travis_wait 20 R CMD check convey*tar.gz
