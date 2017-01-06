@@ -9,7 +9,8 @@ apt_packages:
 script: 
   - |
     R CMD build .
-    travis_wait 40 R CMD check googleComputeEngineR*tar.gz
+    travis_wait 40 R CMD check convey*tar.gz
+    
 after_failure:
 - find *Rcheck -name '*.fail' -print -exec cat '{}' \;
 
