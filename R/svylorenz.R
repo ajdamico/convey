@@ -265,7 +265,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
   N <- sum( w )
   var <- NULL
-  lin_mat <- matrix( NA, nrow = length( w ), ncol = length(quantiles) )
+  lin_mat <- matrix( NA, nrow = length( ordincvar ), ncol = length(quantiles) )
   for ( pc in quantiles ) {
     i <- match( pc, quantiles )
     pc
