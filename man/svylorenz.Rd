@@ -55,7 +55,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 Notice that the 'empirical' curve is observation-based and is the one actually used to calculate the Gini index.
 On the other hand, the quantile-based curve is used to estimate the shares, SEs and confidence intervals.
 
-This way, as the number of quantiles of the quantile-based function increases, the qwuantile-based curve approacches the observation-based curve.
+This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approacches the observation-based curve.
 }
 \examples{
 \dontrun{

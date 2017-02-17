@@ -19,7 +19,7 @@
 #' Notice that the 'empirical' curve is observation-based and is the one actually used to calculate the Gini index.
 #' On the other hand, the quantile-based curve is used to estimate the shares, SEs and confidence intervals.
 #'
-#' This way, as the number of quantiles of the quantile-based function increases, the qwuantile-based curve approacches the observation-based curve.
+#' This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approacches the observation-based curve.
 #'
 #' @return Object of class "\code{svyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
 #' and a "\code{SE}" attribute giving the standard errors of the estimates.
