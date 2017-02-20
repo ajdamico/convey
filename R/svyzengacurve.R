@@ -286,8 +286,10 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
     v_k <- v_k[ order(ordincvar) ]
 
     var[i] <- survey::svyrecvar( v_k/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
-    rm(v_k, lin_wtd.psum); gc()
+    rm(v_k, lin_wtd.psum)
+	
   }
+  
   se <- sqrt(var)
 
   CI.L <- Z.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )

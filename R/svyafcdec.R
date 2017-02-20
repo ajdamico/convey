@@ -223,7 +223,7 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  #rm(dep.matrix) ; gc()
+  #rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -326,7 +326,6 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
     class( grp.contr.pct ) <- c( "svystat" )
 
     rm( grp.pctg.estm, grp.pctg.estm_var, grp.pctg.cont, grp.pctg.cont_lin, grp.pctg.cont_var )
-    gc()
 
   }
 
@@ -356,7 +355,6 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
   class( dim.result ) <- c( "svystat" )
 
   rm( dim.contr, dim.contr_lin, dim.contr_var )
-  gc()
 
   # set up result object:
   if ( is.null( levels( grpvar ) ) ) {
@@ -440,7 +438,7 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  #rm(dep.matrix) ; gc()
+  #rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix

@@ -207,7 +207,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  rm(dep.matrix) ; gc()
+  rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -227,7 +227,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 
   # Sum of censored deprivations:
   cen.depr.sums <- rowSums( sweep( cen.dep.matrix, MARGIN=2 , dimw,`*`) )
-  rm( cen.dep.matrix, ach.matrix ) ; gc()
+  rm( cen.dep.matrix, ach.matrix )
 
 
   w <- 1/design$prob
@@ -353,7 +353,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  rm(dep.matrix) ; gc()
+  rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -372,7 +372,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
 
   # Sum of censored deprivations:
   cen.depr.sums <- rowSums( sweep( cen.dep.matrix, MARGIN=2 , dimw,`*`) )
-  rm( cen.dep.matrix, ach.matrix ) ; gc()
+  rm( cen.dep.matrix, ach.matrix )
 
   if ( any( is.na(cen.depr.sums) ) ){
 
