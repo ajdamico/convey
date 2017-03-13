@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyjdivdec.R
 \name{svyjdivdec}
 \alias{svyjdivdec}
-\alias{svyjdivdec.DBIsvydesign}
 \alias{svyjdivdec.survey.design}
 \alias{svyjdivdec.svyrep.design}
+\alias{svyjdivdec.DBIsvydesign}
 \title{J-Divergence Decomposition}
 \usage{
 svyjdivdec(formula, subgroup, design, ...)
@@ -104,9 +104,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Anthony F. Shorrocks (1984). Inequality decomposition
 by population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
@@ -124,5 +121,7 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \seealso{
 \code{\link{svyjdiv}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

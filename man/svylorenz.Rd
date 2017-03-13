@@ -2,9 +2,9 @@
 % Please edit documentation in R/svylorenz.R
 \name{svylorenz}
 \alias{svylorenz}
-\alias{svylorenz.DBIsvydesign}
 \alias{svylorenz.survey.design}
 \alias{svylorenz.svyrep.design}
+\alias{svylorenz.DBIsvydesign}
 \title{Lorenz curve}
 \usage{
 svylorenz(formula, design, ...)
@@ -123,9 +123,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
@@ -139,5 +136,7 @@ Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. 
 \seealso{
 \code{\link{svyquantile}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

@@ -2,9 +2,9 @@
 % Please edit documentation in R/svybcc.R
 \name{svybcc}
 \alias{svybcc}
-\alias{svybcc.DBIsvydesign}
 \alias{svybcc.survey.design}
 \alias{svybcc.svyrep.design}
+\alias{svybcc.DBIsvydesign}
 \title{Bourguignon-Chakravarty multidimensional poverty class}
 \usage{
 svybcc(formula, design, ...)
@@ -124,9 +124,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Francois Bourguignon and Satya R. Chakravarty (2003). The measurement of multidimensional poverty.
 Journal of Economic Inequality, v. 1, n. 1, April 2003, pp. 1-25.
@@ -138,5 +135,7 @@ Working Papers 109, ECINEQ, Society for the Study of Economic Inequality.
 \seealso{
 \code{\link{svyafc}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

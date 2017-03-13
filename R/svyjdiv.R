@@ -101,14 +101,16 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
-    if (length(nas) > length(design$prob)) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
+    if ( length(nas) > length(design$prob) ) { incvar <- incvar[nas == 0] }
   }
 
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   w <- 1/design$prob
 
-  if ( any( incvar[w != 0] <= 0 , na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
+  incvar <- incvar[ w > 0 ]
+  w <- w[ w > 0 ]
 
-  w <- 1/design$prob
+  if ( any( incvar <= 0 , na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
 
   rval <- NULL
 
@@ -131,6 +133,9 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
     return(rval)
   }
 
+  lin <- 1*( 1/design$prob > 0)
+  lin[ lin > 0 ] <- estimate$lin
+  estimate$lin <- lin ; rm( lin , w )
   variance <- survey::svyrecvar( estimate$lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

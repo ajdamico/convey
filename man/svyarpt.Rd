@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyarpt.R
 \name{svyarpt}
 \alias{svyarpt}
-\alias{svyarpt.DBIsvydesign}
 \alias{svyarpt.survey.design}
 \alias{svyarpt.svyrep.design}
+\alias{svyarpt.DBIsvydesign}
 \title{At-risk-of-poverty threshold}
 \usage{
 svyarpt(formula, design, ...)
@@ -94,9 +94,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -110,5 +107,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyarpr}}
 }
+\author{
+Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

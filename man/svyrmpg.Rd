@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyrmpg.R
 \name{svyrmpg}
 \alias{svyrmpg}
-\alias{svyrmpg.DBIsvydesign}
 \alias{svyrmpg.survey.design}
 \alias{svyrmpg.svyrep.design}
+\alias{svyrmpg.DBIsvydesign}
 \title{Relative median poverty gap}
 \usage{
 svyrmpg(formula, design, ...)
@@ -101,9 +101,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -117,5 +114,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyarpt}}
 }
+\author{
+Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

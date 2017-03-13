@@ -72,9 +72,6 @@ lin_Lor$value
 SE(svytotal(lin_Lor$lin,des_eusilc))
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -84,4 +81,6 @@ ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
 \seealso{
 \code{svyqsr}
 }
-
+\author{
+Djalma Pessoa and Anthony Damico
+}

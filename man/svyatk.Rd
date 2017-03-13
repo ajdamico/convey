@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyatk.R
 \name{svyatk}
 \alias{svyatk}
-\alias{svyatk.DBIsvydesign}
 \alias{svyatk.survey.design}
 \alias{svyatk.svyrep.design}
+\alias{svyatk.DBIsvydesign}
 \title{Atkinson index}
 \usage{
 svyatk(formula, design, ...)
@@ -134,9 +134,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Matti Langel (2012). Measuring inequality in finite population sampling.
 PhD thesis: Universite de Neuchatel,
@@ -150,5 +147,7 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \seealso{
 \code{\link{svygei}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

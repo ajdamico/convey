@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyrenyi.R
 \name{svyrenyi}
 \alias{svyrenyi}
-\alias{svyrenyi.DBIsvydesign}
 \alias{svyrenyi.survey.design}
 \alias{svyrenyi.svyrep.design}
+\alias{svyrenyi.DBIsvydesign}
 \title{Renyi divergence measure}
 \usage{
 svyrenyi(formula, design, ...)
@@ -98,9 +98,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Matti Langel (2012). Measuring inequality in finite population sampling.
 PhD thesis: Universite de Neuchatel,
@@ -109,5 +106,7 @@ URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 \seealso{
 \code{\link{svygei}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

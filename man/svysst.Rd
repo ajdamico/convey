@@ -2,9 +2,9 @@
 % Please edit documentation in R/svysst.R
 \name{svysst}
 \alias{svysst}
-\alias{svysst.DBIsvydesign}
 \alias{svysst.survey.design}
 \alias{svysst.svyrep.design}
+\alias{svysst.DBIsvydesign}
 \title{Sen-Shorrocks-Thon poverty index}
 \usage{
 svysst(formula, design, ...)
@@ -92,9 +92,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Anthony F. Shorrocks (1995). Revisiting the Sen Poverty Index.
 \emph{Econometrica}, v. 63, n. 5, pp. 1225-230.
@@ -111,5 +108,7 @@ URL \url{http://www.jstor.org/stable/1912718}.
 \seealso{
 \code{\link{svysen}}, \code{\link{svyfgt}}, \code{\link{svygini}}.
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

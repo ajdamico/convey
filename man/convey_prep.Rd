@@ -52,4 +52,3 @@ SE( svyarpt( ~ eqincome , sub_eusilc ) )
 Djalma Pessoa and Anthony Damico
 }
 \keyword{survey}
-

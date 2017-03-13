@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyamato.R
 \name{svyamato}
 \alias{svyamato}
-\alias{svyamato.DBIsvydesign}
 \alias{svyamato.survey.design}
 \alias{svyamato.svyrep.design}
+\alias{svyamato.DBIsvydesign}
 \title{Amato index}
 \usage{
 svyamato(formula, design, ...)
@@ -109,9 +109,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
 Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
@@ -123,5 +120,7 @@ URL \url{http://dx.doi.org/10.1016/j.spl.2012.04.020.}.
 \seealso{
 \code{\link{svygini}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

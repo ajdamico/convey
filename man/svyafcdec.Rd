@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyafcdec.R
 \name{svyafcdec}
 \alias{svyafcdec}
-\alias{svyafcdec.DBIsvydesign}
 \alias{svyafcdec.survey.design}
 \alias{svyafcdec.svyrep.design}
+\alias{svyafcdec.DBIsvydesign}
 \title{Alkire-Foster multidimensional poverty decompostition}
 \usage{
 svyafcdec(formula, subgroup, design, ...)
@@ -162,9 +162,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Sabina Alkire and James Foster (2011). Counting and multidimensional poverty measurement.
 Journal of Public Economics, v. 95, n. 7-8, August 2011, pp. 476-487, ISSN 0047-2727.
@@ -178,5 +175,7 @@ URL \url{http://EconPapers.repec.org/RePEc:boc:bocode:s458120}.
 \seealso{
 \code{\link{svyfgt}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

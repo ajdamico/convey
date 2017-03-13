@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyjdiv.R
 \name{svyjdiv}
 \alias{svyjdiv}
-\alias{svyjdiv.DBIsvydesign}
 \alias{svyjdiv.survey.design}
 \alias{svyjdiv.svyrep.design}
+\alias{svyjdiv.DBIsvydesign}
 \title{J-divergence measure}
 \usage{
 svyjdiv(formula, design, ...)
@@ -89,9 +89,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob
-}
 \references{
 Nicholas Rohde (2016). J-divergence measurements of economic inequality.
 J. R. Statist. Soc. A, v. 179, Part 3 (2016), pp. 847-870.
@@ -105,5 +102,7 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \seealso{
 \code{\link{svygei}}
 }
+\author{
+Guilherme Jacob
+}
 \keyword{survey}
-

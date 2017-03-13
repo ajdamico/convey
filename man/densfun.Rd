@@ -43,4 +43,3 @@ densfun ( ~ py010n , design = des_eusilc , 10000,FUN="F", na.rm = TRUE )
 Djalma Pessoa and Anthony Damico
 }
 \keyword{survey}
-

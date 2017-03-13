@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyzenga.R
 \name{svyzenga}
 \alias{svyzenga}
-\alias{svyzenga.DBIsvydesign}
 \alias{svyzenga.survey.design}
 \alias{svyzenga.svyrep.design}
+\alias{svyzenga.DBIsvydesign}
 \title{Zenga index}
 \usage{
 svyzenga(formula, design, ...)
@@ -103,9 +103,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
 Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
@@ -117,5 +114,7 @@ URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 \seealso{
 \code{\link{svygini}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

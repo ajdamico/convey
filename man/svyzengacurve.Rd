@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyzengacurve.R
 \name{svyzengacurve}
 \alias{svyzengacurve}
-\alias{svyzengacurve.DBIsvydesign}
 \alias{svyzengacurve.survey.design}
 \alias{svyzengacurve.svyrep.design}
+\alias{svyzengacurve.DBIsvydesign}
 \title{Zenga inequality curve}
 \usage{
 svyzengacurve(formula, design, ...)
@@ -126,9 +126,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Marcella Polisicchio and Francesco Porro (2011). A Comparison Between Lorenz L(P) Curve
 and Zenga I(P) Curve. Statistica Applicata, v. 21, n. 3-4, 289-301.
@@ -142,5 +139,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyquantile}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

@@ -2,9 +2,9 @@
 % Please edit documentation in R/svybmi.R
 \name{svybmi}
 \alias{svybmi}
-\alias{svybmi.DBIsvydesign}
 \alias{svybmi.survey.design}
 \alias{svybmi.svyrep.design}
+\alias{svybmi.DBIsvydesign}
 \title{Bourguignon (1999) multidimensional inequality indices}
 \usage{
 svybmi(formula, design, ...)
@@ -109,9 +109,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Francois Bourguignon (1999). Comment to 'Multidimensioned Approaches to Welfare
 Analysis' by Maasoumi, E. In: Handbook of income inequality measurement., ed. J.
@@ -123,5 +120,7 @@ In: Research on Economic Inequality. Emerald, p. 213-236.
 \seealso{
 \code{\link{svyfgt}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-
