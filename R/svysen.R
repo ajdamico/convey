@@ -119,7 +119,7 @@ svysen.survey.design <-
 
     # Gini index of poor incomes
     th <- abs_thresh
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    incvar <- model.frame( formula, design$variables, na.action = na.pass )[[1]]
     poor.design <- design[ incvar <= th , ]
 
     rval.gini <- svygini( formula = formula, design = poor.design, na.rm = na.rm )

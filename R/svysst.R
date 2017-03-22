@@ -119,16 +119,17 @@ svysst.survey.design <-
     rm( rval.fgt0 )
 
     # FGT(1)
-    rval.fgt1 <- convey::svyfgt( formula = formula, design = design, abs_thresh=abs_thresh, g = 1, na.rm = na.rm )
+    th <- abs_thresh
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    rval.fgt1 <- convey::svyfgt( formula = formula, design = design[ incvar <= abs_thresh ], abs_thresh=abs_thresh, g = 1, na.rm = na.rm )
     fgt1 <- NULL
     fgt1$value <- coef( rval.fgt1 )[[1]]
     fgt1$lin <- attr( rval.fgt1, "lin" )
     rm( rval.fgt1 )
 
-    # Gini index of poverty gap ratios
-    th <- abs_thresh
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    design$variables$pgratio <-  ( ( th - incvar ) / th ) * ( th >= incvar )
+    # Gini index
+    #design$variables$pgratio <- ( ( th - incvar ) / th ) * ( th >= incvar )
+    design$variables$pgratio <- ( th - incvar ) * ( th >= incvar )
     #design$variables$pgratio <- (th - incvar) / th
 
     gini.design <- design
@@ -256,9 +257,11 @@ svysst.svyrep.design <-
       th <- abs_thresh
 
 
-      fgt0 <- ComputeFGT(incvar, ws, g = 0, th)
-      fgt1 <- ComputeFGT(incvar, ws, g = 1, th)
-      gini <- ComputeGini( ( ( th - incvar ) / th ) * ( incvar <= th ), ws )
+      fgt0 <- ComputeFGT( incvar, ws, g = 0, th)
+      # fgt1 <- ComputeFGT(incvar, ws, g = 1, th)
+      fgt1 <- ComputeFGT( incvar, ws * ( incvar <= th ), g = 1, th)
+      #gini <- ComputeGini( ( ( th - incvar ) / th ) * ( incvar <= th ), ws )
+      gini <- ComputeGini( ( th - incvar ) * ( incvar <= th ) , ws )
 
       sst <- fgt0 * fgt1 * ( 1 + gini )
 
