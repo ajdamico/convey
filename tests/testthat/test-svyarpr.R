@@ -3,8 +3,9 @@ context("Arpr output")
 library(vardpoor)
 library(survey)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
-dati = data.frame(1:nrow(eusilc), eusilc)
-colnames(dati)[1] <- "IDd"
+dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)
+
+
 SE_lin2 <- function(t,des){
 variance<-survey::svyrecvar(t/des$prob, des$cluster,des$strata, des$fpc,postStrata = des$postStrata)
 sqrt(variance)
@@ -14,8 +15,8 @@ des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = 
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
-dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
-vardpoor_arprw <- linarpr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = NULL, dataset = dati, percentage = 60, order_quant = 50)
+
+vardpoor_arprw <- linarpr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = NULL, dataset = dati, percentage = 60, order_quant = 50L)
 vardest<- vardpoor_arprw$value
 attributes(vardest)<- NULL
 vardest<- unlist(vardest)
@@ -29,7 +30,7 @@ convse<- SE(fun_arprw)
 attributes(convse)<-NULL
 #domain
 vardpoor_arprd <- linarpr(Y = "eqincome", id = "IDd", weight = "rb050", Dom = "hsize",
-  dataset = dati, percentage = 60, order_quant = 50)
+  dataset = dati, percentage = 60, order_quant = 50L)
 #  point estimates
 vardestd<-unlist(vardpoor_arprd$value$arpr)
 #  se estimates
