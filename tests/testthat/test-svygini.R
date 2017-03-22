@@ -2,8 +2,8 @@ context("Gini output")
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
-dati = data.frame(1:nrow(eusilc), eusilc)
-colnames(dati)[1] <- "IDd"
+dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)
+
 SE_lin2 <- function(t,des){
   variance<-survey::svyrecvar(t/des$prob, des$cluster,des$strata, des$fpc,postStrata = des$postStrata)
   sqrt(variance)
@@ -11,7 +11,7 @@ SE_lin2 <- function(t,des){
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 
 des_eusilc <- convey_prep(des_eusilc)
-dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
+
 vardpoor_giniw <- lingini(Y = "eqincome", id = "IDd", weight = "rb050",
   dataset = dati)
 
