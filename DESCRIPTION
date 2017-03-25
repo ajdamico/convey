@@ -12,9 +12,17 @@ Description: Variance estimation on indicators of income concentration and
 Depends:
     R (>= 3.2.1)
 Imports:
-    survey, methods
+    survey,
+    methods
 License: GPL-3
 LazyData: true
 Suggests:
-	testthat, knitr, rmarkdown, IC2, vardpoor, DBI, RODBC, MonetDBLite
+    testthat,
+    knitr,
+    rmarkdown,
+    IC2,
+    vardpoor,
+    DBI,
+    RODBC,
+    MonetDBLite
 RoxygenNote: 6.0.1

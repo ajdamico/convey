@@ -112,7 +112,7 @@ svysst.survey.design <-
 
 
     # FGT(0)
-    rval.fgt0 <- convey::svyfgt( formula = formula, design = design, abs_thresh=abs_thresh, g = 0, na.rm = na.rm )
+    rval.fgt0 <- svyfgt( formula = formula, design = design, abs_thresh=abs_thresh, g = 0, na.rm = na.rm )
     fgt0 <- NULL
     fgt0$value <- coef( rval.fgt0 )[[1]]
     fgt0$lin <- attr( rval.fgt0, "lin" )
@@ -121,7 +121,7 @@ svysst.survey.design <-
     # FGT(1)
     th <- abs_thresh
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    rval.fgt1 <- convey::svyfgt( formula = formula, design = design[ incvar <= abs_thresh ], abs_thresh=abs_thresh, g = 1, na.rm = na.rm )
+    rval.fgt1 <- svyfgt( formula = formula, design = design[ incvar <= abs_thresh ], abs_thresh=abs_thresh, g = 1, na.rm = na.rm )
     fgt1 <- NULL
     fgt1$value <- coef( rval.fgt1 )[[1]]
     fgt1$lin <- attr( rval.fgt1, "lin" )
