@@ -191,7 +191,7 @@ svyqsr.svyrep.design <-
 			}
 
 		ws <- weights(design, "sampling")
-		Qsr_val <- ComputeQsr(incvar, ws, alpha1 = alpha1, alpha2)
+		Qsr_val <- ComputeQsr(incvar, ws, alpha1 = alpha1, alpha2= alpha2)
 
 		if( Qsr_val[4] == 0 ) stop( paste0( "division by zero. the alpha1=" , alpha1 , " percentile cannot be zero or svyqsr would return Inf" ) )
 
