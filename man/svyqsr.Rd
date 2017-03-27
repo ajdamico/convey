@@ -9,13 +9,13 @@
 \usage{
 svyqsr(formula, design, ...)
 
-\method{svyqsr}{survey.design}(formula, design, alpha = 0.2, na.rm = FALSE,
-  upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE,
-  lower_tot = FALSE, ...)
+\method{svyqsr}{survey.design}(formula, design, alpha1 = 0.2, alpha2 = 0.8,
+  na.rm = FALSE, upper_quant = FALSE, lower_quant = FALSE,
+  upper_tot = FALSE, lower_tot = FALSE, ...)
 
-\method{svyqsr}{svyrep.design}(formula, design, alpha = 0.2, na.rm = FALSE,
-  upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE,
-  lower_tot = FALSE, ...)
+\method{svyqsr}{svyrep.design}(formula, design, alpha1 = 0.2, alpha2 = 0.8,
+  na.rm = FALSE, upper_quant = FALSE, lower_quant = FALSE,
+  upper_tot = FALSE, lower_tot = FALSE, ...)
 
 \method{svyqsr}{DBIsvydesign}(formula, design, ...)
 }
@@ -26,7 +26,9 @@ svyqsr(formula, design, ...)
 
 \item{...}{future expansion}
 
-\item{alpha}{order of the quintile ratio}
+\item{alpha1}{order of the lower quintile}
+
+\item{alpha2}{order of the upper quintile}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
@@ -84,7 +86,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <-
 	svydesign(
 		ids = ~rb030 ,
-		strata = ~db040 , 
+		strata = ~db040 ,
 		weights = ~rb050 ,
 		data="eusilc",
 		dbname=dbfolder,

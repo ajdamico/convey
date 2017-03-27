@@ -5,7 +5,8 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
-#' @param alpha order of the quintile ratio
+#' @param alpha1 order of the lower quintile
+#' @param alpha2 order of the upper quintile
 #' @param na.rm Should cases with missing values be dropped?
 #' @param upper_quant return the lower bound of highest earners
 #' @param lower_quant return the upper bound of lowest earners
@@ -68,13 +69,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyqsr( ~ eqincome , design = dbd_eusilc )
@@ -100,7 +101,7 @@ svyqsr <-
 #' @rdname svyqsr
 #' @export
 svyqsr.survey.design <-
-	function(formula, design, alpha = 0.2, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
+	function(formula, design, alpha1 = 0.2, alpha2 = .80, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -116,16 +117,16 @@ svyqsr.survey.design <-
 		ind <- names(design$prob)
 
 		# Linearization of S20
-		S20 <- svyisq(formula = formula, design = design, alpha, na.rm=na.rm)
+		S20 <- svyisq(formula = formula, design = design, alpha1, na.rm=na.rm)
 		qS20 <- attr(S20, "quantile")
 		totS20 <- coef(S20)
 		attributes(totS20) <- NULL
 		S20 <- list(value= coef(S20), lin=attr(S20,"lin"))
 
-		if( S20$value == 0 ) stop( paste0( "division by zero. the alpha=" , alpha , " percentile cannot be zero or svyqsr would return Inf" ) )
-		
+		if( S20$value == 0 ) stop( paste0( "division by zero. the alpha1=" , alpha1 , " percentile cannot be zero or svyqsr would return Inf" ) )
+
 		# Linearization of S80
-		S80 <- svyisq(formula = formula, design = design, 1 - alpha, na.rm=na.rm)
+		S80 <- svyisq(formula = formula, design = design, alpha2 , na.rm=na.rm)
 		qS80 <- attr(S80, "quantile")
 		totS80 <- coef(S80)
 		attributes(totS80) <- NULL
@@ -159,7 +160,7 @@ svyqsr.survey.design <-
 #' @rdname svyqsr
 #' @export
 svyqsr.svyrep.design <-
-	function(formula, design, alpha = 0.2, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
+	function(formula, design, alpha1 = 0.2, alpha2 = .80, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
@@ -179,20 +180,20 @@ svyqsr.svyrep.design <-
 
 
 		ComputeQsr <-
-			function(x, w, alpha) {
-				quant_inf <- computeQuantiles(x, w, p = alpha)
-				quant_sup <- computeQuantiles(x, w, p = 1 - alpha)
+			function(x, w, alpha1, alpha2) {
+				quant_inf <- computeQuantiles(x, w, p = alpha1)
+				quant_sup <- computeQuantiles(x, w, p = alpha2)
 				rich <- (x > quant_sup) * x
 				S80 <- sum(rich * w)
 				poor <- (x <= quant_inf) * x
 				S20 <- sum(poor * w)
 				c( quant_sup, quant_inf, S80, S20, S80/S20)
 			}
-			
+
 		ws <- weights(design, "sampling")
-		Qsr_val <- ComputeQsr(incvar, ws, alpha = alpha)
-		
-		if( Qsr_val[4] == 0 ) stop( paste0( "division by zero. the alpha=" , alpha , " percentile cannot be zero or svyqsr would return Inf" ) )
+		Qsr_val <- ComputeQsr(incvar, ws, alpha1 = alpha1, alpha2)
+
+		if( Qsr_val[4] == 0 ) stop( paste0( "division by zero. the alpha1=" , alpha1 , " percentile cannot be zero or svyqsr would return Inf" ) )
 
 		rval <- Qsr_val[5]
 
