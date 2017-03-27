@@ -20,7 +20,7 @@ attributes(vardest)<- NULL
 vardest<- unlist(vardest)
 varse<- SE_lin2(vardpoor_qsrw$lin$lin_qsr, des_eusilc)
 attributes(varse)<- NULL
-fun_qsrw <-svyqsr(~eqincome, design=des_eusilc, alpha= .20)
+fun_qsrw <-svyqsr(~eqincome, design=des_eusilc)
 convest<-coef(fun_qsrw)
 attributes(convest)<-NULL
 convse<- SE(fun_qsrw)
