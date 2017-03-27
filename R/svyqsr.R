@@ -101,7 +101,7 @@ svyqsr <-
 #' @rdname svyqsr
 #' @export
 svyqsr.survey.design <-
-	function(formula, design, alpha1 = 0.2, alpha2 = .80, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
+	function(formula, design, alpha1 = 0.2 , alpha2 = ( 1 - alpha1 ) , na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
@@ -160,7 +160,7 @@ svyqsr.survey.design <-
 #' @rdname svyqsr
 #' @export
 svyqsr.svyrep.design <-
-	function(formula, design, alpha1 = 0.2, alpha2 = .80, na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
+	function(formula, design, alpha1 = 0.2 , alpha2 = ( 1 - alpha1 ) , na.rm=FALSE, upper_quant = FALSE, lower_quant = FALSE, upper_tot = FALSE, lower_tot = FALSE, ...) {
 
 		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
