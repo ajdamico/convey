@@ -198,7 +198,7 @@ svyqsr.svyrep.design <-
 		rval <- Qsr_val[5]
 
 		ww <- weights(design, "analysis")
-		qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha = alpha)[5])
+		qq <- apply(ww, 2, function(wi) ComputeQsr(incvar, w = wi, alpha1 = alpha1, alpha2 = alpha2)[5])
 
 		if(anyNA(qq))variance <- NA
 		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
