@@ -5,7 +5,7 @@
 \alias{svybcc.survey.design}
 \alias{svybcc.svyrep.design}
 \alias{svybcc.DBIsvydesign}
-\title{Bourguignon-Chakravarty multidimensional poverty class}
+\title{Bourguignon-Chakravarty multidimensional poverty class (EXPERIMENTAL)}
 \usage{
 svybcc(formula, design, ...)
 
@@ -42,6 +42,9 @@ Estimate indices from the Bourguignon-Chakravarty class, a class of poverty meas
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+}
+\note{
+This function is experimental and is subject to changes in later versions.
 }
 \examples{
 library(survey)

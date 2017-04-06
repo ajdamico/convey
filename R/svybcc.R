@@ -1,4 +1,4 @@
-#' Bourguignon-Chakravarty multidimensional poverty class
+#' Bourguignon-Chakravarty multidimensional poverty class (EXPERIMENTAL)
 #'
 #' Estimate indices from the Bourguignon-Chakravarty class, a class of poverty measures.
 #'
@@ -16,6 +16,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to changes in later versions.
 #'
 #' @seealso \code{\link{svyafc}}
 #'
@@ -110,6 +112,8 @@
 #'
 #' @export
 svybcc <- function(formula, design, ...) {
+
+  warning("The svybcc function is experimental and is subject to changes in later versions.")
 
   UseMethod("svybcc", design)
 
