@@ -5,7 +5,7 @@
 \alias{svysst.survey.design}
 \alias{svysst.svyrep.design}
 \alias{svysst.DBIsvydesign}
-\title{Sen-Shorrocks-Thon poverty index}
+\title{Sen-Shorrocks-Thon poverty index (EXPERIMENTAL)}
 \usage{
 svysst(formula, design, ...)
 
@@ -38,6 +38,9 @@ Estimate the Sen-Shorrocks-Thon poverty measure.
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
