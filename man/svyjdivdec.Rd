@@ -5,7 +5,7 @@
 \alias{svyjdivdec.survey.design}
 \alias{svyjdivdec.svyrep.design}
 \alias{svyjdivdec.DBIsvydesign}
-\title{J-Divergence Decomposition}
+\title{J-Divergence Decomposition (EXPERIMENTAL)}
 \usage{
 svyjdivdec(formula, subgroup, design, ...)
 
@@ -38,6 +38,9 @@ Estimates the group decomposition of the generalized entropy index
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 
 This measure only allows for strictly positive variables.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)

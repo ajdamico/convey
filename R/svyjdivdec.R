@@ -1,4 +1,4 @@
-#' J-Divergence Decomposition
+#' J-Divergence Decomposition (EXPERIMENTAL)
 #'
 #' Estimates the group decomposition of the generalized entropy index
 #'
@@ -15,6 +15,8 @@
 #' @return Object of class "\code{cvydstat}", which are vectors with a "\code{var}" attribute giving the variance-covariance matrix and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyjdiv}}
 #'
@@ -104,6 +106,8 @@ svyjdivdec <-
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
     if( length( attr( terms.formula( subgroup ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `subgroup=` argument" )
+
+    warning("The svyjdivdec function is experimental and is subject to changes in later versions.")
 
     UseMethod("svyjdivdec", design)
 
