@@ -1,4 +1,4 @@
-#' Zenga inequality curve
+#' Zenga inequality curve (EXPERIMENTAL)
 #'
 #' Estimate the Zenga curve, an inequality graph
 #'
@@ -27,6 +27,8 @@
 #' and a "\code{SE}" attribute giving the standard errors of the estimates.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to changes in later versions.
 #'
 #' @seealso \code{\link{svyquantile}}
 #'
@@ -115,6 +117,8 @@
 svyzengacurve <- function(formula, design, ...) {
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  warning("The svyzengacurve function is experimental and is subject to changes in later versions.")
 
   UseMethod("svyzengacurve", design)
 
@@ -235,7 +239,7 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
   w <- 1/design$prob
 
   if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
-  
+
   domain <- w != 0
 
   ordincvar<-order(incvar)
@@ -287,9 +291,9 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
 
     var[i] <- survey::svyrecvar( v_k/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
     rm(v_k, lin_wtd.psum)
-	
+
   }
-  
+
   se <- sqrt(var)
 
   CI.L <- Z.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
@@ -435,7 +439,7 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
   }
 
   if ( any(incvar < 0, na.rm = TRUE) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
-  
+
 
   ws <- weights(design, "sampling")
   Z.p <- t( as.matrix( lapply_z.p_calc(x = incvar, q = quantiles, weights = ws ) ) )

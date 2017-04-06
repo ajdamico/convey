@@ -5,7 +5,7 @@
 \alias{svyzengacurve.survey.design}
 \alias{svyzengacurve.svyrep.design}
 \alias{svyzengacurve.DBIsvydesign}
-\title{Zenga inequality curve}
+\title{Zenga inequality curve (EXPERIMENTAL)}
 \usage{
 svyzengacurve(formula, design, ...)
 
@@ -58,6 +58,9 @@ Notice that the 'empirical' curve is observation-based and is based on the Loren
 On the other hand, the quantile-based curve is used to estimate the complement of the ratio between the means, SEs and confidence intervals.
 
 This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approaches the observation-based curve.
+}
+\note{
+This function is experimental and is subject to changes in later versions.
 }
 \examples{
 \dontrun{
