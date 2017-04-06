@@ -273,17 +273,17 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   }
 
-  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = T )
+  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = FALSE )
   attr( raw.hc.ratio, "statistic" ) <- "raw headcount"
-  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = T )
+  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = FALSE )
   attr( cen.hc.ratio, "statistic" ) <- "cens. headcount"
 
   U_0 <- list( value = sum( w[ w > 0 ] ), lin = rep( 1, length( w ) ) )
   U_1 <- list( value = sum( w[ w > 0 ] * cen.depr.sums[ w > 0 ] ), lin = cen.depr.sums )
 
   # overall alkire-foster index:
-  overall <- survey::svymean( cen.depr.sums, design, na.rm = T )
-  attr( overall, "statistic" ) <- "alkire-foster"
+  overall <- survey::svymean( cen.depr.sums, design, na.rm = FALSE )
+  names( overall )[1] <- attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
   if ( !is.null( levels( grpvar ) ) ) {
@@ -490,14 +490,14 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   }
 
-  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = T )
+  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = FALSE )
   attr( raw.hc.ratio, "statistic" ) <- "raw headcount"
-  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = T )
+  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = FALSE )
   attr( cen.hc.ratio, "statistic" ) <- "cens. headcount"
 
   # overall alkire-foster index:
-  overall <- survey::svymean( cen.depr.sums, design, na.rm = T )
-  attr( overall, "statistic" ) <- "alkire-foster"
+  overall <- survey::svymean( cen.depr.sums, design, na.rm = FALSE )
+  names( overall )[1] <- attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
   if ( !is.null( levels( grpvar ) ) ) {
@@ -557,10 +557,10 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
   dim.contr_var <- NULL
   for ( i in 1:ncol(cen.dep.matrix) ) {
 
-    dim.contr[ i ] <- dimw[i] * ( sum( ws * dep.matrix[,i] ) / sum( ws ) ) / ( sum( ws * cen.depr.sums ) / sum( ws ) )
+    dim.contr[ i ] <- dimw[i] * ( sum( ws * cen.dep.matrix[ , i ] ) / sum( ws * cen.depr.sums ) )
 
     qq.dim.contr[ , i ] <- apply( ww, 2, function(wi) {
-      dimw[i] * ( sum( wi * dep.matrix[,i] ) / sum( wi ) ) / ( sum( wi * cen.depr.sums ) / sum( wi ) )
+      dimw[i] * ( sum( ws * cen.dep.matrix[ , i ] ) / sum( ws * cen.depr.sums ) )
     } )
 
   }
@@ -602,9 +602,9 @@ svyafcdec.DBIsvydesign <-
 
       full_design$variables <-
         cbind(
-          getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
+          convey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-          getvars(subgroup, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+          convey:::getvars(subgroup, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
         )
 
 
@@ -617,9 +617,9 @@ svyafcdec.DBIsvydesign <-
 
     design$variables <-
       cbind(
-        getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
+        convey:::getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-        getvars(subgroup, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+        convey:::getvars(subgroup, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
       )
 
     NextMethod("svyafcdec", design)
