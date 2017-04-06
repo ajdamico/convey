@@ -1,4 +1,4 @@
-#' Amato index
+#' Amato index (EXPERIMENTAL)
 #'
 #' Estimate the Amato index, a measure of inequality.
 #'
@@ -15,6 +15,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svygini}}
 #'
@@ -100,6 +102,8 @@
 svyamato <- function(formula, design, ...) {
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  warning("The svyamato function is experimental and is subject to changes in later versions.")
 
   UseMethod("svyamato", design)
 

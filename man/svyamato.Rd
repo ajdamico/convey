@@ -5,7 +5,7 @@
 \alias{svyamato.survey.design}
 \alias{svyamato.svyrep.design}
 \alias{svyamato.DBIsvydesign}
-\title{Amato index}
+\title{Amato index (EXPERIMENTAL)}
 \usage{
 svyamato(formula, design, ...)
 
@@ -38,6 +38,9 @@ Estimate the Amato index, a measure of inequality.
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 
 The Amato index is the length of the Lorenz curve.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
