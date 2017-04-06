@@ -5,7 +5,7 @@
 \alias{svyzenga.survey.design}
 \alias{svyzenga.svyrep.design}
 \alias{svyzenga.DBIsvydesign}
-\title{Zenga index}
+\title{Zenga index (EXPERIMENTAL)}
 \usage{
 svyzenga(formula, design, ...)
 
@@ -32,6 +32,9 @@ Estimate the Zenga index, a measure of inequality
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+}
+\note{
+This function is experimental and is subject to changes in later versions.
 }
 \examples{
 library(survey)

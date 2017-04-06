@@ -1,4 +1,4 @@
-#' Zenga index
+#' Zenga index (EXPERIMENTAL)
 #'
 #' Estimate the Zenga index, a measure of inequality
 #'
@@ -12,6 +12,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to changes in later versions.
 #'
 #' @seealso \code{\link{svygini}}
 #'
@@ -98,6 +100,8 @@ svyzenga <- function(formula, design, ...) {
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
+  warning("The svyzenga function is experimental and is subject to changes in later versions.")
+
   UseMethod("svyzenga", design)
 
 }
@@ -113,8 +117,8 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
   w <- 1/design$prob
 
   if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) stop( "The Zenga index is defined for non-negative numeric variables only.")
-  
-  
+
+
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
