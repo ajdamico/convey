@@ -602,9 +602,9 @@ svyafcdec.DBIsvydesign <-
 
       full_design$variables <-
         cbind(
-          convey:::getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
+          getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
 
-          convey:::getvars(subgroup, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
+          getvars(subgroup, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
         )
 
 
@@ -617,9 +617,9 @@ svyafcdec.DBIsvydesign <-
 
     design$variables <-
       cbind(
-        convey:::getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
+        getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
 
-        convey:::getvars(subgroup, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
+        getvars(subgroup, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
       )
 
     NextMethod("svyafcdec", design)
