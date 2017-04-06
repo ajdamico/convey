@@ -5,7 +5,7 @@
 \alias{svybmi.survey.design}
 \alias{svybmi.svyrep.design}
 \alias{svybmi.DBIsvydesign}
-\title{Bourguignon (1999) multidimensional inequality indices}
+\title{Bourguignon (1999) multidimensional inequality indices (EXPERIMENTAL)}
 \usage{
 svybmi(formula, design, ...)
 
@@ -40,6 +40,9 @@ Estimate indices from the Bourguignon (1999) class, a class of multidimensional 
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)

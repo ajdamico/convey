@@ -1,5 +1,5 @@
 #'
-#' Bourguignon (1999) multidimensional inequality indices
+#' Bourguignon (1999) multidimensional inequality indices (EXPERIMENTAL)
 #'
 #' Estimate indices from the Bourguignon (1999) class, a class of multidimensional inequality measures.
 #'
@@ -16,6 +16,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyfgt}}
 #'
@@ -97,6 +99,8 @@
 #'
 #' @export
 svybmi <- function( formula, design, ...) {
+
+  warning("The svybmi function is experimental and is subject to changes in later versions.")
 
   UseMethod("svybmi", design)
 
