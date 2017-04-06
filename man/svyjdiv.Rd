@@ -5,7 +5,7 @@
 \alias{svyjdiv.survey.design}
 \alias{svyjdiv.svyrep.design}
 \alias{svyjdiv.DBIsvydesign}
-\title{J-divergence measure}
+\title{J-divergence measure (EXPERIMENTAL)}
 \usage{
 svyjdiv(formula, design, ...)
 
@@ -34,6 +34,9 @@ Estimate the j-divergence measure, an entropy-based measure of inequality
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 
 This measure only allows for strictly positive variables.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
