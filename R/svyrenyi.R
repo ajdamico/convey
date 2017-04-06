@@ -1,4 +1,4 @@
-#' Renyi divergence measure
+#' Renyi divergence measure (EXPERIMENTAL)
 #'
 #' Estimate the Renyi divergence measure, a measure of inequality
 #'
@@ -15,6 +15,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svygei}}
 #'
@@ -61,13 +63,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfolder,
 #' 		dbtype="MonetDBLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyrenyi( ~eqincome , design = dbd_eusilc, epsilon = .5 )
@@ -88,7 +90,9 @@ svyrenyi <- function(formula, design, ...) {
 	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
 	if( 'epsilon' %in% names( list(...) ) && list(...)[["epsilon"]] < 0 ) stop( "epsilon= cannot be negative." )
-	
+
+  warning("The svyrenyi function is experimental and is subject to changes in later versions.")
+
 	UseMethod("svyrenyi", design)
 
 }

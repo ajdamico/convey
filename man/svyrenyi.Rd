@@ -5,7 +5,7 @@
 \alias{svyrenyi.survey.design}
 \alias{svyrenyi.svyrep.design}
 \alias{svyrenyi.DBIsvydesign}
-\title{Renyi divergence measure}
+\title{Renyi divergence measure (EXPERIMENTAL)}
 \usage{
 svyrenyi(formula, design, ...)
 
@@ -38,6 +38,9 @@ Estimate the Renyi divergence measure, a measure of inequality
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 
 If \code{epsilon == 1}, the result matches \code{svygei} with \code{epsilon == 1}. As in the generalized entropy index, when \code{epsilon == 1}, the logarithm in the function only allows for strictly positive variables.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
@@ -76,7 +79,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <-
 	svydesign(
 		ids = ~rb030 ,
-		strata = ~db040 , 
+		strata = ~db040 ,
 		weights = ~rb050 ,
 		data="eusilc",
 		dbname=dbfolder,
