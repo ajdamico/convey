@@ -7,7 +7,7 @@ Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("a
 URL: https://guilhermejacob.github.io/context/
 BugReports: https://github.com/djalmapessoa/convey/issues
 Description: Variance estimation on indicators of income concentration and
-    poverty using linearization- or replication-based survey designs. Wrapper around the
+    poverty using linearised or replication-based survey designs. Wrapper around the
     survey package.
 Depends:
     R (>= 3.2.1)
