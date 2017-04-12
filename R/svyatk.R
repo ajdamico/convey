@@ -65,6 +65,7 @@
 #' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria") )
 #' svyatk( ~eqincome , subset(des_eusilc_rep_pos_inc, db040 == "Styria"), epsilon = 2 )
 #'
+#' \dontrun{
 #'
 #' # linearized design using a variable with missings (but subsetted to remove negatives)
 #' svyatk( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n)), epsilon = .5 )
@@ -74,8 +75,6 @@
 #' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 )
 #' svyatk( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n)), epsilon = .5 , na.rm=TRUE )
 #'
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

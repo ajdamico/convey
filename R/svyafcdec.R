@@ -68,6 +68,8 @@
 #' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc_rep ,
 #'	k = .5 , g = 0, cutoffs = cos )
 #'
+#' \dontrun{
+#'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
 #' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , des_eusilc,
@@ -87,8 +89,6 @@
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 #' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

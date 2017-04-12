@@ -58,7 +58,7 @@ On the other hand, the quantile-based curve is used to estimate the shares, SEs 
 This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approacches the observation-based curve.
 }
 \examples{
-\dontrun{
+
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -74,6 +74,7 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 svylorenz( ~eqincome , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
 
+\dontrun{
 
 # linearized design using a variable with missings
 svylorenz( ~py010n , des_eusilc, seq(0,1,.05), alpha = .01 )

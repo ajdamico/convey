@@ -58,7 +58,6 @@
 #' svybmi(~eqincome+hy050n, design = des_eusilc_rep, alpha = .5, beta = -1, na.rm = FALSE )
 #' svybmi(~eqincome+hy050n, design = des_eusilc_rep, alpha = .5, beta = -2, na.rm = FALSE )
 #'
-#'
 #' \dontrun{
 #'
 #' # database-backed design

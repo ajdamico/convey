@@ -51,7 +51,6 @@ des_ses_rep <- convey_prep(des_ses_rep)
 
 svygpg(~earningshour, des_ses_rep, ~sex)
 
-
 \dontrun{
 
 # database-backed design

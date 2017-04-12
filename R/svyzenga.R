@@ -48,14 +48,14 @@
 #' svyzenga(~eqincome, subset( des_eusilc, db040 == "Styria"))
 #' svyzenga(~eqincome, subset( des_eusilc_rep, db040 == "Styria"))
 #'
+#' \dontrun{
+#'
 #' # variable with with missings
 #' svyzenga(~py010n, des_eusilc )
 #' svyzenga(~py010n, des_eusilc_rep )
 #'
 #' svyzenga(~py010n, des_eusilc, na.rm = TRUE )
 #' svyzenga(~py010n, des_eusilc_rep, na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

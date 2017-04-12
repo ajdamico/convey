@@ -53,15 +53,15 @@ des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyisq( ~eqincome , design = des_eusilc_rep, .20 , quantile = TRUE )
+
+\dontrun{
+
 # linearized design using a variable with missings
 svyisq( ~ py010n , design = des_eusilc, .20 )
 svyisq( ~ py010n , design = des_eusilc , .20, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyisq( ~ py010n , design = des_eusilc_rep, .20 )
 svyisq( ~ py010n , design = des_eusilc_rep , .20,  na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

@@ -57,14 +57,14 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 svypoormed( ~eqincome , design = des_eusilc_rep )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svypoormed( ~ py010n , design = des_eusilc )
 svypoormed( ~ py010n , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svypoormed( ~ py010n , design = des_eusilc_rep )
 svypoormed( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

@@ -52,15 +52,14 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyiqalpha( ~eqincome , design = des_eusilc_rep, .50 )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svyiqalpha( ~ py010n , design = des_eusilc, .50 )
 svyiqalpha( ~ py010n , design = des_eusilc , .50, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyiqalpha( ~ py010n , design = des_eusilc_rep, .50 )
 svyiqalpha( ~ py010n , design = des_eusilc_rep ,.50, na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

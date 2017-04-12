@@ -58,14 +58,14 @@
 #' svybcc( ~ eqincome + hy050n , design = sub_des_eusilc , cutoffs = cos )
 #' svybcc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , cutoffs = cos )
 #'
+#' \dontrun{
+#'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = FALSE )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = TRUE )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = FALSE )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

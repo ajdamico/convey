@@ -91,7 +91,6 @@ svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
 # poverty gap index, poverty threshold equal to 0.6 times the mean
 svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 
-
 \dontrun{
 
 # database-backed design

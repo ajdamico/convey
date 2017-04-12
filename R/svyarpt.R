@@ -45,6 +45,8 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #' svyarpt( ~eqincome , design = des_eusilc_rep )
 #'
+#' \dontrun{
+#'
 #' # linearized design using a variable with missings
 #' svyarpt( ~ py010n , design = des_eusilc )
 #' svyarpt( ~ py010n , design = des_eusilc , na.rm = TRUE )
@@ -52,8 +54,6 @@
 #' svyarpt( ~ py010n , design = des_eusilc_rep )
 #' svyarpt( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
 #'
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

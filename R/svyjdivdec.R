@@ -54,6 +54,8 @@
 #' # replicate-weighted design
 #' svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
 #'
+#' \dontrun{
+#'
 #' # linearized design using a variable with missings
 #' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc )
@@ -63,8 +65,6 @@
 #' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep , na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

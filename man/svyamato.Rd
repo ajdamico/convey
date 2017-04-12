@@ -64,14 +64,14 @@ svyamato(~eqincome, des_eusilc_rep)
 svyamato(~eqincome, subset( des_eusilc, db040 == "Styria"))
 svyamato(~eqincome, subset( des_eusilc_rep, db040 == "Styria"))
 
+\dontrun{
+
 # variable with with missings
 svyamato(~py010n, des_eusilc )
 svyamato(~py010n, des_eusilc_rep )
 
 svyamato(~py010n, des_eusilc, na.rm = TRUE )
 svyamato(~py010n, des_eusilc_rep, na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

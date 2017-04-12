@@ -44,7 +44,7 @@
 #' @keywords survey
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(survey)
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -60,6 +60,7 @@
 #'
 #' svyzengacurve( ~eqincome , des_eusilc_rep,  alpha = .01 )
 #'
+#' \dontrun{
 #'
 #' # linearized design using a variable with missings
 #' svyzengacurve( ~py010n , des_eusilc, alpha = .01 )

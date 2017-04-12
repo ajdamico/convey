@@ -67,14 +67,14 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 svyqsr( ~eqincome , design = des_eusilc_rep, upper_tot = TRUE, lower_tot = TRUE )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svyqsr( ~ db090 , design = des_eusilc )
 svyqsr( ~ db090 , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyqsr( ~ db090 , design = des_eusilc_rep )
 svyqsr( ~ db090 , design = des_eusilc_rep , na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

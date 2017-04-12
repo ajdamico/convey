@@ -64,6 +64,8 @@ svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = .5 )
 svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
 svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 2 )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0 )
 svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0, na.rm = TRUE )
@@ -83,9 +85,6 @@ svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon =
 svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 1, na.rm = TRUE )
 svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 2 )
 svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 2, na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

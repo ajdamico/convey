@@ -49,6 +49,7 @@
 #'
 #' svyrmpg( ~eqincome , design = des_eusilc_rep, thresh = TRUE )
 #'
+#' \dontrun{
 #'
 #' # linearized design using a variable with missings
 #' svyrmpg( ~ py010n , design = des_eusilc )
@@ -56,8 +57,6 @@
 #' # replicate-weighted design using a variable with missings
 #' svyrmpg( ~ py010n , design = des_eusilc_rep )
 #' svyrmpg( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

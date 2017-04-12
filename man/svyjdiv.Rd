@@ -55,14 +55,14 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyjdiv( ~eqincome , design = subset( des_eusilc_rep , eqincome > 0 ) )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ) )
 svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ), na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) )
 svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) , na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

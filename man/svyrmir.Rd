@@ -69,15 +69,14 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, med_old = TRUE )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age)
 svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age )
 svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)

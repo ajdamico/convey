@@ -44,7 +44,6 @@
 #'
 #' svygpg(~earningshour, des_ses_rep, ~sex)
 #'
-#'
 #' \dontrun{
 #'
 #' # database-backed design

@@ -63,7 +63,7 @@ This way, as the number of quantiles of the quantile-based function increases, t
 This function is experimental and is subject to changes in later versions.
 }
 \examples{
-\dontrun{
+
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -79,6 +79,7 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 svyzengacurve( ~eqincome , des_eusilc_rep,  alpha = .01 )
 
+\dontrun{
 
 # linearized design using a variable with missings
 svyzengacurve( ~py010n , des_eusilc, alpha = .01 )
