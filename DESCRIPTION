@@ -25,6 +25,4 @@ Suggests:
     DBI,
     RODBC,
     MonetDBLite
-Remotes:
-    hannesmuehleisen/MonetDBLite
 RoxygenNote: 6.0.1
