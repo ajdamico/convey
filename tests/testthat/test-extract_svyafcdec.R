@@ -1,4 +1,4 @@
-context("afcdec output survey.design and svyrep.design")
+context("svyafcdec output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
 
@@ -6,7 +6,7 @@ library(survey)
 data(api)
 apistrat[ , sapply( apistrat, is.integer ) ] <- apply( apistrat[ , sapply( apistrat, is.integer ) ], 2, as.numeric )
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
-test_that("svyafc works on unweighted designs",{
+test_that("svyafcdec works on unweighted designs",{
   for (this_dimw in list( NULL, c(.25, .75) )) {
     for ( this_k in c( .5 , 1 ) ){
       for ( this_g in c( 0 , 1 , 2 ) ) {
@@ -88,7 +88,7 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
       se_dif5 <- max(abs(SE(a1$`subgroup alkire-foster estimates`)-SE(b1$`subgroup alkire-foster estimates`)))
       se_dif6 <- max(abs(SE(a1$`percentual contribution per subgroup`)-SE(b1$`percentual contribution per subgroup`)))
 
-      test_that("output svyafc",{
+      test_that("output svyafcdec",{
         expect_is(coef(a1[[1]]),"numeric")
         expect_is(coef(a1[[2]]),"numeric")
         expect_is(coef(a1[[3]]),"numeric")
@@ -185,7 +185,7 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
       # database-backed design
       c1 <- svyafcdec( ~eqincome+hy050n, ~db040 , design=dbd_eusilc, cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = this_dimw, na.rm = FALSE )
 
-      test_that("database svyafc",{
+      test_that("database svyafcdec",{
         expect_equal(coef(a1[[1]]), coef(c1[[1]]))
         expect_equal(coef(a1[[2]]), coef(c1[[2]]))
         expect_equal(coef(a1[[3]]), coef(c1[[3]]))

@@ -121,19 +121,18 @@ svyafc <- function(formula, design, ...) {
 #' @export
 svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL, na.rm = FALSE, ... ) {
 
-  if ( !is.null( dimw ) ) {
-    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
-    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
-    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
-  }
-
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
+
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+    if ( length(dimw) != ncol(ach.matrix) ) { stop( "Dimension weights' length differs from number of dimensions in formula" ) }
+  }
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
@@ -281,8 +280,6 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
-
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
 
@@ -432,21 +429,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
 svyafc.DBIsvydesign <-
   function (formula, design, ...) {
 
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-      full_design <- attr( design , "full_design" )
-
-      full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                       updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
-
-      attr( design , "full_design" ) <- full_design
-
-      rm( full_design )
-
-    }
-
-    design$variables <- getvars(formula, design$db$connection, design$db$tablename,
-                                updates = design$updates, subset = design$subset)
+    design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 
     NextMethod("svyafc", design)
   }
