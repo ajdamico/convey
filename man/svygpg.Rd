@@ -2,9 +2,9 @@
 % Please edit documentation in R/svygpg.R
 \name{svygpg}
 \alias{svygpg}
-\alias{svygpg.DBIsvydesign}
 \alias{svygpg.survey.design}
 \alias{svygpg.svyrep.design}
+\alias{svygpg.DBIsvydesign}
 \title{Linearization of the gender pay (wage) gap}
 \usage{
 svygpg(formula, design, ...)
@@ -51,7 +51,6 @@ des_ses_rep <- convey_prep(des_ses_rep)
 
 svygpg(~earningshour, des_ses_rep, ~sex)
 
-
 \dontrun{
 
 # database-backed design
@@ -71,9 +70,6 @@ dbRemoveTable( conn , 'ses' )
 }
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -87,5 +83,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyarpt}}
 }
+\author{
+Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

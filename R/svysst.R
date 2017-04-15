@@ -1,4 +1,4 @@
-#' Sen-Shorrocks-Thon poverty index
+#' Sen-Shorrocks-Thon poverty index (EXPERIMENTAL)
 #'
 #' Estimate the Sen-Shorrocks-Thon poverty measure.
 #'
@@ -14,6 +14,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svysen}}, \code{\link{svyfgt}}, \code{\link{svygini}}.
 #'
@@ -91,6 +93,8 @@ svysst <-
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
+    warning("The svysst function is experimental and is subject to changes in later versions.")
+
     UseMethod("svysst", design)
 
   }
@@ -112,23 +116,24 @@ svysst.survey.design <-
 
 
     # FGT(0)
-    rval.fgt0 <- convey::svyfgt( formula = formula, design = design, abs_thresh=abs_thresh, g = 0, na.rm = na.rm )
+    rval.fgt0 <- svyfgt( formula = formula, design = design, abs_thresh=abs_thresh, g = 0, na.rm = na.rm )
     fgt0 <- NULL
     fgt0$value <- coef( rval.fgt0 )[[1]]
     fgt0$lin <- attr( rval.fgt0, "lin" )
     rm( rval.fgt0 )
 
     # FGT(1)
-    rval.fgt1 <- convey::svyfgt( formula = formula, design = design, abs_thresh=abs_thresh, g = 1, na.rm = na.rm )
+    th <- abs_thresh
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    rval.fgt1 <- svyfgt( formula = formula, design = design[ incvar <= abs_thresh ], abs_thresh=abs_thresh, g = 1, na.rm = na.rm )
     fgt1 <- NULL
     fgt1$value <- coef( rval.fgt1 )[[1]]
     fgt1$lin <- attr( rval.fgt1, "lin" )
     rm( rval.fgt1 )
 
-    # Gini index of poverty gap ratios
-    th <- abs_thresh
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-    design$variables$pgratio <-  ( ( th - incvar ) / th ) * ( th >= incvar )
+    # Gini index
+    #design$variables$pgratio <- ( ( th - incvar ) / th ) * ( th >= incvar )
+    design$variables$pgratio <- ( th - incvar ) * ( th >= incvar )
     #design$variables$pgratio <- (th - incvar) / th
 
     gini.design <- design
@@ -256,9 +261,11 @@ svysst.svyrep.design <-
       th <- abs_thresh
 
 
-      fgt0 <- ComputeFGT(incvar, ws, g = 0, th)
-      fgt1 <- ComputeFGT(incvar, ws, g = 1, th)
-      gini <- ComputeGini( ( ( th - incvar ) / th ) * ( incvar <= th ), ws )
+      fgt0 <- ComputeFGT( incvar, ws, g = 0, th)
+      # fgt1 <- ComputeFGT(incvar, ws, g = 1, th)
+      fgt1 <- ComputeFGT( incvar, ws * ( incvar <= th ), g = 1, th)
+      #gini <- ComputeGini( ( ( th - incvar ) / th ) * ( incvar <= th ), ws )
+      gini <- ComputeGini( ( th - incvar ) * ( incvar <= th ) , ws )
 
       sst <- fgt0 * fgt1 * ( 1 + gini )
 

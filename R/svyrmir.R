@@ -53,15 +53,14 @@
 #'
 #' svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, med_old = TRUE )
 #'
+#' \dontrun{
+#'
 #' # linearized design using a variable with missings
 #' svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age)
 #' svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
 #' svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age )
 #' svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, na.rm = TRUE )
-#'
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -129,27 +128,27 @@ svyrmir.survey.design  <-
     N <- sum(w)
     h <- h_fun(incvar,w)
     age.name <- terms.formula(age)[[2]]
-	
+
     dsub1 <- eval( substitute( within_function_subset( design , subset = age < agelim ) , list( age = age.name, agelim = agelim ) ) )
     if( nrow( dsub1 ) == 0 ) stop( "zero records in the set of non-elderly people" )
-    
+
 	if( "DBIsvydesign" %in% class( dsub1 ) ) {
 		ind1<- names(design$prob) %in% which(dsub1$prob!=Inf)
 	} else{
 		ind1<- names(design$prob) %in% names(dsub1$prob)
 	}
 
-    h1<- h_fun(incvar*ind1, w*ind1)
+
     q_alpha1 <- survey::svyquantile(x = formula, design = dsub1, quantiles = quantiles,method = "constant", na.rm = na.rm,...)
     q_alpha1 <- as.vector(q_alpha1)
 
-    Fprime1 <- densfun(formula = formula, design = dsub1, q_alpha1, h=h1, FUN = "F", na.rm=na.rm)
+    Fprime1 <- densfun(formula = formula, design = dsub1, q_alpha1, h=h, FUN = "F", na.rm=na.rm)
     N1 <- sum(w*ind1)
     linquant1 <- -( 1 / ( N1 * Fprime1 ) ) *ind1* ( ( incvar <= q_alpha1 ) - quantiles )
 
 
     dsub2 <- eval( substitute( within_function_subset( design , subset = age >= agelim ) , list( age = age.name, agelim = agelim ) ) )
-    
+
     if( nrow( dsub2 ) == 0 ) stop( "zero records in the set of elderly people" )
 
 	if( "DBIsvydesign" %in% class( dsub2 ) ) {
@@ -158,12 +157,12 @@ svyrmir.survey.design  <-
 		ind2<- names(design$prob) %in% names(dsub2$prob)
 	}
 
-    h2<- h_fun(incvar*ind2, w*ind2)
+
 
     q_alpha2 <- survey::svyquantile(x = formula, design = dsub2, quantiles = quantiles, method = "constant", na.rm = na.rm,...)
     q_alpha2 <- as.vector(q_alpha2)
 
-    Fprime2 <- densfun(formula = formula, design = dsub2, q_alpha2, h=h2, FUN = "F", na.rm=na.rm)
+    Fprime2 <- densfun(formula = formula, design = dsub2, q_alpha2, h=h, FUN = "F", na.rm=na.rm)
     N2 <- sum(w*ind2)
 
     linquant2 <- -( 1 / ( N2 * Fprime2 ) ) *ind2* ( ( incvar <= q_alpha2 ) - quantiles )

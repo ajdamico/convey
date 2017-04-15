@@ -19,7 +19,7 @@
 #' Notice that the 'empirical' curve is observation-based and is the one actually used to calculate the Gini index.
 #' On the other hand, the quantile-based curve is used to estimate the shares, SEs and confidence intervals.
 #'
-#' This way, as the number of quantiles of the quantile-based function increases, the qwuantile-based curve approacches the observation-based curve.
+#' This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approacches the observation-based curve.
 #'
 #' @return Object of class "\code{svyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
 #' and a "\code{SE}" attribute giving the standard errors of the estimates.
@@ -40,7 +40,7 @@
 #' @keywords survey
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(survey)
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -56,6 +56,7 @@
 #'
 #' svylorenz( ~eqincome , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
 #'
+#' \dontrun{
 #'
 #' # linearized design using a variable with missings
 #' svylorenz( ~py010n , des_eusilc, seq(0,1,.05), alpha = .01 )
@@ -265,6 +266,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
   N <- sum( w )
   var <- NULL
+  lin_mat <- matrix( NA, nrow = length( ordincvar ), ncol = length(quantiles) )
   for ( pc in quantiles ) {
     i <- match( pc, quantiles )
     pc
@@ -278,27 +280,29 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
       u_i[ u_i > 0 ] <- ( 1 / ( N * average ) ) * ( ( ( incvar - quant ) * ( incvar <= quant ) ) + ( pc * quant ) - ( incvar * s.quant ) )
       u_i <- u_i[ sort(ordincvar) ]
 
-      var[i] <- survey::svyrecvar( u_i/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
+      lin_mat[ , i ] <- u_i
 
-      rm(quant, s.quant)
+      rm(quant, s.quant , u_i )
 
     } else if ( pc == 0 ) {
 
       L.p[i] <- 0
 
-      var[i] <- 0
+      lin_mat[ , i ] <- 0
 
     } else if ( pc == 1 ) {
 
       L.p[i] <- 1
 
-      var[i] <- 0
+      lin_mat[ , i] <- 0
     }
 
     rm( i, pc )
 
   }
-  se <- sqrt(var)
+  var <- survey::svyrecvar( lin_mat/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
+
+  se <- sqrt(diag(var))
 
 
   CI.L <- L.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
@@ -308,6 +312,7 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 
   rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
+  attr(rval, "var") <- var
   attr(rval, "SE") <- se
   class(rval) <- c( "cvyquantile" , "svyquantile" )
 
@@ -475,9 +480,9 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     return(rval)
   }
 
-  variance <- apply( qq, 1, function(x) survey::svrVar(x, design$scale, design$rscales, mse = design$mse, coef = rval) )
-  variance[c(1, length(quantiles))] <- 0
-  se <- sqrt(variance)
+  variance <- survey::svrVar( t(qq), design$scale, design$rscales, mse = design$mse, coef = rval )
+  se <- sqrt(diag(variance))
+  se[c(1, length(quantiles))] <- 0
 
   if (empirical) {
     ordincvar <- order(incvar)
@@ -493,6 +498,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
   cis <- structure(rbind(CI.L,CI.U), .Dim = c(2L, length(quantiles), 1L), .Dimnames = list(c("(lower", "upper)"), as.character(quantiles),  as.character(formula)[2]))
   rval <- t( matrix( data = L.p, nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
   rval <- list(quantiles = rval, CIs = cis)
+  attr(rval, "var") <- variance
   attr(rval, "SE") <- se
   class(rval) <- c( "cvyquantile" , "svyquantile" )
 

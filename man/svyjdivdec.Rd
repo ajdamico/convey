@@ -2,10 +2,10 @@
 % Please edit documentation in R/svyjdivdec.R
 \name{svyjdivdec}
 \alias{svyjdivdec}
-\alias{svyjdivdec.DBIsvydesign}
 \alias{svyjdivdec.survey.design}
 \alias{svyjdivdec.svyrep.design}
-\title{J-Divergence Decomposition}
+\alias{svyjdivdec.DBIsvydesign}
+\title{J-Divergence Decomposition (EXPERIMENTAL)}
 \usage{
 svyjdivdec(formula, subgroup, design, ...)
 
@@ -39,6 +39,9 @@ you must run the \code{convey_prep} function on your survey design object immedi
 
 This measure only allows for strictly positive variables.
 }
+\note{
+This function is experimental and is subject to change in later versions.
+}
 \examples{
 library(survey)
 library(vardpoor)
@@ -58,6 +61,8 @@ svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc, eqincome > 0) )
 # replicate-weighted design
 svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
 
+\dontrun{
+
 # linearized design using a variable with missings
 sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc )
@@ -67,8 +72,6 @@ svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc , na.rm = TRUE )
 sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
 svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep )
 svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep , na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -104,9 +107,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Anthony F. Shorrocks (1984). Inequality decomposition
 by population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
@@ -124,5 +124,7 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \seealso{
 \code{\link{svyjdiv}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

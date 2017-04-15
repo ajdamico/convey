@@ -2,10 +2,10 @@
 % Please edit documentation in R/svyzenga.R
 \name{svyzenga}
 \alias{svyzenga}
-\alias{svyzenga.DBIsvydesign}
 \alias{svyzenga.survey.design}
 \alias{svyzenga.svyrep.design}
-\title{Zenga index}
+\alias{svyzenga.DBIsvydesign}
+\title{Zenga index (EXPERIMENTAL)}
 \usage{
 svyzenga(formula, design, ...)
 
@@ -33,6 +33,9 @@ Estimate the Zenga index, a measure of inequality
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 }
+\note{
+This function is experimental and is subject to changes in later versions.
+}
 \examples{
 library(survey)
 library(vardpoor)
@@ -55,14 +58,14 @@ svyzenga(~eqincome, des_eusilc_rep)
 svyzenga(~eqincome, subset( des_eusilc, db040 == "Styria"))
 svyzenga(~eqincome, subset( des_eusilc_rep, db040 == "Styria"))
 
+\dontrun{
+
 # variable with with missings
 svyzenga(~py010n, des_eusilc )
 svyzenga(~py010n, des_eusilc_rep )
 
 svyzenga(~py010n, des_eusilc, na.rm = TRUE )
 svyzenga(~py010n, des_eusilc_rep, na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -103,9 +106,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
 Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
@@ -117,5 +117,7 @@ URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 \seealso{
 \code{\link{svygini}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

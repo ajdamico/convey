@@ -58,14 +58,14 @@
 #' svyafc( ~ eqincome + hy050n , design = sub_des_eusilc , k = .5, g = 0, cutoffs = cos )
 #' svyafc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , k = .5, g = 0, cutoffs = cos )
 #'
+#' \dontrun{
+#'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
 #' svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 #' svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 #' svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 #' svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -121,17 +121,18 @@ svyafc <- function(formula, design, ...) {
 #' @export
 svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL, na.rm = FALSE, ... ) {
 
-  if ( !is.null( dimw ) ) {
-    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
-    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
-    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
-  }
-
   if ( k <= 0 | k > 1 ) stop( "This functions is only defined for k in (0,1]." )
   if ( g < 0 ) stop( "This function is undefined for g < 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
+
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+    if ( length(dimw) != ncol(ach.matrix) ) { stop( "Dimension weights' length differs from number of dimensions in formula" ) }
+  }
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
@@ -205,7 +206,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  rm(dep.matrix) ; gc()
+  rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -225,7 +226,7 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
 
   # Sum of censored deprivations:
   cen.depr.sums <- rowSums( sweep( cen.dep.matrix, MARGIN=2 , dimw,`*`) )
-  rm( cen.dep.matrix, ach.matrix ) ; gc()
+  rm( cen.dep.matrix, ach.matrix )
 
 
   w <- 1/design$prob
@@ -349,7 +350,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  rm(dep.matrix) ; gc()
+  rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -368,7 +369,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
 
   # Sum of censored deprivations:
   cen.depr.sums <- rowSums( sweep( cen.dep.matrix, MARGIN=2 , dimw,`*`) )
-  rm( cen.dep.matrix, ach.matrix ) ; gc()
+  rm( cen.dep.matrix, ach.matrix )
 
   if ( any( is.na(cen.depr.sums) ) ){
 
@@ -428,7 +429,7 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
 svyafc.DBIsvydesign <-
   function (formula, design, ...) {
 
-    design$variables <- convey:::getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
+    design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 
     NextMethod("svyafc", design)
   }

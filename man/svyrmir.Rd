@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyrmir.R
 \name{svyrmir}
 \alias{svyrmir}
-\alias{svyrmir.DBIsvydesign}
 \alias{svyrmir.survey.design}
 \alias{svyrmir.svyrep.design}
+\alias{svyrmir.DBIsvydesign}
 \title{Relative median income ratio}
 \usage{
 svyrmir(formula, design, ...)
@@ -69,15 +69,14 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyrmir( ~eqincome , design = des_eusilc_rep, age= ~age, med_old = TRUE )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svyrmir( ~ eqincome_miss , design = des_eusilc,age= ~age)
 svyrmir( ~ eqincome_miss , design = des_eusilc , age= ~age, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyrmir( ~ eqincome_miss , design = des_eusilc_rep,age= ~age )
 svyrmir( ~ eqincome_miss , design = des_eusilc_rep ,age= ~age, na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -107,9 +106,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -123,5 +119,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyarpt}}
 }
+\author{
+Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

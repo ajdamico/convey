@@ -7,14 +7,22 @@ Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("a
 URL: https://guilhermejacob.github.io/context/
 BugReports: https://github.com/djalmapessoa/convey/issues
 Description: Variance estimation on indicators of income concentration and
-    poverty using linearized or replication-based survey designs. Wrapper around the
+    poverty using complex sample survey designs. Wrapper around the
     survey package.
 Depends:
     R (>= 3.2.1)
 Imports:
-    survey, methods
+    survey,
+    methods
 License: GPL-3
 LazyData: true
 Suggests:
-	testthat, knitr, rmarkdown, IC2, vardpoor, DBI, RODBC, MonetDBLite
-RoxygenNote: 5.0.1
+    testthat,
+    knitr,
+    rmarkdown,
+    IC2,
+    vardpoor,
+    DBI,
+    RODBC,
+    MonetDBLite
+RoxygenNote: 6.0.1

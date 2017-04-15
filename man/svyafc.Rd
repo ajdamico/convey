@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyafc.R
 \name{svyafc}
 \alias{svyafc}
-\alias{svyafc.DBIsvydesign}
 \alias{svyafc.survey.design}
 \alias{svyafc.svyrep.design}
+\alias{svyafc.DBIsvydesign}
 \title{Alkire-Foster multidimensional poverty class}
 \usage{
 svyafc(formula, design, ...)
@@ -71,14 +71,14 @@ sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
 svyafc( ~ eqincome + hy050n , design = sub_des_eusilc , k = .5, g = 0, cutoffs = cos )
 svyafc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , k = .5, g = 0, cutoffs = cos )
 
+\dontrun{
+
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
 svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 svyafc(~eqincome+hy050n+pb220a, des_eusilc, k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
 svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 svyafc(~eqincome+hy050n+pb220a, des_eusilc_rep, k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -124,9 +124,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Sabina Alkire and James Foster (2011). Counting and multidimensional poverty measurement.
 Journal of Public Economics, v. 95, n. 7-8, August 2011, pp. 476-487, ISSN 0047-2727.
@@ -140,5 +137,7 @@ URL \url{http://EconPapers.repec.org/RePEc:boc:bocode:s458120}.
 \seealso{
 \code{\link{svyfgt}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

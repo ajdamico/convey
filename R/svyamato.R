@@ -1,4 +1,4 @@
-#' Amato index
+#' Amato index (EXPERIMENTAL)
 #'
 #' Estimate the Amato index, a measure of inequality.
 #'
@@ -16,6 +16,8 @@
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
+#' @note This function is experimental and is subject to change in later versions.
+#'
 #' @seealso \code{\link{svygini}}
 #'
 #' @references Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
@@ -23,7 +25,7 @@
 #'
 #' Barry C. Arnold (2012). On the Amato inequality index.
 #' Statistics & Probability Letters, v. 82, n. 8, August 2012, pp. 1504-1506, ISSN 0167-7152.
-#' URL \url{http://dx.doi.org/10.1016/j.spl.2012.04.020.}.
+#' URL \url{http://dx.doi.org/10.1016/j.spl.2012.04.020}.
 #'
 #' @keywords survey
 #'
@@ -49,14 +51,14 @@
 #' svyamato(~eqincome, subset( des_eusilc, db040 == "Styria"))
 #' svyamato(~eqincome, subset( des_eusilc_rep, db040 == "Styria"))
 #'
+#' \dontrun{
+#'
 #' # variable with with missings
 #' svyamato(~py010n, des_eusilc )
 #' svyamato(~py010n, des_eusilc_rep )
 #'
 #' svyamato(~py010n, des_eusilc, na.rm = TRUE )
 #' svyamato(~py010n, des_eusilc_rep, na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -100,6 +102,8 @@
 svyamato <- function(formula, design, ...) {
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  warning("The svyamato function is experimental and is subject to changes in later versions.")
 
   UseMethod("svyamato", design)
 

@@ -2,10 +2,10 @@
 % Please edit documentation in R/svyrenyi.R
 \name{svyrenyi}
 \alias{svyrenyi}
-\alias{svyrenyi.DBIsvydesign}
 \alias{svyrenyi.survey.design}
 \alias{svyrenyi.svyrep.design}
-\title{Renyi divergence measure}
+\alias{svyrenyi.DBIsvydesign}
+\title{Renyi divergence measure (EXPERIMENTAL)}
 \usage{
 svyrenyi(formula, design, ...)
 
@@ -39,6 +39,9 @@ you must run the \code{convey_prep} function on your survey design object immedi
 
 If \code{epsilon == 1}, the result matches \code{svygei} with \code{epsilon == 1}. As in the generalized entropy index, when \code{epsilon == 1}, the logarithm in the function only allows for strictly positive variables.
 }
+\note{
+This function is experimental and is subject to change in later versions.
+}
 \examples{
 library(survey)
 library(vardpoor)
@@ -56,15 +59,14 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyrenyi( ~eqincome , design = des_eusilc_rep, epsilon = .5 )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svyrenyi( ~py010n , design = des_eusilc, epsilon = .5 )
 svyrenyi( ~py010n , design = des_eusilc, epsilon = .5, na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyrenyi( ~py010n , design = des_eusilc_rep, epsilon = .5 )
 svyrenyi( ~py010n , design = des_eusilc_rep, epsilon = .5, na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -76,7 +78,7 @@ dbWriteTable( conn , 'eusilc' , eusilc )
 dbd_eusilc <-
 	svydesign(
 		ids = ~rb030 ,
-		strata = ~db040 , 
+		strata = ~db040 ,
 		weights = ~rb050 ,
 		data="eusilc",
 		dbname=dbfolder,
@@ -98,9 +100,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Matti Langel (2012). Measuring inequality in finite population sampling.
 PhD thesis: Universite de Neuchatel,
@@ -109,5 +108,7 @@ URL \url{https://doc.rero.ch/record/29204/files/00002252.pdf}.
 \seealso{
 \code{\link{svygei}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

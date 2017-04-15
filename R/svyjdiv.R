@@ -1,4 +1,4 @@
-#' J-divergence measure
+#' J-divergence measure (EXPERIMENTAL)
 #'
 #' Estimate the j-divergence measure, an entropy-based measure of inequality
 #'
@@ -14,6 +14,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svygei}}
 #'
@@ -45,14 +47,14 @@
 #'
 #' svyjdiv( ~eqincome , design = subset( des_eusilc_rep , eqincome > 0 ) )
 #'
+#' \dontrun{
+#'
 #' # linearized design using a variable with missings
 #' svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ) )
 #' svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ), na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
 #' svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) )
 #' svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) , na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -86,6 +88,8 @@ svyjdiv <- function(formula, design, ...) {
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
+  warning("The svyjdiv function is experimental and is subject to changes in later versions.")
+
   UseMethod("svyjdiv", design)
 
 }
@@ -101,14 +105,16 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
   if (na.rm) {
     nas <- is.na(incvar)
     design <- design[nas == 0, ]
-    if (length(nas) > length(design$prob)) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
+    if ( length(nas) > length(design$prob) ) { incvar <- incvar[nas == 0] }
   }
 
+  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   w <- 1/design$prob
 
-  if ( any( incvar[w != 0] <= 0 , na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
+  incvar <- incvar[ w > 0 ]
+  w <- w[ w > 0 ]
 
-  w <- 1/design$prob
+  if ( any( incvar <= 0 , na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
 
   rval <- NULL
 
@@ -131,6 +137,9 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
     return(rval)
   }
 
+  lin <- 1*( 1/design$prob > 0)
+  lin[ lin > 0 ] <- estimate$lin
+  estimate$lin <- lin ; rm( lin , w )
   variance <- survey::svyrecvar( estimate$lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

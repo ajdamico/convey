@@ -2,9 +2,9 @@
 % Please edit documentation in R/svygei.R
 \name{svygei}
 \alias{svygei}
-\alias{svygei.DBIsvydesign}
 \alias{svygei.survey.design}
 \alias{svygei.svyrep.design}
+\alias{svygei.DBIsvydesign}
 \title{Generalized entropy index}
 \usage{
 svygei(formula, design, ...)
@@ -64,6 +64,8 @@ svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = .5 )
 svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 1 )
 svygei( ~eqincome , subset(des_eusilc_rep, eqincome > 0), epsilon = 2 )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0 )
 svygei( ~py010n , subset(des_eusilc, py010n > 0 | is.na(py010n) ), epsilon = 0, na.rm = TRUE )
@@ -83,9 +85,6 @@ svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon =
 svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 1, na.rm = TRUE )
 svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 2 )
 svygei( ~py010n , subset(des_eusilc_rep, py010n > 0 | is.na(py010n) ), epsilon = 2, na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -129,9 +128,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Matti Langel (2012). Measuring inequality in finite population sampling.
 PhD thesis: Universite de Neuchatel,
@@ -145,5 +141,7 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \seealso{
 \code{\link{svyatk}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

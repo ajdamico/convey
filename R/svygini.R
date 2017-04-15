@@ -43,15 +43,14 @@
 #'
 #' svygini( ~eqincome , design = des_eusilc_rep )
 #'
+#' \dontrun{
+#'
 #' # linearized design using a variable with missings
 #' svygini( ~ py010n , design = des_eusilc )
 #' svygini( ~ py010n , design = des_eusilc , na.rm = TRUE )
 #' # replicate-weighted design using a variable with missings
 #' svygini( ~ py010n , design = des_eusilc_rep )
 #' svygini( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
-#'
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)

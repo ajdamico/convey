@@ -21,4 +21,3 @@ Using the whole sample, computes the bandwith used to get the linearized variabl
 Djalma Pessoa and Anthony Damico
 }
 \keyword{survey}
-

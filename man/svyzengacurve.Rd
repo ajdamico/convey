@@ -2,10 +2,10 @@
 % Please edit documentation in R/svyzengacurve.R
 \name{svyzengacurve}
 \alias{svyzengacurve}
-\alias{svyzengacurve.DBIsvydesign}
 \alias{svyzengacurve.survey.design}
 \alias{svyzengacurve.svyrep.design}
-\title{Zenga inequality curve}
+\alias{svyzengacurve.DBIsvydesign}
+\title{Zenga inequality curve (EXPERIMENTAL)}
 \usage{
 svyzengacurve(formula, design, ...)
 
@@ -59,8 +59,11 @@ On the other hand, the quantile-based curve is used to estimate the complement o
 
 This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approaches the observation-based curve.
 }
+\note{
+This function is experimental and is subject to changes in later versions.
+}
 \examples{
-\dontrun{
+
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -76,6 +79,7 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 svyzengacurve( ~eqincome , des_eusilc_rep,  alpha = .01 )
 
+\dontrun{
 
 # linearized design using a variable with missings
 svyzengacurve( ~py010n , des_eusilc, alpha = .01 )
@@ -126,9 +130,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Marcella Polisicchio and Francesco Porro (2011). A Comparison Between Lorenz L(P) Curve
 and Zenga I(P) Curve. Statistica Applicata, v. 21, n. 3-4, 289-301.
@@ -142,5 +143,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyquantile}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

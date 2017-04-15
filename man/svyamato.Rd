@@ -2,10 +2,10 @@
 % Please edit documentation in R/svyamato.R
 \name{svyamato}
 \alias{svyamato}
-\alias{svyamato.DBIsvydesign}
 \alias{svyamato.survey.design}
 \alias{svyamato.svyrep.design}
-\title{Amato index}
+\alias{svyamato.DBIsvydesign}
+\title{Amato index (EXPERIMENTAL)}
 \usage{
 svyamato(formula, design, ...)
 
@@ -39,6 +39,9 @@ you must run the \code{convey_prep} function on your survey design object immedi
 
 The Amato index is the length of the Lorenz curve.
 }
+\note{
+This function is experimental and is subject to change in later versions.
+}
 \examples{
 library(survey)
 library(vardpoor)
@@ -61,14 +64,14 @@ svyamato(~eqincome, des_eusilc_rep)
 svyamato(~eqincome, subset( des_eusilc, db040 == "Styria"))
 svyamato(~eqincome, subset( des_eusilc_rep, db040 == "Styria"))
 
+\dontrun{
+
 # variable with with missings
 svyamato(~py010n, des_eusilc )
 svyamato(~py010n, des_eusilc_rep )
 
 svyamato(~py010n, des_eusilc, na.rm = TRUE )
 svyamato(~py010n, des_eusilc_rep, na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -109,19 +112,18 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
 Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
 
 Barry C. Arnold (2012). On the Amato inequality index.
 Statistics & Probability Letters, v. 82, n. 8, August 2012, pp. 1504-1506, ISSN 0167-7152.
-URL \url{http://dx.doi.org/10.1016/j.spl.2012.04.020.}.
+URL \url{http://dx.doi.org/10.1016/j.spl.2012.04.020}.
 }
 \seealso{
 \code{\link{svygini}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

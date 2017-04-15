@@ -1,4 +1,4 @@
-#' J-Divergence Decomposition
+#' J-Divergence Decomposition (EXPERIMENTAL)
 #'
 #' Estimates the group decomposition of the generalized entropy index
 #'
@@ -15,6 +15,8 @@
 #' @return Object of class "\code{cvydstat}", which are vectors with a "\code{var}" attribute giving the variance-covariance matrix and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyjdiv}}
 #'
@@ -52,6 +54,8 @@
 #' # replicate-weighted design
 #' svyjdivdec( ~eqincome , ~rb090 , subset(des_eusilc_rep, eqincome > 0) )
 #'
+#' \dontrun{
+#'
 #' # linearized design using a variable with missings
 #' sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc )
@@ -61,8 +65,6 @@
 #' sub_des_eusilc_rep <- subset(des_eusilc_rep, py010n > 0 | is.na(py010n) )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep )
 #' svyjdivdec( ~py010n , ~rb090 , sub_des_eusilc_rep , na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -104,6 +106,8 @@ svyjdivdec <-
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
     if( length( attr( terms.formula( subgroup ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `subgroup=` argument" )
+
+    warning("The svyjdivdec function is experimental and is subject to changes in later versions.")
 
     UseMethod("svyjdivdec", design)
 

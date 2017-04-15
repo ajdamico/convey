@@ -2,15 +2,13 @@ context("Atk output")
 library(IC2)
 library(vardpoor)
 data(eusilc)
-dati = data.frame(1:nrow(eusilc), eusilc)
-colnames(dati)[1] <- "IDd"
+dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 
 des_eusilc <- convey_prep(des_eusilc)
 convey_atk <- svyatk(~eqIncome, subset(des_eusilc, eqIncome > 0) )
 
-dati <- data.frame(IDd = 1:nrow(eusilc), eusilc)
 IC2_atk <- calcAtkinson( x = dati$eqIncome[dati$eqIncome > 0], w = dati$rb050[dati$eqIncome > 0] )$ineq$index
 
 # point estiamte

@@ -2,10 +2,10 @@
 % Please edit documentation in R/svyjdiv.R
 \name{svyjdiv}
 \alias{svyjdiv}
-\alias{svyjdiv.DBIsvydesign}
 \alias{svyjdiv.survey.design}
 \alias{svyjdiv.svyrep.design}
-\title{J-divergence measure}
+\alias{svyjdiv.DBIsvydesign}
+\title{J-divergence measure (EXPERIMENTAL)}
 \usage{
 svyjdiv(formula, design, ...)
 
@@ -35,6 +35,9 @@ you must run the \code{convey_prep} function on your survey design object immedi
 
 This measure only allows for strictly positive variables.
 }
+\note{
+This function is experimental and is subject to change in later versions.
+}
 \examples{
 library(survey)
 library(vardpoor)
@@ -52,14 +55,14 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svyjdiv( ~eqincome , design = subset( des_eusilc_rep , eqincome > 0 ) )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ) )
 svyjdiv( ~py010n , design = subset( des_eusilc , py010n > 0 | is.na( py010n ) ), na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) )
 svyjdiv( ~py010n , design = subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) ) , na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -89,9 +92,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob
-}
 \references{
 Nicholas Rohde (2016). J-divergence measurements of economic inequality.
 J. R. Statist. Soc. A, v. 179, Part 3 (2016), pp. 847-870.
@@ -105,5 +105,7 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \seealso{
 \code{\link{svygei}}
 }
+\author{
+Guilherme Jacob
+}
 \keyword{survey}
-

@@ -2,10 +2,10 @@
 % Please edit documentation in R/svybcc.R
 \name{svybcc}
 \alias{svybcc}
-\alias{svybcc.DBIsvydesign}
 \alias{svybcc.survey.design}
 \alias{svybcc.svyrep.design}
-\title{Bourguignon-Chakravarty multidimensional poverty class}
+\alias{svybcc.DBIsvydesign}
+\title{Bourguignon-Chakravarty multidimensional poverty class (EXPERIMENTAL)}
 \usage{
 svybcc(formula, design, ...)
 
@@ -43,6 +43,9 @@ Estimate indices from the Bourguignon-Chakravarty class, a class of poverty meas
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 }
+\note{
+This function is experimental and is subject to changes in later versions.
+}
 \examples{
 library(survey)
 library(vardpoor)
@@ -71,14 +74,14 @@ sub_des_eusilc_rep <- subset( des_eusilc_rep, db040 == "Styria")
 svybcc( ~ eqincome + hy050n , design = sub_des_eusilc , cutoffs = cos )
 svybcc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , cutoffs = cos )
 
+\dontrun{
+
 # including factor variable with missings
 cos <- list( 10000, 5000, "EU" )
 svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = FALSE )
 svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = TRUE )
 svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = FALSE )
 svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -124,9 +127,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Francois Bourguignon and Satya R. Chakravarty (2003). The measurement of multidimensional poverty.
 Journal of Economic Inequality, v. 1, n. 1, April 2003, pp. 1-25.
@@ -138,5 +138,7 @@ Working Papers 109, ECINEQ, Society for the Study of Economic Inequality.
 \seealso{
 \code{\link{svyafc}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

@@ -2,10 +2,10 @@
 % Please edit documentation in R/svysen.R
 \name{svysen}
 \alias{svysen}
-\alias{svysen.DBIsvydesign}
 \alias{svysen.survey.design}
 \alias{svysen.svyrep.design}
-\title{Sen (1976) poverty index}
+\alias{svysen.DBIsvydesign}
+\title{Sen (1976) poverty index (EXPERIMENTAL)}
 \usage{
 svysen(formula, design, ...)
 
@@ -38,6 +38,9 @@ Estimate the Sen (1976) poverty measure.
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
@@ -92,9 +95,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Amartya K. Sen (1976). Poverty: An Ordinal Approach to Measurement.
 \emph{Econometrica}, v. 44, n. 3, pp. 219-231.
@@ -103,5 +103,7 @@ URL \url{http://www.jstor.org/stable/1912718}.
 \seealso{
 \code{\link{svysst}}, \code{\link{svyfgt}}, \code{\link{svygini}}.
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

@@ -2,9 +2,9 @@
 % Please edit documentation in R/svyfgt.R
 \name{svyfgt}
 \alias{svyfgt}
-\alias{svyfgt.DBIsvydesign}
 \alias{svyfgt.survey.design}
 \alias{svyfgt.svyrep.design}
+\alias{svyfgt.DBIsvydesign}
 \title{FGT measure of poverty}
 \usage{
 svyfgt(formula, design, ...)
@@ -26,7 +26,7 @@ svyfgt(formula, design, ...)
 
 \item{...}{passed to \code{svyarpr} and \code{svyarpt}}
 
-\item{g}{If g=0 estimates the headcount ratio. Measures with g=1 or g=2 also have a natural interpretation}
+\item{g}{If g=0 estimates the headcount ratio; If g=1 estimates the average normalised poverty gap, and if g=2 estimates the average squared normalised poverty gap}
 
 \item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
 of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.}
@@ -91,7 +91,6 @@ svyfgt(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
 # poverty gap index, poverty threshold equal to 0.6 times the mean
 svyfgt(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
 
-
 \dontrun{
 
 # database-backed design
@@ -134,9 +133,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -150,5 +146,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyarpt}}
 }
+\author{
+Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

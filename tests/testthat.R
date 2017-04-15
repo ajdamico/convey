@@ -3,8 +3,6 @@ library(survey)
 library(vardpoor)
 library(IC2)
 
-test_check("convey")
-
-
+if( .Machine$sizeof.pointer > 4 ) test_check("convey")
 
 

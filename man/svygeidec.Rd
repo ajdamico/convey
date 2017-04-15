@@ -2,9 +2,9 @@
 % Please edit documentation in R/svygeidec.R
 \name{svygeidec}
 \alias{svygeidec}
-\alias{svygeidec.DBIsvydesign}
 \alias{svygeidec.survey.design}
 \alias{svygeidec.svyrep.design}
+\alias{svygeidec.DBIsvydesign}
 \title{Generalized entropy index Decomposition}
 \usage{
 svygeidec(formula, subgroup, design, ...)
@@ -66,6 +66,8 @@ svygeidec( ~eqincome , ~rb090 , subset( des_eusilc_rep, eqincome > 0 ) , epsilon
 svygeidec( ~eqincome , ~rb090 , subset( des_eusilc_rep, eqincome > 0 ) , epsilon = 1 )
 svygeidec( ~eqincome , ~rb090 , subset( des_eusilc_rep, eqincome > 0 ) , epsilon = 2 )
 
+\dontrun{
+
 # linearized design using a variable with missings
 sub_des_eusilc <- subset(des_eusilc, py010n > 0 | is.na(py010n) )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc , epsilon = 0 )
@@ -79,9 +81,6 @@ svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0 )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 0, na.rm = TRUE )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 1 )
 svygeidec( ~py010n , ~rb090 , sub_des_eusilc_rep , epsilon = 1, na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -126,9 +125,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Anthony F. Shorrocks (1984). Inequality decomposition
 groups population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
@@ -142,5 +138,7 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \seealso{
 \code{\link{svygei}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

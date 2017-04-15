@@ -1,4 +1,4 @@
-#' Bourguignon-Chakravarty multidimensional poverty class
+#' Bourguignon-Chakravarty multidimensional poverty class (EXPERIMENTAL)
 #'
 #' Estimate indices from the Bourguignon-Chakravarty class, a class of poverty measures.
 #'
@@ -16,6 +16,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to changes in later versions.
 #'
 #' @seealso \code{\link{svyafc}}
 #'
@@ -56,14 +58,14 @@
 #' svybcc( ~ eqincome + hy050n , design = sub_des_eusilc , cutoffs = cos )
 #' svybcc( ~ eqincome + hy050n , design = sub_des_eusilc_rep , cutoffs = cos )
 #'
+#' \dontrun{
+#'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = FALSE )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc, cutoffs = cos, na.rm = TRUE )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = FALSE )
 #' svybcc(~eqincome+hy050n+pb220a, des_eusilc_rep, cutoffs = cos, na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -111,6 +113,8 @@
 #' @export
 svybcc <- function(formula, design, ...) {
 
+  warning("The svybcc function is experimental and is subject to changes in later versions.")
+
   UseMethod("svybcc", design)
 
 }
@@ -123,6 +127,13 @@ svybcc.survey.design <- function( formula, design, theta = .5 , alpha = .5 , cut
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
+
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+    if ( length(dimw) != ncol(ach.matrix) ) { stop( "Dimension weights' length differs from number of dimensions in formula" ) }
+  }
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
@@ -221,6 +232,13 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
 
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+    if ( length(dimw) != ncol(ach.matrix) ) { stop( "Dimension weights' length differs from number of dimensions in formula" ) }
+  }
+
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
   var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
                       dimnames = list( c("var.class"), colnames( ach.matrix ) ) )
@@ -312,8 +330,8 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
 #' @export
 svybcc.DBIsvydesign <-
   function (formula, design, ...) {
-
-  design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
-
+    
+    design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
+    
     NextMethod("svybcc", design)
   }

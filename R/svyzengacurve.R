@@ -1,4 +1,4 @@
-#' Zenga inequality curve
+#' Zenga inequality curve (EXPERIMENTAL)
 #'
 #' Estimate the Zenga curve, an inequality graph
 #'
@@ -28,6 +28,8 @@
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
+#' @note This function is experimental and is subject to changes in later versions.
+#'
 #' @seealso \code{\link{svyquantile}}
 #'
 #' @references Marcella Polisicchio and Francesco Porro (2011). A Comparison Between Lorenz L(P) Curve
@@ -42,7 +44,7 @@
 #' @keywords survey
 #'
 #' @examples
-#' \dontrun{
+#'
 #' library(survey)
 #' library(vardpoor)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -58,6 +60,7 @@
 #'
 #' svyzengacurve( ~eqincome , des_eusilc_rep,  alpha = .01 )
 #'
+#' \dontrun{
 #'
 #' # linearized design using a variable with missings
 #' svyzengacurve( ~py010n , des_eusilc, alpha = .01 )
@@ -115,6 +118,8 @@
 svyzengacurve <- function(formula, design, ...) {
 
   if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+
+  warning("The svyzengacurve function is experimental and is subject to changes in later versions.")
 
   UseMethod("svyzengacurve", design)
 
@@ -235,7 +240,7 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
   w <- 1/design$prob
 
   if ( any( incvar[w != 0] < 0, na.rm = TRUE ) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
-  
+
   domain <- w != 0
 
   ordincvar<-order(incvar)
@@ -286,8 +291,10 @@ svyzengacurve.survey.design <- function ( formula , design, quantiles = seq(0,1,
     v_k <- v_k[ order(ordincvar) ]
 
     var[i] <- survey::svyrecvar( v_k/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
-    rm(v_k, lin_wtd.psum); gc()
+    rm(v_k, lin_wtd.psum)
+
   }
+
   se <- sqrt(var)
 
   CI.L <- Z.p - se * qnorm( alpha, mean = 0, sd = 1, lower.tail = FALSE )
@@ -433,7 +440,7 @@ svyzengacurve.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1
   }
 
   if ( any(incvar < 0, na.rm = TRUE) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
-  
+
 
   ws <- weights(design, "sampling")
   Z.p <- t( as.matrix( lapply_z.p_calc(x = incvar, q = quantiles, weights = ws ) ) )

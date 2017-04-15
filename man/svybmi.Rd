@@ -2,10 +2,10 @@
 % Please edit documentation in R/svybmi.R
 \name{svybmi}
 \alias{svybmi}
-\alias{svybmi.DBIsvydesign}
 \alias{svybmi.survey.design}
 \alias{svybmi.svyrep.design}
-\title{Bourguignon (1999) multidimensional inequality indices}
+\alias{svybmi.DBIsvydesign}
+\title{Bourguignon (1999) multidimensional inequality indices (EXPERIMENTAL)}
 \usage{
 svybmi(formula, design, ...)
 
@@ -41,6 +41,9 @@ Estimate indices from the Bourguignon (1999) class, a class of multidimensional 
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 }
+\note{
+This function is experimental and is subject to change in later versions.
+}
 \examples{
 library(survey)
 library(vardpoor)
@@ -68,7 +71,6 @@ svybmi(~eqincome+hy050n, design = des_eusilc_rep, alpha = .5, beta = 0, na.rm = 
 svybmi(~eqincome+hy050n, design = des_eusilc_rep, alpha = .5, beta = -.5, na.rm = FALSE )
 svybmi(~eqincome+hy050n, design = des_eusilc_rep, alpha = .5, beta = -1, na.rm = FALSE )
 svybmi(~eqincome+hy050n, design = des_eusilc_rep, alpha = .5, beta = -2, na.rm = FALSE )
-
 
 \dontrun{
 
@@ -109,9 +111,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Francois Bourguignon (1999). Comment to 'Multidimensioned Approaches to Welfare
 Analysis' by Maasoumi, E. In: Handbook of income inequality measurement., ed. J.
@@ -123,5 +122,7 @@ In: Research on Economic Inequality. Emerald, p. 213-236.
 \seealso{
 \code{\link{svyfgt}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

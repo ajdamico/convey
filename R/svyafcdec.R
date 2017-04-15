@@ -68,6 +68,8 @@
 #' svyafcdec( ~ eqincome + hy050n ,  ~rb090 , sub_des_eusilc_rep ,
 #'	k = .5 , g = 0, cutoffs = cos )
 #'
+#' \dontrun{
+#'
 #' # including factor variable with missings
 #' cos <- list( 10000, 5000, "EU" )
 #' svyafcdec(~eqincome+hy050n+pb220a,  ~1 , des_eusilc,
@@ -87,8 +89,6 @@
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = FALSE )
 #' svyafcdec(~eqincome+hy050n+pb220a,  ~rb090 , des_eusilc_rep,
 #' 		k = .5, g = 0, cutoffs = cos , na.rm = TRUE )
-#'
-#' \dontrun{
 #'
 #' # database-backed design
 #' library(MonetDBLite)
@@ -169,6 +169,14 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
   }
 
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
+
+  if ( !is.null( dimw ) ) {
+    if ( any( is.na( dimw ) ) ) { stop( "Invalid value in dimension weights vector." ) }
+    if ( sum( dimw ) > 1 ) { stop( "The sum of dimension weigths have to be equal to one." ) }
+    if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
+    if ( length(dimw) != ncol(ach.matrix) ) { stop( "Dimension weights' length differs from number of dimensions in formula" ) }
+  }
+
   grpvar <- model.frame(subgroup, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
@@ -221,7 +229,7 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  #rm(dep.matrix) ; gc()
+  #rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -271,17 +279,17 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   }
 
-  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = T )
+  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = FALSE )
   attr( raw.hc.ratio, "statistic" ) <- "raw headcount"
-  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = T )
+  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = FALSE )
   attr( cen.hc.ratio, "statistic" ) <- "cens. headcount"
 
   U_0 <- list( value = sum( w[ w > 0 ] ), lin = rep( 1, length( w ) ) )
   U_1 <- list( value = sum( w[ w > 0 ] * cen.depr.sums[ w > 0 ] ), lin = cen.depr.sums )
 
   # overall alkire-foster index:
-  overall <- survey::svymean( cen.depr.sums, design, na.rm = T )
-  attr( overall, "statistic" ) <- "alkire-foster"
+  overall <- survey::svymean( cen.depr.sums, design, na.rm = FALSE )
+  names( overall )[1] <- attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
   if ( !is.null( levels( grpvar ) ) ) {
@@ -324,7 +332,6 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
     class( grp.contr.pct ) <- c( "svystat" )
 
     rm( grp.pctg.estm, grp.pctg.estm_var, grp.pctg.cont, grp.pctg.cont_lin, grp.pctg.cont_var )
-    gc()
 
   }
 
@@ -354,7 +361,6 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
   class( dim.result ) <- c( "svystat" )
 
   rm( dim.contr, dim.contr_lin, dim.contr_var )
-  gc()
 
   # set up result object:
   if ( is.null( levels( grpvar ) ) ) {
@@ -436,7 +442,7 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   # k multidimensional cutoff:
   multi.cut <- depr.sums*( depr.sums >= k )
-  #rm(dep.matrix) ; gc()
+  #rm(dep.matrix)
 
   # Censored Deprivation Matrix
   cen.dep.matrix <- ach.matrix
@@ -488,14 +494,14 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   }
 
-  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = T )
+  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = FALSE )
   attr( raw.hc.ratio, "statistic" ) <- "raw headcount"
-  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = T )
+  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = FALSE )
   attr( cen.hc.ratio, "statistic" ) <- "cens. headcount"
 
   # overall alkire-foster index:
-  overall <- survey::svymean( cen.depr.sums, design, na.rm = T )
-  attr( overall, "statistic" ) <- "alkire-foster"
+  overall <- survey::svymean( cen.depr.sums, design, na.rm = FALSE )
+  names( overall )[1] <- attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
   if ( !is.null( levels( grpvar ) ) ) {
@@ -555,10 +561,10 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
   dim.contr_var <- NULL
   for ( i in 1:ncol(cen.dep.matrix) ) {
 
-    dim.contr[ i ] <- dimw[i] * ( sum( ws * dep.matrix[,i] ) / sum( ws ) ) / ( sum( ws * cen.depr.sums ) / sum( ws ) )
+    dim.contr[ i ] <- dimw[i] * ( sum( ws * cen.dep.matrix[ , i ] ) / sum( ws * cen.depr.sums ) )
 
     qq.dim.contr[ , i ] <- apply( ww, 2, function(wi) {
-      dimw[i] * ( sum( wi * dep.matrix[,i] ) / sum( wi ) ) / ( sum( wi * cen.depr.sums ) / sum( wi ) )
+      dimw[i] * ( sum( ws * cen.dep.matrix[ , i ] ) / sum( ws * cen.depr.sums ) )
     } )
 
   }
@@ -597,7 +603,6 @@ svyafcdec.DBIsvydesign <-
     design$variables <-
       cbind(
         getvars(formula, design$db$connection,design$db$tablename, updates = design$updates, subset = design$subset),
-
         getvars(subgroup, design$db$connection, design$db$tablename,updates = design$updates, subset = design$subset)
       )
 

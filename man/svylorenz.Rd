@@ -2,9 +2,9 @@
 % Please edit documentation in R/svylorenz.R
 \name{svylorenz}
 \alias{svylorenz}
-\alias{svylorenz.DBIsvydesign}
 \alias{svylorenz.survey.design}
 \alias{svylorenz.svyrep.design}
+\alias{svylorenz.DBIsvydesign}
 \title{Lorenz curve}
 \usage{
 svylorenz(formula, design, ...)
@@ -55,10 +55,10 @@ you must run the \code{convey_prep} function on your survey design object immedi
 Notice that the 'empirical' curve is observation-based and is the one actually used to calculate the Gini index.
 On the other hand, the quantile-based curve is used to estimate the shares, SEs and confidence intervals.
 
-This way, as the number of quantiles of the quantile-based function increases, the qwuantile-based curve approacches the observation-based curve.
+This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approacches the observation-based curve.
 }
 \examples{
-\dontrun{
+
 library(survey)
 library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -74,6 +74,7 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 svylorenz( ~eqincome , des_eusilc_rep, seq(0,1,.05), alpha = .01 )
 
+\dontrun{
 
 # linearized design using a variable with missings
 svylorenz( ~py010n , des_eusilc, seq(0,1,.05), alpha = .01 )
@@ -123,9 +124,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
-}
 \references{
 Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
@@ -139,5 +137,7 @@ Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. 
 \seealso{
 \code{\link{svyquantile}}
 }
+\author{
+Guilherme Jacob, Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

@@ -2,9 +2,9 @@
 % Please edit documentation in R/svypoormed.R
 \name{svypoormed}
 \alias{svypoormed}
-\alias{svypoormed.DBIsvydesign}
 \alias{svypoormed.survey.design}
 \alias{svypoormed.svyrep.design}
+\alias{svypoormed.DBIsvydesign}
 \title{Relative median poverty gap}
 \usage{
 svypoormed(formula, design, ...)
@@ -57,14 +57,14 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 svypoormed( ~eqincome , design = des_eusilc_rep )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svypoormed( ~ py010n , design = des_eusilc )
 svypoormed( ~ py010n , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svypoormed( ~ py010n , design = des_eusilc_rep )
 svypoormed( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -94,9 +94,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -110,5 +107,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyarpt}}
 }
+\author{
+Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-

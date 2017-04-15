@@ -2,9 +2,9 @@
 % Please edit documentation in R/svygini.R
 \name{svygini}
 \alias{svygini}
-\alias{svygini.DBIsvydesign}
 \alias{svygini.survey.design}
 \alias{svygini.svyrep.design}
+\alias{svygini.DBIsvydesign}
 \title{Gini coefficient}
 \usage{
 svygini(formula, design, ...)
@@ -50,15 +50,14 @@ des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 svygini( ~eqincome , design = des_eusilc_rep )
 
+\dontrun{
+
 # linearized design using a variable with missings
 svygini( ~ py010n , design = des_eusilc )
 svygini( ~ py010n , design = des_eusilc , na.rm = TRUE )
 # replicate-weighted design using a variable with missings
 svygini( ~ py010n , design = des_eusilc_rep )
 svygini( ~ py010n , design = des_eusilc_rep , na.rm = TRUE )
-
-
-\dontrun{
 
 # database-backed design
 library(MonetDBLite)
@@ -88,9 +87,6 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 
 }
-\author{
-Djalma Pessoa and Anthony Damico
-}
 \references{
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
@@ -104,5 +100,7 @@ URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X
 \seealso{
 \code{\link{svyarpr}}
 }
+\author{
+Djalma Pessoa and Anthony Damico
+}
 \keyword{survey}
-
