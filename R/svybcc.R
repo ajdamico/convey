@@ -122,8 +122,6 @@ svybcc.survey.design <- function( formula, design, theta = .5 , alpha = .5 , cut
   if ( theta <= 0 | alpha <= 0 ) stop( "This function is undefined for theta <= 0 or alpha <= 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
@@ -221,8 +219,6 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
   if ( theta <= 0 | alpha <= 0 ) stop( "This function is undefined for theta <= 0 or alpha <= 0." )
   if ( !is.list( cutoffs ) ) stop( "The parameter 'cutoffs' has to be a list." )
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
@@ -317,21 +313,7 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
 svybcc.DBIsvydesign <-
   function (formula, design, ...) {
 
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-      full_design <- attr( design , "full_design" )
-
-      full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                       updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
-
-      attr( design , "full_design" ) <- full_design
-
-      rm( full_design )
-
-    }
-
-    design$variables <- getvars(formula, design$db$connection, design$db$tablename,
-                                updates = design$updates, subset = design$subset)
+  design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 
     NextMethod("svybcc", design)
   }

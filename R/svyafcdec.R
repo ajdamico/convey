@@ -168,8 +168,6 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
     if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
   }
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
   grpvar <- model.frame(subgroup, design$variables, na.action = na.pass)[,]
 
@@ -389,8 +387,6 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
     if ( any( dimw > 1 | dimw < 0 ) ) { stop( "Dim. weights have to be within interval [0,1]." ) }
   }
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
   ach.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
@@ -538,17 +534,17 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
     grp.pctg.estm_var <- survey::svrVar( qq.estm, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.estm )
     grp.pctg.cont_var <- survey::svrVar( qq.pctg, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.cont )
 
-	grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
-	attr( grp.contr.estimate, "names" ) <- levels( grpvar )
-	attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
-	attr( grp.contr.estimate, "statistic") <- "alkire-foster"
-	class( grp.contr.estimate ) <- c( "svrepstat" )
+    grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
+    attr( grp.contr.estimate, "names" ) <- levels( grpvar )
+    attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
+    attr( grp.contr.estimate, "statistic") <- "alkire-foster"
+    class( grp.contr.estimate ) <- c( "svrepstat" )
 
-	grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
-	attr( grp.contr.pct, "names" ) <- levels( grpvar )
-	attr( grp.contr.pct, "var") <- grp.pctg.cont_var
-	attr( grp.contr.pct, "statistic") <- "grp. % contribution"
-	class( grp.contr.pct ) <- c( "svrepstat" )
+    grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
+    attr( grp.contr.pct, "names" ) <- levels( grpvar )
+    attr( grp.contr.pct, "var") <- grp.pctg.cont_var
+    attr( grp.contr.pct, "statistic") <- "grp. % contribution"
+    class( grp.contr.pct ) <- c( "svrepstat" )
 
 
   }
@@ -597,25 +593,6 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
 #' @export
 svyafcdec.DBIsvydesign <-
   function (formula, subgroup = ~1 , design, ...) {
-
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-      full_design <- attr( design , "full_design" )
-
-      full_design$variables <-
-        cbind(
-          getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset),
-
-          getvars(subgroup, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
-        )
-
-
-
-      attr( design , "full_design" ) <- full_design
-
-      rm( full_design )
-
-    }
 
     design$variables <-
       cbind(
