@@ -5,4 +5,3 @@ library(IC2)
 
 test_check("convey")
 
-
