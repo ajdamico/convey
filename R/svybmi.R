@@ -150,9 +150,16 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
     for ( i in seq_along(var.class) ) {
+
       top <- max( nac.matrix[ , i], na.rm = TRUE )
       bottom <- min( nac.matrix[ , i], na.rm = TRUE )
-      nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
+      if (top != bottom) {
+        nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
+      } else {
+        warning( paste0( "component '" , colnames(nac.matrix)[ i ] , "' does not vary across this sample.\n Assuming normalized component = 1." ) )
+        nac.matrix[ , i ] <- 1
+      }
+
     }
 
   }
@@ -284,8 +291,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   }
 
   var.class <- lapply( nac.matrix, function(x) class(x)[1] )
-  var.class <- matrix(var.class, nrow = 1, ncol = ncol(nac.matrix),
-                      dimnames = list( c("var.class"), colnames( nac.matrix ) ) )
+  var.class <- matrix(var.class, nrow = 1, ncol = ncol(nac.matrix), dimnames = list( c("var.class"), colnames( nac.matrix ) ) )
 
   if ( any( !( var.class %in% c( "numeric", "integer" ) ) ) ) {
     stop( "This function is only applicable to variables of type 'numeric'." )
@@ -311,9 +317,17 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
     for ( i in seq_along(var.class) ) {
-      top <- max( nac.matrix[ w > 0 , i ], na.rm = TRUE )
-      bottom <- min( nac.matrix[ w > 0 , i ], na.rm = TRUE )
-      nac.matrix[ w > 0 , i ] <- ( nac.matrix[ w > 0 , i ] - bottom ) / ( top - bottom )
+
+      top <- max( nac.matrix[ , i ], na.rm = TRUE )
+      bottom <- min( nac.matrix[ , i ], na.rm = TRUE )
+
+      if (top != bottom) {
+        nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
+      } else {
+        warning( paste0( "component '" , colnames(nac.matrix)[ i ] , "' does not vary across this sample.\n Assuming normalized component = 1." ) )
+        nac.matrix[ , i ] <- 1
+      }
+
     }
 
   }

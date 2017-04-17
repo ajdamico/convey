@@ -180,8 +180,7 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
   grpvar <- model.frame(subgroup, design$variables, na.action = na.pass)[,]
 
   var.class <- lapply( ach.matrix, function(x) class(x)[1] )
-  var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix),
-                      dimnames = list( c("var.class"), colnames( ach.matrix ) ) )
+  var.class <- matrix(var.class, nrow = 1, ncol = ncol(ach.matrix), dimnames = list( c("var.class"), colnames( ach.matrix ) ) )
 
   if ( any( !( var.class %in% c( "numeric", "ordered" ) ) ) ) {
     stop( "This function is only applicable to variables of types 'numeric' or 'ordered factor'." )
@@ -200,7 +199,7 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   if (na.rm) {
     nas <- apply( cbind( ach.matrix, grpvar ), 1, function(x) any( is.na(x) ) )
-    design <- design[nas == 0, ]
+    design <- design[ nas == 0, ]
   }
 
   w <- 1/design$prob
@@ -279,16 +278,16 @@ svyafcdec.survey.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   }
 
-  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = FALSE )
+  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = TRUE )
   attr( raw.hc.ratio, "statistic" ) <- "raw headcount"
-  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = FALSE )
+  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = TRUE )
   attr( cen.hc.ratio, "statistic" ) <- "cens. headcount"
 
   U_0 <- list( value = sum( w[ w > 0 ] ), lin = rep( 1, length( w ) ) )
   U_1 <- list( value = sum( w[ w > 0 ] * cen.depr.sums[ w > 0 ] ), lin = cen.depr.sums )
 
   # overall alkire-foster index:
-  overall <- survey::svymean( cen.depr.sums, design, na.rm = FALSE )
+  overall <- survey::svymean( cen.depr.sums, design, na.rm = TRUE )
   names( overall )[1] <- attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
@@ -494,13 +493,13 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
 
   }
 
-  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = FALSE )
+  raw.hc.ratio <- survey::svymean( dep.matrix[,] , design, na.rm = TRUE )
   attr( raw.hc.ratio, "statistic" ) <- "raw headcount"
-  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = FALSE )
+  cen.hc.ratio <- survey::svymean( cen.dep.matrix[,] , design, na.rm = TRUE )
   attr( cen.hc.ratio, "statistic" ) <- "cens. headcount"
 
   # overall alkire-foster index:
-  overall <- survey::svymean( cen.depr.sums, design, na.rm = FALSE )
+  overall <- survey::svymean( cen.depr.sums, design, na.rm = TRUE )
   names( overall )[1] <- attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
@@ -540,17 +539,17 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
     grp.pctg.estm_var <- survey::svrVar( qq.estm, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.estm )
     grp.pctg.cont_var <- survey::svrVar( qq.pctg, design$scale, design$rscales, mse = design$mse, coef = grp.pctg.cont )
 
-	grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
-	attr( grp.contr.estimate, "names" ) <- levels( grpvar )
-	attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
-	attr( grp.contr.estimate, "statistic") <- "alkire-foster"
-	class( grp.contr.estimate ) <- c( "svrepstat" )
+    grp.contr.estimate <- matrix( grp.pctg.estm, ncol = 1, dimnames = list( levels( grpvar ), "alkire-foster" ) )
+    attr( grp.contr.estimate, "names" ) <- levels( grpvar )
+    attr( grp.contr.estimate, "var") <- grp.pctg.estm_var
+    attr( grp.contr.estimate, "statistic") <- "alkire-foster"
+    class( grp.contr.estimate ) <- c( "svrepstat" )
 
-	grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
-	attr( grp.contr.pct, "names" ) <- levels( grpvar )
-	attr( grp.contr.pct, "var") <- grp.pctg.cont_var
-	attr( grp.contr.pct, "statistic") <- "grp. % contribution"
-	class( grp.contr.pct ) <- c( "svrepstat" )
+    grp.contr.pct <- matrix( grp.pctg.cont, ncol = 1, dimnames = list( levels( grpvar ), "grp. % contribution" ) )
+    attr( grp.contr.pct, "names" ) <- levels( grpvar )
+    attr( grp.contr.pct, "var") <- grp.pctg.cont_var
+    attr( grp.contr.pct, "statistic") <- "grp. % contribution"
+    class( grp.contr.pct ) <- c( "svrepstat" )
 
 
   }

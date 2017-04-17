@@ -330,8 +330,8 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
 #' @export
 svybcc.DBIsvydesign <-
   function (formula, design, ...) {
-
+    
     design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
-
+    
     NextMethod("svybcc", design)
   }
