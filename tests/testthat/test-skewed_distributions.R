@@ -154,10 +154,10 @@ for( n in c( 50 , 1000 ) ){
 
 					test_that(paste( "functions work on weird distributions" , this_prefix , as.character( this_formula )[2] ) ,{
 
-						print( paste( "testing functions work on weird distributions" , this_prefix , as.character( this_formula )[2] ) )
-					
 						lin_res <- do.call( FUN , lin_params_list )
 						rep_res <- do.call( FUN , rep_params_list )
+
+						print( paste( "testing functions work on weird distributions" , attr(lin_res , "statistic") , this_prefix , as.character( this_formula )[2] ) )
 
 						# result should give some non-missing number
 						expect_that( coef( lin_res ) , is.numeric )
