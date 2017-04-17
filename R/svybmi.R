@@ -150,6 +150,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
     for ( i in seq_along(var.class) ) {
+
       top <- max( nac.matrix[ , i], na.rm = TRUE )
       bottom <- min( nac.matrix[ , i], na.rm = TRUE )
       if (top != bottom) {
@@ -290,8 +291,7 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   }
 
   var.class <- lapply( nac.matrix, function(x) class(x)[1] )
-  var.class <- matrix(var.class, nrow = 1, ncol = ncol(nac.matrix),
-                      dimnames = list( c("var.class"), colnames( nac.matrix ) ) )
+  var.class <- matrix(var.class, nrow = 1, ncol = ncol(nac.matrix), dimnames = list( c("var.class"), colnames( nac.matrix ) ) )
 
   if ( any( !( var.class %in% c( "numeric", "integer" ) ) ) ) {
     stop( "This function is only applicable to variables of type 'numeric'." )
@@ -316,14 +316,18 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   # Normalized Achievement Matrix
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
-    top <- max( nac.matrix[ , i ], na.rm = TRUE )
-    bottom <- min( nac.matrix[ , i ], na.rm = TRUE )
+    for ( i in seq_along(var.class) ) {
 
-    if (top != bottom) {
-      nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
-    } else {
-      warning( paste0( "component '" , colnames(nac.matrix)[ i ] , "' does not vary across this sample.\n Assuming normalized component = 1." ) )
-      nac.matrix[ , i ] <- 1
+      top <- max( nac.matrix[ , i ], na.rm = TRUE )
+      bottom <- min( nac.matrix[ , i ], na.rm = TRUE )
+
+      if (top != bottom) {
+        nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
+      } else {
+        warning( paste0( "component '" , colnames(nac.matrix)[ i ] , "' does not vary across this sample.\n Assuming normalized component = 1." ) )
+        nac.matrix[ , i ] <- 1
+      }
+
     }
 
   }
