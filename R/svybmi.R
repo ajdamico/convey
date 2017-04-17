@@ -316,6 +316,9 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   # Normalized Achievement Matrix
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
+    top <- max( nac.matrix[ , i ], na.rm = TRUE )
+    bottom <- min( nac.matrix[ , i ], na.rm = TRUE )
+
     if (top != bottom) {
       nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
     } else {
