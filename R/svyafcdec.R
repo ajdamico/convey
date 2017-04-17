@@ -499,7 +499,7 @@ svyafcdec.svyrep.design <- function( formula, subgroup = ~1 , design, g , cutoff
   attr( cen.hc.ratio, "statistic" ) <- "cens. headcount"
 
   # overall alkire-foster index:
-  overall <- survey::svymean( cen.depr.sums, design, na.rm = TRUE )
+  overall <- survey::svymean( as.matrix(cen.depr.sums) , design, na.rm = TRUE )
   names( overall )[1] <- attr( overall, "statistic" ) <- "alkire-foster"
 
   # group decomposition
