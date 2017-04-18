@@ -98,8 +98,6 @@ svyjdiv <- function(formula, design, ...) {
 #' @export
 svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
   if (na.rm) {
@@ -156,8 +154,6 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
 #' @export
 svyjdiv.svyrep.design <- function ( formula, design, na.rm = FALSE, ... ) {
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
   if(na.rm){
@@ -212,21 +208,7 @@ svyjdiv.svyrep.design <- function ( formula, design, na.rm = FALSE, ... ) {
 svyjdiv.DBIsvydesign <-
   function (formula, design, ...) {
 
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-      full_design <- attr( design , "full_design" )
-
-      full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                       updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
-
-      attr( design , "full_design" ) <- full_design
-
-      rm( full_design )
-
-    }
-
-    design$variables <- getvars(formula, design$db$connection, design$db$tablename,
-                                updates = design$updates, subset = design$subset)
+    design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 
     NextMethod("svyjdiv", design)
   }

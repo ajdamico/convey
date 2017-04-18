@@ -157,8 +157,6 @@ svylorenzpolygon_wrap <-
 #' @export
 svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ... ) {
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
   # quantile function:
   wtd.qtl <- function (x, q = .5, weights = NULL ) {
 
@@ -368,8 +366,6 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
 #' @export
 svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red", ci = TRUE, alpha = .05, na.rm = FALSE , ...) {
 
-  if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
   # quantile function:
   wtd.qtl <- function (x, q = .5, weights = NULL ) {
 
@@ -552,24 +548,9 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
 
 #' @rdname svylorenz
 #' @export
-svylorenz.DBIsvydesign <- function (formula, design, ...)
-{
+svylorenz.DBIsvydesign <- function (formula, design, ...) {
 
-  if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-    full_design <- attr( design , "full_design" )
-
-    full_design$variables <- getvars(formula, attr( design , "full_design" )$db$connection, attr( design , "full_design" )$db$tablename,
-                                     updates = attr( design , "full_design" )$updates, subset = attr( design , "full_design" )$subset)
-
-    attr( design , "full_design" ) <- full_design
-
-    rm( full_design )
-
-  }
-
-  design$variables <- getvars(formula, design$db$connection, design$db$tablename,
-                              updates = design$updates, subset = design$subset)
+  design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
 
   NextMethod("svylorenz", design)
 
