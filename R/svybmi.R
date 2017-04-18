@@ -311,15 +311,15 @@ svybmi.svyrep.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     w <- weights( design, "sampling" )
   }
 
-  nac.matrix <- model.frame(formula, design$variables, na.action = na.pass)[,]
+  nac.matrix <- model.frame(formula, design$variables, na.action = na.pass)[ , ]
 
   # Normalized Achievement Matrix
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
     for ( i in seq_along(var.class) ) {
 
-      top <- max( nac.matrix[ , i ], na.rm = TRUE )
-      bottom <- min( nac.matrix[ , i ], na.rm = TRUE )
+      top <- max( nac.matrix[ w > 0 , i ], na.rm = TRUE )
+      bottom <- min( nac.matrix[ w > 0 , i ], na.rm = TRUE )
 
       if (top != bottom) {
         nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
