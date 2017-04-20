@@ -30,7 +30,7 @@
 #' Vol. 46, No. 14, pp. 1599-1608, URL \url{http://dx.doi.org/10.1080/00036846.2014.880106}.
 #'
 #' Andreas Peichl, Thilo Schaefer, and Christoph Scheicher (2010). Measuring richness and poverty: A micro data
-#' application to Europe and Germany. \emph{Review of Income and Wealth}, Vol. 56, No.3, pp. 597–619.
+#' application to Europe and Germany. \emph{Review of Income and Wealth}, Vol. 56, No.3, pp. 597-619.
 #'
 #' Guillaume Osier (2009). Variance estimation for complex indicators
 #' of poverty and inequality. \emph{Journal of the European Survey Research
