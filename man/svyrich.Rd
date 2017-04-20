@@ -5,7 +5,7 @@
 \alias{svyrich.survey.design}
 \alias{svyrich.svyrep.design}
 \alias{svyrich.DBIsvydesign}
-\title{Richness measures}
+\title{Richness measures (EXPERIMENTAL)}
 \usage{
 svyrich(formula, design, ...)
 
@@ -49,6 +49,9 @@ Estimate Peichl, Schaefer and Scheicher (2010) richness measures.
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
+}
+\note{
+This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)

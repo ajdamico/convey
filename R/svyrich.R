@@ -1,4 +1,4 @@
-#' Richness measures
+#' Richness measures (EXPERIMENTAL)
 #'
 #' Estimate Peichl, Schaefer and Scheicher (2010) richness measures.
 #'
@@ -19,6 +19,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyfgt}}
 #'
@@ -120,6 +122,8 @@
 #' @export
 svyrich <-
   function(formula, design, ... ) {
+
+    warning("The svyrich function is experimental and is subject to changes in later versions.")
 
     if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
 
