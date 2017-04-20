@@ -24,6 +24,8 @@ svyrich(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{...}{passed to \code{svyarpt}}
+
 \item{type_measure}{A string "Cha" or "FGT" defining the richness measure.}
 
 \item{g}{Richness preference parameter.}

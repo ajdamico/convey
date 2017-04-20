@@ -13,6 +13,8 @@
 #' @param quantiles the quantile used used in the richness threshold definition
 #' @param thresh return the richness threshold value
 #' @param na.rm Should cases with missing values be dropped?
+#' @param ... passed to \code{svyarpt}
+#'
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
