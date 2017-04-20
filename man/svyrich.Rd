@@ -7,7 +7,7 @@
 \alias{svyrich.DBIsvydesign}
 \title{Richness measures}
 \usage{
-svyrich(formula, design, type_measure = "FGT", ...)
+svyrich(formula, design, ...)
 
 \method{svyrich}{survey.design}(formula, design, type_measure, g,
   type_thresh = "abs", abs_thresh = NULL, times = 1, quantiles = 0.5,
@@ -24,6 +24,8 @@ svyrich(formula, design, type_measure = "FGT", ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
+\item{type_measure}{A string "Cha" or "FGT" defining the richness measure.}
+
 \item{g}{Richness preference parameter.}
 
 \item{type_thresh}{type of richness threshold. If "abs" the threshold is fixed and given the value
@@ -38,8 +40,6 @@ of abs_thresh; if "relq" it is given by \code{times} times the quantile; if "rel
 \item{na.rm}{Should cases with missing values be dropped?}
 
 \item{thresh}{return the richness threshold value}
-
-\item{type}{A string "Cha" or "FGT" defining the richness measure. Defaults to \code{type = "FGT"}.}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -64,32 +64,32 @@ des_eusilc <- convey_prep( des_eusilc )
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
-# headcount ratio, poverty threshold fixed
-svyrich(~eqincome, des_eusilc, g=0,  abs_thresh=10000)
-# poverty gap index, poverty threshold fixed
-svyrich(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
-# headcount ratio, poverty threshold equal to arpt
-svyrich(~eqincome, des_eusilc, g=0, type_thresh= "relq" , thresh = TRUE)
-# poverty gap index, poverty threshold equal to arpt
-svyrich(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
-# headcount ratio, poverty threshold equal to .6 times the mean
-svyrich(~eqincome, des_eusilc, g=0, type_thresh= "relm", thresh = TRUE)
-# poverty gap index, poverty threshold equal to 0.6 times the mean
-svyrich(~eqincome, des_eusilc, g=1, type_thresh= "relm" , thresh = TRUE)
+# headcount ratio, richness threshold fixed
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=0,  abs_thresh=30000)
+# richness gap index, richness threshold fixed
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1,  abs_thresh=30000)
+# headcount ratio, richness threshold equal to arpt
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=0, type_thresh= "relq" , thresh = TRUE)
+# richness gap index, richness threshold equal to arpt
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1, type_thresh= "relq", thresh = TRUE)
+# headcount ratio, richness threshold equal to .6 times the mean
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=0, type_thresh= "relm", thresh = TRUE)
+# richness gap index, richness threshold equal to 0.6 times the mean
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1, type_thresh= "relm" , thresh = TRUE)
 
 #  using svrep.design:
-# headcount ratio, poverty threshold fixed
-svyrich(~eqincome, des_eusilc_rep, g=0,  abs_thresh=10000)
-# poverty gap index, poverty threshold fixed
-svyrich(~eqincome, des_eusilc, g=1,  abs_thresh=10000)
-# headcount ratio, poverty threshold equal to arpt
-svyrich(~eqincome, des_eusilc_rep, g=0, type_thresh= "relq" , thresh = TRUE)
-# poverty gap index, poverty threshold equal to arpt
-svyrich(~eqincome, des_eusilc, g=1, type_thresh= "relq", thresh = TRUE)
-# headcount ratio, poverty threshold equal to .6 times the mean
-svyrich(~eqincome, des_eusilc_rep, g=0, type_thresh= "relm" , thresh = TRUE)
-# poverty gap index, poverty threshold equal to 0.6 times the mean
-svyrich(~eqincome, des_eusilc_rep, g=1, type_thresh= "relm", thresh = TRUE)
+# headcount ratio, richness threshold fixed
+svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=0,  abs_thresh=30000)
+# richness gap index, richness threshold fixed
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1,  abs_thresh=30000)
+# headcount ratio, richness threshold equal to arpt
+svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=0, type_thresh= "relq" , thresh = TRUE)
+# richness gap index, richness threshold equal to arpt
+svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1, type_thresh= "relq", thresh = TRUE)
+# headcount ratio, richness threshold equal to .6 times the mean
+svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=0, type_thresh= "relm" , thresh = TRUE)
+# richness gap index, richness threshold equal to 0.6 times the mean
+svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=1, type_thresh= "relm", thresh = TRUE)
 
 \dontrun{
 
@@ -113,18 +113,18 @@ dbd_eusilc <-
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
-# headcount ratio, poverty threshold fixed
-svyrich(~eqincome, dbd_eusilc, g=0, abs_thresh=10000)
-# poverty gap index, poverty threshold fixed
-svyrich(~eqincome, dbd_eusilc, g=1, abs_thresh=10000)
-# headcount ratio, poverty threshold equal to arpt
-svyrich(~eqincome, dbd_eusilc, g=0, type_thresh= "relq", thresh = TRUE)
-# poverty gap index, poverty threshold equal to arpt
-svyrich(~eqincome, dbd_eusilc, g=1, type_thresh= "relq")
-# headcount ratio, poverty threshold equal to .6 times the mean
-svyrich(~eqincome, dbd_eusilc, g=0, type_thresh= "relm")
-# poverty gap index, poverty threshold equal to 0.6 times the mean
-svyrich(~eqincome, dbd_eusilc, g=1, type_thresh= "relm")
+# headcount ratio, richness threshold fixed
+svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=0, abs_thresh=30000)
+# richness gap index, richness threshold fixed
+svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=1, abs_thresh=30000)
+# headcount ratio, richness threshold equal to arpt
+svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=0, type_thresh= "relq", thresh = TRUE)
+# richness gap index, richness threshold equal to arpt
+svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=1, type_thresh= "relq")
+# headcount ratio, richness threshold equal to .6 times the mean
+svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=0, type_thresh= "relm")
+# richness gap index, richness threshold equal to 0.6 times the mean
+svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=1, type_thresh= "relm")
 
 dbRemoveTable( conn , 'eusilc' )
 
