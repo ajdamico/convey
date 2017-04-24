@@ -1,4 +1,4 @@
-#' Watss poverty index
+#' Watss poverty index (EXPERIMENTAL)
 #'
 #' Estimate the Watts (1968) poverty measure
 #'
@@ -18,6 +18,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyarpt}}
 #'
@@ -103,6 +105,8 @@
 #' @export
 svywatts <-
   function(formula, design,  ...) {
+
+    warning("The svywatts function is experimental and is subject to changes in later versions.")
 
     if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svywatts for more detail.' )
 
