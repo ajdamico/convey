@@ -8,7 +8,7 @@ dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
 test_that("svyfgt works on unweighted designs",{
 	for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 		for ( this_g in c( 0 , 1 ) ) {
-			svyfgt(~api00, design=dstrat1, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+			svyfgt(~api00, design=dstrat1, g=this_g, type_thresh= this_thresh, percent = 1, abs_thresh=600)
 		}
 	}
 })
