@@ -1,4 +1,4 @@
-#' CHU class of poverty measures
+#' CHU class of poverty measures (EXPERIMENTAL)
 #'
 #' Estimate the Clark, Hemming and Ulph (1981) class of poverty measures
 #'
@@ -19,6 +19,8 @@
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
+#'
+#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyarpt}}
 #'
@@ -108,6 +110,8 @@ svychu <-
     if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
 
     if( !is.na( list(...)[["g"]] ) && ( list(...)[["g"]] == 0 ) ) return( svywatts( formula , design , ... ) )
+
+    warning("The svychu function is experimental and is subject to changes in later versions.")
 
     if( !is.na( list(...)[["g"]] ) && !( list(...)[["g"]] <= 1 ) ) stop( "g= must be in the [0, 1] interval." )
 
