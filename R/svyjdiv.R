@@ -109,17 +109,17 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
   w <- 1/design$prob
 
-  incvar <- incvar[ w > 0 ]
-  w <- w[ w > 0 ]
+  #incvar <- incvar[ w > 0 ]
+  #w <- w[ w > 0 ]
 
-  if ( any( incvar <= 0 , na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
+  if ( any( incvar[ w > 0 ] <= 0 , na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
 
   rval <- NULL
 
-  U_0 <- list( value = sum( w ), lin = rep( 1, length( incvar ) ) )
-  U_1 <- list( value = sum( w * incvar ), lin = incvar )
-  T_0 <- list( value = sum( w * log( incvar ) ), lin = log( incvar ) )
-  T_1 <- list( value = sum( w * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
+  U_0 <- list( value = sum( w ), lin = ifelse( w > 0 , 1 , 0 ) )
+  U_1 <- list( value = sum( ifelse( w > 0 , w * incvar , 0 ) ), lin = ifelse( w > 0 , incvar , 0 ) )
+  T_0 <- list( value = sum( ifelse( w > 0 ,  w * log( incvar ) , 0 ) ), lin = ifelse( w > 0 , log( incvar ) , 0 ) )
+  T_1 <- list( value = sum( ifelse( w > 0 , w * incvar * log( incvar ) , 0 ) ), lin = ifelse( w > 0 , incvar * log( incvar ) , 0 ) )
 
   list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1 )
   estimate <- contrastinf( quote( ( T_1 / U_1 ) - ( T_0 / U_0 ) ) , list_all )
@@ -135,9 +135,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
     return(rval)
   }
 
-  lin <- 1*( 1/design$prob > 0)
-  lin[ lin > 0 ] <- estimate$lin
-  estimate$lin <- lin ; rm( lin , w )
+  estimate$lin <- ifelse( 1/design$prob > 0 , estimate$lin , 0 )
   variance <- survey::svyrecvar( estimate$lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
