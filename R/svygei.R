@@ -238,9 +238,10 @@ svygei.svyrep.design <-
 
 			variance <- as.matrix(NA)
 			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-			class(rval) <- "cvystat"
+			class(rval) <- c( "cvystat" , "svrepstat" )
 			attr(rval, "var") <- variance
-			attr(rval, "statistic") <- "generalized entropy index"
+			attr(rval, "statistic") <- "gei"
+			attr(rval,"epsilon")<- epsilon
 
 			return(rval)
 
@@ -256,6 +257,7 @@ svygei.svyrep.design <-
 		class(rval) <- c( "cvystat" , "svrepstat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "gei"
+		attr(rval,"epsilon")<- epsilon
 		return(rval)
 	}
 
