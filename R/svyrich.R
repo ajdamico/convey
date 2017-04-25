@@ -140,7 +140,7 @@ svyrich <-
 
     if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT2' ) && ( list(...)[["g"]] <= 1 ) ) stop( 'type_measure="FGTT2" is defined for g > 1 only.' )
 
-    if( 'type_measure' %in% names( list( ... ) ) && !( list(...)[["type_measure"]] == 'FGTT1' ) ) warning( 'Brezinski (2010) warns about poor inferential performance for convex richness measures. See ?svyrich for reference.' )
+    if( 'type_measure' %in% names( list( ... ) ) && !( list(...)[["type_measure"]] == 'FGTT1' ) ) warning( 'Brzezinski (2014) warns about poor inferential performance for convex richness measures. See ?svyrich for reference.' )
 
     if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq", "relm" or "abs". See ?svyrich for more detail.' )
 
