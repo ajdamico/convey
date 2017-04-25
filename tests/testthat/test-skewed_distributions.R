@@ -134,8 +134,8 @@ for( n in c( 50 , 1000 ) ){
 
 			  if( identical( FUN , svyrich ) ){
 
-			    lin_params_list <- c( lin_params_list , list( type_measure = "FGT", g=1, type_thresh= "abs", abs_thresh=30000 ) )
-			    rep_params_list <- c( rep_params_list , list( type_measure = "FGT", g=1, type_thresh= "abs", abs_thresh=30000 ) )
+			    lin_params_list <- c( lin_params_list , list( type_measure = "FGTT1", g=1, type_thresh= "abs", abs_thresh=30000 ) )
+			    rep_params_list <- c( rep_params_list , list( type_measure = "FGTT1", g=1, type_thresh= "abs", abs_thresh=30000 ) )
 
 			  }
 

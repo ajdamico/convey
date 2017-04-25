@@ -5,13 +5,14 @@ library(survey)
 
 data(api)
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
-for ( this_measure in c( "Cha" , "FGT" ) ){
+for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
   for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
     for ( this_g in c( 0 , 1 ) ) {
 
       if (this_measure == "Cha" & this_g == 0 ) this_g = 1/2
+      if (this_measure == "FGTT2" ) this_g = this_g + 2
 
-      test_that( paste0(this_measure , this_g ,"-svyrich works on unweighted designs"),{
+      test_that( paste0(this_measure , "-" , this_g ,"-svyrich works on unweighted designs"),{
       svyrich(~api00, design=dstrat1, type_measure = this_measure , g=this_g, type_thresh=this_thresh, abs_thresh=500)
       })
     }
@@ -64,11 +65,12 @@ dbd_eusilc_rep <-
 dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
 
-for ( this_measure in c( "Cha" , "FGT" ) ){
+for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
   for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
     for ( this_g in c( 0 , 1 ) ) {
 
       if (this_measure == "Cha" & this_g == 0 ) this_g = 1/2
+      if (this_measure == "FGTT2" ) this_g = this_g + 2
 
       a1 <- svyrich(~eqincome, design = des_eusilc, type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
 
@@ -82,7 +84,7 @@ for ( this_measure in c( "Cha" , "FGT" ) ){
       se_dif1 <- abs(SE(a1)-SE(b1))
       se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
-      test_that( paste0( "output svyrich-", this_measure , this_g  ) , {
+      test_that( paste0( "output svyrich-", this_measure , "-" , this_g  ) , {
         expect_is(coef(a1),"numeric")
         expect_is(coef(a2), "numeric")
         expect_is(coef(b1),"numeric")

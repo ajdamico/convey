@@ -4,7 +4,7 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
-#' @param type_measure A string "Cha" or "FGT" defining the richness measure.
+#' @param type_measure A string "Cha", "FGTT1" or "FGTT2" defining the richness measure.
 #' @param type_thresh type of richness threshold. If "abs" the threshold is fixed and given the value
 #' of abs_thresh; if "relq" it is given by \code{times} times the quantile; if "relm" it is \code{times} times the mean.
 #' @param abs_thresh richness threshold value if type_thresh is "abs"
@@ -53,32 +53,33 @@
 #' des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
+#' # concave FGT-like richness measure
 #' # headcount ratio, richness threshold fixed
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=0,  abs_thresh=30000)
+#' svyrich(~eqincome, des_eusilc, type_measure = "FGTT1" , g=0,  abs_thresh=30000)
 #' # richness gap index, richness threshold fixed
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1,  abs_thresh=30000)
-#' # headcount ratio, richness threshold equal to arpt
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=0, type_thresh= "relq" , thresh = TRUE)
-#' # richness gap index, richness threshold equal to arpt
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1, type_thresh= "relq", thresh = TRUE)
-#' # headcount ratio, richness threshold equal to .6 times the mean
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=0, type_thresh= "relm", thresh = TRUE)
-#' # richness gap index, richness threshold equal to 0.6 times the mean
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1, type_thresh= "relm" , thresh = TRUE)
+#' svyrich(~eqincome, des_eusilc, type_measure = "FGTT1" , g=1,  abs_thresh=30000)
+#' # headcount ratio, richness threshold equal to the median
+#' svyrich(~eqincome, des_eusilc, type_measure = "FGTT1" , g=0, type_thresh= "relq" , thresh = TRUE)
+#' # richness gap index, richness threshold equal to the median
+#' svyrich(~eqincome, des_eusilc, type_measure = "FGTT1" , g=1, type_thresh= "relq", thresh = TRUE)
+#' # headcount ratio, richness threshold equal to the mean
+#' svyrich(~eqincome, des_eusilc, type_measure = "FGTT1" , g=0, type_thresh= "relm", thresh = TRUE)
+#' # richness gap index, richness threshold equal to the mean
+#' svyrich(~eqincome, des_eusilc, type_measure = "FGTT1" , g=1, type_thresh= "relm" , thresh = TRUE)
 #'
 #' #  using svrep.design:
 #' # headcount ratio, richness threshold fixed
-#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=0,  abs_thresh=30000)
+#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGTT1" , g=.5,  abs_thresh=30000)
 #' # richness gap index, richness threshold fixed
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1,  abs_thresh=30000)
-#' # headcount ratio, richness threshold equal to arpt
-#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=0, type_thresh= "relq" , thresh = TRUE)
-#' # richness gap index, richness threshold equal to arpt
-#' svyrich(~eqincome, des_eusilc, type_measure = "FGT" , g=1, type_thresh= "relq", thresh = TRUE)
-#' # headcount ratio, richness threshold equal to .6 times the mean
-#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=0, type_thresh= "relm" , thresh = TRUE)
-#' # richness gap index, richness threshold equal to 0.6 times the mean
-#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGT" , g=1, type_thresh= "relm", thresh = TRUE)
+#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGTT1" , g=1,  abs_thresh=30000)
+#' # headcount ratio, richness threshold equal to the median
+#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGTT1" , g=0, type_thresh= "relq" , thresh = TRUE)
+#' # richness gap index, richness threshold equal to the median
+#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGTT1" , g=1, type_thresh= "relq", thresh = TRUE)
+#' # headcount ratio, richness threshold equal to the mean
+#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGTT1" , g=0, type_thresh= "relm", thresh = TRUE)
+#' # richness gap index, richness threshold equal to the mean
+#' svyrich(~eqincome, des_eusilc_rep, type_measure = "FGTT1" , g=1, type_thresh= "relm" , thresh = TRUE)
 #'
 #' \dontrun{
 #'
@@ -103,17 +104,17 @@
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' # headcount ratio, richness threshold fixed
-#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=0, abs_thresh=30000)
+#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGTT1" , g=0,  abs_thresh=30000)
 #' # richness gap index, richness threshold fixed
-#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=1, abs_thresh=30000)
-#' # headcount ratio, richness threshold equal to arpt
-#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=0, type_thresh= "relq", thresh = TRUE)
-#' # richness gap index, richness threshold equal to arpt
-#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=1, type_thresh= "relq")
-#' # headcount ratio, richness threshold equal to .6 times the mean
-#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=0, type_thresh= "relm")
-#' # richness gap index, richness threshold equal to 0.6 times the mean
-#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGT" , g=1, type_thresh= "relm")
+#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGTT1" , g=1,  abs_thresh=30000)
+#' # headcount ratio, richness threshold equal to the median
+#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGTT1" , g=0, type_thresh= "relq" , thresh = TRUE)
+#' # richness gap index, richness threshold equal to the median
+#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGTT1" , g=1, type_thresh= "relq", thresh = TRUE)
+#' # headcount ratio, richness threshold equal to the mean
+#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGTT1" , g=0, type_thresh= "relm", thresh = TRUE)
+#' # richness gap index, richness threshold equal to the mean
+#' svyrich(~eqincome, dbd_eusilc, type_measure = "FGTT1" , g=1, type_thresh= "relm" , thresh = TRUE)
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -131,13 +132,17 @@ svyrich <-
 
     if( !( 'type_measure' %in% names(list(...)) ) ) stop( "type_measure= parameter must be specified" )
 
-    if( 'type_measure' %in% names( list( ... ) ) && !( list(...)[["type_measure"]] %in% c( 'FGT' , 'Cha' ) ) ) stop( 'type_measure= must be "Cha" or "FGT".  see ?svyrich for more detail.' )
+    if( 'type_measure' %in% names( list( ... ) ) && !( list(...)[["type_measure"]] %in% c( 'Cha' , 'FGTT1' , 'FGTT2' ) ) ) stop( 'type_measure= must be "Cha", "FGTT1" or "FGTT2". See ?svyrich for more detail.' )
 
-    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'Cha' ) && ( list(...)[["g"]] <= 0 ) ) stop( 'type_measure="FGT" is defined for g > 0 only.' )
+    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'Cha' ) && ( list(...)[["g"]] < 0 ) ) stop( 'type_measure="Cha" is defined for g > 0 only.' )
 
-    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGT' ) && ( list(...)[["g"]] < 0 ) ) stop( 'type_measure="FGT" is defined for g >= 0 only.' )
+    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT1' ) && (( list(...)[["g"]] > 1 ) | ( list(...)[["g"]] < 0 ) ) ) stop( 'type_measure="FGTT1" is defined for 0 <= g <= 1 only.' )
 
-    if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq", "relm" or "abs".  see ?svyrich for more detail.' )
+    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT2' ) && ( list(...)[["g"]] <= 1 ) ) stop( 'type_measure="FGTT2" is defined for g > 1 only.' )
+
+    if( 'type_measure' %in% names( list( ... ) ) && !( list(...)[["type_measure"]] == 'FGTT1' ) ) warning( 'Brezinski (2010) warns about poor inferential performance for convex richness measures. See ?svyrich for reference.' )
+
+    if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq", "relm" or "abs". See ?svyrich for more detail.' )
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
@@ -163,7 +168,15 @@ svyrich.survey.design <-
       # ht function
       ht <- function( y , thresh , g ) ifelse( y > thresh , -(g/thresh) * ( thresh / y )^g , 0 )
 
-    } else if ( type_measure == "FGT" ) {
+    } else if ( type_measure == "FGTT1" ) {
+
+      #  survey design h function
+      h <- function( y , thresh , g ) ifelse( y > thresh , ( 1 - thresh / y )^g , 0 )
+
+      # ht function
+      ht <- function( y , thresh , g ) ifelse( y > thresh , -g/y * ( 1 - thresh / y )^(g - 1) , 0 )
+
+    } else if ( type_measure == "FGTT2" ) {
 
       #  survey design h function
       h <- function( y , thresh , g ) ifelse( y > thresh , ( y  / thresh - 1 )^g , 0 )
@@ -263,7 +276,7 @@ svyrich.survey.design <-
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- c( "cvystat" , "svystat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- paste0( type_measure, g, "-richness measure" )
+    attr(rval, "statistic") <- paste0( type_measure, "-" , g, "-richness measure" )
     attr(rval, "lin") <- richlin
     if(thresh) attr(rval, "thresh") <- th
     rval
@@ -288,7 +301,9 @@ svyrich.svyrep.design <-
     # svyrep design h function
     if ( type_measure == "Cha" ) {
       h <- function( y , thresh , g ) ifelse( y > thresh ,  1 - ( thresh / y )^g , 0 )
-    } else if ( type_measure == "FGT" ) {
+    } else if ( type_measure == "FGTT1" ) {
+      h <- function( y , thresh , g ) ifelse( y > thresh , ( 1 - thresh / y )^g , 0 )
+    } else if ( type_measure == "FGTT2" ) {
       h <- function( y , thresh , g ) ifelse( y > thresh , ( y  / thresh - 1 )^g , 0 )
     }
 
@@ -350,7 +365,7 @@ svyrich.svyrep.design <-
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     class(rval) <- c( "cvystat" , "svrepstat" )
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- paste0( type_measure, g, "-richness measure" )
+    attr(rval, "statistic") <- paste0( type_measure, "-" , g, "-richness measure" )
     attr(rval, "lin") <- NA
     if(thresh) attr(rval, "thresh") <- th
     rval
