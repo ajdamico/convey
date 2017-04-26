@@ -1,4 +1,4 @@
-#' Watss poverty index (EXPERIMENTAL)
+#' Watts poverty index (EXPERIMENTAL)
 #'
 #' Estimate the Watts (1968) poverty measure
 #'

@@ -5,7 +5,7 @@
 \alias{svywatts.survey.design}
 \alias{svywatts.svyrep.design}
 \alias{svywatts.DBIsvydesign}
-\title{Watss poverty index (EXPERIMENTAL)}
+\title{Watts poverty index (EXPERIMENTAL)}
 \usage{
 svywatts(formula, design, ...)
 
