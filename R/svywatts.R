@@ -289,6 +289,7 @@ svywatts.svyrep.design <-
       full_design<-full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
+      ws <- weights(design, "sampling")
     }
 
     wsf <- weights(full_design,"sampling")
