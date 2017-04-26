@@ -228,7 +228,11 @@ print.cvydstat <- function(x, ...) {
   m <- matrix( x[[1]], nrow = 1 )
   m <- rbind( m , matrix( sqrt( diag(vv) ), nrow = 1 ) )
 
-  dimnames(m) <- list( c( "coef", "SE" ), c( "total", "within", "between" ) )
+  if ( attr( x , "statistic" ) == c( "watts index decomposition" ) ) {
+    dimnames(m) <- list( c( "coef", "SE" ), c( "watts", "fgt0", "fgt1" , "theil(poor)" ) )
+  } else {
+    dimnames(m) <- list( c( "coef", "SE" ), c( "total", "within", "between" ) )
+  }
 
   printCoefmat(m, digits = 5)
 
