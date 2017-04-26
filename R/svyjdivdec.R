@@ -137,9 +137,9 @@ svyjdivdec.survey.design <-
 
     if ( any( incvar[ w != 0 ] <= 0, na.rm = TRUE) ) stop( "The J-divergence index is defined for strictly positive incomes only." )
 
-    # incvar <- incvar[ w > 0 ]
-    # grpvar <- grpvar[ w > 0 ]
-    # w <- w[ w > 0 ]
+    incvar <- incvar[ w > 0 ]
+    grpvar <- grpvar[ w > 0 ]
+    w <- w[ w > 0 ]
 
     if ( any( any( is.na(incvar) | is.na(grpvar ) ) & (w > 0) ) ) {
 
@@ -157,16 +157,17 @@ svyjdivdec.survey.design <-
     grpvar <- interaction( grpvar )
 
     # total
-    U_0 <- list( value = sum( w ), lin = ifelse( w > 0 , 1 , 0 ) )
-    U_1 <- list( value = sum( ifelse( w > 0 , w * incvar , 0 ) ), lin = ifelse( w > 0 , incvar , 0 ) )
-    T_0 <- list( value = sum( ifelse( w > 0 ,  w * log( incvar ) , 0 ) ), lin = ifelse( w > 0 , log( incvar ) , 0 ) )
-    T_1 <- list( value = sum( ifelse( w > 0 , w * incvar * log( incvar ) , 0 ) ), lin = ifelse( w > 0 , incvar * log( incvar ) , 0 ) )
+    U_0 <- list( value = sum( w ), lin = rep( 1, length( incvar ) ) )
+    U_1 <- list( value = sum( w * incvar ), lin = incvar )
+    T_0 <- list( value = sum( w * log( incvar ) ), lin = log( incvar ) )
+    T_1 <- list( value = sum( w * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
 
     list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1 )
     estimate <- contrastinf( quote( ( T_1 / U_1 ) - ( T_0 / U_0 ) ) , list_all )
 
     ttl.jdiv <- estimate$value
-    ttl.jdiv.lin <- ifelse( 1/design$prob > 0 , estimate$lin , 0 )
+    ttl.jdiv.lin <- 1/design$prob
+    ttl.jdiv.lin[ ttl.jdiv.lin > 0 ] <- estimate$lin
 
     # within:
 
@@ -177,30 +178,34 @@ svyjdivdec.survey.design <-
     grp.theilt.wtd.lin <- matrix( NA, nrow = length(incvar), ncol = length( levels( grpvar ) ) )
 
     for ( i in seq_along( levels(grpvar) ) ) {
-      w_i <- ifelse( grpvar == levels(grpvar)[i] , w , 0 )
+      w_i <- w
+      w_i[ grpvar != levels(grpvar)[i] ] <- 0
 
-      U_0_i <- list( value = sum( w_i * ifelse( w_i > 0 , 1 , 0 ) ), lin = ifelse( w_i > 0 , 1 , 0 ) )
-      U_1_i <- list( value = sum( w_i * ifelse( w_i > 0 , incvar , 0 ) ), lin = ifelse( w_i > 0 , incvar , 0 ) )
-      T_0_i <- list( value = sum( w_i * ifelse( w_i > 0 , log( incvar ) , 0 ) ), lin = ifelse( w_i > 0 , log( incvar ) , 0 ) )
-      T_1_i <- list( value = sum( w_i * ifelse( w_i > 0 , incvar * log( incvar ) , 0 ) ), lin = ifelse( w_i > 0 , incvar * log( incvar ) , 0 ) )
+      U_0_i <- list( value = sum( w_i ), lin = rep( 1, length( incvar ) ) )
+      U_1_i <- list( value = sum( w_i * incvar ), lin = incvar )
+      T_0_i <- list( value = sum( w_i * log( incvar ) ), lin = log( incvar ) )
+      T_1_i <- list( value = sum( w_i * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
       Y_AVG_i <- contrastinf( quote( U_1_i / U_0_i ), list( U_0_i = U_0_i , U_1_i = U_1_i ) )
 
       list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1, Y_AVG_i = Y_AVG_i, U_1_i = U_1_i, T_1_i = T_1_i )
       estimate <- contrastinf( quote( ( 1 / U_1_i ) * ( T_1_i - log( Y_AVG_i ) * U_1_i ) ) , list_all )
 
       grp.theilt[i] <- estimate$value
-      grp.theilt.lin[,i] <- ifelse( w_i > 0 , estimate$lin , 0 )
+      grp.theilt.lin[,i] <- estimate$lin * ( w_i != 0 )
 
       estimate <- contrastinf( quote( grp_theilt * U_1_i / U_1 ) , list( grp_theilt = estimate, U_1_i = U_1_i, U_1 = U_1 ) )
       grp.theilt.wtd[i] <- estimate$value
-      grp.theilt.wtd.lin[,i] <- ifelse( w_i > 0 , estimate$lin , 0 )
+      grp.theilt.wtd.lin[,i] <- estimate$lin * ( w_i != 0 )
 
       rm(i, w_i, estimate)
 
     }
 
     wtn.theilt <- sum( grp.theilt.wtd )
-    wtn.theilt.lin <- ifelse( 1/design$prob > 0 , apply( grp.theilt.wtd.lin, 1, sum ) , 0 )
+    w_teste <- 1/design$prob
+    w_teste[ w_teste > 0 ] <- apply( grp.theilt.wtd.lin, 1, sum )
+    wtn.theilt.lin <- w_teste ; rm( w_teste )
+
 
     # Theil L index:
     grp.theill <- NULL
@@ -209,30 +214,33 @@ svyjdivdec.survey.design <-
     grp.theill.wtd.lin <- matrix( NA, nrow = length(incvar), ncol = length( levels( grpvar ) ) )
 
     for ( i in seq_along( levels(grpvar) ) ) {
-      w_i <- ifelse( grpvar == levels(grpvar)[i] , w , 0 )
+      w_i <- w
+      w_i[ grpvar != levels(grpvar)[i] ] <- 0
 
-      U_0_i <- list( value = sum( w_i ), lin = ifelse( w_i > 0 , 1 , 0 ) )
-      U_1_i <- list( value = sum( w_i * ifelse( w_i > 0 , incvar , 0 ) ), lin = ifelse( w_i > 0 , incvar , 0 ) )
-      T_0_i <- list( value = sum( w_i * ifelse( w_i > 0 , log( incvar ) , 0 ) ), lin = ifelse( w_i > 0 , log( incvar ) , 0 ) )
-      T_1_i <- list( value = sum( w_i * ifelse( w_i > 0 , incvar * log( incvar ) , 0 ) ), lin = ifelse( w_i > 0 , incvar * log( incvar ) , 0 ) )
+      U_0_i <- list( value = sum( w_i ), lin = rep( 1, length( incvar ) ) )
+      U_1_i <- list( value = sum( w_i * incvar ), lin = incvar )
+      T_0_i <- list( value = sum( w_i * log( incvar ) ), lin = log( incvar ) )
+      T_1_i <- list( value = sum( w_i * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
       Y_AVG_i <- contrastinf( quote( U_1_i / U_0_i ), list(  U_0_i = U_0_i, U_1_i = U_1_i ) )
 
       list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1, Y_AVG_i = Y_AVG_i, U_0_i = U_0_i, U_1_i = U_1_i, T_0_i = T_0_i, T_1_i = T_1_i )
       estimate <- contrastinf( quote( ( 1 / U_0_i ) * ( log( Y_AVG_i ) * U_0_i - T_0_i ) ) , list_all )
 
       grp.theill[i] <- estimate$value
-      grp.theill.lin[,i] <- ifelse( w_i > 0 , estimate$lin , 0 )
+      grp.theill.lin[,i] <- estimate$lin * ( w_i != 0 )
 
       estimate <- contrastinf( quote( grp_theill * U_0_i / U_0 ) , list( grp_theill = estimate, U_0_i = U_0_i, U_0 = U_0 ) )
       grp.theill.wtd[i] <- estimate$value
-      grp.theill.wtd.lin[,i] <- ifelse( w_i > 0 , estimate$lin , 0 )
+      grp.theill.wtd.lin[,i] <- estimate$lin * ( w_i != 0 )
 
       rm(i, w_i, estimate)
 
     }
 
     wtn.theill <- sum( grp.theill.wtd )
-    wtn.theill.lin <- ifelse( 1/design$prob > 0 , apply( grp.theill.wtd.lin, 1, sum ) , 0 )
+    w_teste <- 1/design$prob
+    w_teste[ w_teste > 0 ] <- apply( grp.theill.wtd.lin, 1, sum )
+    wtn.theill.lin <- w_teste ; rm( w_teste )
 
     # Within component:
     within.jdiv <- wtn.theilt + wtn.theill

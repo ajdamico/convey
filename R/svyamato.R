@@ -129,10 +129,10 @@ svyamato.survey.design <- function( formula, design, standardized = FALSE , na.r
 
   w <- 1/design$prob
 
-  # incvar <- incvar[ w != 0 ]
-  # w <- w[ w != 0 ]
+  incvar <- incvar[ w != 0 ]
+  w <- w[ w != 0 ]
 
-  if ( any( is.na(incvar[ w > 0 ]) ) ) {
+  if ( any( is.na(incvar) ) ) {
     rval <- as.numeric(NA)
     variance <- as.matrix(NA)
     colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
@@ -144,15 +144,14 @@ svyamato.survey.design <- function( formula, design, standardized = FALSE , na.r
   }
 
   N <- sum(w)
-  Tot <- sum(w * ifelse( w > 0 , incvar , 0 ) )
+  Tot <- sum(w * incvar)
 
   rval <- sum( w * ( 1 / N^2 + incvar^2 / Tot^2 )^.5 )
 
-  z <- ifelse( w > 0 ,
-               sqrt( ( 1 / N^2 + incvar / Tot^2 ) ) +
-                 ( -1 / N^3 ) * sum( w * ( 1 / N^2 + incvar^2 / Tot^2 )^-.5 ) +
-                 ( - incvar / Tot^3 ) * sum( w * incvar^2 * ( 1 / N^2 + incvar^2 / Tot^2 )^-.5 ) ,
-               0 )
+  z <- 1/design$prob
+  z[ z > 0 ]  <- sqrt( ( 1 / N^2 + incvar / Tot^2 ) ) +
+    ( -1 / N^3 ) * sum( w * ( 1 / N^2 + incvar^2 / Tot^2 )^-.5 ) +
+    ( - incvar / Tot^3 ) * sum( w * incvar^2 * ( 1 / N^2 + incvar^2 / Tot^2 )^-.5 )
 
   variance <- survey::svyrecvar( z / design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
 
@@ -161,7 +160,7 @@ svyamato.survey.design <- function( formula, design, standardized = FALSE , na.r
     rval <- ( rval - sqrt(2) ) / ( 2 - sqrt(2) )
     variance <- variance / ( 2 - sqrt(2) )^2
 
-  }
+    }
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- c( "cvystat" , "svystat" )
@@ -171,7 +170,7 @@ svyamato.survey.design <- function( formula, design, standardized = FALSE , na.r
     attr(rval, "statistic") <- "standardized amato index"
   } else {
     attr(rval, "statistic") <- "amato index"
-  }
+    }
 
   return( rval )
 

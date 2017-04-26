@@ -143,21 +143,21 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
     w <- 1/design$prob
   }
 
-  # nac.matrix <- model.frame(formula, design$variables, na.action = na.pass) [ w > 0, ]
-  # w <- w [ w > 0 ]
+  nac.matrix <- model.frame(formula, design$variables, na.action = na.pass) [ w > 0, ]
+  w <- w [ w > 0 ]
 
   # Normalized Achievement Matrix
   if ( any( ( nac.matrix < 0 | nac.matrix > 1 )[ w > 0 ], na.rm = T ) ) {
 
     for ( i in seq_along(var.class) ) {
 
-      top <- max( nac.matrix[ w > 0 , i], na.rm = TRUE )
-      bottom <- min( nac.matrix[ w > 0 , i], na.rm = TRUE )
+      top <- max( nac.matrix[ , i], na.rm = TRUE )
+      bottom <- min( nac.matrix[ , i], na.rm = TRUE )
       if (top != bottom) {
-        nac.matrix[ w > 0, i ] <- ( nac.matrix[ w > 0, i ] - bottom ) / ( top - bottom )
+        nac.matrix[ , i ] <- ( nac.matrix[ , i ] - bottom ) / ( top - bottom )
       } else {
         warning( paste0( "component '" , colnames(nac.matrix)[ i ] , "' does not vary across this sample.\n Assuming normalized component = 1." ) )
-        nac.matrix[ w > 0, i ] <- 1
+        nac.matrix[ , i ] <- 1
       }
 
     }
@@ -188,8 +188,8 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
   }
 
-  U_x <- list( value = sum( w * ifelse( w > 0 , indiv.welfare , 0 ) ) , lin = ifelse( w > 0 , indiv.welfare , 0 ) )
-  aggr.pop <- list( value = sum( w ), lin = ifelse( w > 0 , 1 , 0 ) )
+  U_x <- list( value = sum( w * indiv.welfare ) , lin = indiv.welfare )
+  aggr.pop <- list( value = sum( w ), lin = rep( 1 , length( nac.matrix[ , 1 ] ) ) )
 
   U_x <- contrastinf( quote( U_x / aggr.pop ) , list( U_x = U_x, aggr.pop = aggr.pop ) )
 
@@ -202,7 +202,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       if ( beta != 0 ) {
 
-        aggr.nac <- list( value = sum( w * ifelse( w > 0 , nac.matrix[ , i ] , 0 ) ), lin = ifelse( w > 0 , nac.matrix[ , i ] , 0 ) )
+        aggr.nac <- list( value = sum( w * nac.matrix[ , i ] ), lin = nac.matrix[ , i ] )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -210,7 +210,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       } else {
 
-        aggr.nac <- list( value = sum( w * ifelse( w > 0 , nac.matrix[ , i ] , 0 ) ), lin = ifelse( w > 0 , nac.matrix[ , i ] , 0 ) )
+        aggr.nac <- list( value = sum( nac.matrix[ , i ] * w ), lin = nac.matrix[ , i ] )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -222,7 +222,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       if ( beta != 0 ) {
 
-        aggr.nac <- list( value = sum( w * ifelse( w > 0 , nac.matrix[ , i ] , 0 ) ), lin = ifelse( w > 0 , nac.matrix[ , i ] , 0 ) )
+        aggr.nac <- list( value = sum( w * nac.matrix[ , i ] ), lin = nac.matrix[ , i ] )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -232,7 +232,7 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
 
       } else {
 
-        aggr.nac <- list( value = sum( w * ifelse( w > 0 , nac.matrix[ , i ] , 0 ) ), lin = ifelse( w > 0 , nac.matrix[ , i ] , 0 ) )
+        aggr.nac <- list( value = sum( nac.matrix[ , i ] * w ), lin = nac.matrix[ , i ] )
         aggr.dimw <- list( value = dimw[ i ] , lin = rep( 0 , length( nac.matrix[ , i ] ) ) )
 
         list_all <- list( aggr.nac = aggr.nac , aggr.pop = aggr.pop , aggr.dimw = aggr.dimw , aggr.alpha = aggr.alpha, aggr.beta = aggr.beta )
@@ -253,8 +253,12 @@ svybmi.survey.design <- function( formula, design, alpha = .5, beta = -2, dimw =
   }
 
   estimate <- contrastinf( quote( 1 - ( U_x / aggr.mu ) ), list( U_x = U_x, aggr.mu = aggr.mu ) )
-
-  estimate$lin <- ifelse( 1/design$prob > 0 , estimate$lin , 0 )
+  if ( length(estimate$lin) < length(design$prob) ) {
+    lin <- 1 *( (1/design$prob) > 0 )
+    lin[ lin == 1 ] <- estimate$lin
+    estimate$lin <- lin
+    rm(lin)
+  }
 
   variance <- survey::svyrecvar( estimate$lin / design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata )
 

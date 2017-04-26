@@ -180,7 +180,7 @@ svygeidec.survey.design <-
             U_fn( incvar , w , 0 )^( -1 ) - 1
         )
 
-      ttl.lin <- ifelse( w > 0 , ttl.lin , 0 )
+      ttl.lin [ w == 0 ] <- 0
 
       ttl.variance <- survey::svyrecvar(ttl.lin/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 
@@ -191,7 +191,7 @@ svygeidec.survey.design <-
         U_fn( incvar , w , 1 )^( -1 ) * ( T_fn( incvar , w , 1 ) * U_fn( incvar , w, 1 )^( -1 ) + 1 ) * incvar +
         U_fn( incvar , w , 0 )^( -1 )
 
-      ttl.lin <- ifelse( w > 0 , ttl.lin , 0 )
+      ttl.lin [ w == 0 ] <- 0
 
     } else {
 
@@ -211,7 +211,7 @@ svygeidec.survey.design <-
         U_fn( incvar , w , 1 )^( -epsilon ) *
         incvar^(epsilon)
 
-      ttl.lin <- ifelse( w > 0 , ttl.lin , 0 )
+      ttl.lin[ w == 0 ] <- 0
 
     }
 
@@ -235,18 +235,20 @@ svygeidec.survey.design <-
       grp.gei[i] <- calc.gei( x = incvar, weights = w_i, epsilon = epsilon )
 
       grp.U_0[i] <- sum( w_i )
-      grp.U_0.lin[,i] <- ifelse( w_i > 0 , 1 , 0 )
+      grp.U_0.lin[,i] <- rep(1, length(incvar) )
+      grp.U_0.lin[ w_i == 0, i ] <- 0
 
       grp.U_1[i] <- sum( incvar[ w_i > 0 ] * w_i[ w_i > 0 ] )
       grp.U_1.lin[,i] <- incvar
-      grp.U_1.lin[ , i ] <- ifelse( w_i > 0 , grp.U_1.lin[ , i ] , 0 )
+      grp.U_1.lin[ w_i == 0, i ] <- 0
 
       U_0_i <- list( value = grp.U_0[i] , lin = grp.U_0.lin[,i] )
       U_0 <- list( value = sum( w ) , lin = rep( 1 , length(incvar) ) )
       list_all <- list( U_0_i = U_0_i, U_0 = U_0 )
       grp.est <- contrastinf( quote( U_0_i / U_0 ) , list_all )
       grp.p[i] <- grp.est$value
-      grp.p.lin[ , i ] <-ifelse( w_i > 0 , grp.est$lin , 0 )
+      grp.p.lin[ , i ] <- grp.est$lin
+      grp.p.lin[ w_i == 0, i ] <- 0
       rm(grp.est)
 
 
@@ -255,7 +257,8 @@ svygeidec.survey.design <-
       list_all <- list( U_0_i = U_0_i, U_0 = U_0, U_1_i = U_1_i, U_1 = U_1 )
       grp.est <- contrastinf( quote( (U_0_i / U_0) * ( U_1_i / U_0_i ) / ( U_1 / U_0 ) ) , list_all )
       grp.g[i] <- grp.est$value
-      grp.g.lin[ , i ] <- ifelse( w_i > 0 , grp.est$lin , 0 )
+      grp.g.lin[ , i ] <- grp.est$lin
+      grp.g.lin[ w_i == 0, i ] <- 0
       rm(grp.est)
 
 
@@ -271,12 +274,16 @@ svygeidec.survey.design <-
               U_fn( incvar , w_i , 0 )^( -1 ) - 1
           )
 
+        grp.lin [ w_i == 0, i ] <- 0
+
       } else if ( epsilon == 1) {
 
         grp.lin[ , i ] <-
           U_fn( incvar , w_i , 1 )^( -1 ) * incvar * log( incvar ) -
           U_fn( incvar , w_i , 1 )^( -1 ) * ( T_fn( incvar , w_i , 1 ) * U_fn( incvar , w_i, 1 )^( -1 ) + 1 ) * incvar +
           U_fn( incvar , w_i , 0 )^( -1 )
+
+        grp.lin [ w_i == 0 ] <- 0
 
       } else {
 
@@ -296,9 +303,9 @@ svygeidec.survey.design <-
           U_fn( incvar , w_i , 1 )^( -epsilon ) *
           incvar^(epsilon)
 
+        grp.lin[ w_i == 0 , i ] <- 0
 
       }
-      grp.lin[ , i ] <- ifelse( w_i > 0 , grp.lin[ , i ] , 0 )
       rm(i, w_i)
     }
 
@@ -318,21 +325,24 @@ svygeidec.survey.design <-
 
         grp.est <- contrastinf( quote( p_i * gei_i ) , list_all )
         wtd.gei[i] <- grp.est$value
-        wtd.gei.lin[ , i ] <- ifelse( w_i > 0 , grp.est$lin , 0 )
+        wtd.gei.lin[ , i ] <- grp.est$lin
+        wtd.gei.lin[ w_i == 0 , i ] <- 0
         rm(grp.est)
 
       } else if ( epsilon == 1 ) {
 
         grp.est <- contrastinf( quote( g_i * gei_i ) , list_all )
         wtd.gei[i] <- grp.est$value
-        wtd.gei.lin[ , i ] <- ifelse( w_i > 0 , grp.est$lin , 0 )
+        wtd.gei.lin[ , i ] <- grp.est$lin
+        wtd.gei.lin[ w_i == 0 , i ] <- 0
         rm(grp.est)
 
       } else {
 
         grp.est <- contrastinf( quote( g_i^epsilon * p_i^(1-epsilon) * gei_i ) , list_all )
         wtd.gei[i] <- grp.est$value
-        wtd.gei.lin[ , i ] <- ifelse( w_i > 0 , grp.est$lin , 0 )
+        wtd.gei.lin[ , i ] <- grp.est$lin
+        wtd.gei.lin[ w_i == 0 , i ] <- 0
         rm(grp.est)
 
       }

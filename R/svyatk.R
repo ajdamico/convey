@@ -210,7 +210,7 @@ svyatk.survey.design <-
 
 		}
 
-		v <- ifelse( 1/design$prob > 0 , v , 0 )
+		v[w == 0] <- 0
 
 		variance <- survey::svyrecvar(v/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
