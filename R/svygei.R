@@ -143,7 +143,7 @@ svygei.survey.design <-
 		}
 
 		w <- 1/design$prob
-		if ( any( incvar[ w != 0 ] == 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for zero incomes if epsilon ==", epsilon) )
+		if ( any( incvar[ w > 0 ] <= 0, na.rm = TRUE) ) stop( paste("the GEI is undefined for incomes <= 0 if epsilon ==", epsilon) )
 
 		rval <- calc.gei( x = incvar, weights = w, epsilon = epsilon )
 
@@ -159,20 +159,12 @@ svygei.survey.design <-
 					U_fn( incvar , w , 0 )^( -1 ) - 1
 				)
 
-			v[w == 0] <- 0
-
-			variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-
 		} else if ( epsilon == 1) {
 
 			v <-
 				U_fn( incvar , w , 1 )^( -1 ) * incvar * log( incvar ) -
 				U_fn( incvar , w , 1 )^( -1 ) * ( T_fn( incvar , w , 1 ) * U_fn( incvar , w, 1 )^( -1 ) + 1 ) * incvar +
 				U_fn( incvar , w , 0 )^( -1 )
-
-			v[w == 0] <- 0
-
-			variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 
 		} else {
 
@@ -192,17 +184,19 @@ svygei.survey.design <-
 				U_fn( incvar , w , 1 )^( -epsilon ) *
 				incvar^(epsilon)
 
-			v[w == 0] <- 0
-
-			variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
-
 		}
+
+		v[ w == 0 ] <- 0
+		# stopifnot( length( v ) == length( design$prob) )
+
+		variance <- survey::svyrecvar(v/design$prob, design$cluster,design$strata, design$fpc, postStrata = design$postStrata)
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 		class(rval) <- c( "cvystat" , "svystat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "gei"
 		attr(rval,"epsilon")<- epsilon
+		attr(rval,"lin")<- v
 		rval
 
 	}
