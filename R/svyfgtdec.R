@@ -128,14 +128,6 @@ svyfgtdec.survey.design <-
 
     w <- 1/design$prob
 
-    if( any( incvar[w > 0] <= 0 , na.rm = TRUE ) ){
-      warning("keeping strictly positive incomes only.")
-      nps<-incvar <= 0
-      design<-design[!nps,]
-      if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[nps] <- 0
-      w <- 1/design$prob
-    }
-
     N <- sum(w)
 
     # linearization
@@ -243,15 +235,6 @@ svyfgtdec.svyrep.design <-
     }
 
     ws <- weights(design, "sampling")
-
-    if( any( incvar[ws > 0] <= 0 , na.rm = TRUE ) ){
-      warning("keeping strictly positive incomes only.")
-      nps<-incvar <= 0
-      design<-design[!nps,]
-      if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[nps] <- 0
-      ws <- weights(design, "sampling")
-    }
-
     # poverty threshold
     th <- abs_thresh
 
