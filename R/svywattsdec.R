@@ -210,7 +210,7 @@ svywattsdec.survey.design <-
 #' @rdname svywattsdec
 #' @export
 svywattsdec.svyrep.design <-
-  function(formula, design, type_thresh="abs",  abs_thresh=NULL, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula, design, abs_thresh=NULL, na.rm = FALSE, thresh = FALSE, ...){
 
     # svyrep design ComputeIndex functions
     ComputeWatts <-

@@ -12,8 +12,8 @@ svywattsdec(formula, design, ...)
 \method{svywattsdec}{survey.design}(formula, design, abs_thresh = NULL,
   na.rm = FALSE, thresh = FALSE, ...)
 
-\method{svywattsdec}{svyrep.design}(formula, design, type_thresh = "abs",
-  abs_thresh = NULL, na.rm = FALSE, thresh = FALSE, ...)
+\method{svywattsdec}{svyrep.design}(formula, design, abs_thresh = NULL,
+  na.rm = FALSE, thresh = FALSE, ...)
 
 \method{svywattsdec}{DBIsvydesign}(formula, design, ...)
 }
