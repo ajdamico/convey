@@ -7,7 +7,7 @@ library(survey)
 data(api)
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
 test_that("svylorenz works on unweighted designs",{
-	svylorenz(~api00, design=dstrat1)
+  svylorenz(~api00, design=dstrat1)
 })
 
 
@@ -17,11 +17,10 @@ des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = 
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
+
 a1 <- svylorenz(~eqincome, design = des_eusilc )
 a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svylorenz )
-
 b1 <- svylorenz(~eqincome, design = des_eusilc_rep )
-
 b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svylorenz )
 
 SE_dif1 <- max(abs(SE(a1)-SE(b1)))
@@ -53,36 +52,34 @@ test_that("output svylorenz",{
 })
 
 
-	# database-backed design
-	library(MonetDBLite)
-	library(DBI)
-	dbfolder <- tempdir()
-	conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
-	dbWriteTable( conn , 'eusilc' , eusilc )
+# database-backed design
+library(MonetDBLite)
+library(DBI)
+dbfolder <- tempdir()
+conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+dbWriteTable( conn , 'eusilc' , eusilc )
 
-	dbd_eusilc <-
-	svydesign(
-	ids = ~rb030 ,
-	strata = ~db040 ,
-	weights = ~rb050 ,
-	data="eusilc",
-	dbname=dbfolder,
-	dbtype="MonetDBLite"
-	)
-	dbd_eusilc <- convey_prep( dbd_eusilc )
+dbd_eusilc <-
+  svydesign(
+    ids = ~rb030 ,
+    strata = ~db040 ,
+    weights = ~rb050 ,
+    data="eusilc",
+    dbname=dbfolder,
+    dbtype="MonetDBLite"
+  )
+dbd_eusilc <- convey_prep( dbd_eusilc )
 
 
-	c1 <- svylorenz( ~ eqincome , design = dbd_eusilc )
-	c2 <- svyby(~ eqincome, by = ~db040, design = dbd_eusilc, FUN = svylorenz )
+c1 <- svylorenz( ~ eqincome , design = dbd_eusilc )
+c2 <- svyby(~ eqincome, by = ~db040, design = dbd_eusilc, FUN = svylorenz )
 
-	dbRemoveTable( conn , 'eusilc' )
-
-	test_that("database svylorenz",{
-	  expect_equal(coef(a1), coef(c1))
-	  expect_equal(coef(a2), coef(c2))
-	  expect_equal(SE(a1), SE(c1))
-	  expect_equal(SE(a2), SE(c2))
-	})
+test_that("database svylorenz",{
+  expect_equal(coef(a1), coef(c1))
+  expect_equal(coef(a2), coef(c2))
+  expect_equal(SE(a1), SE(c1))
+  expect_equal(SE(a2), SE(c2))
+})
 
 
 # compare subsetted objects to svyby objects
@@ -92,82 +89,58 @@ sub_rep <- svylorenz( ~eqincome , design = subset( des_eusilc_rep , db040 == "Bu
 sby_rep <- svyby( ~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svylorenz)
 
 test_that("subsets equal svyby",{
-	expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des[sby_des$db040 == "Burgenland",])))
+  expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des[sby_des$db040 == "Burgenland",])))
   expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep[sby_rep$db040 == "Burgenland",])))
   expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des[sby_des$db040 == "Burgenland",])))
   expect_equal(as.numeric(SE(sub_rep)), as.numeric(SE(sby_rep[sby_rep$db040 == "Burgenland",])))
 
-	# coefficients should match across svydesign & svrepdesign
-	expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sub_rep)))
-	expect_equal(as.numeric(coef(sby_des)), as.numeric(coef(sby_rep)))
+  # coefficients should match across svydesign & svrepdesign
+  expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sub_rep)))
+  expect_equal(as.numeric(coef(sby_des)), as.numeric(coef(sby_rep)))
 
 })
 
+# create a hacky database-backed svrepdesign object
+# mirroring des_eusilc_rep
+dbd_eusilc_rep <-
+  svrepdesign(
+    weights = ~ rb050,
+    repweights = des_eusilc_rep$repweights ,
+    scale = des_eusilc_rep$scale ,
+    rscales = des_eusilc_rep$rscales ,
+    type = "bootstrap" ,
+    data = "eusilc" ,
+    dbtype = "MonetDBLite" ,
+    dbname = dbfolder ,
+    combined.weights = FALSE
+  )
+
+dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
+
+sub_dbd <- svylorenz( ~eqincome , design = subset( dbd_eusilc , db040 == "Burgenland") )
+sby_dbd <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc, FUN = svylorenz)
+sub_dbr <- svylorenz( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Burgenland") )
+sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svylorenz)
+
+dbRemoveTable( conn , 'eusilc' )
 
 
-
-# second run of database-backed designs #
-
-	# database-backed design
-	library(MonetDBLite)
-	library(DBI)
-	dbfolder <- tempdir()
-	conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
-	dbWriteTable( conn , 'eusilc' , eusilc )
-
-	dbd_eusilc <-
-		svydesign(
-			ids = ~rb030 ,
-			strata = ~db040 ,
-			weights = ~rb050 ,
-			data="eusilc",
-			dbname=dbfolder,
-			dbtype="MonetDBLite"
-		)
-
-	dbd_eusilc <- convey_prep( dbd_eusilc )
-
-	# create a hacky database-backed svrepdesign object
-	# mirroring des_eusilc_rep
-	dbd_eusilc_rep <-
-		svrepdesign(
-			weights = ~ rb050,
-			repweights = des_eusilc_rep$repweights ,
-			scale = des_eusilc_rep$scale ,
-			rscales = des_eusilc_rep$rscales ,
-			type = "bootstrap" ,
-			data = "eusilc" ,
-			dbtype = "MonetDBLite" ,
-			dbname = dbfolder ,
-			combined.weights = FALSE
-		)
-
-	dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
-
-	sub_dbd <- svylorenz( ~eqincome , design = subset( dbd_eusilc , db040 == "Burgenland") )
-	sby_dbd <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc, FUN = svylorenz)
-	sub_dbr <- svylorenz( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Burgenland") )
-	sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svylorenz)
-
-	dbRemoveTable( conn , 'eusilc' )
+# compare database-backed designs to non-database-backed designs
+test_that("dbi subsets equal non-dbi subsets",{
+  expect_equal(coef(sub_des), coef(sub_dbd))
+  expect_equal(coef(sub_rep), coef(sub_dbr))
+  expect_equal(SE(sub_des), SE(sub_dbd))
+  expect_equal(SE(sub_rep), SE(sub_dbr))
+})
 
 
-	# compare database-backed designs to non-database-backed designs
-	test_that("dbi subsets equal non-dbi subsets",{
-		expect_equal(coef(sub_des), coef(sub_dbd))
-		expect_equal(coef(sub_rep), coef(sub_dbr))
-		expect_equal(SE(sub_des), SE(sub_dbd))
-		expect_equal(SE(sub_rep), SE(sub_dbr))
-	})
+# compare database-backed subsetted objects to database-backed svyby objects
+test_that("dbi subsets equal dbi svyby",{
+  expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[sby_dbd$db040 == "Burgenland",])))
+  expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[sby_dbr$db040 == "Burgenland",])))
+  expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[sby_dbd$db040 == "Burgenland",])))
+  expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[sby_dbr$db040 == "Burgenland",])))
 
-
-	# compare database-backed subsetted objects to database-backed svyby objects
-	test_that("dbi subsets equal dbi svyby",{
-		expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[sby_dbd$db040 == "Burgenland",])))
-		expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[sby_dbr$db040 == "Burgenland",])))
-		expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[sby_dbd$db040 == "Burgenland",])))
-		expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[sby_dbr$db040 == "Burgenland",])))
-
-	})
+})
 
 

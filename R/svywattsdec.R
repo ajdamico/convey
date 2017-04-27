@@ -199,7 +199,7 @@ svywattsdec.survey.design <-
     attr(rval, "SE") <- sqrt(diag(variance[1:4,1:4]))
     attr(rval, "var") <- variance[1:4,1:4]
     attr(rval, "statistic") <- "watts index decomposition"
-    class(rval) <- c( "cvydstat" , "cvystat" , "svystat" )
+    class(rval) <- c( "cvydstat" , "cvystat" , "svystat" , "svrepstat" )
 
     rval
 
@@ -303,7 +303,7 @@ svywattsdec.svyrep.design <-
     attr(rval, "var") <- variance[1:4,1:4]
     attr(rval, "statistic") <- "watts index decomposition"
     if(thresh) attr(rval, "thresh") <- th
-    class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" )
+    class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" , "svystat" )
 
     rval
 
