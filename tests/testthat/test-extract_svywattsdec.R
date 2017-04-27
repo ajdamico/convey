@@ -6,7 +6,7 @@ library(survey)
 data(api)
 apistrat[ , sapply( apistrat, is.integer ) ] <- apply( apistrat[ , sapply( apistrat, is.integer ) ], 2, as.numeric )
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
-test_that("svysen works on unweighted designs",{
+test_that("svywattsdec works on unweighted designs",{
   svywattsdec( ~api00, design=dstrat1, abs_thresh = 700, na.rm = FALSE )
 })
 
