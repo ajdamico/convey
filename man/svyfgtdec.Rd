@@ -9,11 +9,13 @@
 \usage{
 svyfgtdec(formula, design, ...)
 
-\method{svyfgtdec}{survey.design}(formula, design, g = NULL,
-  abs_thresh = NULL, na.rm = FALSE, thresh = FALSE, ...)
+\method{svyfgtdec}{survey.design}(formula, design, g, type_thresh = "abs",
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
-\method{svyfgtdec}{svyrep.design}(formula, design, g = NULL,
-  abs_thresh = NULL, na.rm = FALSE, thresh = FALSE, ...)
+\method{svyfgtdec}{svyrep.design}(formula, design, g, type_thresh = "abs",
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
 \method{svyfgtdec}{DBIsvydesign}(formula, design, ...)
 }
@@ -22,18 +24,25 @@ svyfgtdec(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
-\item{...}{passed to \code{svyarpr} and \code{svyarpt}}
+\item{...}{additional arguments. Currently not used.}
 
-\item{g}{If g=1 estimates the average normalised poverty gap, and if g=2 estimates the average squared normalised poverty gap.}
+\item{g}{If g=2 estimates the average squared normalised poverty gap. This function is defined for g > 1 only,}
+
+\item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
+of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.}
 
 \item{abs_thresh}{poverty threshold value if type_thresh is "abs"}
+
+\item{percent}{the multiple of the the quantile or mean used in the poverty threshold definition}
+
+\item{quantiles}{the quantile used used in the poverty threshold definition}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
 \item{thresh}{return the poverty threshold value}
 }
 \value{
-Object of class "\code{cvydstat}", with estimates for the FGT(2), FGT(0), FGT(1), income gap ratio and GEI(income gaps; epsilon = g) with a "\code{var}" attribute giving the variance-covariance matrix.
+Object of class "\code{cvydstat}", with estimates for the FGT(g), FGT(0), FGT(1), income gap ratio and GEI(income gaps; epsilon = g) with a "\code{var}" attribute giving the variance-covariance matrix.
 A "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
