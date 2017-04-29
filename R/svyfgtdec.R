@@ -14,6 +14,7 @@
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... additional arguments. Currently not used.
 #'
+#'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
 #' @return Object of class "\code{cvydstat}", with estimates for the FGT(g), FGT(0), FGT(1), income gap ratio and GEI(income gaps; epsilon = g) with a "\code{var}" attribute giving the variance-covariance matrix.
@@ -59,11 +60,19 @@
 #' des_eusilc_rep <- convey_prep( des_eusilc_rep )
 #'
 #' # absolute poverty threshold
-#' svyfgtdec(~eqincome, des_eusilc, g = 1, abs_thresh=10000)
+#' svyfgtdec(~eqincome, des_eusilc, g=2, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to 0.6 times the mean
+#' svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
-#' #  using svrep.design:
+#' # using svrep.design:
 #' # absolute poverty threshold
-#' svyfgtdec(~eqincome, des_eusilc_rep, g = 1, abs_thresh=10000)
+#' svyfgtdec(~eqincome, des_eusilc_rep, g=2, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to 0.6 times the mean
+#' svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' \dontrun{
 #'
@@ -87,8 +96,13 @@
 #'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
+#'
 #' # absolute poverty threshold
-#' svyfgtdec(~eqincome, dbd_eusilc , g = 1, abs_thresh=10000)
+#' svyfgtdec(~eqincome, dbd_eusilc, g=2, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to 0.6 times the mean
+#' svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -118,6 +132,10 @@ svyfgtdec <-
 #' @export
 svyfgtdec.survey.design <-
   function(formula, design, g, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+
+    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
+    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
 
     fgt0 <- svyfgt( formula = formula, design=design, g=0, type_thresh=type_thresh, percent=percent, quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh = thresh )
     fgt1 <- svyfgt( formula = formula, design=design, g=1, type_thresh=type_thresh, percent=percent, quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh = thresh )

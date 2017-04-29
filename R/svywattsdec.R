@@ -13,6 +13,7 @@
 #' @param na.rm Should cases with missing values be dropped?
 #' @param ... additional arguments. Currently not used.
 #'
+#'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
 #' @return Object of class "\code{cvydstat}", with estimates for the Watts index, FGT(0), FGT(1), and Theil(poor incomes) with a "\code{var}" attribute giving the variance-covariance matrix.
@@ -59,10 +60,18 @@
 #'
 #' # absolute poverty threshold
 #' svywattsdec(~eqincome, des_eusilc, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svywattsdec(~eqincome, des_eusilc, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to 0.6 times the mean
+#' svywattsdec(~eqincome, des_eusilc, type_thresh= "relm" , thresh = TRUE)
 #'
 #' #  using svrep.design:
 #' # absolute poverty threshold
 #' svywattsdec(~eqincome, des_eusilc_rep, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svywattsdec(~eqincome, des_eusilc_rep, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to 0.6 times the mean
+#' svywattsdec(~eqincome, des_eusilc_rep, type_thresh= "relm" , thresh = TRUE)
 #'
 #' \dontrun{
 #'
@@ -88,6 +97,10 @@
 #'
 #' # absolute poverty threshold
 #' svywattsdec(~eqincome, dbd_eusilc, abs_thresh=10000)
+#' # poverty threshold equal to arpt
+#' svywattsdec(~eqincome, dbd_eusilc, type_thresh= "relq" , thresh = TRUE)
+#' # poverty threshold equal to 0.6 times the mean
+#' svywattsdec(~eqincome, dbd_eusilc, type_thresh= "relm" , thresh = TRUE)
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -101,8 +114,7 @@ svywattsdec <-
 
     warning("The svywattsdec function is experimental and is subject to changes in later versions.")
 
-    # if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'abs' ) ) ) stop( 'type_thresh= must be "abs". See ?svywattsdec for more detail.' )
-    if( !( 'abs_thresh' %in% names( list(...) ) ) ) stop( "abs_thresh= parameter must be specified." )
+    if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs". see ?svywattsdec for more detail.' )
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
@@ -197,6 +209,10 @@ svywattsdec.survey.design <-
 #' @export
 svywattsdec.svyrep.design <-
   function(formula, design, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+
+    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
+    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
 
     # svyrep design ComputeIndex functions
     ComputeWatts <-

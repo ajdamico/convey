@@ -9,11 +9,13 @@
 \usage{
 svywattsdec(formula, design, ...)
 
-\method{svywattsdec}{survey.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, thresh = FALSE, ...)
+\method{svywattsdec}{survey.design}(formula, design, type_thresh = "abs",
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
-\method{svywattsdec}{svyrep.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, thresh = FALSE, ...)
+\method{svywattsdec}{svyrep.design}(formula, design, type_thresh = "abs",
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
 \method{svywattsdec}{DBIsvydesign}(formula, design, ...)
 }
@@ -22,9 +24,16 @@ svywattsdec(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
-\item{...}{passed to \code{svyarpr} and \code{svyarpt}}
+\item{...}{additional arguments. Currently not used.}
+
+\item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
+of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.}
 
 \item{abs_thresh}{poverty threshold value if type_thresh is "abs"}
+
+\item{percent}{the multiple of the the quantile or mean used in the poverty threshold definition}
+
+\item{quantiles}{the quantile used used in the poverty threshold definition}
 
 \item{na.rm}{Should cases with missing values be dropped?}
 
@@ -59,10 +68,18 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 # absolute poverty threshold
 svywattsdec(~eqincome, des_eusilc, abs_thresh=10000)
+# poverty threshold equal to arpt
+svywattsdec(~eqincome, des_eusilc, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to 0.6 times the mean
+svywattsdec(~eqincome, des_eusilc, type_thresh= "relm" , thresh = TRUE)
 
 #  using svrep.design:
 # absolute poverty threshold
 svywattsdec(~eqincome, des_eusilc_rep, abs_thresh=10000)
+# poverty threshold equal to arpt
+svywattsdec(~eqincome, des_eusilc_rep, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to 0.6 times the mean
+svywattsdec(~eqincome, des_eusilc_rep, type_thresh= "relm" , thresh = TRUE)
 
 \dontrun{
 
@@ -88,6 +105,10 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 
 # absolute poverty threshold
 svywattsdec(~eqincome, dbd_eusilc, abs_thresh=10000)
+# poverty threshold equal to arpt
+svywattsdec(~eqincome, dbd_eusilc, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to 0.6 times the mean
+svywattsdec(~eqincome, dbd_eusilc, type_thresh= "relm" , thresh = TRUE)
 
 dbRemoveTable( conn , 'eusilc' )
 

@@ -69,11 +69,19 @@ des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
 
 # absolute poverty threshold
-svyfgtdec(~eqincome, des_eusilc, g = 1, abs_thresh=10000)
+svyfgtdec(~eqincome, des_eusilc, g=2, abs_thresh=10000)
+# poverty threshold equal to arpt
+svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to 0.6 times the mean
+svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 
-#  using svrep.design:
+# using svrep.design:
 # absolute poverty threshold
-svyfgtdec(~eqincome, des_eusilc_rep, g = 1, abs_thresh=10000)
+svyfgtdec(~eqincome, des_eusilc_rep, g=2, abs_thresh=10000)
+# poverty threshold equal to arpt
+svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to 0.6 times the mean
+svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
 
 \dontrun{
 
@@ -97,8 +105,13 @@ dbd_eusilc <-
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
+
 # absolute poverty threshold
-svyfgtdec(~eqincome, dbd_eusilc , g = 1, abs_thresh=10000)
+svyfgtdec(~eqincome, dbd_eusilc, g=2, abs_thresh=10000)
+# poverty threshold equal to arpt
+svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+# poverty threshold equal to 0.6 times the mean
+svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 
 dbRemoveTable( conn , 'eusilc' )
 
