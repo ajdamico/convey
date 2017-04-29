@@ -11,8 +11,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
   })
 }
 
-
-
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
 
@@ -172,6 +170,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
   })
 
 }
-dbRemoveTable( conn , 'eusilc' )
 
+dbRemoveTable( conn , 'eusilc' )
 dbDisconnect( conn , shutdown = TRUE )

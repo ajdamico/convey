@@ -152,4 +152,6 @@ test_that("dbi subsets equal dbi svyby",{
   expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[2]) # inverted results!
 })
 
+
 dbRemoveTable( conn , 'eusilc' )
+dbDisconnect( conn , shutdown = TRUE )
