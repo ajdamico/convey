@@ -4,10 +4,14 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
+#' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
+#' of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.
 #' @param abs_thresh poverty threshold value if type_thresh is "abs"
+#' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
+#' @param quantiles the quantile used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
-#' @param ... passed to \code{svyarpr} and \code{svyarpt}
+#' @param ... additional arguments. Currently not used.
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -109,37 +113,43 @@ svywattsdec <-
 #' @rdname svywattsdec
 #' @export
 svywattsdec.survey.design <-
-  function(formula, design, abs_thresh=NULL, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula, design, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+
+    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+
+    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
     # domain
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
 
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      if (length(nas) > length(design$prob))incvar <- incvar[!nas] else incvar[nas] <- 0
-    } else {
-      nas <- rep(0 , nrow( design ) )
-    }
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-    w <- 1/design$prob
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    if( any( incvar[w > 0] <= 0 , na.rm = TRUE ) ){
+    wf <- 1/full_design$prob
+
+    if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+
+    if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else ID <- 1 * ( ncom %in% ind )
+
+    if( any( incvec[wf > 0] <= 0 , na.rm = TRUE ) ){
       warning("keeping strictly positive incomes only.")
-      nps<-incvar <= 0
-      design<-design[!nps,]
-      if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[nps] <- 0
-      w <- 1/design$prob
+      nps <- incvec <= 0
+      design <- full_design[!nps&ID,]
+      attr( design , "full_design" ) <- full_design <- full_design[!nps,]
     }
 
-    N <- sum(w)
+    watts <- suppressWarnings( svywatts( formula=formula , design=design , type_thresh=type_thresh , percent=percent , quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh=thresh ) )
+    fgt0 <- svyfgt( formula=formula , design=design , g = 0 , type_thresh=type_thresh , percent=percent , quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh=thresh )
+    fgt1 <- svyfgt( formula=formula , design=design , g = 1 , type_thresh=type_thresh , percent=percent , quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh=thresh )
 
-    # linearization
-    th <- abs_thresh
-
-    watts <- suppressWarnings( svywatts( formula , design , type_thresh = "abs" , abs_thresh = abs_thresh ) )
-    fgt0 <- svyfgt( formula , design , g = 0 , type_thresh = "abs" , abs_thresh = abs_thresh )
-    fgt1 <- svyfgt( formula , design , g = 1 , type_thresh = "abs" , abs_thresh = abs_thresh )
+    if ( thresh ) thresh.value <- attr( fgt0 , "thresh" )
 
     if ( length( attr(watts , "lin" ) ) < length( attr(fgt0 , "lin" ) ) ) {
       lin <- rep( 0 , length( attr(fgt0 , "lin" ) ) )
@@ -147,58 +157,34 @@ svywattsdec.survey.design <-
       attr(watts , "lin" ) <- lin ; rm( lin )
     }
 
-    # mean income of the poor
+    # Watts Poverty Gap Ratio
     fgt0 <- list( value = fgt0[[1]], lin = attr( fgt0 , "lin" ) )
     fgt1 <- list( value = fgt1[[1]], lin = attr( fgt1 , "lin" ) )
-
-    th <- list( value = th , lin = rep( 0 , length( fgt0$lin ) ) )
-
-    list_all <- list( fgt0 = fgt0 , fgt1 = fgt1 , th = th )
-    mip <- convey::contrastinf( quote( ( ( fgt0 - fgt1 ) * th ) / fgt0 ) , list_all )
-    rm(list_all)
-
-    # Watts Poverty Gap Ratio
-    W_pgr <- convey::contrastinf( quote( log( th / mip ) ) , list( th = th , mip = mip ) )
+    W_pgr <- convey::contrastinf( quote( log( fgt0/(fgt0 - fgt1 ) ) ) , list( fgt0 = fgt0 , fgt1 = fgt1 ) )
 
     # Theil inequality index of incomes among the poor
-    stopifnot( length( incvar ) == length( design$prob ) )
-    design_poor <- design[ incvar <= th$value , ]
-    ID <- as.numeric( rownames( design_poor ) )
-    L_poor <- svygei( formula , design_poor , epsilon = 0 )
-    if ( length(fgt0$lin) > length(  attr(L_poor , "lin" ) ) ) {
-      lin <- rep( 0 , length(fgt0$lin) )
-      lin[ ID ] <- attr(L_poor , "lin" )
-      attr(L_poor , "lin" ) <- lin ; rm(lin , design_poor )
-    }
-    #L_poor <- list( value = L_poor[[1]] , lin = ifelse( incvec <= th$value , attr(L_poor , "lin" ) , 0 ) )
-    L_poor <- list( value = L_poor[[1]] , lin = attr( L_poor , "lin" ) )
+    # by residual
+    watts <- list( value = watts[[1]], lin = attr( watts , "lin" ) )
+    L_poor <- convey::contrastinf( quote( watts/fgt0 - W_pgr ) , list( watts = watts , fgt0 = fgt0 , W_pgr = W_pgr ) )
 
-
-    test.estimate <- convey::contrastinf( quote( fgt0 * ( W_pgr + L_poor ) ) , list( fgt0 = fgt0 , W_pgr = W_pgr , L_poor = L_poor ) )
-    #stopifnot( length(attr(watts, "lin")) == length(test.estimate$lin) )
-
-    lin.matrix <- cbind(test.estimate$lin, fgt0$lin, fgt1$lin , L_poor$lin)
+    lin.matrix <- cbind(watts$lin, fgt0$lin, fgt1$lin , L_poor$lin)
     lin.matrix <- as.matrix( lin.matrix )
     colnames(lin.matrix) <- c( "watts", "fgt0", "fgt1" , "theil(poor)" )
 
-    if ( length(design$prob) > nrow( lin.matrix ) ) {
-      lin.matrix <- apply( lin.matrix , 2 , function(x) { y = 1/design$prob ; y[ y > 0 ] <- x ; return( y )  } )
+    estimates <- matrix( c( watts$value, fgt0$value, fgt1$value , L_poor$value ), dimnames = list( c( "watts", "fgt0", "fgt1" , "theil(poor)" ) ) )[,]
+
+    if( nrow( full_design ) > nrow( lin.matrix ) ) {
+      lin.matrix <- apply( lin.matrix , 2 , function(x) { y = 1/full_design$prob ; y[ y > 0 ] <- x ; return( y )  } )
       lin.matrix <- as.matrix( lin.matrix )
     }
-    if ( length(design$prob) < nrow( lin.matrix ) ) {
-      lin.matrix <- lin.matrix [ as.numeric(rownames(design) ) , ]
-    }
-
-    # stopifnot( abs(sqrt(survey::svyrecvar( test.estimate$lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)) - sqrt(survey::svyrecvar( attr(watts , "lin") /design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata))) < 10^-10 )
-
-    estimates <- matrix( c( test.estimate$value, fgt0$value, fgt1$value , L_poor$value ), dimnames = list( c( "watts", "fgt0", "fgt1" , "theil(poor)" ) ) )[,]
-    variance <- survey::svyrecvar( lin.matrix/design$prob , design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
+    variance <- survey::svyrecvar( lin.matrix/full_design$prob , full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
 
     rval <- list( estimate = estimates )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
     attr(rval, "SE") <- sqrt(diag(variance[1:4,1:4]))
     attr(rval, "var") <- variance[1:4,1:4]
     attr(rval, "statistic") <- "watts index decomposition"
+    if ( thresh ) attr(rval, "thresh") <- thresh.value
     class(rval) <- c( "cvydstat" , "cvystat" , "svystat" , "svrepstat" )
 
     rval
@@ -210,7 +196,7 @@ svywattsdec.survey.design <-
 #' @rdname svywattsdec
 #' @export
 svywattsdec.svyrep.design <-
-  function(formula, design, abs_thresh=NULL, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula, design, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
 
     # svyrep design ComputeIndex functions
     ComputeWatts <-
@@ -247,27 +233,52 @@ svywattsdec.svyrep.design <-
 
       }
 
-    # domain
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      if (length(nas) > length(design$prob))incvar <- incvar[!nas] else incvar[nas] <- 0
-    }
+    # domain
+    if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+
+    df <- model.frame(design)
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
     ws <- weights(design, "sampling")
 
-    if( any( incvar[ws > 0] <= 0 , na.rm = TRUE ) ){
-      warning("keeping strictly positive incomes only.")
+    if( any(incvar[ ws > 0 ] <= 0 , na.rm = TRUE ) ){
       nps<-incvar <= 0
       design<-design[!nps,]
-      if (length(nps) > length(design$prob)) incvar <- incvar[!nps] else incvar[nps] <- 0
+      df <- model.frame(design)
+      incvar <- incvar[!nps]
       ws <- weights(design, "sampling")
     }
 
+
+    df_full<- model.frame(full_design)
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+
+    wsf <- weights(full_design,"sampling")
+
+    if( any(incvec[ wsf > 0 ] <= 0 , na.rm = TRUE ) ){
+      warning("keeping strictly positive incomes only.")
+      nps<-incvec <= 0
+      full_design<-full_design[!nps,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nps]
+      wsf <- weights(full_design,"sampling")
+    }
+
+    names(incvec) <- names(wsf) <- row.names(df_full)
+    ind<- row.names(df)
+
     # poverty threshold
-    th <- abs_thresh
+    if(type_thresh=='relq') th <- percent * computeQuantiles( incvec, wsf, p = quantiles)
+    if(type_thresh=='relm') th <- percent*sum(incvec*wsf)/sum(wsf)
+    if(type_thresh=='abs') th <- abs_thresh
 
     # estimates
     watts <- ComputeWatts(incvar, ws, thresh = th )
@@ -315,7 +326,34 @@ svywattsdec.svyrep.design <-
 svywattsdec.DBIsvydesign <-
   function (formula, design, ...) {
 
-    design$variables <- getvars( formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset )
+
+    if (!( "logical" %in% class(attr(design, "full_design"))) ){
+
+      full_design <- attr( design , "full_design" )
+
+      full_design$variables <-
+        getvars(
+          formula,
+          attr( design , "full_design" )$db$connection,
+          attr( design , "full_design" )$db$tablename,
+          updates = attr( design , "full_design" )$updates,
+          subset = attr( design , "full_design" )$subset
+        )
+
+      attr( design , "full_design" ) <- full_design
+
+      rm( full_design )
+
+    }
+
+    design$variables <-
+      getvars(
+        formula,
+        design$db$connection,
+        design$db$tablename,
+        updates = design$updates,
+        subset = design$subset
+      )
 
     NextMethod("svywattsdec", design)
   }
