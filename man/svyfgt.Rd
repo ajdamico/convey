@@ -134,6 +134,9 @@ dbDisconnect( conn , shutdown = TRUE )
 
 }
 \references{
+James Foster, Joel Greer and Erik Thorbecke (1984). A class of decomposable poverty measures.
+\emph{Econometrica}, Vol.52, No.3, pp. 761-766.
+
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
 Association}, Vol.3, No.3, pp. 167-195,
