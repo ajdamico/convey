@@ -119,6 +119,9 @@ dbDisconnect( conn , shutdown = TRUE )
 
 }
 \references{
+Anthony B. Atkinson (1987). On the measurement of poverty. \emph{Econometrica},
+Vol.55, No.4, (Jul., 1987), pp. 749-764, URL \url{http://www.jstor.org/stable/1911028}.
+
 Stephen Clark, Richard Hemming and David Ulph (1968). On Indices
 for the Measurement of Poverty. \emph{The Economic Journal}, Vol.91, No.362, (Jun., 1981), pp. 515-526,
 URL \url{http://www.jstor.org/stable/2232600}.
