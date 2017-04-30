@@ -142,10 +142,10 @@ svychu.survey.design <-
 
 
     #  survey design h function
-    h <- function( y , thresh , g ) ifelse( y <= thresh , 1 - ( y / thresh )^g , 0 )
+    h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
 
     # ht function
-    ht <- function( y , thresh , g ) ifelse( y <= thresh , g*(y^g / thresh^(g + 1) ) , 0 )
+    ht <- function( y , thresh , g ) ifelse( y <= thresh , (y^g / thresh^(g + 1) ) , 0 )
 
     # domain
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -262,7 +262,7 @@ svychu.svyrep.design <-
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
     # svyrep design h function
-    h <- function( y , thresh , g ) ifelse( y <= thresh , 1 - ( y / thresh )^g , 0 )
+    h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
 
     # svyrep design ComputeCHU function
     ComputeCHU <-
