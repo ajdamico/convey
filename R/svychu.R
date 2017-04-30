@@ -255,94 +255,93 @@ svychu.svyrep.design <-
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design")))
-      full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-      # svyrep design h function
-      h <- function( y , thresh , g ) ifelse( y <= thresh , 1 - ( y / thresh )^g , 0 )
+    # svyrep design h function
+    h <- function( y , thresh , g ) ifelse( y <= thresh , 1 - ( y / thresh )^g , 0 )
 
-      # svyrep design ComputeCHU function
-      ComputeCHU <-
-        function( y , w , thresh , g ){
-          N <- sum(w)
-          sum( w * h( y , thresh , g ) ) / N
-        }
+    # svyrep design ComputeCHU function
+    ComputeCHU <-
+      function( y , w , thresh , g ){
+        N <- sum(w)
+        sum( w * h( y , thresh , g ) ) / N
+      }
 
 
+    df <- model.frame(design)
+    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+    if(na.rm){
+      nas<-is.na(incvar)
+      design<-design[!nas,]
       df <- model.frame(design)
-      incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+      incvar <- incvar[!nas]
+    }
 
-      if(na.rm){
-        nas<-is.na(incvar)
-        design<-design[!nas,]
-        df <- model.frame(design)
-        incvar <- incvar[!nas]
-      }
+    ws <- weights(design, "sampling")
 
+    if( any(incvar[ ws > 0 ] <= 0 , na.rm = TRUE ) ){
+      nps<-incvar <= 0
+      design<-design[!nps,]
+      df <- model.frame(design)
+      incvar <- incvar[!nps]
       ws <- weights(design, "sampling")
-
-      if( any(incvar[ ws > 0 ] <= 0 , na.rm = TRUE ) ){
-        nps<-incvar <= 0
-        design<-design[!nps,]
-        df <- model.frame(design)
-        incvar <- incvar[!nps]
-        ws <- weights(design, "sampling")
-      }
+    }
 
 
-      df_full<- model.frame(full_design)
-      incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    df_full<- model.frame(full_design)
+    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-      if(na.rm){
-        nas<-is.na(incvec)
-        full_design<-full_design[!nas,]
-        df_full <- model.frame(full_design)
-        incvec <- incvec[!nas]
-      }
+    if(na.rm){
+      nas<-is.na(incvec)
+      full_design<-full_design[!nas,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
 
+    wsf <- weights(full_design,"sampling")
+
+    if( any(incvec[ wsf > 0 ] <= 0 , na.rm = TRUE ) ){
+      warning("keeping strictly positive incomes only.")
+      nps<-incvec <= 0
+      full_design<-full_design[!nps,]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nps]
       wsf <- weights(full_design,"sampling")
+    }
 
-      if( any(incvec[ wsf > 0 ] <= 0 , na.rm = TRUE ) ){
-        warning("keeping strictly positive incomes only.")
-        nps<-incvec <= 0
-        full_design<-full_design[!nps,]
-        df_full <- model.frame(full_design)
-        incvec <- incvec[!nps]
-        wsf <- weights(full_design,"sampling")
-      }
+    names(incvec) <- names(wsf) <- row.names(df_full)
+    ind<- row.names(df)
 
-      names(incvec) <- names(wsf) <- row.names(df_full)
-      ind<- row.names(df)
-
-      # poverty threshold
-      if(type_thresh=='relq') th <- percent * computeQuantiles( incvec, wsf, p = quantiles)
-      if(type_thresh=='relm') th <- percent*sum(incvec*wsf)/sum(wsf)
-      if(type_thresh=='abs') th <- abs_thresh
+    # poverty threshold
+    if(type_thresh=='relq') th <- percent * computeQuantiles( incvec, wsf, p = quantiles)
+    if(type_thresh=='relm') th <- percent*sum(incvec*wsf)/sum(wsf)
+    if(type_thresh=='abs') th <- abs_thresh
 
 
-      rval <- ComputeCHU(incvar, ws, thresh = th , g = g)
+    rval <- ComputeCHU(incvar, ws, thresh = th , g = g)
 
-      wwf <- weights(full_design, "analysis")
+    wwf <- weights(full_design, "analysis")
 
-      qq <-
-        apply(wwf, 2, function(wi){
-          names(wi)<- row.names(df_full)
-          wd<-wi[ind]
-          incd <- incvec[ind]
-          ComputeCHU( incd, wd, thresh = th , g = g )}
-        )
-      if(anyNA(qq))variance <- NA
-      else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    qq <-
+      apply(wwf, 2, function(wi){
+        names(wi)<- row.names(df_full)
+        wd<-wi[ind]
+        incd <- incvec[ind]
+        ComputeCHU( incd, wd, thresh = th , g = g )}
+      )
+    if(anyNA(qq))variance <- NA
+    else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
-      variance <- as.matrix( variance )
+    variance <- as.matrix( variance )
 
-      colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-      class(rval) <- c( "cvystat" , "svrepstat" )
-      attr(rval, "var") <- variance
-      attr(rval, "statistic") <- paste0("chu",g)
-      attr(rval, "lin") <- NA
-      if(thresh) attr(rval, "thresh") <- th
-      rval
+    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- c( "cvystat" , "svrepstat" )
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- paste0("chu",g)
+    attr(rval, "lin") <- NA
+    if(thresh) attr(rval, "thresh") <- th
+    rval
   }
 
 #' @rdname svychu
