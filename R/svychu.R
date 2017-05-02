@@ -4,10 +4,10 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
+#' @param g A parameter where (1 - g) defines the inequality aversion among the poor. If g = 0, the CHU class becomes the Watts poverty measure.
 #' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
 #' of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.
 #' @param abs_thresh poverty threshold value if type_thresh is "abs"
-#' @param g A parameter where (1 - g) defines the inequality aversion among the poor. If g = 0, the CHU class becomes the Watts poverty measure.
 #' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
 #' @param quantiles the quantile used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value
