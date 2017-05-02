@@ -16,7 +16,7 @@
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
-#' @return Object of class "\code{cvydstat}", with estimates for the Watts index, FGT(0), FGT(1), and Theil(poor incomes) with a "\code{var}" attribute giving the variance-covariance matrix.
+#' @return Object of class "\code{cvydstat}", with estimates for the Watts index, FGT(0), Watts Poverty Gap Ratio, and Theil(poor incomes) with a "\code{var}" attribute giving the variance-covariance matrix.
 #' A "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
@@ -179,11 +179,11 @@ svywattsdec.survey.design <-
     watts <- list( value = watts[[1]], lin = attr( watts , "lin" ) )
     L_poor <- convey::contrastinf( quote( watts/fgt0 - W_pgr ) , list( watts = watts , fgt0 = fgt0 , W_pgr = W_pgr ) )
 
-    lin.matrix <- cbind(watts$lin, fgt0$lin, fgt1$lin , L_poor$lin)
+    lin.matrix <- cbind(watts$lin, fgt0$lin, W_pgr$lin , L_poor$lin)
     lin.matrix <- as.matrix( lin.matrix )
-    colnames(lin.matrix) <- c( "watts", "fgt0", "fgt1" , "theil(poor)" )
+    colnames(lin.matrix) <- c( "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)" )
 
-    estimates <- matrix( c( watts$value, fgt0$value, fgt1$value , L_poor$value ), dimnames = list( c( "watts", "fgt0", "fgt1" , "theil(poor)" ) ) )[,]
+    estimates <- matrix( c( watts$value, fgt0$value, W_pgr$value , L_poor$value ), dimnames = list( c( "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)" ) ) )[,]
 
     if( nrow( full_design ) > nrow( lin.matrix ) ) {
       lin.matrix <- apply( lin.matrix , 2 , function(x) { y = 1/full_design$prob ; y[ y > 0 ] <- x ; return( y )  } )
@@ -300,7 +300,7 @@ svywattsdec.svyrep.design <-
     watts <- ComputeWatts(incvar, ws, thresh = th )
     fgt0 <- ComputeFGT(incvar, ws, g = 0 , thresh = th )
     fgt1 <- ComputeFGT(incvar, ws, g = 1 , thresh = th )
-    mip <- sum( incvar * ifelse( incvar <= th , ws , 0 ) ) / sum( ifelse( incvar <= th , ws , 0 ) )
+    w_pgr <- log( fgt0/(fgt0 - fgt1 ) )
     L_poor <- ComputeGEI( incvar, ifelse( incvar <= th , ws , 0 ) , epsilon = 0 )
 
     ww <- weights(design, "analysis" )
@@ -309,20 +309,17 @@ svywattsdec.svyrep.design <-
     qq.watts <- apply( ww, 2, function(wi){ ComputeWatts( incvar, wi, thresh = th ) } )
     qq.fgt0 <- apply( ww, 2, function(wi){ ComputeFGT( incvar, wi, g = 0 , thresh = th ) } )
     qq.fgt1 <- apply( ww, 2, function(wi){ ComputeFGT( incvar, wi, g = 1 , thresh = th ) } )
-    qq.mip <- apply( ww, 2, function(wi){ sum( incvar * ifelse( incvar <= th , wi , 0 ) ) / sum( ifelse( incvar <= th , wi , 0 ) ) } )
+    qq.w_pgr <- qq.fgt0/( qq.fgt0 - qq.fgt1 )
     qq.L_poor <- apply( ww, 2, function(wi){ ComputeGEI( incvar, ifelse( incvar <= th , wi , 0 ) , epsilon = 0 ) } )
 
-    qq <- cbind( qq.watts , qq.fgt0 , qq.fgt1 , qq.L_poor )
-    colnames(qq) <- c( "watts" , "fgt0" , "fgt1" , "theil(poor)" )
-
-    # test.estimate <- fgt0 * ( log( th / mip ) + L_poor )
-    # qq.test.estimate <- qq.fgt0 * ( log( th / qq.mip ) + qq.L_poor )
+    qq <- cbind( qq.watts , qq.fgt0 , qq.w_pgr , qq.L_poor )
+    colnames(qq) <- c( "watts" , "fgt0" , "watts pov. gap ratio" , "theil(poor)" )
 
     if (anyNA(qq)) variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
 
     variance <- as.matrix( variance )
 
-    estimates <- matrix( c( watts, fgt0, fgt1 , L_poor ), dimnames = list( c( "watts", "fgt0", "fgt1" , "theil(poor)" ) ) )[,]
+    estimates <- matrix( c( watts, fgt0, w_pgr , L_poor ), dimnames = list( c( "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)" ) ) )[,]
 
     rval <- list( estimate = estimates )
     names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]

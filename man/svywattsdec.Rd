@@ -40,7 +40,7 @@ of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it
 \item{thresh}{return the poverty threshold value}
 }
 \value{
-Object of class "\code{cvydstat}", with estimates for the Watts index, FGT(0), FGT(1), and Theil(poor incomes) with a "\code{var}" attribute giving the variance-covariance matrix.
+Object of class "\code{cvydstat}", with estimates for the Watts index, FGT(0), Watts Poverty Gap Ratio, and Theil(poor incomes) with a "\code{var}" attribute giving the variance-covariance matrix.
 A "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
