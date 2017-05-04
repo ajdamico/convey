@@ -4,7 +4,7 @@
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
-#' @param g A parameter where (1 - g) defines the inequality aversion among the poor. If g = 0, the CHU class becomes the Watts poverty measure.
+#' @param g A parameter where (1 - g) defines the inequality aversion among the poor. If g = 0, the CHU class becomes a monotonic transform of the Watts poverty measure.
 #' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
 #' of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.
 #' @param abs_thresh poverty threshold value if type_thresh is "abs"
@@ -22,7 +22,7 @@
 #'
 #' @note This function is experimental and is subject to change in later versions.
 #'
-#' @seealso \code{\link{svyarpt}}
+#' @seealso \code{\link{svywatts}}
 #'
 #' @references Vijay Verma and Gianni Betti (2011). Taylor linearization sampling errors and design effects for poverty measures
 #' and other complex statistics. \emph{Journal Of Applied Statistics}, Vol.38, No.8, pp. 1549-1576,
@@ -113,11 +113,9 @@ svychu <-
 
     if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
 
-    if( !is.na( list(...)[["g"]] ) && ( list(...)[["g"]] == 0 ) ) return( svywatts( formula , design , ... ) )
-
     warning("The svychu function is experimental and is subject to changes in later versions.")
 
-    if( !is.na( list(...)[["g"]] ) && !( list(...)[["g"]] <= 1 ) ) stop( "g= must be in the [0, 1] interval." )
+    if( !is.na( list(...)[["g"]] ) && !( list(...)[["g"]] <= 1 & list(...)[["g"]] >= 0 ) ) stop( "g= must be in the [0, 1] interval." )
 
     if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svychu for more detail.' )
 
@@ -140,12 +138,19 @@ svychu.survey.design <-
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
+    if (g == 0) {
+      #  survey design h function
+      h <- function( y , thresh , g ) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 )
 
-    #  survey design h function
-    h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
+      # ht function
+      ht <- function( y , thresh , g ) ifelse( y != 0 , ifelse( y <= thresh , 1/thresh , 0 ) , 0 )
+    } else {
+      #  survey design h function
+      h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
 
-    # ht function
-    ht <- function( y , thresh , g ) ifelse( y <= thresh , (y^g / thresh^(g + 1) ) , 0 )
+      # ht function
+      ht <- function( y , thresh , g ) ifelse( y <= thresh , (y^g / thresh^(g + 1) ) , 0 )
+    }
 
     # domain
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -210,6 +215,13 @@ svychu.survey.design <-
 
       chulin <-ID*( h( incvec , th , g ) - rval ) / N + ( ahat * arptlin )
 
+      if ( g == 0 ) {
+        estimate <- contrastinf( quote(1 - exp(-watts) ) , list( watts = list( value = rval , lin = chulin ) ) )
+        rval <- estimate$value
+        chulin <- estimate$lin
+        rm(estimate)
+        }
+
     }
 
     if( type_thresh == 'relm'){
@@ -220,6 +232,13 @@ svychu.survey.design <-
       ahat <- sum(w*ht(incvar,th,g))/N
       chulin <-ID*( h( incvec , th , g ) - rval + ( ( percent * incvec ) - th ) * ahat ) / N
 
+      if ( g == 0 ) {
+        estimate <- contrastinf( quote(1 - exp(-watts) ) , list( watts = list( value = rval , lin = chulin ) ) )
+        rval <- estimate$value
+        chulin <- estimate$lin
+        rm(estimate)
+      }
+
     }
 
     if( type_thresh == 'abs' ){
@@ -229,6 +248,13 @@ svychu.survey.design <-
       rval <- sum( w*h( incvar , th , g ) ) / N
 
       chulin <- ID*( h( incvec , th , g ) - rval ) / N
+
+      if ( g == 0 ) {
+        estimate <- contrastinf( quote(1 - exp(-watts) ) , list( watts = list( value = rval , lin = chulin ) ) )
+        rval <- estimate$value
+        chulin <- estimate$lin
+        rm(estimate)
+      }
 
     }
 
@@ -261,14 +287,23 @@ svychu.svyrep.design <-
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-    # svyrep design h function
-    h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
+    if (g == 0) {
+      # svyrep design h function
+      h <- function( y , thresh ) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 )
+    } else {
+      # svyrep design h function
+      h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
+    }
 
     # svyrep design ComputeCHU function
     ComputeCHU <-
       function( y , w , thresh , g ){
         N <- sum(w)
-        sum( w * h( y , thresh , g ) ) / N
+        if (g == 0) {
+          1 - exp( -sum( w * h( y , thresh ) ) / N )
+        } else {
+          sum( w * h( y , thresh , g ) ) / N
+        }
       }
 
 

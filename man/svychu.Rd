@@ -26,7 +26,7 @@ svychu(formula, design, ...)
 
 \item{...}{passed to \code{svyarpr} and \code{svyarpt}}
 
-\item{g}{A parameter where (1 - g) defines the inequality aversion among the poor. If g = 0, the CHU class becomes the Watts poverty measure.}
+\item{g}{A parameter where (1 - g) defines the inequality aversion among the poor. If g = 0, the CHU class becomes a monotonic transform of the Watts poverty measure.}
 
 \item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
 of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.}
@@ -137,7 +137,7 @@ Association}, Vol.3, No.3, pp. 167-195,
 ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
 }
 \seealso{
-\code{\link{svyarpt}}
+\code{\link{svywatts}}
 }
 \author{
 Guilherme Jacob, Djalma Pessoa and Anthony Damico
