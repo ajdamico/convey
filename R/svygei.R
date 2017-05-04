@@ -195,8 +195,8 @@ svygei.survey.design <-
 		class(rval) <- c( "cvystat" , "svystat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "gei"
-		attr(rval,"epsilon")<- epsilon
 		attr(rval,"lin")<- v
+		attr(rval,"epsilon")<- epsilon
 		rval
 
 	}
@@ -251,6 +251,7 @@ svygei.svyrep.design <-
 		class(rval) <- c( "cvystat" , "svrepstat" )
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "gei"
+		attr(rval,"lin")<- NA
 		attr(rval,"epsilon")<- epsilon
 		return(rval)
 	}
