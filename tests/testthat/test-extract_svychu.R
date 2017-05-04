@@ -59,7 +59,6 @@ dbd_eusilc_rep <-
 dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
 
-
 for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
   for ( this_g in c( 0 , .3 , .6 , 1 ) ) {
 
