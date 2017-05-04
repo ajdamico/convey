@@ -138,7 +138,7 @@ svyrich <-
 
     if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT1' ) && (( list(...)[["g"]] > 1 ) | ( list(...)[["g"]] < 0 ) ) ) stop( 'type_measure="FGTT1" is defined for 0 <= g <= 1 only.' )
 
-    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT2' ) && ( list(...)[["g"]] < 1 ) ) stop( 'type_measure="FGTT2" is defined for g >= 1 only.' )
+    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT2' ) && ( list(...)[["g"]] <= 1 ) ) stop( 'type_measure="FGTT2" is defined for g > 1 only.' )
 
     if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT2' ) ) warning( 'Brzezinski (2014) warns about poor inferential performance for convex richness measures. See ?svyrich for reference.' )
 
