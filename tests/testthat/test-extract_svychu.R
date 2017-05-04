@@ -61,15 +61,15 @@ dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
 
 for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
-  for ( this_g in c( .3 , .6 , 1 ) ) {
+  for ( this_g in c( 0 , .3 , .6 , 1 ) ) {
 
     a1 <- svychu(~eqincome, design = des_eusilc, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 
-    a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+    a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
     b1 <- svychu(~eqincome, design = des_eusilc_rep, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 
-    b2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svychu,g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+    b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svychu,g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
 
     se_dif1 <- abs(SE(a1)-SE(b1))
@@ -100,7 +100,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 
 
     c1 <- svychu(~eqincome, design = dbd_eusilc, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
-    c2 <- svyby(~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+    c2 <- svyby(~eqincome, by = ~db040, design = dbd_eusilc, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
 
     test_that("database svychu",{
@@ -111,10 +111,10 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
     })
 
     # compare subsetted objects to svyby objects
-    sub_des <- svychu( ~eqincome , design = subset( des_eusilc , hsize == 1), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-    sby_des <- svyby( ~eqincome, by = ~hsize, design = des_eusilc, FUN = svychu , g=this_g, type_thresh= this_thresh, abs_thresh=10000)
-    sub_rep <- svychu( ~eqincome , design = subset( des_eusilc_rep , hsize == 1), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-    sby_rep <- svyby( ~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+    sub_des <- svychu( ~eqincome , design = subset( des_eusilc , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
+    sby_des <- svyby( ~eqincome, by = ~db040, design = des_eusilc, FUN = svychu , g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+    sub_rep <- svychu( ~eqincome , design = subset( des_eusilc_rep , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
+    sby_rep <- svyby( ~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 
     test_that("subsets equal svyby",{
       expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
@@ -132,10 +132,10 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
     })
 
 
-    sub_dbd <- svychu( ~eqincome , design = subset( dbd_eusilc , hsize == 1), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-    sby_dbd <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svychu ,g=this_g, type_thresh= this_thresh, abs_thresh=10000)
-    sub_dbr <- svychu( ~eqincome , design = subset( dbd_eusilc_rep , hsize == 1), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-    sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svychu , g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+    sub_dbd <- svychu( ~eqincome , design = subset( dbd_eusilc , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
+    sby_dbd <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc, FUN = svychu ,g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+    sub_dbr <- svychu( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
+    sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svychu , g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 
 
 
