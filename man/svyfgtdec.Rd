@@ -26,7 +26,7 @@ svyfgtdec(formula, design, ...)
 
 \item{...}{additional arguments. Currently not used.}
 
-\item{g}{If g=2 estimates the average squared normalised poverty gap. This function is defined for g > 1 only,}
+\item{g}{If g=2 estimates the average squared normalised poverty gap. This function is defined for g >= 2 only,}
 
 \item{type_thresh}{type of poverty threshold. If "abs" the threshold is fixed and given the value
 of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.}

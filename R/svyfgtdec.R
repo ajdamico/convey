@@ -7,7 +7,7 @@
 #' @param type_thresh type of poverty threshold. If "abs" the threshold is fixed and given the value
 #' of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it is percent times the mean.
 #' @param abs_thresh poverty threshold value if type_thresh is "abs"
-#' @param g If g=2 estimates the average squared normalised poverty gap. This function is defined for g > 1 only,
+#' @param g If g=2 estimates the average squared normalised poverty gap. This function is defined for g >= 2 only,
 #' @param percent the multiple of the the quantile or mean used in the poverty threshold definition
 #' @param quantiles the quantile used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value
@@ -120,7 +120,7 @@ svyfgtdec <-
     if( !( 'abs_thresh' %in% names( list(...) ) ) ) stop( "abs_thresh= parameter must be specified." )
 
     if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
-    if( !is.na( list(...)[["g"]] ) && !( ( list(...)[["g"]] == 0 ) | ( list(...)[["g"]] >= 1 ) ) ) stop( "tis decomposition is defined for g >= 1." )
+    if( !is.na( list(...)[["g"]] ) && !( list(...)[["g"]] >= 2 ) ) stop( "this decomposition is defined for g >= 2 only." )
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
