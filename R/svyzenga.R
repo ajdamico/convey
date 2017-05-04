@@ -192,13 +192,13 @@ svyzenga.survey.design <- function( formula, design, na.rm = FALSE, ... ) {
   z_if[ z_if != 0 ] <- as.numeric( my_outvec )
   z_if <- z_if[ order(ordincvar) ]
 
-  variance <- survey::svyrecvar( z_if/design$prob, design$cluster,
-                                 design$strata, design$fpc, postStrata = design$postStrata)
+  variance <- survey::svyrecvar( z_if/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
 
   colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
   class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "zenga"
+  attr(rval, "lin") <- z_if
 
   return( rval )
 

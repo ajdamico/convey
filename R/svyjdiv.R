@@ -144,6 +144,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
   class(rval) <- c( "cvystat" , "svystat" )
   attr(rval, "statistic") <- "j-divergence"
   attr(rval, "var") <- variance
+  attr(rval, "lin") <- estimate$lin
 
   rval
 
