@@ -181,18 +181,14 @@ svybcc.survey.design <- function( formula, design, theta = .5 , alpha = .5 , cut
   }
 
   # Deprivation Matrix
-  dep.matrix <- ach.matrix
-  for ( i in seq_along(cutoffs) ) {
-
-    cut.value <- cutoffs[[i]]
-
+  dep.matrix <- sapply( seq_along(cutoffs), FUN = function( i ){
     if ( var.class[ i ] == "numeric" ) {
-      dep.matrix[ , i ] <- ( 1 - ach.matrix[ , i ] / cut.value ) * ( cut.value > ach.matrix[ , i ] )
+      ( 1 - ach.matrix[ , i ] / cutoffs[[i]] ) * ( cutoffs[[i]] > ach.matrix[ , i ] )
     } else {
-      dep.matrix[ , i ] <- ( cut.value > ach.matrix[ , i ] )
+      ( cutoffs[[i]] > ach.matrix[ , i ] )
     }
-
-  }
+  } )
+  colnames(dep.matrix) <- colnames( var.class )
 
   # calculate multidimensional deprivation scores
   if ( is.null(dimw) ) {
@@ -285,18 +281,14 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
   }
 
   # Deprivation Matrix
-  dep.matrix <- ach.matrix
-  for ( i in seq_along(cutoffs) ) {
-
-    cut.value <- cutoffs[[i]]
-
+  dep.matrix <- sapply( seq_along(cutoffs), FUN = function( i ){
     if ( var.class[ i ] == "numeric" ) {
-      dep.matrix[ , i ] <- ( 1 - ach.matrix[ , i ] / cut.value ) * ( cut.value > ach.matrix[ , i ] )
+      ( 1 - ach.matrix[ , i ] / cutoffs[[i]] ) * ( cutoffs[[i]] > ach.matrix[ , i ] )
     } else {
-      dep.matrix[ , i ] <- ( cut.value > ach.matrix[ , i ] )
+      ( cutoffs[[i]] > ach.matrix[ , i ] )
     }
-
-  }
+  } )
+  colnames(dep.matrix) <- colnames( var.class )
 
   # calculate multidimensional deprivation scores
   if ( is.null(dimw) ) {
@@ -330,8 +322,8 @@ svybcc.svyrep.design <- function( formula, design, theta = .5 , alpha = .5 , cut
 #' @export
 svybcc.DBIsvydesign <-
   function (formula, design, ...) {
-    
+
     design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
-    
+
     NextMethod("svybcc", design)
   }
