@@ -180,18 +180,8 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
   }
 
   # Deprivation Matrix
-  dep.matrix <- ach.matrix
-  for ( i in seq_along(cutoffs) ) {
-
-    cut.value <- cutoffs[[i]]
-
-    if ( is.numeric( cut.value ) ) {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    } else {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    }
-
-  }
+  dep.matrix <- sapply( seq_along(var.class), FUN = function( i ){ 1*( cutoffs[[i]] > ach.matrix[ , i ] ) } )
+  colnames(dep.matrix) <- colnames( var.class )
 
   # Unweighted count of deprivations:
   # depr.count <- rowSums( dep.matrix )
@@ -209,19 +199,14 @@ svyafc.survey.design <- function( formula, design, k , g , cutoffs , dimw = NULL
   rm(dep.matrix)
 
   # Censored Deprivation Matrix
-  cen.dep.matrix <- ach.matrix
-  for ( i in seq_along(cutoffs) ) {
-
-    cut.value <- cutoffs[[i]]
-
-    if ( var.class[ i ] == "numeric" ) {
-      cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )^g
+  cen.dep.matrix <- sapply( seq_along(cutoffs) , FUN = function( x ) {
+    if ( var.class[ x ] == "numeric" ) {
+      1*( cutoffs[[x]] > ach.matrix[ , x ] ) * ( ( cutoffs[[x]] - ach.matrix[ , x ] ) / cutoffs[[x]] )^g
     } else {
-      cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
+      1*( cutoffs[[x]] > ach.matrix[ , x ] )
     }
-
-  }
-
+  } )
+  colnames(cen.dep.matrix) <- colnames( var.class )
   cen.dep.matrix[ multi.cut == 0, ] <- 0
 
   # Sum of censored deprivations:
@@ -324,18 +309,8 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   }
 
   # Deprivation Matrix
-  dep.matrix <- ach.matrix
-  for ( i in seq_along(cutoffs) ) {
-
-    cut.value <- cutoffs[[i]]
-
-    if ( var.class[ i ] == "numeric" ) {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    } else {
-      dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
-    }
-
-  }
+  dep.matrix <- sapply( seq_along(var.class), FUN = function( i ){ 1*( cutoffs[[i]] > ach.matrix[ , i ] ) } )
+  colnames(dep.matrix) <- colnames( var.class )
 
   # Unweighted count of deprivations:
   # depr.count <- rowSums( dep.matrix )
@@ -353,18 +328,14 @@ svyafc.svyrep.design <- function(formula, design, k , g , cutoffs , dimw = NULL,
   rm(dep.matrix)
 
   # Censored Deprivation Matrix
-  cen.dep.matrix <- ach.matrix
-  for ( i in seq_along(cutoffs) ) {
-
-    cut.value <- cutoffs[[i]]
-
-    if ( is.numeric( cut.value ) ) {
-      cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] ) * ( ( cut.value - ach.matrix[ , i ] ) / cut.value )^g
+  cen.dep.matrix <- sapply( seq_along(cutoffs) , FUN = function( x ) {
+    if ( var.class[ x ] == "numeric" ) {
+      1*( cutoffs[[x]] > ach.matrix[ , x ] ) * ( ( cutoffs[[x]] - ach.matrix[ , x ] ) / cutoffs[[x]] )^g
     } else {
-      cen.dep.matrix[ , i ] <- 1*( cut.value > ach.matrix[ , i ] )
+      1*( cutoffs[[x]] > ach.matrix[ , x ] )
     }
-
-  }
+  } )
+  colnames(cen.dep.matrix) <- colnames( var.class )
   cen.dep.matrix[ multi.cut == 0, ] <- 0
 
   # Sum of censored deprivations:
