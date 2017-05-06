@@ -25,7 +25,11 @@
 #'
 #' @seealso \code{\link{svywatts},\link{svyfgt},\link{svyfgt}}
 #'
-#' @references Satya Chakravarty, Joseph Deutsch and Jacques Silber (2008).
+#' @references McKinley L. Blackburn (1989). Poverty measurement: an index related to a Theil measure of inequality.
+#' \emph{Journal of Business & Economic Statistics}, Vol.7, No.4, pp. 475-481,
+#' URL \url{http://amstat.tandfonline.com/doi/abs/10.1080/07350015.1989.10509760}.
+#'
+#' Satya R. Chakravarty, Joseph Deutsch and Jacques Silber (2008).
 #' On the Watts multidimensional poverty index and its decomposition.
 #' \emph{World Development}, Vol.36, No.6, pp.1067-1077.
 #'
