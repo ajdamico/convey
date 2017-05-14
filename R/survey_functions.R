@@ -170,3 +170,21 @@ within_function_subset.DBIsvydesign <-
 		x
 	}
 
+
+	
+	
+	
+	
+
+# convey.design update method
+#' @method update convey.design
+#' @export
+update.convey.design <-
+  function (object, ...) {
+  
+	attr( object , "full_design" ) <- NextMethod("update" , attr( object , "full_design" ) )
+  
+    NextMethod("update", object)
+	
+  }
+
