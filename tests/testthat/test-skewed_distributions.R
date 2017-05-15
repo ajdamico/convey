@@ -3,7 +3,7 @@ library(convey)
 
 no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z }
 
-all_funs <- list( svyrmir , svyqsr , svyarpt , svyarpt , svyatk , svyfgt , svygini , svygpg , svyiqalpha , svyisq , svyzenga , svypoormed  , svyrenyi , svygei  , svyrmpg  , svyzengacurve , svylorenz , svyjdiv , svyamato , svyafc , svybmi, svysst, svysen, svybcc , svyrich , svychu , svywatts )
+all_funs <- c( "svyrmir" , "svyqsr" , "svyarpt" , "svyarpt" , "svyatk" , "svyfgt" , "svygini" , "svygpg" , "svyiqalpha" , "svyisq" , "svyzenga" , "svypoormed" , "svyrenyi" , "svygei" , "svyrmpg" , "svyzengacurve" , "svylorenz" , "svyjdiv" , "svyamato" , "svyafc" , "svybmi" , "svysst" , "svysen" , "svybcc" , "svyrich" , "svychu" , "svywatts" )
 
 for( n in c( 50 , 1000 ) ){
 
@@ -28,8 +28,10 @@ for( n in c( 50 , 1000 ) ){
 	dist_frame[ -which( names( dist_frame ) == 'sex' ) ] <- sapply( dist_frame[ -which( names( dist_frame ) == 'sex' ) ] , as.numeric )
 
 
-	for( FUN in all_funs ){
+	for( this_function in all_funs ){
 
+		FUN <- get( this_function )
+	
 		unwtd_des <- convey_prep( svydesign( ~ 1 , data = dist_frame ) )
 		binom_des <- convey_prep( svydesign( ~ 1 , data = dist_frame , weight = ~ wt_binom ) )
 		unif_des <- convey_prep( svydesign( ~ 1 , data = dist_frame , weight = ~ wt_unif ) )
@@ -178,7 +180,7 @@ for( n in c( 50 , 1000 ) ){
 						lin_res <- do.call( FUN , lin_params_list )
 						rep_res <- do.call( FUN , rep_params_list )
 
-						print( paste( "testing functions work on weird distributions" , attr(lin_res , "statistic") , this_prefix , as.character( this_formula )[2] ) )
+						print( paste( "testing functions work on weird distributions" , this_function , this_prefix , as.character( this_formula )[2] ) )
 
 						# result should give some non-missing number
 						expect_that( coef( lin_res ) , is.numeric )
