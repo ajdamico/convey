@@ -138,19 +138,11 @@ svychu.survey.design <-
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-    if (g == 0) {
-      #  survey design h function
-      h <- function( y , thresh , g ) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 )
+    #  survey design h function
+    h <- function( y , thresh , g ) if (g==0) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 ) else ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
 
-      # ht function
-      ht <- function( y , thresh , g ) ifelse( y != 0 , ifelse( y <= thresh , 1/thresh , 0 ) , 0 )
-    } else {
-      #  survey design h function
-      h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
-
-      # ht function
-      ht <- function( y , thresh , g ) ifelse( y <= thresh , (y^g / thresh^(g + 1) ) , 0 )
-    }
+    # ht function
+    ht <- function( y , thresh , g ) if (g==0) ifelse( y != 0 , ifelse( y <= thresh , 1/thresh , 0 ) , 0 ) else ifelse( y <= thresh , (y^g / thresh^(g + 1) ) , 0 )
 
     # domain
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -287,13 +279,8 @@ svychu.svyrep.design <-
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-    if (g == 0) {
-      # svyrep design h function
-      h <- function( y , thresh ) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 )
-    } else {
-      # svyrep design h function
-      h <- function( y , thresh , g ) ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
-    }
+    #  survey design h function
+    h <- function( y , thresh , g ) if (g==0) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 ) else ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
 
     # svyrep design ComputeCHU function
     ComputeCHU <-
