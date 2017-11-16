@@ -35,10 +35,10 @@ des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 # database-backed design
-library(MonetDBLite)
+library(RSQLite)
 library(DBI)
-dbfolder <- tempdir()
-conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+dbfile <- tempfile()
+conn <- dbConnect( RSQLite::SQLite() , dbfile )
 dbWriteTable( conn , 'eusilc' , eusilc )
 
 dbd_eusilc <-
@@ -47,8 +47,8 @@ dbd_eusilc <-
     strata = ~db040 ,
     weights = ~rb050 ,
     data="eusilc",
-    dbname=dbfolder,
-    dbtype="MonetDBLite"
+    dbname=dbfile,
+    dbtype="SQLite"
   )
 
 dbd_eusilc <- convey_prep( dbd_eusilc )
@@ -63,8 +63,8 @@ dbd_eusilc_rep <-
     rscales = des_eusilc_rep$rscales ,
     type = "bootstrap" ,
     data = "eusilc" ,
-    dbtype = "MonetDBLite" ,
-    dbname = dbfolder ,
+    dbtype="SQLite" ,
+    dbname = dbfile ,
     combined.weights = FALSE
   )
 
