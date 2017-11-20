@@ -57,12 +57,12 @@ test_that("output svygpg",{
 
 
 	# database-backed design
-	library(MonetDBLite)
+	library(RSQLite)
 	library(DBI)
-	dbfolder <- tempdir()
-	conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+	dbfile <- tempfile()
+	conn <- dbConnect( RSQLite::SQLite() , dbfile )
 	dbWriteTable( conn , 'ses' , ses )
-	dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfolder, dbtype="MonetDBLite")
+	dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfile, dbtype="SQLite")
 	dbd_ses <- convey_prep( dbd_ses )
 
 	c1 <-  svygpg(formula=~earningshour, design=dbd_ses, sex= ~sex)
@@ -108,13 +108,13 @@ test_that("subsets equal svyby",{
 # second run of database-backed designs #
 
 	# database-backed design
-	library(MonetDBLite)
+	library(RSQLite)
 	library(DBI)
-	dbfolder <- tempdir()
-	conn <- dbConnect( MonetDBLite::MonetDBLite() , dbfolder )
+	dbfile <- tempfile()
+	conn <- dbConnect( RSQLite::SQLite() , dbfile )
 	dbWriteTable( conn , 'ses' , ses )
 
-	dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfolder, dbtype="MonetDBLite")
+	dbd_ses <- svydesign(id=~1, weights=~weights, data="ses", dbname=dbfile, dbtype="SQLite")
 
 	dbd_ses <- convey_prep( dbd_ses )
 
@@ -128,8 +128,8 @@ test_that("subsets equal svyby",{
 			rscales = des_ses_rep$rscales ,
 			type = "bootstrap" ,
 			data = "ses" ,
-			dbtype = "MonetDBLite" ,
-			dbname = dbfolder ,
+			dbtype="SQLite" ,
+			dbname = dbfile ,
 			combined.weights = FALSE
 		)
 
