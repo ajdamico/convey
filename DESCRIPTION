@@ -24,5 +24,6 @@ Suggests:
     vardpoor,
     DBI,
     RODBC,
-    RSQLite
+    RSQLite,
+    srvyr
 RoxygenNote: 6.0.1
