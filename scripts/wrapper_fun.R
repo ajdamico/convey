@@ -8,10 +8,10 @@ if (missing(vartype)) vartype <- "se"
   .svy <- srvyr::set_survey_vars(.svy, x )
   attributes(.svy)$full_design <- srvyr::set_survey_vars(attributes(.svy)$full_design,x)
 if (length(group_vars(.svy))== 0){
-  out <- convey_fun(~`__SRVYR_TEMP_VAR__`, na.rm = na.rm, design = .svy)
+  out <- convey_fun(~`__SRVYR_TEMP_VAR__`, na.rm = na.rm, design = .svy, ...)
   out <- srvyr::get_var_est(out, vartype)}else{
   grps_formula <- survey::make.formula(group_vars(.svy))
-  out <- survey::svyby(~`__SRVYR_TEMP_VAR__`, grps_formula, convey_fun, na.rm = na.rm, design = .svy)
+  out <- survey::svyby(~`__SRVYR_TEMP_VAR__`, grps_formula, convey_fun, na.rm = na.rm, design = .svy, ...)
   out <- srvyr::get_var_est(out, vartype, grps = group_vars(.svy))
   out
 }
@@ -70,6 +70,32 @@ convey_wrapper(svygini, srvyr_eusilc$variables$eqincome, .svy = group_by(srvyr_e
 srvyr_eusilc %>%
   group_by(rb090) %>%
   summarize(eqincome = convey_wrapper(convey_fun =svygini, eqincome))
+
+######
+
+
+## Ungrouped
+# Calculate ungrouped for survey package
+convey::svyfgt(~eqincome, des_eusilc, g=0, abs_thresh=10000 )
+
+# With our new function
+
+
+convey_wrapper(convey_fun =svyfgt , x=srvyr_eusilc$variables$eqincome, g=0, abs_thresh = 10000, .svy = srvyr_eusilc)
+
+
+## And finally, the more typical way through summarize
+srvyr_eusilc %>%  summarize(eqincome = convey_wrapper(convey_fun =svyfgt,eqincome, g = 0, abs_thresh=10000 ))
+
+## Groups
+# Calculate by groups for survey
+
+survey::svyby(~eqincome, ~rb090, des_eusilc, convey::svyfgt, g = 0, abs_thresh=10000)
+
+# And finally, the more typical way through summarize
+srvyr_eusilc %>%
+  group_by(rb090) %>%
+  summarize(eqincome = convey_wrapper(convey_fun =svyfgt, eqincome, g=0, abs_thresh=10000))
 
 
 

@@ -271,7 +271,7 @@ convey::svyfgt(~eqincome, des_eusilc, g=0, abs_thresh=10000 )
 
 # With our new function
 
-undebug(survey_fgt.tbl_svy)
+
 survey_fgt.tbl_svy(srvyr_eusilc$variables$eqincome, g=0, abs_thresh = 10000, .svy = srvyr_eusilc)
 
 
