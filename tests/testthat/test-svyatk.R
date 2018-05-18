@@ -1,23 +1,27 @@
 context("Atk output")
 library(IC2)
 library(vardpoor)
+library(data.table)
 data(eusilc)
 dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)
+dati_nz <- subset(dati, eqIncome > 0)
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 
 des_eusilc <- convey_prep(des_eusilc)
 convey_atk <- svyatk(~eqIncome, subset(des_eusilc, eqIncome > 0) )
 
-IC2_atk <- calcAtkinson( x = dati$eqIncome[dati$eqIncome > 0], w = dati$rb050[dati$eqIncome > 0] )$ineq$index
+IC2_atk <- calcAtkinson( x = dati_nz$eqIncome, w = dati_nz$rb050 )$ineq$index
 
 # point estiamte
 vardest <- as.numeric( IC2_atk )
 convest <- as.numeric(coef(convey_atk)[1])
 #domain
 # IC2 point estimates
-library(plyr)
-vardestd <- ddply( subset(dati, eqIncome > 0), .(hsize), summarize, fun = calcAtkinson(x = eqIncome, w = rb050)$ineq$index)$fun
+vardestd <- as.data.table( dati_nz )[ , .( atk = calcAtkinson( x = eqIncome, w = rb050 )$ineq$index ) , by = .(hsize) ]
+vardestd <- vardestd[ order(hsize) ]
+vardestd <- vardestd$atk
+
 # convey point estimates
 convestd <- as.numeric( coef( svyby(~eqIncome, ~factor(hsize), subset(des_eusilc, eqIncome > 0), svyatk) ) )
 
