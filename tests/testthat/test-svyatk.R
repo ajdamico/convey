@@ -1,4 +1,5 @@
 context("Atk output")
+library(survey)
 library(IC2)
 library(vardpoor)
 data(eusilc)
