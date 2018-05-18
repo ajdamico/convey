@@ -1,7 +1,6 @@
 context("Atk output")
 library(IC2)
 library(vardpoor)
-library(data.table)
 data(eusilc)
 dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)
 dati_nz <- subset(dati, eqIncome > 0)
@@ -18,9 +17,8 @@ vardest <- as.numeric( IC2_atk )
 convest <- as.numeric(coef(convey_atk)[1])
 #domain
 # IC2 point estimates
-vardestd <- as.data.table( dati_nz )[ , .( atk = calcAtkinson( x = eqIncome, w = rb050 )$ineq$index ) , by = .(hsize) ]
-vardestd <- vardestd[ order(hsize) ]
-vardestd <- vardestd$atk
+vardestd <- sapply( split(dati_nz, dati_nz$hsize), function(x){ calcAtkinson( x = x$eqIncome, w = x$rb050 )$ineq$index[[1]] } )
+vardestd <- as.numeric( vardestd )
 
 # convey point estimates
 convestd <- as.numeric( coef( svyby(~eqIncome, ~factor(hsize), subset(des_eusilc, eqIncome > 0), svyatk) ) )
