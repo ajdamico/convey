@@ -130,7 +130,7 @@ svypoormed.survey.design <-
 
 		if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
 
-		htot <- h_fun(incvec, wf)
+		htot <- h_fun(incvar, w)
 
 		ARPT <- svyarpt(formula = formula, full_design, quantiles = quantiles, percent = percent, na.rm = na.rm)
 		arpt <- coef(ARPT)

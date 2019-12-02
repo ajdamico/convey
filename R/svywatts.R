@@ -182,7 +182,7 @@ svywatts.survey.design <-
 
     if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
 
-    htot <- h_fun(incvec, wf)
+    htot <- h_fun(incvar, w)
     if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else ID <- 1 * ( ncom %in% ind )
 
 
