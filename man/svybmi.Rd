@@ -9,11 +9,25 @@
 \usage{
 svybmi(formula, design, ...)
 
-\method{svybmi}{survey.design}(formula, design, alpha = 0.5, beta = -2,
-  dimw = NULL, na.rm = FALSE, ...)
+\method{svybmi}{survey.design}(
+  formula,
+  design,
+  alpha = 0.5,
+  beta = -2,
+  dimw = NULL,
+  na.rm = FALSE,
+  ...
+)
 
-\method{svybmi}{svyrep.design}(formula, design, alpha = 0.5, beta = -2,
-  dimw = NULL, na.rm = FALSE, ...)
+\method{svybmi}{svyrep.design}(
+  formula,
+  design,
+  alpha = 0.5,
+  beta = -2,
+  dimw = NULL,
+  na.rm = FALSE,
+  ...
+)
 
 \method{svybmi}{DBIsvydesign}(formula, design, ...)
 }

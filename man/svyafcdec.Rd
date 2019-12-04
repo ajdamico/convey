@@ -9,11 +9,29 @@
 \usage{
 svyafcdec(formula, subgroup, design, ...)
 
-\method{svyafcdec}{survey.design}(formula, subgroup = ~1, design, g, cutoffs,
-  k, dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{survey.design}(
+  formula,
+  subgroup = ~1,
+  design,
+  g,
+  cutoffs,
+  k,
+  dimw = NULL,
+  na.rm = FALSE,
+  ...
+)
 
-\method{svyafcdec}{svyrep.design}(formula, subgroup = ~1, design, g, cutoffs,
-  k, dimw = NULL, na.rm = FALSE, ...)
+\method{svyafcdec}{svyrep.design}(
+  formula,
+  subgroup = ~1,
+  design,
+  g,
+  cutoffs,
+  k,
+  dimw = NULL,
+  na.rm = FALSE,
+  ...
+)
 
 \method{svyafcdec}{DBIsvydesign}(formula, subgroup = ~1, design, ...)
 }

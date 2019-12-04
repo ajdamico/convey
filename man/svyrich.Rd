@@ -9,13 +9,33 @@
 \usage{
 svyrich(formula, design, ...)
 
-\method{svyrich}{survey.design}(formula, design, type_measure, g,
-  type_thresh = "abs", abs_thresh = NULL, times = 1, quantiles = 0.5,
-  na.rm = FALSE, thresh = FALSE, ...)
+\method{svyrich}{survey.design}(
+  formula,
+  design,
+  type_measure,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  times = 1,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
-\method{svyrich}{svyrep.design}(formula, design, type_measure, g,
-  type_thresh = "abs", abs_thresh = NULL, times = 1, quantiles = 0.5,
-  na.rm = FALSE, thresh = FALSE, ...)
+\method{svyrich}{svyrep.design}(
+  formula,
+  design,
+  type_measure,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  times = 1,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
 \method{svyrich}{DBIsvydesign}(formula, design, ...)
 }

@@ -9,13 +9,31 @@
 \usage{
 svychu(formula, design, ...)
 
-\method{svychu}{survey.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svychu}{survey.design}(
+  formula,
+  design,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  percent = 0.6,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
-\method{svychu}{svyrep.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svychu}{svyrep.design}(
+  formula,
+  design,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  percent = 0.6,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
 \method{svychu}{DBIsvydesign}(formula, design, ...)
 }

@@ -9,11 +9,23 @@
 \usage{
 svysst(formula, design, ...)
 
-\method{svysst}{survey.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, components = FALSE, ...)
+\method{svysst}{survey.design}(
+  formula,
+  design,
+  abs_thresh = NULL,
+  na.rm = FALSE,
+  components = FALSE,
+  ...
+)
 
-\method{svysst}{svyrep.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, components = FALSE, ...)
+\method{svysst}{svyrep.design}(
+  formula,
+  design,
+  abs_thresh = NULL,
+  na.rm = FALSE,
+  components = FALSE,
+  ...
+)
 
 \method{svysst}{DBIsvydesign}(formula, design, ...)
 }

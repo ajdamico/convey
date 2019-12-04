@@ -9,11 +9,9 @@
 \usage{
 svyafc(formula, design, ...)
 
-\method{svyafc}{survey.design}(formula, design, k, g, cutoffs, dimw = NULL,
-  na.rm = FALSE, ...)
+\method{svyafc}{survey.design}(formula, design, k, g, cutoffs, dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafc}{svyrep.design}(formula, design, k, g, cutoffs, dimw = NULL,
-  na.rm = FALSE, ...)
+\method{svyafc}{svyrep.design}(formula, design, k, g, cutoffs, dimw = NULL, na.rm = FALSE, ...)
 
 \method{svyafc}{DBIsvydesign}(formula, design, ...)
 }

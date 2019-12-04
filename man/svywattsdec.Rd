@@ -9,13 +9,29 @@
 \usage{
 svywattsdec(formula, design, ...)
 
-\method{svywattsdec}{survey.design}(formula, design, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svywattsdec}{survey.design}(
+  formula,
+  design,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  percent = 0.6,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
-\method{svywattsdec}{svyrep.design}(formula, design, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svywattsdec}{svyrep.design}(
+  formula,
+  design,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  percent = 0.6,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
 \method{svywattsdec}{DBIsvydesign}(formula, design, ...)
 }

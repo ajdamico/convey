@@ -9,11 +9,9 @@
 \usage{
 svygeidec(formula, subgroup, design, ...)
 
-\method{svygeidec}{survey.design}(formula, subgroup, design, epsilon = 1,
-  na.rm = FALSE, ...)
+\method{svygeidec}{survey.design}(formula, subgroup, design, epsilon = 1, na.rm = FALSE, ...)
 
-\method{svygeidec}{svyrep.design}(formula, subgroup, design, epsilon = 1,
-  na.rm = FALSE, ...)
+\method{svygeidec}{svyrep.design}(formula, subgroup, design, epsilon = 1, na.rm = FALSE, ...)
 
 \method{svygeidec}{DBIsvydesign}(formula, subgroup, design, ...)
 }

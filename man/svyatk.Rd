@@ -9,11 +9,9 @@
 \usage{
 svyatk(formula, design, ...)
 
-\method{svyatk}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE,
-  ...)
+\method{svyatk}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
 
-\method{svyatk}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE,
-  ...)
+\method{svyatk}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
 
 \method{svyatk}{DBIsvydesign}(formula, design, ...)
 }

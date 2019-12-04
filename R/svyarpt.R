@@ -147,6 +147,7 @@ svyarpt.survey.design <-
 
 		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
 		class(rval) <- c( "cvystat" , "svystat" )
+		attr(rval, "quant") <- q_alpha
 		attr(rval, "var") <- variance
 		attr(rval, "statistic") <- "arpt"
 		attr(rval, "lin") <- lin

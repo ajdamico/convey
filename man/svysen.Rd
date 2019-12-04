@@ -9,11 +9,23 @@
 \usage{
 svysen(formula, design, ...)
 
-\method{svysen}{survey.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, components = FALSE, ...)
+\method{svysen}{survey.design}(
+  formula,
+  design,
+  abs_thresh = NULL,
+  na.rm = FALSE,
+  components = FALSE,
+  ...
+)
 
-\method{svysen}{svyrep.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, components = FALSE, ...)
+\method{svysen}{svyrep.design}(
+  formula,
+  design,
+  abs_thresh = NULL,
+  na.rm = FALSE,
+  components = FALSE,
+  ...
+)
 
 \method{svysen}{DBIsvydesign}(formula, design, ...)
 }

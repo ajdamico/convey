@@ -1,7 +1,7 @@
 context("Arpt output survey.design and svyrep.design")
 library(vardpoor)
 library(survey)
-
+data(api)
 
 
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))

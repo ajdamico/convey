@@ -9,11 +9,9 @@
 \usage{
 svyisq(formula, design, ...)
 
-\method{svyisq}{survey.design}(formula, design, alpha, quantile = FALSE,
-  na.rm = FALSE, ...)
+\method{svyisq}{survey.design}(formula, design, alpha, quantile = FALSE, na.rm = FALSE, ...)
 
-\method{svyisq}{svyrep.design}(formula, design, alpha, quantile = FALSE,
-  na.rm = FALSE, ...)
+\method{svyisq}{svyrep.design}(formula, design, alpha, quantile = FALSE, na.rm = FALSE, ...)
 
 \method{svyisq}{DBIsvydesign}(formula, design, ...)
 }

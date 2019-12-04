@@ -9,13 +9,29 @@
 \usage{
 svyrmir(formula, design, ...)
 
-\method{svyrmir}{survey.design}(formula, design, age, agelim = 65,
-  quantiles = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE,
-  ...)
+\method{svyrmir}{survey.design}(
+  formula,
+  design,
+  age,
+  agelim = 65,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  med_old = FALSE,
+  med_young = FALSE,
+  ...
+)
 
-\method{svyrmir}{svyrep.design}(formula, design, age, agelim = 65,
-  quantiles = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE,
-  ...)
+\method{svyrmir}{svyrep.design}(
+  formula,
+  design,
+  age,
+  agelim = 65,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  med_old = FALSE,
+  med_young = FALSE,
+  ...
+)
 
 \method{svyrmir}{DBIsvydesign}(formula, design, age, ...)
 }
