@@ -9,9 +9,11 @@
 \usage{
 svyarpr(formula, design, ...)
 
-\method{svyarpr}{survey.design}(formula, design, quantiles = 0.5, percent = 0.6, na.rm = FALSE, ...)
+\method{svyarpr}{survey.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, ...)
 
-\method{svyarpr}{svyrep.design}(formula, design, quantiles = 0.5, percent = 0.6, na.rm = FALSE, ...)
+\method{svyarpr}{svyrep.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, ...)
 
 \method{svyarpr}{DBIsvydesign}(formula, design, ...)
 }

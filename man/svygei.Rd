@@ -9,9 +9,11 @@
 \usage{
 svygei(formula, design, ...)
 
-\method{svygei}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
+\method{svygei}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE,
+  ...)
 
-\method{svygei}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
+\method{svygei}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE,
+  ...)
 
 \method{svygei}{DBIsvydesign}(formula, design, ...)
 }

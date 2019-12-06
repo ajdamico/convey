@@ -9,27 +9,11 @@
 \usage{
 svybcc(formula, design, ...)
 
-\method{svybcc}{survey.design}(
-  formula,
-  design,
-  theta = 0.5,
-  alpha = 0.5,
-  cutoffs,
-  dimw = NULL,
-  na.rm = FALSE,
-  ...
-)
+\method{svybcc}{survey.design}(formula, design, theta = 0.5, alpha = 0.5,
+  cutoffs, dimw = NULL, na.rm = FALSE, ...)
 
-\method{svybcc}{svyrep.design}(
-  formula,
-  design,
-  theta = 0.5,
-  alpha = 0.5,
-  cutoffs,
-  dimw = NULL,
-  na.rm = FALSE,
-  ...
-)
+\method{svybcc}{svyrep.design}(formula, design, theta = 0.5, alpha = 0.5,
+  cutoffs, dimw = NULL, na.rm = FALSE, ...)
 
 \method{svybcc}{DBIsvydesign}(formula, design, ...)
 }

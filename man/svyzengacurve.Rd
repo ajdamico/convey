@@ -9,33 +9,13 @@
 \usage{
 svyzengacurve(formula, design, ...)
 
-\method{svyzengacurve}{survey.design}(
-  formula,
-  design,
-  quantiles = seq(0, 1, 0.1),
-  empirical = FALSE,
-  plot = TRUE,
-  add = FALSE,
-  curve.col = "red",
-  ci = TRUE,
-  alpha = 0.05,
-  na.rm = FALSE,
-  ...
-)
+\method{svyzengacurve}{survey.design}(formula, design, quantiles = seq(0, 1,
+  0.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red",
+  ci = TRUE, alpha = 0.05, na.rm = FALSE, ...)
 
-\method{svyzengacurve}{svyrep.design}(
-  formula,
-  design,
-  quantiles = seq(0, 1, 0.1),
-  empirical = FALSE,
-  plot = TRUE,
-  add = FALSE,
-  curve.col = "red",
-  ci = TRUE,
-  alpha = 0.05,
-  na.rm = FALSE,
-  ...
-)
+\method{svyzengacurve}{svyrep.design}(formula, design, quantiles = seq(0, 1,
+  0.1), empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red",
+  ci = TRUE, alpha = 0.05, na.rm = FALSE, ...)
 
 \method{svyzengacurve}{DBIsvydesign}(formula, design, ...)
 }

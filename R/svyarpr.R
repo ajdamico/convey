@@ -138,7 +138,6 @@ svyarpr.survey.design <-
 		ARPT <- svyarpt(formula = formula, design=full_design, quantiles = quantiles, percent = percent, na.rm = na.rm,...)
 		arptv <- coef(ARPT)
 		arptlin <- attr(ARPT, "lin")
-		quant_val <- attr(ARPT, "quant")
 
 		# value of arpr and first term of lin
 		poor <- incvar <= arptv
@@ -148,7 +147,7 @@ svyarpr.survey.design <-
 		arpr1lin <- ( 1 / N ) * ID * ( ( incvec <= arptv ) - rval )
 
 		# use h for the whole sample
-		Fprime <- densfun(formula = formula, design = design, quant_val, h=htot, FUN = "F", na.rm=na.rm)
+		Fprime <- densfun(formula = formula, design = design, arptv, h=htot, FUN = "F", na.rm=na.rm)
 
 		arprlin <- arpr1lin + Fprime * arptlin
 

@@ -9,9 +9,11 @@
 \usage{
 svyjdivdec(formula, subgroup, design, ...)
 
-\method{svyjdivdec}{survey.design}(formula, subgroup, design, na.rm = FALSE, ...)
+\method{svyjdivdec}{survey.design}(formula, subgroup, design, na.rm = FALSE,
+  ...)
 
-\method{svyjdivdec}{svyrep.design}(formula, subgroup, design, na.rm = FALSE, ...)
+\method{svyjdivdec}{svyrep.design}(formula, subgroup, design, na.rm = FALSE,
+  ...)
 
 \method{svyjdivdec}{DBIsvydesign}(formula, subgroup, design, ...)
 }

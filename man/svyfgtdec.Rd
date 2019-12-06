@@ -9,31 +9,13 @@
 \usage{
 svyfgtdec(formula, design, ...)
 
-\method{svyfgtdec}{survey.design}(
-  formula,
-  design,
-  g,
-  type_thresh = "abs",
-  abs_thresh = NULL,
-  percent = 0.6,
-  quantiles = 0.5,
-  na.rm = FALSE,
-  thresh = FALSE,
-  ...
-)
+\method{svyfgtdec}{survey.design}(formula, design, g, type_thresh = "abs",
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
-\method{svyfgtdec}{svyrep.design}(
-  formula,
-  design,
-  g,
-  type_thresh = "abs",
-  abs_thresh = NULL,
-  percent = 0.6,
-  quantiles = 0.5,
-  na.rm = FALSE,
-  thresh = FALSE,
-  ...
-)
+\method{svyfgtdec}{svyrep.design}(formula, design, g, type_thresh = "abs",
+  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
+  thresh = FALSE, ...)
 
 \method{svyfgtdec}{DBIsvydesign}(formula, design, ...)
 }

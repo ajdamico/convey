@@ -9,9 +9,11 @@
 \usage{
 svypoormed(formula, design, ...)
 
-\method{svypoormed}{survey.design}(formula, design, quantiles = 0.5, percent = 0.6, na.rm = FALSE, ...)
+\method{svypoormed}{survey.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, ...)
 
-\method{svypoormed}{svyrep.design}(formula, design, quantiles = 0.5, percent = 0.6, na.rm = FALSE, ...)
+\method{svypoormed}{svyrep.design}(formula, design, quantiles = 0.5,
+  percent = 0.6, na.rm = FALSE, ...)
 
 \method{svypoormed}{DBIsvydesign}(formula, design, ...)
 }
