@@ -121,8 +121,6 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 
 dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
 
-# dbRemoveTable( conn , 'eusilc' )
-		dbDisconnect( conn )
 
 # create a hacky database-backed svrepdesign object
 # mirroring des_eusilc_rep_save
