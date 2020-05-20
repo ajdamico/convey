@@ -9,11 +9,9 @@
 \usage{
 svypoormed(formula, design, ...)
 
-\method{svypoormed}{survey.design}(formula, design, quantiles = 0.5,
-  percent = 0.6, na.rm = FALSE, ...)
+\method{svypoormed}{survey.design}(formula, design, quantiles = 0.5, percent = 0.6, na.rm = FALSE, ...)
 
-\method{svypoormed}{svyrep.design}(formula, design, quantiles = 0.5,
-  percent = 0.6, na.rm = FALSE, ...)
+\method{svypoormed}{svyrep.design}(formula, design, quantiles = 0.5, percent = 0.6, na.rm = FALSE, ...)
 
 \method{svypoormed}{DBIsvydesign}(formula, design, ...)
 }
@@ -42,7 +40,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 \examples{
 
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

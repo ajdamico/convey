@@ -9,13 +9,31 @@
 \usage{
 svyfgtdec(formula, design, ...)
 
-\method{svyfgtdec}{survey.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svyfgtdec}{survey.design}(
+  formula,
+  design,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  percent = 0.6,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
-\method{svyfgtdec}{svyrep.design}(formula, design, g, type_thresh = "abs",
-  abs_thresh = NULL, percent = 0.6, quantiles = 0.5, na.rm = FALSE,
-  thresh = FALSE, ...)
+\method{svyfgtdec}{svyrep.design}(
+  formula,
+  design,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  percent = 0.6,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
 \method{svyfgtdec}{DBIsvydesign}(formula, design, ...)
 }
@@ -56,7 +74,7 @@ This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

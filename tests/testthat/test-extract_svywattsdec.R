@@ -1,5 +1,5 @@
 context("Watts decomposition output survey.design and svyrep.design")
-library(vardpoor)
+library(laeken)
 library(survey)
 
 data(api)
@@ -172,4 +172,5 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
 }
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 dbDisconnect( conn , shutdown = TRUE )

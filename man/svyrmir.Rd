@@ -9,13 +9,29 @@
 \usage{
 svyrmir(formula, design, ...)
 
-\method{svyrmir}{survey.design}(formula, design, age, agelim = 65,
-  quantiles = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE,
-  ...)
+\method{svyrmir}{survey.design}(
+  formula,
+  design,
+  age,
+  agelim = 65,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  med_old = FALSE,
+  med_young = FALSE,
+  ...
+)
 
-\method{svyrmir}{svyrep.design}(formula, design, age, agelim = 65,
-  quantiles = 0.5, na.rm = FALSE, med_old = FALSE, med_young = FALSE,
-  ...)
+\method{svyrmir}{svyrep.design}(
+  formula,
+  design,
+  age,
+  agelim = 65,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  med_old = FALSE,
+  med_young = FALSE,
+  ...
+)
 
 \method{svyrmir}{DBIsvydesign}(formula, design, age, ...)
 }
@@ -49,7 +65,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # missing completely at random, missingness rate = .20

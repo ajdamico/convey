@@ -9,11 +9,25 @@
 \usage{
 svybmi(formula, design, ...)
 
-\method{svybmi}{survey.design}(formula, design, alpha = 0.5, beta = -2,
-  dimw = NULL, na.rm = FALSE, ...)
+\method{svybmi}{survey.design}(
+  formula,
+  design,
+  alpha = 0.5,
+  beta = -2,
+  dimw = NULL,
+  na.rm = FALSE,
+  ...
+)
 
-\method{svybmi}{svyrep.design}(formula, design, alpha = 0.5, beta = -2,
-  dimw = NULL, na.rm = FALSE, ...)
+\method{svybmi}{svyrep.design}(
+  formula,
+  design,
+  alpha = 0.5,
+  beta = -2,
+  dimw = NULL,
+  na.rm = FALSE,
+  ...
+)
 
 \method{svybmi}{DBIsvydesign}(formula, design, ...)
 }
@@ -46,7 +60,7 @@ This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

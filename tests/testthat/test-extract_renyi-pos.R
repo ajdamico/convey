@@ -1,6 +1,6 @@
 context("svyrenyi output survey.design and svyrep.design")
 
-library(vardpoor)
+library(laeken)
 library(survey)
 data(api)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
@@ -82,6 +82,7 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 		c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyrenyi , epsilon = this_eps )
 
 		dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 		test_that("database svyrenyi",{
 		  expect_equal(coef(a1), coef(c1))
@@ -162,6 +163,7 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 		sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svyrenyi , epsilon = this_eps )
 
 		dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 
 		# compare database-backed designs to non-database-backed designs

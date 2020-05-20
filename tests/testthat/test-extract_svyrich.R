@@ -1,5 +1,5 @@
 context("svyrich output survey.design and svyrep.design")
-library(vardpoor)
+library(laeken)
 library(survey)
 
 
@@ -171,3 +171,4 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
 }
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )

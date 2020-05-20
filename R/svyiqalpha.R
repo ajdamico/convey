@@ -28,7 +28,7 @@
 #'
 #' @examples
 #'
-#' library(vardpoor)
+#' library(laeken)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' # linearized design

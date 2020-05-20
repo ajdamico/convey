@@ -1,5 +1,5 @@
 context("bcc output survey.design and svyrep.design")
-library(vardpoor)
+library(laeken)
 library(survey)
 
 
@@ -170,3 +170,4 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
 }
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )

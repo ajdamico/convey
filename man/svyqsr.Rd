@@ -9,13 +9,31 @@
 \usage{
 svyqsr(formula, design, ...)
 
-\method{svyqsr}{survey.design}(formula, design, alpha1 = 0.2, alpha2 = (1 -
-  alpha1), na.rm = FALSE, upper_quant = FALSE, lower_quant = FALSE,
-  upper_tot = FALSE, lower_tot = FALSE, ...)
+\method{svyqsr}{survey.design}(
+  formula,
+  design,
+  alpha1 = 0.2,
+  alpha2 = (1 - alpha1),
+  na.rm = FALSE,
+  upper_quant = FALSE,
+  lower_quant = FALSE,
+  upper_tot = FALSE,
+  lower_tot = FALSE,
+  ...
+)
 
-\method{svyqsr}{svyrep.design}(formula, design, alpha1 = 0.2, alpha2 = (1 -
-  alpha1), na.rm = FALSE, upper_quant = FALSE, lower_quant = FALSE,
-  upper_tot = FALSE, lower_tot = FALSE, ...)
+\method{svyqsr}{svyrep.design}(
+  formula,
+  design,
+  alpha1 = 0.2,
+  alpha2 = (1 - alpha1),
+  na.rm = FALSE,
+  upper_quant = FALSE,
+  lower_quant = FALSE,
+  upper_tot = FALSE,
+  lower_tot = FALSE,
+  ...
+)
 
 \method{svyqsr}{DBIsvydesign}(formula, design, ...)
 }
@@ -52,7 +70,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 \examples{
 
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

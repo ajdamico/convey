@@ -22,7 +22,7 @@ The call must use function that \code{deriv} knows how to differentiate. It allo
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

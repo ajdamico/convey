@@ -1,6 +1,6 @@
 context("svylorenz output survey.design and svyrep.design")
 
-library(vardpoor)
+library(laeken)
 library(survey)
 
 
@@ -123,6 +123,7 @@ sub_dbr <- svylorenz( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Bu
 sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svylorenz)
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 
 # compare database-backed designs to non-database-backed designs

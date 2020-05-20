@@ -1,7 +1,7 @@
 context("Atk output")
 library(survey)
 library(IC2)
-library(vardpoor)
+library(laeken)
 data(eusilc)
 dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)
 dati_nz <- subset(dati, eqIncome > 0)

@@ -9,11 +9,9 @@
 \usage{
 svyjdivdec(formula, subgroup, design, ...)
 
-\method{svyjdivdec}{survey.design}(formula, subgroup, design, na.rm = FALSE,
-  ...)
+\method{svyjdivdec}{survey.design}(formula, subgroup, design, na.rm = FALSE, ...)
 
-\method{svyjdivdec}{svyrep.design}(formula, subgroup, design, na.rm = FALSE,
-  ...)
+\method{svyjdivdec}{svyrep.design}(formula, subgroup, design, na.rm = FALSE, ...)
 
 \method{svyjdivdec}{DBIsvydesign}(formula, subgroup, design, ...)
 }
@@ -44,7 +42,7 @@ This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

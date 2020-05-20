@@ -29,7 +29,7 @@
 #' @keywords survey
 #'
 #' @examples
-#' library(vardpoor)
+#' library(laeken)
 #' library(survey)
 #' data(ses)
 #' names( ses ) <- gsub( "size" , "size_" , tolower( names( ses ) ) )

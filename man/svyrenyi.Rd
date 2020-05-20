@@ -9,11 +9,9 @@
 \usage{
 svyrenyi(formula, design, ...)
 
-\method{svyrenyi}{survey.design}(formula, design, epsilon = 1,
-  na.rm = FALSE, ...)
+\method{svyrenyi}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
 
-\method{svyrenyi}{svyrep.design}(formula, design, epsilon = 1,
-  na.rm = FALSE, ...)
+\method{svyrenyi}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
 
 \method{svyrenyi}{DBIsvydesign}(formula, design, ...)
 }
@@ -44,7 +42,7 @@ This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

@@ -33,7 +33,7 @@ h_fun <- function(incvar, w) {
 #'
 #' @keywords survey
 #' @examples
-#' library(vardpoor)
+#' library(laeken)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
@@ -96,7 +96,7 @@ densfun <- function(formula, design, x, h = NULL, FUN = "F" , na.rm=FALSE, ...) 
 #'
 #' @keywords survey
 #' @examples
-#' library(vardpoor)
+#' library(laeken)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #' library(survey)
 #' des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
@@ -283,7 +283,7 @@ SE.cvydstat <- function (object, ...) {
 #' @examples
 #'
 #' library(survey)
-#' library(vardpoor)
+#' library(laeken)
 #' data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 #'
 #' # linearized design: convey_prep must be run as soon as the linearized design has been created

@@ -21,7 +21,7 @@ functions in the convey package that use a global poverty threshold require the 
 \examples{
 
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design: convey_prep must be run as soon as the linearized design has been created

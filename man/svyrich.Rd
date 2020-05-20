@@ -9,13 +9,33 @@
 \usage{
 svyrich(formula, design, ...)
 
-\method{svyrich}{survey.design}(formula, design, type_measure, g,
-  type_thresh = "abs", abs_thresh = NULL, times = 1, quantiles = 0.5,
-  na.rm = FALSE, thresh = FALSE, ...)
+\method{svyrich}{survey.design}(
+  formula,
+  design,
+  type_measure,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  times = 1,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
-\method{svyrich}{svyrep.design}(formula, design, type_measure, g,
-  type_thresh = "abs", abs_thresh = NULL, times = 1, quantiles = 0.5,
-  na.rm = FALSE, thresh = FALSE, ...)
+\method{svyrich}{svyrep.design}(
+  formula,
+  design,
+  type_measure,
+  g,
+  type_thresh = "abs",
+  abs_thresh = NULL,
+  times = 1,
+  quantiles = 0.5,
+  na.rm = FALSE,
+  thresh = FALSE,
+  ...
+)
 
 \method{svyrich}{DBIsvydesign}(formula, design, ...)
 }
@@ -57,7 +77,7 @@ This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

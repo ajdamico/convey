@@ -1,5 +1,5 @@
 context("Arpt output survey.design and svyrep.design")
-library(vardpoor)
+library(laeken)
 library(survey)
 
 
@@ -73,6 +73,7 @@ test_that("output svyarpt",{
 	c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyarpt, quantiles = 0.5, percent = 0.6,deff = FALSE)
 
 	dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 	test_that("database svyarpt",{
 	  expect_equal(coef(a1), coef(c1))
@@ -149,6 +150,7 @@ test_that("subsets equal svyby",{
 	sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svyarpt)
 
 	dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 
 	# compare database-backed designs to non-database-backed designs

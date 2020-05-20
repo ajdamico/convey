@@ -9,13 +9,33 @@
 \usage{
 svylorenz(formula, design, ...)
 
-\method{svylorenz}{survey.design}(formula, design, quantiles = seq(0, 1, 0.1),
-  empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red",
-  ci = TRUE, alpha = 0.05, na.rm = FALSE, ...)
+\method{svylorenz}{survey.design}(
+  formula,
+  design,
+  quantiles = seq(0, 1, 0.1),
+  empirical = FALSE,
+  plot = TRUE,
+  add = FALSE,
+  curve.col = "red",
+  ci = TRUE,
+  alpha = 0.05,
+  na.rm = FALSE,
+  ...
+)
 
-\method{svylorenz}{svyrep.design}(formula, design, quantiles = seq(0, 1, 0.1),
-  empirical = FALSE, plot = TRUE, add = FALSE, curve.col = "red",
-  ci = TRUE, alpha = 0.05, na.rm = FALSE, ...)
+\method{svylorenz}{svyrep.design}(
+  formula,
+  design,
+  quantiles = seq(0, 1, 0.1),
+  empirical = FALSE,
+  plot = TRUE,
+  add = FALSE,
+  curve.col = "red",
+  ci = TRUE,
+  alpha = 0.05,
+  na.rm = FALSE,
+  ...
+)
 
 \method{svylorenz}{DBIsvydesign}(formula, design, ...)
 }
@@ -60,7 +80,7 @@ This way, as the number of quantiles of the quantile-based function increases, t
 \examples{
 
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

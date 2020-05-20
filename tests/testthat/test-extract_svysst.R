@@ -1,5 +1,5 @@
 context("sst output survey.design and svyrep.design")
-library(vardpoor)
+library(laeken)
 library(survey)
 
 
@@ -153,3 +153,4 @@ test_that("dbi subsets equal dbi svyby",{
 })
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )

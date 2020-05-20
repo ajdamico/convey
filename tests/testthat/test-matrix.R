@@ -1,6 +1,6 @@
 context("test-matrix makes sense across all functions' coefficients and standard errors")
 
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 

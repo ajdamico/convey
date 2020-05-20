@@ -1,6 +1,6 @@
 context("svyjdiv output survey.design and svyrep.design")
 
-library(vardpoor)
+library(laeken)
 library(survey)
 
 data(api)
@@ -80,6 +80,7 @@ c1 <- svyjdiv( ~ eqincome , design = dbd_eusilc )
 c2 <- svyby(~ eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyjdiv )
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 test_that("database svyjdiv",{
   expect_equal(coef(a1), coef(c1))
@@ -160,6 +161,7 @@ sub_dbr <- svyjdiv( ~eqincome , design = subset( dbd_eusilc_rep , hsize == 1) )
 sby_dbr <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc_rep, FUN = svyjdiv)
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 
 # compare database-backed designs to non-database-backed designs

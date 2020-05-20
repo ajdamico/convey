@@ -24,7 +24,7 @@ Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribut
 Computes the linearized variable of the cdf function in a point.
 }
 \examples{
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)

@@ -36,7 +36,7 @@ Estimate the difference between the average gross hourly earnings of men and wom
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 }
 \examples{
-library(vardpoor)
+library(laeken)
 library(survey)
 data(ses)
 names( ses ) <- gsub( "size" , "size_" , tolower( names( ses ) ) )

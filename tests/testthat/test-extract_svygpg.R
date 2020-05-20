@@ -1,5 +1,5 @@
 context("Gpg output survey.design and svyrep.design")
-library(vardpoor)
+library(laeken)
 library(survey)
 
 

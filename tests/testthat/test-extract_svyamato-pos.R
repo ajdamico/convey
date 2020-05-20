@@ -1,6 +1,6 @@
 context("svyamato output survey.design and svyrep.design")
 
-library(vardpoor)
+library(laeken)
 library(survey)
 
 
@@ -81,6 +81,7 @@ test_that("output svyamato",{
 	c2 <- svyby(~ eqincome, by = ~rb090, design = dbd_eusilc, FUN = svyamato )
 
 	dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 	test_that("database svyamato",{
 	  expect_equal(coef(a1), coef(c1))
@@ -161,6 +162,7 @@ test_that("subsets equal svyby",{
 	sby_dbr <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc_rep, FUN = svyamato)
 
 	dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )
 
 
 	# compare database-backed designs to non-database-backed designs

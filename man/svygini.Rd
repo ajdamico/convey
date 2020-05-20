@@ -35,7 +35,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

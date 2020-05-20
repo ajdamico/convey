@@ -9,11 +9,23 @@
 \usage{
 svysst(formula, design, ...)
 
-\method{svysst}{survey.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, components = FALSE, ...)
+\method{svysst}{survey.design}(
+  formula,
+  design,
+  abs_thresh = NULL,
+  na.rm = FALSE,
+  components = FALSE,
+  ...
+)
 
-\method{svysst}{svyrep.design}(formula, design, abs_thresh = NULL,
-  na.rm = FALSE, components = FALSE, ...)
+\method{svysst}{svyrep.design}(
+  formula,
+  design,
+  abs_thresh = NULL,
+  na.rm = FALSE,
+  components = FALSE,
+  ...
+)
 
 \method{svysst}{DBIsvydesign}(formula, design, ...)
 }
@@ -44,7 +56,7 @@ This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

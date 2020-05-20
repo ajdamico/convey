@@ -1,5 +1,5 @@
 context("Fgt output survey.design and svyrep.design")
-library(vardpoor)
+library(laeken)
 library(survey)
 
 
@@ -161,3 +161,4 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 }
 
 dbRemoveTable( conn , 'eusilc' )
+		dbDisconnect( conn )

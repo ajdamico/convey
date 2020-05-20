@@ -9,11 +9,9 @@
 \usage{
 svyisq(formula, design, ...)
 
-\method{svyisq}{survey.design}(formula, design, alpha, quantile = FALSE,
-  na.rm = FALSE, ...)
+\method{svyisq}{survey.design}(formula, design, alpha, quantile = FALSE, na.rm = FALSE, ...)
 
-\method{svyisq}{svyrep.design}(formula, design, alpha, quantile = FALSE,
-  na.rm = FALSE, ...)
+\method{svyisq}{svyrep.design}(formula, design, alpha, quantile = FALSE, na.rm = FALSE, ...)
 
 \method{svyisq}{DBIsvydesign}(formula, design, ...)
 }
@@ -41,7 +39,7 @@ the distribution of a variable.
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 }
 \examples{
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)

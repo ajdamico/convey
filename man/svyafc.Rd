@@ -9,11 +9,9 @@
 \usage{
 svyafc(formula, design, ...)
 
-\method{svyafc}{survey.design}(formula, design, k, g, cutoffs, dimw = NULL,
-  na.rm = FALSE, ...)
+\method{svyafc}{survey.design}(formula, design, k, g, cutoffs, dimw = NULL, na.rm = FALSE, ...)
 
-\method{svyafc}{svyrep.design}(formula, design, k, g, cutoffs, dimw = NULL,
-  na.rm = FALSE, ...)
+\method{svyafc}{svyrep.design}(formula, design, k, g, cutoffs, dimw = NULL, na.rm = FALSE, ...)
 
 \method{svyafc}{DBIsvydesign}(formula, design, ...)
 }
@@ -45,7 +43,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design

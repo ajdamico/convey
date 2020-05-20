@@ -9,11 +9,9 @@
 \usage{
 svyatk(formula, design, ...)
 
-\method{svyatk}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE,
-  ...)
+\method{svyatk}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
 
-\method{svyatk}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE,
-  ...)
+\method{svyatk}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
 
 \method{svyatk}{DBIsvydesign}(formula, design, ...)
 }
@@ -39,7 +37,7 @@ you must run the \code{convey_prep} function on your survey design object immedi
 }
 \examples{
 library(survey)
-library(vardpoor)
+library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design
