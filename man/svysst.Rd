@@ -110,7 +110,7 @@ dbDisconnect( conn , shutdown = TRUE )
 \references{
 Anthony F. Shorrocks (1995). Revisiting the Sen Poverty Index.
 \emph{Econometrica}, v. 63, n. 5, pp. 1225-230.
-URL \url{http://dx.doi.org/10.2307/2171728}.
+URL \url{https://www.jstor.org/stable/2171728}.
 
 Dominique Thon (1979). On measuring poverty.
 \emph{Review of Income and Wealth}, v. 25, n. 4, pp. 429-439.

@@ -147,7 +147,7 @@ dbDisconnect( conn , shutdown = TRUE )
 \references{
 Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
-Vol.13, No.1, 1997. pp. 41 58. URL \url{http://www.jos.nu/Articles/abstract.asp?article=13141}.
+Vol.13, No.1, 1997. pp. 41 58. URL \url{https://www.scb.se/contentassets/ca21efb41fee47d293bbee5bf7be7fb3/variance-estimation-for-measures-of-income-inequality-and-polarization---the-estimating-equations-approach.pdf}.
 
 Shlomo Yitzhaki and Robert Lerman (1989). Improving the accuracy of estimates of Gini coefficients.
 \emph{Journal of Econometrics}, Vol.42(1), pp. 43-47, September.
