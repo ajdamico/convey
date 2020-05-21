@@ -20,6 +20,10 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
 }
 
 
+
+test_that( "output svyrich" , {
+	skip_on_cran()
+
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
@@ -84,7 +88,6 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
       se_dif1 <- abs(SE(a1)-SE(b1))
       se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
-      test_that( paste0( "output svyrich-", this_measure , "-" , this_g  ) , {
         expect_is(coef(a1),"numeric")
         expect_is(coef(a2), "numeric")
         expect_is(coef(b1),"numeric")
@@ -105,19 +108,18 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
         expect_equal(sum(confint(a2)[,2]>= coef(a2)),length(coef(a2)))
         expect_equal(sum(confint(b2)[,1]<= coef(b2)),length(coef(b2)))
         expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
-      })
 
 
       c1 <- svyrich(~eqincome, design = dbd_eusilc, type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
       c2 <- svyby(~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyrich, type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
 
-      test_that("database svyrich",{
+      # database svyrich
         expect_equal(coef(a1), coef(c1))
         expect_equal(coef(a2), coef(c2))
         expect_equal(SE(a1), SE(c1))
         expect_equal(SE(a2), SE(c2))
-      })
+      
 
       # compare subsetted objects to svyby objects
       sub_des <- svyrich( ~eqincome , design = subset( des_eusilc , hsize == 1), type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
@@ -125,7 +127,7 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
       sub_rep <- svyrich( ~eqincome , design = subset( des_eusilc_rep , hsize == 1), type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
       sby_rep <- svyby( ~eqincome, by = ~hsize, design = des_eusilc_rep, FUN = svyrich, type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
 
-      test_that("subsets equal svyby",{
+      # subsets equal svyby
         expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
         expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep))[1])
         expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des))[1])
@@ -138,8 +140,7 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
         cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
 
         expect_lte(cv_dif,5)
-      })
-
+      
 
       sub_dbd <- svyrich( ~eqincome , design = subset( dbd_eusilc , hsize == 1), type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
       sby_dbd <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyrich , type_measure = this_measure, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
@@ -149,21 +150,21 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
 
 
       # compare database-backed designs to non-database-backed designs
-      test_that("dbi subsets equal non-dbi subsets",{
+      # dbi subsets equal non-dbi subsets
         expect_equal(coef(sub_des), coef(sub_dbd))
         expect_equal(coef(sub_rep), coef(sub_dbr))
         expect_equal(SE(sub_des), SE(sub_dbd))
         expect_equal(SE(sub_rep), SE(sub_dbr))
-      })
+      
 
 
       # compare database-backed subsetted objects to database-backed svyby objects
-      test_that("dbi subsets equal dbi svyby",{
+      # dbi subsets equal dbi svyby
         expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd))[1])
         expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr))[1])
         expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[1])
         expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
-      })
+      
 
 
     }
@@ -172,3 +173,5 @@ for ( this_measure in c( "Cha" , "FGTT1" , "FGTT2" ) ){
 
 dbRemoveTable( conn , 'eusilc' )
 		dbDisconnect( conn )
+
+})

@@ -1,8 +1,14 @@
 context("test-matrix makes sense across all functions' coefficients and standard errors")
 
+
+test_that("coef and SE matrix values make sense",{
+skip_on_cran()
+
 library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 library(survey)
+
+
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
@@ -189,7 +195,6 @@ names( out ) <- c( "function_name" , "measure_of_uncertainty__mou" , "linearized
 # matrix of coefficients and standard errors for all convey functions
 print( out )
 
-test_that("coef and SE matrix values make sense",{
 
 		# test that coefficients for all functions are equal!
 		isTRUE( expect_true( all.equal( out$linearized_coefficient , out$replication_coefficient ) ) )

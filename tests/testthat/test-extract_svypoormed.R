@@ -55,7 +55,8 @@ test_that("output svypoomed",{
 
 
 
-
+test_that("database svypoomed",{
+	skip_on_cran()
 
 
 	# database-backed design
@@ -83,12 +84,11 @@ test_that("output svypoomed",{
 	dbRemoveTable( conn , 'eusilc' )
 		dbDisconnect( conn )
 
-	test_that("database svypoomed",{
 	  expect_equal(coef(a1), coef(c1))
 	  expect_equal(coef(a2), coef(c2))
 	  expect_equal(SE(a1), SE(c1))
 	  expect_equal(SE(a2), SE(c2))
-	})
+	
 
 # compare subsetted objects to svyby objects
 sub_des <- svypoormed( ~eqincome , design = subset( des_eusilc , hsize == 1) )
@@ -96,7 +96,7 @@ sby_des <- svyby( ~eqincome, by = ~hsize, design = subset( des_eusilc , hsize < 
 sub_rep <- svypoormed( ~eqincome , design = subset( des_eusilc_rep , hsize == 1) )
 sby_rep <- svyby( ~eqincome, by = ~hsize, design = subset( des_eusilc_rep , hsize < 8 ), FUN = svypoormed)
 
-test_that("subsets equal svyby",{
+# subsets equal svyby
   expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
   expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep))[1])
   expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des))[1])
@@ -108,7 +108,7 @@ test_that("subsets equal svyby",{
   # coefficients of variation should be within five percent
   cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
   expect_lte(cv_dif,5)
-})
+
 
 
 
@@ -161,20 +161,22 @@ test_that("subsets equal svyby",{
 
 
   # compare database-backed designs to non-database-backed designs
-  test_that("dbi subsets equal non-dbi subsets",{
+  # dbi subsets equal non-dbi subsets
     expect_equal(coef(sub_des), coef(sub_dbd))
     expect_equal(coef(sub_rep), coef(sub_dbr))
     expect_equal(SE(sub_des), SE(sub_dbd))
     expect_equal(SE(sub_rep), SE(sub_dbr))
-  })
+  
 
 
   # compare database-backed subsetted objects to database-backed svyby objects
-  test_that("dbi subsets equal dbi svyby",{
+  # dbi subsets equal dbi svyby
     expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd))[1])
     expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr))[1])
     expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[1])
     expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[1])
-  })
+  
+  
+  
 
-
+})

@@ -1,6 +1,10 @@
 library(survey)
 library(convey)
 
+
+test_that("functions work on weird distributions" ,{
+skip_on_cran()
+
 no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z }
 
 all_funs <- c( "svyrmir" , "svyqsr" , "svyarpt" , "svyarpt" , "svyatk" , "svyfgt" , "svygini" , "svygpg" , "svyiqalpha" , "svyisq" , "svyzenga" , "svypoormed" , "svyrenyi" , "svygei" , "svyrmpg" , "svyzengacurve" , "svylorenz" , "svyjdiv" , "svyamato" , "svyafc" , "svybmi" , "svysst" , "svysen" , "svybcc" , "svyrich" , "svychu" , "svywatts" )
@@ -175,8 +179,6 @@ for( n in c( 50 , 1000 ) ){
 
 				} else {
 
-					test_that(paste( "functions work on weird distributions" , this_prefix , as.character( this_formula )[2] ) ,{
-
 						lin_res <- do.call( FUN , lin_params_list )
 						rep_res <- do.call( FUN , rep_params_list )
 
@@ -195,7 +197,7 @@ for( n in c( 50 , 1000 ) ){
 							expect_true( all( abs( SE( lin_res ) - SE( rep_res ) ) <= max( coef( lin_res ) ) * 0.3 ) )
 						}
 
-					})
+					
 
 				}
 
@@ -205,3 +207,5 @@ for( n in c( 50 , 1000 ) ){
 	}
 }
 
+
+})

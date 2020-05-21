@@ -17,6 +17,8 @@ test_that("svyafcdec works on unweighted designs",{
 })
 
 
+test_that("output svyafcdec",{
+	skip_on_cran()
 
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
@@ -88,7 +90,6 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
       se_dif5 <- max(abs(SE(a1$`subgroup alkire-foster estimates`)-SE(b1$`subgroup alkire-foster estimates`)))
       se_dif6 <- max(abs(SE(a1$`percentual contribution per subgroup`)-SE(b1$`percentual contribution per subgroup`)))
 
-      test_that("output svyafcdec",{
         expect_is(coef(a1[[1]]),"numeric")
         expect_is(coef(a1[[2]]),"numeric")
         expect_is(coef(a1[[3]]),"numeric")
@@ -178,14 +179,11 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         expect_equal(sum(confint(b1[[6]])[,2]>= coef(b1[[6]])),length(coef(b1[[6]])))
 
 
-      })
-
-
 
       # database-backed design
       c1 <- svyafcdec( ~eqincome+hy050n, ~db040 , design=dbd_eusilc, cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = this_dimw, na.rm = FALSE )
 
-      test_that("database svyafcdec",{
+      # database svyafcdec"
         expect_equal(coef(a1[[1]]), coef(c1[[1]]))
         expect_equal(coef(a1[[2]]), coef(c1[[2]]))
         expect_equal(coef(a1[[3]]), coef(c1[[3]]))
@@ -208,7 +206,7 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
       c2 <- svyafcdec( ~eqincome+hy050n, ~db040 , design=dbd_eusilc_rep, cutoffs = list( 7000, 3000 ), g = this_g, k = this_k, dimw = this_dimw, na.rm = FALSE )
 
       # compare database-backed designs to non-database-backed designs
-      test_that("dbi subsets equal non-dbi subsets",{
+      # dbi subsets equal non-dbi subsets"
         expect_equal(coef(c2[[1]]), coef(b1[[1]]))
         expect_equal(coef(c2[[2]]), coef(b1[[2]]))
         expect_equal(coef(c2[[3]]), coef(b1[[3]]))
@@ -223,8 +221,6 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         expect_equal(SE(c2[[5]]), SE(b1[[5]]))
         expect_equal(SE(c2[[6]]), SE(b1[[6]]))
 
-      })
-
     }
   }
 }
@@ -232,3 +228,5 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
 
 dbRemoveTable( conn , 'eusilc' )
 		dbDisconnect( conn )
+
+})

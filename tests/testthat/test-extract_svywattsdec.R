@@ -11,6 +11,10 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
   })
 }
 
+
+test_that( "output svywattsdec" ,{
+	skip_on_cran()
+	
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
 
@@ -71,7 +75,6 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
   se_dif1 <- max(abs(SE(a1)-SE(b1)))
   se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
-  test_that( paste0( "output svywattsdec - type_thresh='" , this_thresh , "'" ),{
     expect_is(coef(a1),"numeric")
     expect_is(coef(a2), "numeric")
     expect_is(coef(b1),"numeric")
@@ -102,7 +105,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
     expect_equal(sum(confint(a2)[,2]>= coef(a2)),length(coef(a2)))
     expect_equal(sum(confint(b2)[,1]<= coef(b2)),length(coef(b2)))
     expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
-  })
+  
 
   # compare subsetted objects to svyby objects
   sub_des <- svywattsdec( ~eqincome, design=subset(des_eusilc , rb090 == "male"), type_thresh= this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
@@ -110,7 +113,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
   sub_rep <- svywattsdec( ~eqincome, design=subset(des_eusilc_rep , rb090 == "male"), type_thresh= this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
   sby_rep <- svyby( ~eqincome, by = ~rb090, design = des_eusilc_rep, FUN = svywattsdec, type_thresh= this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE , deff = FALSE)
 
-  test_that( paste0("subsets equal svyby - type_thresh='" , this_thresh , "'" ),{
+  # subsets equal svyby
     expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des)[ grepl( "^male", names(coef(sby_des)) ) ]))
     expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep)[ grepl( "^male", names(coef(sby_rep)) ) ]))
     expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des)[1,]))
@@ -123,7 +126,7 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
     cv_dif <- abs(cv(sby_des)-cv(sby_rep))
     expect_lte( max( unlist(cv_dif) ) , .05 )
 
-  })
+  
 
 
   # database-backed design
@@ -133,19 +136,19 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
   d1 <- svywattsdec( ~eqincome, design=dbd_eusilc_rep, type_thresh= this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
   d2 <- svyby( ~eqincome, by = ~rb090, design=dbd_eusilc_rep, FUN = svywattsdec, type_thresh= this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE , deff = FALSE)
 
-  test_that( paste0("database svywattsdec- type_thresh='" , this_thresh , "'") ,{
+  # database svywattsdec
     expect_equal(coef(a1), coef(c1))
     # expect_equal(rev(coef(a2)), coef(c2)) # inverted results
     expect_equal(SE(a1), SE(c1))
     # expect_equal(rev(SE(a2)), SE(c2)) # inverted results
-  })
+  
 
-  test_that( paste0("db-svrep svywattsdec- type_thresh='" , this_thresh , "'") ,{
+  # db-svrep svywattsdec
     expect_equal(coef(b1), coef(d1))
     # expect_equal(rev(coef(b2)), coef(d2)) # inverted results
     expect_equal(SE(b1), SE(d1))
     # expect_equal(rev(SE(a2)), SE(c2)) # inverted results
-  })
+  
 
   # compare database-backed designs to non-database-backed designs
   sub_dbd <- svywattsdec( ~eqincome, design=subset( dbd_eusilc, rb090 == "male"), type_thresh= this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
@@ -154,23 +157,25 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ) {
   sby_dbr <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc_rep, FUN = svywattsdec, type_thresh= this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE , deff = FALSE)
 
   # compare database-backed designs to non-database-backed designs
-  test_that( paste0("dbi subsets equal non-dbi subsets - type_thresh='" , this_thresh , "'" ),{
+  # dbi subsets equal non-dbi subsets
     expect_equal(coef(sub_des), coef(sub_dbd))
     expect_equal(coef(sub_rep), coef(sub_dbr))
     expect_equal(SE(sub_des), SE(sub_dbd))
     expect_equal(SE(sub_rep), SE(sub_dbr))
-  })
+  
 
   # compare database-backed subsetted objects to database-backed svyby objects
-  test_that( paste0("dbi subsets equal dbi svyby - type_thresh='" , this_thresh , "'" ),{
+  # dbi subsets equal dbi svyby
     expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[2,])) ) # inverted results!
     expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[2,])) ) # inverted results!
     expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[2,])) ) # inverted results!
     expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[2,])) ) # inverted results!
-  })
+  
 
 }
 
 dbRemoveTable( conn , 'eusilc' )
 		dbDisconnect( conn )
 dbDisconnect( conn , shutdown = TRUE )
+
+})
