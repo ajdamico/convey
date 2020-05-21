@@ -198,8 +198,6 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         expect_equal(SE(a1[[5]]), SE(c1[[5]]))
         expect_equal(SE(a1[[6]]), SE(c1[[6]]))
 
-      })
-
 
 
       # database-backed replcate design
