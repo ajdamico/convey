@@ -162,8 +162,7 @@ test_that("dbi subsets equal non-dbi subsets",{
 
 
 	# compare database-backed subsetted objects to database-backed svyby objects
-	# dbi subsets equal dbi svyby"
-		skip_on_cran()
+	# dbi subsets equal dbi svyby
 		expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd))[1])
 		expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr))[1])
 		expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[1])
