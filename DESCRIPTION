@@ -8,7 +8,7 @@ URL: https://guilhermejacob.github.io/context/
 BugReports: https://github.com/djalmapessoa/convey/issues
 Description: Variance estimation on indicators of income concentration and
     poverty using complex sample survey designs. Wrapper around the
-    survey package.
+    'survey' package.
 Depends:
     R (>= 3.2.1)
 Imports:

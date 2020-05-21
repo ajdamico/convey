@@ -4,4 +4,4 @@ library(survey)
 library(vardpoor)
 library(IC2)
 
- test_check("convey")
+test_check("convey")
