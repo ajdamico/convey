@@ -7,6 +7,7 @@ data(api)
 apistrat[ , sapply( apistrat, is.integer ) ] <- apply( apistrat[ , sapply( apistrat, is.integer ) ], 2, as.numeric )
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
 test_that("svysen works on unweighted designs",{
+  skip_on_cran()
   svysen( ~api00, design=dstrat1, abs_thresh = 700, na.rm = FALSE )
 })
 
@@ -16,15 +17,12 @@ eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap" , replicates = 10 )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 a1 <- svysen( ~eqincome, design=des_eusilc, abs_thresh = 15000, na.rm = FALSE )
-
 a2 <- svyby( ~eqincome, by = ~rb090, design = des_eusilc, FUN = svysen, abs_thresh = 15000, deff = FALSE)
-
 b1 <- svysen( ~eqincome, design=des_eusilc_rep, abs_thresh = 15000 , na.rm = FALSE )
-
 b2 <- svyby( ~eqincome, by = ~rb090, design = des_eusilc_rep, FUN = svysen, abs_thresh = 15000, deff = FALSE)
 
 
@@ -154,5 +152,4 @@ test_that("dbi subsets equal dbi svyby",{
 
 
 dbRemoveTable( conn , 'eusilc' )
-		dbDisconnect( conn )
-dbDisconnect( conn , shutdown = TRUE )
+dbDisconnect( conn )

@@ -1,6 +1,7 @@
 context("Qsr output")
 library(survey)
 library(laeken)
+library(vardpoor)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)
 
@@ -43,6 +44,6 @@ test_that("compare results convey vs vardpoor",{
   expect_equal(vardest,convest)
   expect_equal(varse, convse)
   expect_equal(vardestd, convestd)
-  
+
   expect_equal(varsed, convsed )
 })

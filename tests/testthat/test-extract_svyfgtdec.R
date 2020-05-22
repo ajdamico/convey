@@ -14,63 +14,63 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
 }
 
 test_that("output svyfgtdec",{
-	skip_on_cran()
-	
-data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
-eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
+  skip_on_cran()
 
-des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
-des_eusilc_rep <- convey_prep(des_eusilc_rep)
+  data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
+  eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
 
-# database-backed design
-library(RSQLite)
-library(DBI)
-dbfile <- tempfile()
-conn <- dbConnect( RSQLite::SQLite() , dbfile )
-dbWriteTable( conn , 'eusilc' , eusilc )
+  des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+  des_eusilc <- convey_prep(des_eusilc)
+  des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap" , replicates = 20 )
+  des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-dbd_eusilc <-
-  svydesign(
-    ids = ~rb030 ,
-    strata = ~db040 ,
-    weights = ~rb050 ,
-    data="eusilc",
-    dbname=dbfile,
-    dbtype="SQLite"
-  )
+  # database-backed design
+  library(RSQLite)
+  library(DBI)
+  dbfile <- tempfile()
+  conn <- dbConnect( RSQLite::SQLite() , dbfile )
+  dbWriteTable( conn , 'eusilc' , eusilc )
 
-dbd_eusilc <- convey_prep( dbd_eusilc )
+  dbd_eusilc <-
+    svydesign(
+      ids = ~rb030 ,
+      strata = ~db040 ,
+      weights = ~rb050 ,
+      data="eusilc",
+      dbname=dbfile,
+      dbtype="SQLite"
+    )
 
-# create a hacky database-backed svrepdesign object
-# mirroring des_eusilc_rep
-dbd_eusilc_rep <-
-  svrepdesign(
-    weights = ~ rb050,
-    repweights = des_eusilc_rep$repweights ,
-    scale = des_eusilc_rep$scale ,
-    rscales = des_eusilc_rep$rscales ,
-    type = "bootstrap" ,
-    data = "eusilc" ,
-    dbtype="SQLite" ,
-    dbname = dbfile ,
-    combined.weights = FALSE
-  )
+  dbd_eusilc <- convey_prep( dbd_eusilc )
 
-dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
+  # create a hacky database-backed svrepdesign object
+  # mirroring des_eusilc_rep
+  dbd_eusilc_rep <-
+    svrepdesign(
+      weights = ~ rb050,
+      repweights = des_eusilc_rep$repweights ,
+      scale = des_eusilc_rep$scale ,
+      rscales = des_eusilc_rep$rscales ,
+      type = "bootstrap" ,
+      data = "eusilc" ,
+      dbtype="SQLite" ,
+      dbname = dbfile ,
+      combined.weights = FALSE
+    )
+
+  dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
 
-for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
-  for (this_g in 2:3 ) {
+  for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
+    for (this_g in 2:3 ) {
 
-    a1 <- svyfgtdec( ~eqincome, design=des_eusilc, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
-    a2 <- svyby( ~eqincome, by = ~rb090, design = des_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
-    b1 <- svyfgtdec( ~eqincome, design=des_eusilc_rep, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
-    b2 <- svyby( ~eqincome, by = ~rb090, design = des_eusilc_rep, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
+      a1 <- svyfgtdec( ~eqincome, design=des_eusilc, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
+      a2 <- svyby( ~eqincome, by = ~rb090, design = des_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
+      b1 <- svyfgtdec( ~eqincome, design=des_eusilc_rep, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
+      b2 <- svyby( ~eqincome, by = ~rb090, design = des_eusilc_rep, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
 
-    se_dif1 <- max(abs(SE(a1)-SE(b1)))
-    se_diff2 <- max(abs(SE(a2)-SE(b2)))
+      se_dif1 <- max(abs(SE(a1)-SE(b1)))
+      se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
       expect_is(coef(a1),"numeric")
       expect_is(coef(a2), "numeric")
@@ -102,24 +102,24 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
       expect_equal(sum(confint(a2)[,2]>= coef(a2)),length(coef(a2)))
       expect_equal(sum(confint(b2)[,1]<= coef(b2)),length(coef(b2)))
       expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
-    
-    c1 <- svyfgtdec( ~eqincome, design=dbd_eusilc, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
-    c2 <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
 
-    # database svyfgtdec
+      c1 <- svyfgtdec( ~eqincome, design=dbd_eusilc, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
+      c2 <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
+
+      # database svyfgtdec
       expect_equal(coef(a1), coef(c1))
       # expect_equal(rev(coef(a2)), coef(c2)) # inverted results
       expect_equal(SE(a1), SE(c1))
       # expect_equal(rev(SE(a2)), SE(c2)) # inverted results
-    
 
-    # compare subsetted objects to svyby objects
-    sub_des <- svyfgtdec( ~eqincome, design=subset( des_eusilc, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
-    sby_des <- svyby( ~eqincome, by = ~rb090, design = des_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
-    sub_rep <- svyfgtdec( ~eqincome, design=subset( des_eusilc_rep, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
-    sby_rep <- svyby( ~eqincome, by = ~rb090, design = des_eusilc_rep, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
 
-    # subsets equal svyby
+      # compare subsetted objects to svyby objects
+      sub_des <- svyfgtdec( ~eqincome, design=subset( des_eusilc, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
+      sby_des <- svyby( ~eqincome, by = ~rb090, design = des_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
+      sub_rep <- svyfgtdec( ~eqincome, design=subset( des_eusilc_rep, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
+      sby_rep <- svyby( ~eqincome, by = ~rb090, design = des_eusilc_rep, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
+
+      # subsets equal svyby
       expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des)[ grepl( "^male", names(coef(sby_des)) ) ]))
       expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep)[ grepl( "^male", names(coef(sby_rep)) ) ]))
       expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des)[1,]))
@@ -132,35 +132,35 @@ for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
       cv_dif <- abs(cv(sby_des)-cv(sby_rep))
       expect_lte( max( unlist(cv_dif) ) , .05 )
 
-    
 
 
-    sub_dbd <- svyfgtdec( ~eqincome, design=subset( dbd_eusilc, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
-    sby_dbd <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
-    sub_dbr <- svyfgtdec( ~eqincome, design=subset( dbd_eusilc_rep, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
-    sby_dbr <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc_rep, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
 
-    # compare database-backed designs to non-database-backed designs
-    # dbi subsets equal non-dbi subsets
+      sub_dbd <- svyfgtdec( ~eqincome, design=subset( dbd_eusilc, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
+      sby_dbd <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
+      sub_dbr <- svyfgtdec( ~eqincome, design=subset( dbd_eusilc_rep, rb090 == "male"), g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE )
+      sby_dbr <- svyby( ~eqincome, by = ~rb090, design = dbd_eusilc_rep, FUN = svyfgtdec, g=this_g, type_thresh=this_thresh, percent = .6, abs_thresh=15000 , na.rm  = FALSE, deff = FALSE)
+
+      # compare database-backed designs to non-database-backed designs
+      # dbi subsets equal non-dbi subsets
       expect_equal(coef(sub_des), coef(sub_dbd))
       expect_equal(coef(sub_rep), coef(sub_dbr))
       expect_equal(SE(sub_des), SE(sub_dbd))
       expect_equal(SE(sub_rep), SE(sub_dbr))
-    
 
 
-    # compare database-backed subsetted objects to database-backed svyby objects
-    # dbi subsets equal dbi svyby
+
+      # compare database-backed subsetted objects to database-backed svyby objects
+      # dbi subsets equal dbi svyby
       expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[2,])) ) # inverted results!
       expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[2,])) ) # inverted results!
       expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[2,])) ) # inverted results!
       expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[2,])) ) # inverted results!
-	  
 
+
+    }
   }
-}
 
-dbRemoveTable( conn , 'eusilc' )
-dbDisconnect( conn )
+  dbRemoveTable( conn , 'eusilc' )
+  dbDisconnect( conn )
 
 })

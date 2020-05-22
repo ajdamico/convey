@@ -6,8 +6,8 @@ data(api)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 for ( this_eps in c( 0.5 , 1 , 2 ) ){
-	
-	
+
+
 	dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
 	test_that("svyrenyi works on unweighted designs",{
 		svyrenyi(~api00, design=dstrat1, epsilon = this_eps)
@@ -16,7 +16,7 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 
 	des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 	des_eusilc <- convey_prep(des_eusilc)
-	des_eusilc_rep_save <- des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
+	des_eusilc_rep_save <- des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap" , replicates = 30)
 	des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 	des_eusilc <- subset( des_eusilc , eqincome > 0 )
@@ -137,7 +137,7 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 		dbd_eusilc <- convey_prep( dbd_eusilc )
 
 		dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
-		
+
 		# create a hacky database-backed svrepdesign object
 		# mirroring des_eusilc_rep_save
 		dbd_eusilc_rep <-
@@ -156,7 +156,7 @@ for ( this_eps in c( 0.5 , 1 , 2 ) ){
 		dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
 		dbd_eusilc_rep <- subset( dbd_eusilc_rep , eqincome > 0 )
-		
+
 		sub_dbd <- svyrenyi( ~eqincome , design = subset( dbd_eusilc , hsize == 1 ) , epsilon = this_eps )
 		sby_dbd <- svyby( ~eqincome, by = ~hsize, design = dbd_eusilc, FUN = svyrenyi , epsilon = this_eps )
 		sub_dbr <- svyrenyi( ~eqincome , design = subset( dbd_eusilc_rep , hsize == 1 ) , epsilon = this_eps )

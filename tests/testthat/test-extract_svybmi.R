@@ -18,68 +18,65 @@ test_that("svybmi works on unweighted designs",{
 
 
 test_that("output svybmi",{
-	skip_on_cran()
-	
-data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
-eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
 
-des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
-des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
-des_eusilc_rep <- convey_prep(des_eusilc_rep)
+  skip_on_cran()
 
-# database-backed design
-library(RSQLite)
-library(DBI)
-dbfile <- tempfile()
-conn <- dbConnect( RSQLite::SQLite() , dbfile )
-dbWriteTable( conn , 'eusilc' , eusilc )
+  data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
+  eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
 
-dbd_eusilc <-
-  svydesign(
-    ids = ~rb030 ,
-    strata = ~db040 ,
-    weights = ~rb050 ,
-    data="eusilc",
-    dbname=dbfile,
-    dbtype="SQLite"
-  )
+  des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+  des_eusilc <- convey_prep(des_eusilc)
+  des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap" , replicates = 10 )
+  des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-dbd_eusilc <- convey_prep( dbd_eusilc )
+  # database-backed design
+  library(RSQLite)
+  library(DBI)
+  dbfile <- tempfile()
+  conn <- dbConnect( RSQLite::SQLite() , dbfile )
+  dbWriteTable( conn , 'eusilc' , eusilc )
 
-# create a hacky database-backed svrepdesign object
-# mirroring des_eusilc_rep
-dbd_eusilc_rep <-
-  svrepdesign(
-    weights = ~ rb050,
-    repweights = des_eusilc_rep$repweights ,
-    scale = des_eusilc_rep$scale ,
-    rscales = des_eusilc_rep$rscales ,
-    type = "bootstrap" ,
-    data = "eusilc" ,
-    dbtype="SQLite" ,
-    dbname = dbfile ,
-    combined.weights = FALSE
-  )
+  dbd_eusilc <-
+    svydesign(
+      ids = ~rb030 ,
+      strata = ~db040 ,
+      weights = ~rb050 ,
+      data="eusilc",
+      dbname=dbfile,
+      dbtype="SQLite"
+    )
 
-dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
+  dbd_eusilc <- convey_prep( dbd_eusilc )
 
+  # create a hacky database-backed svrepdesign object
+  # mirroring des_eusilc_rep
+  dbd_eusilc_rep <-
+    svrepdesign(
+      weights = ~ rb050,
+      repweights = des_eusilc_rep$repweights ,
+      scale = des_eusilc_rep$scale ,
+      rscales = des_eusilc_rep$rscales ,
+      type = "bootstrap" ,
+      data = "eusilc" ,
+      dbtype="SQLite" ,
+      dbname = dbfile ,
+      combined.weights = FALSE
+    )
 
-for (this_dimw in list( NULL, c(.25, .75) )) {
-  for ( this_alpha in c(.5, 1) ){
-    for ( this_beta in c( -.5, 0, .5 ) ) {
-
-      a1 <- svybmi( ~eqincome+hy050n, design=des_eusilc, alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
-
-      a2 <- svyby( ~eqincome+hy050n, by = ~rb090, design=des_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
-
-      b1 <- svybmi( ~eqincome+hy050n, design=des_eusilc_rep, alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
-
-      b2 <- svyby( ~eqincome+hy050n, by = ~rb090, design=des_eusilc_rep, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
+  dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
 
 
-      se_dif1 <- abs(SE(a1)-SE(b1))
-      se_diff2 <- max(abs(SE(a2)-SE(b2)))
+  for (this_dimw in list( NULL, c(.25, .75) )) {
+    for ( this_alpha in c(.5, 1) ){
+      for ( this_beta in c( -.5, 0, .5 ) ) {
+
+        a1 <- svybmi( ~eqincome+hy050n, design=des_eusilc, alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
+        a2 <- svyby( ~eqincome+hy050n, by = ~rb090, design=des_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
+        b1 <- svybmi( ~eqincome+hy050n, design=des_eusilc_rep, alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
+        b2 <- svyby( ~eqincome+hy050n, by = ~rb090, design=des_eusilc_rep, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
+
+        se_dif1 <- abs(SE(a1)-SE(b1))
+        se_diff2 <- max(abs(SE(a2)-SE(b2)))
 
         expect_is(coef(a1),"numeric")
         expect_is(coef(a2), "numeric")
@@ -102,26 +99,23 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         expect_equal(sum(confint(b2)[,1]<= coef(b2)),length(coef(b2)))
         expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
 
-
-      c1 <- svybmi( ~eqincome+hy050n, design=dbd_eusilc, alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
-
-      c2 <- svyby( ~eqincome+hy050n, by = ~rb090, design=dbd_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
+        c1 <- svybmi( ~eqincome+hy050n, design=dbd_eusilc, alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
+        c2 <- svyby( ~eqincome+hy050n, by = ~rb090, design=dbd_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
 
 
-      # database svybmi"
+        # database svybmi"
         expect_equal(coef(a1), coef(c1))
         expect_equal(rev(coef(a2)), coef(c2)) # inverted results
         expect_equal(SE(a1), SE(c1))
         expect_equal(rev(SE(a2)), SE(c2)) # inverted results
-      
 
-      # compare subsetted objects to svyby objects
-      sub_des <- svybmi( ~eqincome+hy050n, design=subset( des_eusilc, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
-      sby_des <- svyby( ~eqincome+hy050n, by = ~rb090, design= des_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
-      sub_rep <- svybmi( ~eqincome+hy050n, design=subset( des_eusilc_rep, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
-      sby_rep <- svyby( ~eqincome+hy050n, by = ~rb090, design= des_eusilc_rep, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
+        # compare subsetted objects to svyby objects
+        sub_des <- svybmi( ~eqincome+hy050n, design=subset( des_eusilc, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
+        sby_des <- svyby( ~eqincome+hy050n, by = ~rb090, design= des_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
+        sub_rep <- svybmi( ~eqincome+hy050n, design=subset( des_eusilc_rep, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
+        sby_rep <- svyby( ~eqincome+hy050n, by = ~rb090, design= des_eusilc_rep, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
 
-      # subsets equal svyby"
+        # subsets equal svyby"
         expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
         expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep))[1])
         expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des))[1])
@@ -134,36 +128,30 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
 
         expect_lte(cv_dif,5)
-      
 
+        sub_dbd <- svybmi( ~eqincome+hy050n, design=subset( dbd_eusilc, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
+        sby_dbd <- svyby( ~eqincome+hy050n, by = ~rb090, design= dbd_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
+        sub_dbr <- svybmi( ~eqincome+hy050n, design=subset( dbd_eusilc_rep, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
+        sby_dbr <- svyby( ~eqincome+hy050n, by = ~rb090, design= dbd_eusilc_rep, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
 
-      sub_dbd <- svybmi( ~eqincome+hy050n, design=subset( dbd_eusilc, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
-      sby_dbd <- svyby( ~eqincome+hy050n, by = ~rb090, design= dbd_eusilc, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
-      sub_dbr <- svybmi( ~eqincome+hy050n, design=subset( dbd_eusilc_rep, rb090 == "male" ), alpha = this_alpha, beta = this_beta, dimw = this_dimw, na.rm = FALSE )
-      sby_dbr <- svyby( ~eqincome+hy050n, by = ~rb090, design= dbd_eusilc_rep, FUN = svybmi, alpha = this_alpha, beta = this_beta, dimw = this_dimw, deff = FALSE)
-
-
-
-      # compare database-backed designs to non-database-backed designs
-      # dbi subsets equal non-dbi subsets"
+        # compare database-backed designs to non-database-backed designs
+        # dbi subsets equal non-dbi subsets"
         expect_equal(coef(sub_des), coef(sub_dbd)) # inveted results
         expect_equal(coef(sub_rep), coef(sub_dbr))
         expect_equal(SE(sub_des), SE(sub_dbd))
         expect_equal(SE(sub_rep), SE(sub_dbr))
-      
 
-
-      # compare database-backed subsetted objects to database-backed svyby objects
-      # dbi subsets equal dbi svyby"
+        # compare database-backed subsetted objects to database-backed svyby objects
+        # dbi subsets equal dbi svyby"
         expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd))[2]) # inverted results!
         expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr))[2]) # inverted results!
         expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd))[2]) # inverted results!
         expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr))[2]) # inverted results!
-      
+
       }
     }
-}
+  }
 
-dbRemoveTable( conn , 'eusilc' )
-		dbDisconnect( conn )
-})
+  dbRemoveTable( conn , 'eusilc' )
+  dbDisconnect( conn )
+} )

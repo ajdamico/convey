@@ -2,7 +2,6 @@ context("bcc output survey.design and svyrep.design")
 library(laeken)
 library(survey)
 
-
 data(api)
 apistrat[ , sapply( apistrat, is.integer ) ] <- apply( apistrat[ , sapply( apistrat, is.integer ) ], 2, as.numeric )
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
@@ -16,13 +15,12 @@ test_that("svybcc works on unweighted designs",{
   }
 })
 
-
+# create design object
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 eusilc[ , sapply( eusilc, is.integer ) ] <- apply( eusilc[ , sapply( eusilc, is.integer ) ], 2, as.numeric )
-
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap" , replicates = 10 )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
 # database-backed design
@@ -41,7 +39,6 @@ dbd_eusilc <-
     dbname=dbfile,
     dbtype="SQLite"
   )
-
 dbd_eusilc <- convey_prep( dbd_eusilc )
 
 # create a hacky database-backed svrepdesign object
@@ -66,13 +63,9 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
     for ( this_theta in 1:2 ) {
 
       a1 <- svybcc( ~eqincome+hy050n, design=des_eusilc, cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = this_dimw, na.rm = FALSE )
-
       a2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc, FUN = svybcc, alpha = this_alpha, theta = this_theta, dimw = this_dimw, cutoffs = list( 7000, 3000 ), deff = FALSE)
-
       b1 <- svybcc( ~eqincome+hy050n, design=des_eusilc_rep, cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = this_dimw, na.rm = FALSE )
-
       b2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = des_eusilc_rep, FUN = svybcc, alpha = this_alpha, theta = this_theta, dimw = this_dimw, cutoffs = list( 7000, 3000 ), deff = FALSE)
-
 
       se_dif1 <- abs(SE(a1)-SE(b1))
       se_diff2 <- max(abs(SE(a2)-SE(b2)))
@@ -100,13 +93,9 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
       })
 
-
-
       # database-backed design
       c1 <- svybcc( ~eqincome+hy050n, design=dbd_eusilc, cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = this_dimw, na.rm = FALSE )
-
       c2 <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc, FUN = svybcc, alpha = this_alpha, theta = this_theta, dimw = this_dimw, cutoffs = list( 7000, 3000 ), deff = FALSE)
-
 
       test_that("database svybcc",{
         expect_equal(coef(a1), coef(c1))
@@ -136,17 +125,12 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
         expect_lte(cv_dif,5)
       })
 
-
-
-
       # create a hacky database-backed svrepdesign object
       # mirroring des_eusilc_rep
       sub_dbd <- svybcc( ~eqincome+hy050n, design=subset( dbd_eusilc, rb090 == "male" ), cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = this_dimw, na.rm = FALSE )
       sby_dbd <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc, FUN = svybcc, alpha = this_alpha, theta = this_theta, dimw = this_dimw, cutoffs = list( 7000, 3000 ), deff = FALSE)
       sub_dbr <- svybcc( ~eqincome+hy050n, design=subset( dbd_eusilc_rep, rb090 == "male" ), cutoffs = list( 7000, 3000 ), alpha = this_alpha, theta = this_theta, dimw = this_dimw, na.rm = FALSE )
       sby_dbr <- svyby( ~eqincome+hy050n, by = ~rb090, design = dbd_eusilc_rep, FUN = svybcc, alpha = this_alpha, theta = this_theta, dimw = this_dimw, cutoffs = list( 7000, 3000 ), deff = FALSE)
-
-
 
       # compare database-backed designs to non-database-backed designs
       test_that("dbi subsets equal non-dbi subsets",{
@@ -170,4 +154,4 @@ for (this_dimw in list( NULL, c(.25, .75) )) {
 }
 
 dbRemoveTable( conn , 'eusilc' )
-		dbDisconnect( conn )
+dbDisconnect( conn )

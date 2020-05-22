@@ -1,18 +1,20 @@
 context("Arpr output survey.design and svyrep.design")
 library(laeken)
 library(survey)
+library(vardpoor)
 
+data("api")
 dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
 test_that("svyarpr works on unweighted designs",{
 	svyarpr(~api00, design=dstrat1)
 })
 
-	
+
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
-des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
+des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap" , replicates = 50 )
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 a1 <- svyarpr(~eqincome, design = des_eusilc, 0.5, 0.6)
 a2 <- svyby(~eqincome, by = ~hsize, design = des_eusilc, FUN = svyarpr, quantiles = 0.5, percent = 0.6,deff = FALSE)
@@ -48,8 +50,8 @@ test_that("output svyarpr",{
 })
 
 test_that("database svyarpr",{
-	skip_on_cran()
-	
+	# skip_on_cran()
+
 	 # database-backed design
 	library(RSQLite)
 	library(DBI)
@@ -158,7 +160,7 @@ test_that("dbi subsets equal non-dbi subsets",{
 		expect_equal(coef(sub_rep), coef(sub_dbr))
 		expect_equal(SE(sub_des), SE(sub_dbd))
 		expect_equal(SE(sub_rep), SE(sub_dbr))
-	
+
 
 
 	# compare database-backed subsetted objects to database-backed svyby objects

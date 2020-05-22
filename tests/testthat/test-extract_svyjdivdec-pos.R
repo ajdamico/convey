@@ -8,19 +8,16 @@ test_that("svyjdivdec works on unweighted designs",{
   svygei(~api00, design=dstrat1)
 })
 
-
+# build designs
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
-
 des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep_save <- des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap")
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
-
 des_eusilc <- subset( des_eusilc , eqincome > 0 )
 des_eusilc_rep <- subset( des_eusilc_rep , eqincome > 0 )
 
-
-
+# point estimates
 a1 <- svyjdivdec(~eqincome, subgroup = ~db040, design = des_eusilc )
 a2 <- svyby(formula = ~eqincome, by =~db040 , design = des_eusilc , subgroup = ~rb090, svyjdivdec )
 b1 <- svyjdivdec(~eqincome, subgroup = ~db040, design = des_eusilc_rep )
@@ -236,4 +233,4 @@ test_that("dbi subsets equal dbi svyby",{
 })
 
 dbRemoveTable( conn , 'eusilc' )
-		dbDisconnect( conn )
+dbDisconnect( conn )
