@@ -1,12 +1,12 @@
 Package: convey
 Title: Income Concentration Analysis with Complex Survey Samples
 Version: 0.2.3
-Date: 2020-05-23
-Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = c("aut","cre")),
-            person("Anthony", "Damico", email= "ajdamico@gmail.com", role= "aut"),
+Date: 2021-03-08
+Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = "aut"),
+            person("Anthony", "Damico", email= "ajdamico@gmail.com", role= c("aut","cre")),
             person("Guilherme", "Jacob", email= "guilhermejacob91@gmail.com", role= "aut"))
 URL: https://guilhermejacob.github.io/context/
-BugReports: https://github.com/djalmapessoa/convey/issues
+BugReports: https://github.com/ajdamico/convey/issues
 Description: Variance estimation on indicators of income concentration and
     poverty using complex sample survey designs. Wrapper around the
     'survey' package.
@@ -28,4 +28,4 @@ Suggests:
     RODBC,
     RSQLite,
     srvyr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
