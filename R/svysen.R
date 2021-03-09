@@ -21,7 +21,7 @@
 #'
 #' @references Amartya K. Sen (1976). Poverty: An Ordinal Approach to Measurement.
 #' \emph{Econometrica}, v. 44, n. 3, pp. 219-231.
-#' URL \url{http://www.jstor.org/stable/1912718}.
+#' URL \url{https://www.jstor.org/stable/1912718}.
 #'
 #' @keywords survey
 #'

@@ -126,7 +126,7 @@ dbDisconnect( conn , shutdown = TRUE )
 \references{
 Anthony F. Shorrocks (1984). Inequality decomposition
 groups population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
-URL \url{http://www.jstor.org/stable/1913511}.
+URL \url{https://www.jstor.org/stable/1913511}.
 
 Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
 and Atkinson Inequality Indices from Complex Survey Data. \emph{DIW Discussion Papers},

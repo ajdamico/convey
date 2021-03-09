@@ -21,7 +21,7 @@
 #'
 #' @references Anthony F. Shorrocks (1995). Revisiting the Sen Poverty Index.
 #' \emph{Econometrica}, v. 63, n. 5, pp. 1225-230.
-#' URL \url{http://www.jstor.org/stable/2171728}.
+#' URL \url{https://www.jstor.org/stable/2171728}.
 #'
 #' Dominique Thon (1979). On measuring poverty.
 #' \emph{Review of Income and Wealth}, v. 25, n. 4, pp. 429-439.
@@ -29,7 +29,7 @@
 #'
 #' Amartya K. Sen (1976). Poverty: An Ordinal Approach to Measurement.
 #' \emph{Econometrica}, v. 44, n. 3, pp. 219-231.
-#' URL \url{http://www.jstor.org/stable/1912718}.
+#' URL \url{https://www.jstor.org/stable/1912718}.
 #'
 #' @keywords survey
 #'
