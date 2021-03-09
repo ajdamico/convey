@@ -81,7 +81,7 @@ test_that("output svychu",{
       expect_equal(coef(a1), coef(b1))
       expect_equal(coef(a2), coef(b2))
       expect_lte(se_dif1, coef(a1) * 0.05 ) # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
-      expect_lte(se_diff2, max( coef(a2) ) * 0.1 ) # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
+      expect_lte(se_diff2, max( coef(a2) ) * 0.15 ) # the difference between CVs should be less than 15% of the maximum coefficient, otherwise manually set it
       expect_is(SE(a1),"matrix")
       expect_is(SE(a2), "numeric")
       expect_is(SE(b1),"numeric")
