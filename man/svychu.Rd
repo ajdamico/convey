@@ -139,7 +139,7 @@ dbDisconnect( conn , shutdown = TRUE )
 \references{
 Vijay Verma and Gianni Betti (2011). Taylor linearization sampling errors and design effects for poverty measures
 and other complex statistics. \emph{Journal Of Applied Statistics}, Vol.38, No.8, pp. 1549-1576,
-URL \url{http://dx.doi.org/10.1080/02664763.2010.515674}.
+<doi:10.1080/02664763.2010.515674>
 
 Anthony B. Atkinson (1987). On the measurement of poverty.
 \emph{Econometrica}, Vol.55, No.4, (Jul., 1987), pp. 749-764,

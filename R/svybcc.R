@@ -23,7 +23,7 @@
 #'
 #' @references Francois Bourguignon and Satya R. Chakravarty (2003). The measurement of multidimensional poverty.
 #' Journal of Economic Inequality, v. 1, n. 1, April 2003, pp. 1-25.
-#' URL \url{http://dx.doi.org/10.1023/A:1023913831342}.
+#' <doi:10.1023/A:1023913831342>
 #'
 #' Maria Casilda Lasso de la Vega, Ana Urrutia and Henar Diez (2009). The Bourguignon and Chakravarty multidimensional poverty family: a characterization.
 #' Working Papers 109, ECINEQ, Society for the Study of Economic Inequality.

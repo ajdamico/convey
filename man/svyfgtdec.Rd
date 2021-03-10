@@ -142,7 +142,7 @@ dbDisconnect( conn , shutdown = TRUE )
 Oihana Aristondo, Cassilda Lasso De La vega and Ana Urrutia (2010).
 A new multiplicative decomposition for the Foster-Greer-Thorbecke poverty indices.
 \emph{Bulletin of Economic Research}, Vol.62, No.3, pp. 259-267.
-University of Wisconsin. URL \url{http://dx.doi.org/10.1111/j.1467-8586.2009.00320.x}.
+University of Wisconsin. <doi:10.1111/j.1467-8586.2009.00320.x>
 
 James Foster, Joel Greer and Erik Thorbecke (1984). A class of decomposable poverty measures.
 \emph{Econometrica}, Vol.52, No.3, pp. 761-766.

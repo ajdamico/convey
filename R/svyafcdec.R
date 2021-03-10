@@ -22,7 +22,7 @@
 #'
 #' @references Sabina Alkire and James Foster (2011). Counting and multidimensional poverty measurement.
 #' Journal of Public Economics, v. 95, n. 7-8, August 2011, pp. 476-487, ISSN 0047-2727.
-#' URL \url{http://dx.doi.org/10.1016/j.jpubeco.2010.11.006}.
+#' <doi:10.1016/j.jpubeco.2010.11.006>
 #'
 #' Alkire et al. (2015). Multidimensional Poverty Measurement and Analysis. Oxford University Press, 2015.
 #'

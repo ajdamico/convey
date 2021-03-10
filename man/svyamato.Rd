@@ -116,7 +116,7 @@ Statistics. URL \url{https://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1
 
 Barry C. Arnold (2012). On the Amato inequality index.
 Statistics & Probability Letters, v. 82, n. 8, August 2012, pp. 1504-1506, ISSN 0167-7152.
-URL \url{http://dx.doi.org/10.1016/j.spl.2012.04.020}.
+<doi:10.1016/j.spl.2012.04.020>
 }
 \seealso{
 \code{\link{svygini}}
