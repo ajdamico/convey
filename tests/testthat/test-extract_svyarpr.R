@@ -50,7 +50,7 @@ test_that("output svyarpr",{
 })
 
 test_that("database svyarpr",{
-	# skip_on_cran()
+	skip_on_cran()
 
 	 # database-backed design
 	library(RSQLite)

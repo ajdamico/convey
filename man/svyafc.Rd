@@ -130,7 +130,7 @@ Journal of Public Economics, v. 95, n. 7-8, August 2011, pp. 476-487, ISSN 0047-
 Alkire et al. (2015). Multidimensional Poverty Measurement and Analysis. Oxford University Press, 2015.
 
 Daniele Pacifico and Felix Poege (2016). MPI: Stata module to compute the Alkire-Foster multidimensional poverty measures and their decomposition by deprivation indicators and population sub-groups.
-URL \url{http://EconPapers.repec.org/RePEc:boc:bocode:s458120}.
+URL \url{https://econpapers.repec.org/RePEc:boc:bocode:s458120}.
 }
 \seealso{
 \code{\link{svyfgt}}
