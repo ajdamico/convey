@@ -169,7 +169,7 @@ application to Europe and Germany. \emph{Review of Income and Wealth}, Vol. 56, 
 Guillaume Osier (2009). Variance estimation for complex indicators
 of poverty and inequality. \emph{Journal of the European Survey Research
 Association}, Vol.3, No.3, pp. 167-195,
-ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+ISSN 1864-3361, URL \url{https://ojs.ub.uni-konstanz.de/srm/article/view/369}.
 }
 \seealso{
 \code{\link{svyfgt}}
