@@ -27,7 +27,7 @@
 #'
 #' @references McKinley L. Blackburn (1989). Poverty measurement: an index related to a Theil measure of inequality.
 #' \emph{Journal of Business & Economic Statistics}, Vol.7, No.4, pp. 475-481,
-#' URL \url{http://amstat.tandfonline.com/doi/abs/10.1080/07350015.1989.10509760}.
+#' URL \url{https://amstat.tandfonline.com/doi/abs/10.1080/07350015.1989.10509760}.
 #'
 #' Satya R. Chakravarty, Joseph Deutsch and Jacques Silber (2008).
 #' On the Watts multidimensional poverty index and its decomposition.
@@ -40,7 +40,7 @@
 #' Guillaume Osier (2009). Variance estimation for complex indicators
 #' of poverty and inequality. \emph{Journal of the European Survey Research
 #' Association}, Vol.3, No.3, pp. 167-195,
-#' ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+#' ISSN 1864-3361, URL \url{https://ojs.ub.uni-konstanz.de/srm/article/view/369}.
 #'
 #' Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 #' linearization and residual techniques. Survey Methodology, 25, 193-203,

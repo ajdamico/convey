@@ -21,7 +21,7 @@
 #' @seealso \code{\link{svygini}}
 #'
 #' @references Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indexes in the design-based framework.
-#' Statistics. URL \url{http://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
+#' Statistics. URL \url{https://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
 #'
 #' Barry C. Arnold (2012). On the Amato inequality index.
 #' Statistics & Probability Letters, v. 82, n. 8, August 2012, pp. 1504-1506, ISSN 0167-7152.
