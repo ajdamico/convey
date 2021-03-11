@@ -1,4 +1,7 @@
 
+skip_on_cran()
+
+
 library(laeken)
 library(survey)
 

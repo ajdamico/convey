@@ -1,5 +1,7 @@
 context("svyzenga output survey.design and svyrep.design")
 
+skip_on_cran()
+  
 library(laeken)
 library(survey)
 
