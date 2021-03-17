@@ -158,7 +158,7 @@ Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. 
 
 Jean-Claude Deville (1999). Variance estimation for complex statistics and estimators:
 linearization and residual techniques. Survey Methodology, 25, 193-203,
-URL \url{http://www5.statcan.gc.ca/bsolc/olc-cel/olc-cel?lang=eng&catno=12-001-X19990024882}.
+URL \url{https://www150.statcan.gc.ca/n1/en/catalogue/12-001-X19990024882}.
 }
 \seealso{
 \code{\link{svyquantile}}
