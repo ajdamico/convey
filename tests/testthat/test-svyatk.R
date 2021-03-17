@@ -1,4 +1,7 @@
 context("Atk output")
+
+skip_on_cran()
+
 library(survey)
 library(IC2)
 library(laeken)

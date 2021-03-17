@@ -1,4 +1,7 @@
 context("Poormed output")
+
+skip_on_cran()
+
 library(survey)
 library(laeken)
 library(vardpoor)

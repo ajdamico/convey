@@ -1,5 +1,7 @@
-
 context("Rmir output")
+
+skip_on_cran()
+
 library(laeken)
 library(survey)
 library(vardpoor)

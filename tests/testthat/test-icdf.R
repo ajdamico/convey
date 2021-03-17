@@ -1,5 +1,8 @@
 
 context("Icdf output")
+
+skip_on_cran()
+
 set.seed(1)
 Y<- rchisq(10,3)
 H<- rep("str1",10)
