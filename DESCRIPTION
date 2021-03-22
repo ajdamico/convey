@@ -1,6 +1,6 @@
 Package: convey
 Title: Income Concentration Analysis with Complex Survey Samples
-Version: 0.2.3
+Version: 0.2.4
 Date: 2021-03-11
 Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = "aut"),
             person("Anthony", "Damico", email= "ajdamico@gmail.com", role= c("aut","cre")),
