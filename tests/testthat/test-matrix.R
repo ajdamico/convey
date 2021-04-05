@@ -18,7 +18,7 @@ test_that("coef and SE matrix values make sense",{
 
   out <- NULL
 
-  for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyamato" , "svyqsr" , "svypoormed" , "svyjdiv" , "svyzenga" , "svyrmpg" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" , "svyrenyi" ) ){
+  for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyamato" , "svyqsr" , "svypoormed" , "svyjdiv" , "svyzenga" , "svyrmpg" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" ) ){
 
     final_fun <- FUN <- get( this_fun )
 
@@ -27,7 +27,6 @@ test_that("coef and SE matrix values make sense",{
     if( identical( FUN , svyisq ) ) final_fun <- function( ... ) FUN( ... , alpha = 0.2 )
     if( identical( FUN , svyiqalpha ) ) final_fun <- function( ... ) FUN( ... , alpha = 0.5 )
     if( identical( FUN , svyfgt ) ) final_fun <- function( ... ) FUN( ... , g = 0 , abs_thresh = 10000 )
-    if( identical( FUN , svyrenyi ) ) final_fun <- function( ... ) FUN( ... , epsilon = 0.5 )
     if( identical( FUN , svygpg ) ) final_fun <- function( ... ) FUN( ... , sex = ~ rb090 )
     if( identical( FUN , svygei ) ) final_fun <- function( ... ) FUN( ... , epsilon = 0.5 )
 
