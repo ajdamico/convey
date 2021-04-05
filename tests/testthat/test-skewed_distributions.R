@@ -7,7 +7,7 @@ test_that("functions work on weird distributions" ,{
 
   no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z }
 
-  all_funs <- c( "svyrmir" , "svyqsr" , "svyarpt" , "svyarpt" , "svyatk" , "svyfgt" , "svygini" , "svygpg" , "svyiqalpha" , "svyisq" , "svyzenga" , "svypoormed" , "svygei" , "svyrmpg" , "svyzengacurve" , "svylorenz" , "svyjdiv" , "svyamato" , "svysst" , "svysen" , "svyrich" , "svychu" , "svywatts" )
+  all_funs <- c( "svyrmir" , "svyqsr" , "svyarpt" , "svyarpt" , "svyatk" , "svyfgt" , "svygini" , "svygpg" , "svyiqalpha" , "svyisq" , "svyzenga" , "svypoormed" , "svygei" , "svyrmpg" , "svyzengacurve" , "svylorenz" , "svyjdiv" , "svyamato" , "svyrich" , "svychu" , "svywatts" )
 
   for( n in c( 50 , 1000 ) ){
 
@@ -90,20 +90,6 @@ test_that("functions work on weird distributions" ,{
 
             lin_params_list <- c( lin_params_list , list( age = ~age ) )
             rep_params_list <- c( rep_params_list , list( age = ~age ) )
-
-          }
-
-          if( identical( FUN , svysen ) ){
-
-            lin_params_list <- c( lin_params_list , abs_thresh = 10000 )
-            rep_params_list <- c( rep_params_list , abs_thresh = 10000 )
-
-          }
-
-          if( identical( FUN , svysst ) ){
-
-            lin_params_list <- c( lin_params_list , abs_thresh = 10000 )
-            rep_params_list <- c( rep_params_list , abs_thresh = 10000 )
 
           }
 
