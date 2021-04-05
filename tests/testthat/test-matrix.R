@@ -18,7 +18,7 @@ test_that("coef and SE matrix values make sense",{
 
   out <- NULL
 
-  for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyamato" , "svyqsr" , "svypoormed" , "svyjdiv" , "svyzenga" , "svyrmpg" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" ) ){
+  for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyqsr" , "svypoormed" , "svyjdiv" , "svyzenga" , "svyrmpg" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" ) ){
 
     final_fun <- FUN <- get( this_fun )
 
