@@ -7,7 +7,7 @@ test_that("functions work on weird distributions" ,{
 
   no.na <- function( z , value = FALSE ){ z[ is.na( z ) ] <- value ; z }
 
-  all_funs <- c( "svyrmir" , "svyqsr" , "svyarpt" , "svyarpt" , "svyatk" , "svyfgt" , "svygini" , "svygpg" , "svyiqalpha" , "svyisq" , "svyzenga" , "svypoormed" , "svygei" , "svyrmpg" , "svyzengacurve" , "svylorenz" , "svyjdiv" , "svyrich" , "svychu" , "svywatts" )
+  all_funs <- c( "svyrmir" , "svyqsr" , "svyarpt" , "svyarpt" , "svyatk" , "svyfgt" , "svygini" , "svygpg" , "svyiqalpha" , "svyisq" , "svypoormed" , "svygei" , "svyrmpg" , "svylorenz" , "svyjdiv" , "svyrich" , "svychu" , "svywatts" )
 
   for( n in c( 50 , 1000 ) ){
 
@@ -54,7 +54,7 @@ test_that("functions work on weird distributions" ,{
 
           # function-specific parameters here
 
-          if( any( unlist( lapply( list( svygei , svyatk , svyjdiv , svyzenga ) , function( z ) identical( z , FUN ) ) ) ) ){
+          if( any( unlist( lapply( list( svygei , svyatk , svyjdiv ) , function( z ) identical( z , FUN ) ) ) ) ){
 
             lin_des <- subset( lin_des , no.na( lin_des$variables[ , as.character( this_formula )[2] ] > 0 ) )
             rep_des <- subset( rep_des , no.na( rep_des$variables[ , as.character( this_formula )[2] ] > 0 ) )

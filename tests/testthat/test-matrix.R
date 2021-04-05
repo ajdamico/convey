@@ -18,7 +18,7 @@ test_that("coef and SE matrix values make sense",{
 
   out <- NULL
 
-  for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyqsr" , "svypoormed" , "svyjdiv" , "svyzenga" , "svyrmpg" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" ) ){
+  for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyqsr" , "svypoormed" , "svyjdiv" , "svyrmpg" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" ) ){
 
     final_fun <- FUN <- get( this_fun )
 
@@ -46,23 +46,6 @@ test_that("coef and SE matrix values make sense",{
     out <- rbind( out , this_df )
 
   }
-
-  zc_lin <- svyzengacurve( ~eqincome , des_eusilc,  alpha = .01 , plot = FALSE )
-  zc_rep <- svyzengacurve( ~eqincome , des_eusilc_rep,  alpha = .01 , plot = FALSE )
-
-  this_df <-
-    data.frame(
-      function_name = "svyzengacurve" ,
-      coef_lin = zc_lin$quantiles[5] ,
-      se_lin = zc_lin$quantiles[5] - zc_lin$CIs[9] ,
-      coef_rep = zc_rep$quantiles[5] ,
-      se_rep = zc_rep$quantiles[5] - zc_rep$CIs[9] ,
-      measure_of_uncertainty = "confidence interval length at median"
-    )
-
-  rownames( this_df ) <- NULL
-
-  out <- rbind( out , this_df )
 
   lor_lin <- svylorenz( ~eqincome , des_eusilc, seq(0,1,.05), alpha = .01 , plot = FALSE )
   lor_rep <- svylorenz( ~eqincome , des_eusilc_rep, seq(0,1,.05), alpha = .01 , plot = FALSE )
