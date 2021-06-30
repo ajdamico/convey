@@ -63,7 +63,7 @@ svylorenz(formula, design, ...)
 \item{na.rm}{Should cases with missing values be dropped? Defaults to \code{FALSE}.}
 }
 \value{
-Object of class "\code{svyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
+Object of class "\code{oldsvyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
 and a "\code{SE}" attribute giving the standard errors of the estimates.
 }
 \description{
@@ -155,7 +155,7 @@ Shlomo Yitzhaki and Robert Lerman (1989). Improving the accuracy of estimates of
 Matti Langel (2012). \emph{Measuring inequality in finite population sampling}. PhD thesis. URL \url{http://doc.rero.ch/record/29204}.
 }
 \seealso{
-\code{\link{svyquantile}}
+\code{\link{oldsvyquantile}}
 }
 \author{
 Guilherme Jacob, Djalma Pessoa and Anthony Damico

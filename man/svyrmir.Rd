@@ -40,7 +40,7 @@ svyrmir(formula, design, ...)
 
 \item{design}{a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.}
 
-\item{...}{arguments passed on to `survey::svyquantile`}
+\item{...}{arguments passed on to `survey::oldsvyquantile`}
 
 \item{age}{formula defining the variable age}
 

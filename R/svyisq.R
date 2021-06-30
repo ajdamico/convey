@@ -8,7 +8,7 @@
 #' @param alpha the order of the quantile
 #' @param quantile return the upper bound of the lower tail
 #' @param na.rm Should cases with missing values be dropped?
-#' @param ... arguments passed on to `survey::svyquantile`
+#' @param ... arguments passed on to `survey::oldsvyquantile`
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -109,7 +109,7 @@ svyisq.survey.design <-
 		N <- sum(w)
 		h <- h_fun(incvar, w)
 
-		q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
+		q_alpha <- survey::oldsvyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
 		q_alpha <- as.vector(q_alpha)
 
 		Fprime0 <- densfun(formula = formula, design = design, q_alpha, h=h, FUN = "F", na.rm=na.rm)

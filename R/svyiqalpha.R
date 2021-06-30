@@ -7,7 +7,7 @@
 #' @param alpha the order of the quantile
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #' @param na.rm Should cases with missing values be dropped?
-#' @param ... arguments passed on to `survey::svyquantile`
+#' @param ... arguments passed on to `survey::oldsvyquantile`
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -110,7 +110,7 @@ svyiqalpha.survey.design <-
 		w <- 1/design$prob
 		N <- sum(w)
 
-		q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
+		q_alpha <- survey::oldsvyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
 
 		q_alpha <- as.vector(q_alpha)
 

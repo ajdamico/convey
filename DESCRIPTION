@@ -13,7 +13,7 @@ Description: Variance estimation on indicators of income concentration and
 Depends:
     R (>= 3.2.1)
 Imports:
-    survey,
+    survey (>= 4.1),
     methods
 License: GPL-3
 LazyData: true
