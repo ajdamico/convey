@@ -116,13 +116,10 @@
 svyfgtdec <-
   function(formula, design, ...) {
 
-    warning("The svyfgtdec function is experimental and is subject to changes in later versions.")
-
-    # if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'abs' ) ) ) stop( 'type_thresh= must be "abs". See ?svyfgtdec for more detail.' )
     if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.' )
 
     if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
-    if( !is.na( list(...)[["g"]] ) && !( list(...)[["g"]] >= 2 ) ) stop( "this decomposition is defined for g >= 2 only." )
+    if( !is.na( list(...)[["g"]] ) && !( ( list(...)[["g"]] >= 2 ) & ( list(...)[["g"]] %% 1 == 0 ) ) ) stop( "g= must be an integer greater or equal to 2" )
 
     if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
 
@@ -162,10 +159,10 @@ svyfgtdec.survey.design <-
     # generalized entropy index of poverty gaps
     # by residual
     fgtg <- list( value = fgtg[[1]], lin = attr( fgtg , "linearized" ) )
-    gei_poor <- contrastinf( quote( ( fgtg / ( fgt0 * igr^g ) - 1 ) / ( g^2 - g ) ) , list( fgtg =fgtg , fgt0 = fgt0 , fgt1 = fgt1 , igr = igr , g = list( value = g , lin = rep( 0 , length( igr$lin ) ) ) ) )
+    gei_poor <- contrastinf( quote( ( fgtg / fgt0 - igr^g ) / ( igr^g * ( g^2 - g ) ) ) , list( fgtg =fgtg , fgt0 = fgt0 , fgt1 = fgt1 , igr = igr , g = list( value = g , lin = rep( 0 , length( igr$lin ) ) ) ) )
 
     # matrix of linearized variables
-    lin.matrix <- cbind( fgtg$lin, fgt0$lin, fgt1$lin , igr$lin , gei_poor$lin)
+    lin.matrix <- cbind( fgtg$lin, fgt0$lin, fgt1$lin , igr$lin , gei_poor$lin )
     lin.matrix <- as.matrix( lin.matrix )
     colnames( lin.matrix ) <- c( paste0("fgt",g), "fgt0", "fgt1" , "igr" , paste0( "gei(poor;epsilon=",g,")" ) )
 
@@ -173,7 +170,7 @@ svyfgtdec.survey.design <-
     if ( nrow( lin.matrix ) != length( full_design$prob ) ) {
       w <- 1/full_design$prob
       tmplin <- matrix( 0 , nrow = nrow( full_design$variables ) , ncol = ncol( lin.matrix ) )
-      tmplin[ w > 0 , ] <- lin.matrix
+      tmplin[ names( w ) %in% rownames( lin.matrix ) , ] <- lin.matrix
       lin.matrix <- tmplin ; rm( tmplin )
       colnames( lin.matrix ) <- c( paste0("fgt",g), "fgt0", "fgt1" , "igr" , paste0( "gei(poor;epsilon=",g,")" ) )
     }
@@ -301,7 +298,7 @@ svyfgtdec.svyrep.design <-
     # generalized entropy index of poverty gaps
     # by residual
     fgtg <- list( value = fgtg[[1]], lin = attr( fgtg , "linearized" ) )
-    gei_poor <- contrastinf( quote( ( fgtg / ( fgt0 * igr^g ) - 1 ) / ( g^2 - g ) ) , list( fgtg =fgtg , fgt0 = fgt0 , fgt1 = fgt1 , igr = igr , g = list( value = g , lin = rep( 0 , length( igr$lin ) ) ) ) )
+    gei_poor <- contrastinf( quote( ( fgtg / fgt0 - igr^g ) / ( igr^g * ( g^2 - g ) ) ) , list( fgtg =fgtg , fgt0 = fgt0 , fgt1 = fgt1 , igr = igr , g = list( value = g , lin = rep( 0 , length( igr$lin ) ) ) ) )
 
     # combine values and linearization
     estimates <- c( fgtg$value, fgt0$value, fgt1$value , igr$value , gei_poor$value )
