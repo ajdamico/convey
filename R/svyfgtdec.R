@@ -165,7 +165,7 @@ svyfgtdec.survey.design <-
     gei_poor <- contrastinf( quote( ( fgtg / ( fgt0 * igr^g ) - 1 ) / ( g^2 - g ) ) , list( fgtg =fgtg , fgt0 = fgt0 , fgt1 = fgt1 , igr = igr , g = list( value = g , lin = rep( 0 , length( igr$lin ) ) ) ) )
 
     # matrix of linearized variables
-    lin.matrix <- cbind( fgtg$lin, fgt0$lin, fgt1$lin , igr$lin , gei_poor$lin)
+    lin.matrix <- cbind( fgtg$lin, fgt0$lin, fgt1$lin , igr$lin , gei_poor$lin )
     lin.matrix <- as.matrix( lin.matrix )
     colnames( lin.matrix ) <- c( paste0("fgt",g), "fgt0", "fgt1" , "igr" , paste0( "gei(poor;epsilon=",g,")" ) )
 
@@ -173,7 +173,7 @@ svyfgtdec.survey.design <-
     if ( nrow( lin.matrix ) != length( full_design$prob ) ) {
       w <- 1/full_design$prob
       tmplin <- matrix( 0 , nrow = nrow( full_design$variables ) , ncol = ncol( lin.matrix ) )
-      tmplin[ w > 0 , ] <- lin.matrix
+      tmplin[ names( w ) %in% rownames( lin.matrix ) , ] <- lin.matrix
       lin.matrix <- tmplin ; rm( tmplin )
       colnames( lin.matrix ) <- c( paste0("fgt",g), "fgt0", "fgt1" , "igr" , paste0( "gei(poor;epsilon=",g,")" ) )
     }
