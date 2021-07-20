@@ -1,7 +1,7 @@
 Package: convey
 Title: Income Concentration Analysis with Complex Survey Samples
-Version: 0.2.4
-Date: 2021-03-11
+Version: 1.0.0
+Date: 2021-07-20
 Authors@R: c(person("Djalma", "Pessoa", email = "pessoad@gmail.com", role = "aut"),
             person("Anthony", "Damico", email= "ajdamico@gmail.com", role= c("aut","cre")),
             person("Guilherme", "Jacob", email= "guilhermejacob91@gmail.com", role= "aut"))
@@ -13,7 +13,7 @@ Description: Variance estimation on indicators of income concentration and
 Depends:
     R (>= 3.2.1)
 Imports:
-    survey,
+    survey (>= 4.1),
     methods
 License: GPL-3
 LazyData: true

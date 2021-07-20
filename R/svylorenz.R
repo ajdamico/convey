@@ -25,12 +25,12 @@
 #'
 #' This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approacches the observation-based curve.
 #'
-#' @return Object of class "\code{svyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
+#' @return Object of class "\code{oldsvyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
 #' and a "\code{SE}" attribute giving the standard errors of the estimates.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{\link{svyquantile}}
+#' @seealso \code{\link{oldsvyquantile}}
 #'
 #' @references Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 #' Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},
@@ -183,7 +183,9 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
     rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
     rval <- list(quantiles = rval, CIs = cis)
     attr(rval, "SE") <- rep(NA, length(quantiles))
-    class(rval) <- c( "cvyquantile" , "svyquantile" )
+    # class(rval) <- c( "cvyquantile" , "svyquantile" )
+    class(rval) <- c( "cvyquantile" , "oldsvyquantile" )
+
     return(rval)
   }
 
@@ -243,7 +245,6 @@ svylorenz.survey.design <- function ( formula , design, quantiles = seq(0,1,.1),
   # calculate empirical curve
   if (empirical) empirical.lorenz <- emp.interp( incvar , w )
 
-  # plot data
   if ( plot ) {
 
     plot_dots <- list( ... )
@@ -323,7 +324,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
     rval <- list(quantiles = rval, CIs = cis)
     attr(rval, "SE") <- rep(NA, length(quantiles))
-    class(rval) <- c( "cvyquantile" , "svyquantile" )
+    class(rval) <- c( "cvyquantile" , "svystat" )
     return(rval)
   }
 
@@ -344,7 +345,7 @@ svylorenz.svyrep.design <- function(formula , design, quantiles = seq(0,1,.1), e
     rval <- t( matrix( data = rep(NA, length(quantiles)), nrow = length(quantiles), dimnames = list( as.character( quantiles ), as.character(formula)[2] ) ) )
     rval <- list(quantiles = rval, CIs = cis)
     attr(rval, "SE") <- rep(NA, length(quantiles))
-    class(rval) <- c( "cvyquantile" , "svyquantile" )
+    class(rval) <- c( "cvystat" , "svrepstat" )
     return(rval)
   }
   variance <- survey::svrVar( qq, design$scale, design$rscales, mse = design$mse, coef = rval )

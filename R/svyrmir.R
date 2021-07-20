@@ -11,7 +11,7 @@
 #' @param med_old return the median income of people older than agelim
 #' @param med_young return the median income of people younger than agelim
 #' @param linearized Should a matrix of linearized variables be returned
-#' @param ... arguments passed on to `survey::svyquantile`
+#' @param ... arguments passed on to `survey::oldsvyquantile`
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'

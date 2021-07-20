@@ -11,7 +11,7 @@
 #' @param linearized Should a matrix of linearized variables be returned?
 #' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})
 #' @param return.replicates Return the replicate estimates?
-#' @param ... arguments passed on to `survey::svyquantile`
+#' @param ... arguments passed on to `survey::oldsvyquantile`
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'

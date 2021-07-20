@@ -7,7 +7,7 @@
 #' @param quantiles income quantile, usually .5 (median)
 #' @param percent fraction of the quantile, usually .60
 #' @param na.rm Should cases with missing values be dropped?
-#' @param ... arguments passed on to `survey::svyquantile`
+#' @param ... arguments passed on to `survey::oldsvyquantile`
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
@@ -174,7 +174,6 @@ svypoormed.survey.design <-
     }
 
     # compute median income of the poor
-    # medp <- survey::svyquantile(x = formula, dsub, 0.5, method = "constant", na.rm=na.rm,...) # old
     ww <- 1 / dsub$prob
     incvar.top <- model.frame(formula, dsub$variables, na.action = na.pass)[[1]]
     medp <- computeQuantiles( incvar.top , ww , .5 )

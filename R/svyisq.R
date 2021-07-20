@@ -14,6 +14,7 @@
 #' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})
 #' @param return.replicates Return the replicate estimates?
 #' @param ... future expansion. not used.
+#' @param ... arguments passed on to `survey::oldsvyquantile`
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
@@ -197,13 +198,13 @@ svyisq.svyrep.design <-
 	  # collect sampling weights
 	  ws <- weights(design, "sampling")
 
-	  # store quantile
-	  if (quantile) q_alpha <- survey::svyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
-
 	  # compute point estimate
 	  q_alpha <- computeQuantiles( incvar , ws, alpha )
 	  estimate <- CalcISQ( incvar , ws, alpha )
 	  if (upper) estimate <- sum( ws * incvar ) - estimate
+
+	  # store quantile
+	  # if (quantile) q_alpha <- survey::oldsvyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
 
 	  # collect analysis weights
 	  ww <- weights(design, "analysis")
