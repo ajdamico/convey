@@ -2,8 +2,64 @@ context("Atk output")
 
 skip_on_cran()
 
+
+# function from the IC2 library 1.0-1
+# removed from CRAN but available at
+# https://cran.r-project.org/src/contrib/Archive/IC2/
+calcAtkinson<-function(x, w=NULL, epsilon=1)
+{
+  if (epsilon<0) return(NULL)
+  if (!is.numeric(x)) return(NULL)
+  xNA<-sum(as.numeric(is.na(x)))
+  weighted<-FALSE
+  wNA<-NULL
+  if (is.null(w)) w<-rep(1, length(x))
+  else 
+  {
+    if (!is.numeric(w)) return(NULL)
+    weighted<-TRUE
+    wNA<-sum(as.numeric(is.na(w)))
+  }
+  df<-cbind("x"=x,"w"=w)
+  df<-df[complete.cases(df),, drop=FALSE]
+  if(nrow(df)==0) return (NULL)
+  if(any(df[,"x"]<0) || sum(df[,"x"])==0) return(NULL)
+  if (any(df[,"x"]==0) && epsilon==1) return(NULL)
+  index<-0
+  names(index)<-"Atk"
+  names(epsilon)<-"epsilon"
+  Atk<-list(ineq=   list(index=index,
+                        parameter=epsilon),
+            nas=    list(xNA=xNA, wNA=wNA, totalNA=length(x)-nrow(df)))
+  class(Atk)<-"ICI"
+  if(nrow(df)==1) return(Atk)
+  if (epsilon==1)
+  {
+    w<-df[,"w"]/sum(df[,"w"])
+    xMean<-weighted.mean(df[,"x"],w)
+    index<-1-(prod(exp(w*log(df[,"x"])))/xMean)
+  }
+  else
+  {
+    xMean<-weighted.mean(df[,"x"], df[,"w"])
+    x1<-df[,"x"]/xMean
+    w<-df[,"w"]/sum(df[,"w"])
+    param<-1-epsilon
+    index<-1-(weighted.mean((x1^param), w)^(1/param))
+  }
+  names(index)<-"Atk"
+  Atk[["ineq"]][["index"]]<-index
+  return(Atk)
+}
+
+
+
+
+
+
+
+
 library(survey)
-library(IC2)
 library(laeken)
 data(eusilc)
 dati = data.frame(IDd = seq( 10000 , 10000 + nrow( eusilc ) - 1 ) , eusilc)

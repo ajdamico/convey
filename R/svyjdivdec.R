@@ -122,7 +122,7 @@ svyjdivdec.survey.design <-
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <- model.frame( subgroup, design$variables, na.action = na.pass)[,]
 
-    if ( class(grpvar) == "labelled" ) {
+    if ( inherits(grpvar,"labelled") ) {
       stop( "This function does not support 'labelled' variables. Try factor().")
     }
 

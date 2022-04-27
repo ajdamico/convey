@@ -55,15 +55,14 @@ getvars <- function (formula, dbconnection, tables, db.only = TRUE, updates = NU
         query <- sub("@tab@", tables, "select * from @tab@ limit 1")
         if (is(dbconnection, "DBIConnection")) 
             oneline <- DBI::dbGetQuery(dbconnection, query)
-        else oneline <- RODBC::sqlQuery(dbconnection, query)
         in.db <- infilter$varlist[infilter$varlist %in% names(oneline)]
     }
     query <- paste("select", paste(in.db, collapse = ", "), "from", 
         tables)
-    if (is(dbconnection, "DBIConnection")) 
-        df <- DBI::dbGetQuery(dbconnection, query)
-    else df <- RODBC::sqlQuery(dbconnection, query)
-    if (!is.null(subset)) 
+    
+	df <- DBI::dbGetQuery(dbconnection, query)
+    
+	if (!is.null(subset)) 
         df <- df[subset, , drop = FALSE]
     df <- updatesOutfilter(df, var0, infilter$history, updates)
     is.string <- sapply(df, is.character)
