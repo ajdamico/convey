@@ -124,27 +124,49 @@
 #'
 #' @export
 svyrich <-
-  function(formula, design, ... ) {
-
+  function(formula, design, ...) {
     warning("The svyrich function is experimental and is subject to changes in later versions.")
 
-    if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
+    if (!('g' %in% names(list(...))))
+      stop("g= parameter must be specified")
 
-    if( !( 'type_measure' %in% names(list(...)) ) ) stop( "type_measure= parameter must be specified" )
+    if (!('type_measure' %in% names(list(...))))
+      stop("type_measure= parameter must be specified")
 
-    if( 'type_measure' %in% names( list( ... ) ) && !( list(...)[["type_measure"]] %in% c( 'Cha' , 'FGTT1' , 'FGTT2' ) ) ) stop( 'type_measure= must be "Cha", "FGTT1" or "FGTT2". See ?svyrich for more detail.' )
+    if ('type_measure' %in% names(list(...)) &&
+        !(list(...)[["type_measure"]] %in% c('Cha' , 'FGTT1' , 'FGTT2')))
+      stop('type_measure= must be "Cha", "FGTT1" or "FGTT2". See ?svyrich for more detail.')
 
-    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'Cha' ) && ( list(...)[["g"]] < 0 ) ) stop( 'type_measure="Cha" is defined for g > 0 only.' )
+    if ('type_measure' %in% names(list(...)) &&
+        (list(...)[["type_measure"]] == 'Cha') &&
+        (list(...)[["g"]] < 0))
+      stop('type_measure="Cha" is defined for g > 0 only.')
 
-    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT1' ) && (( list(...)[["g"]] > 1 ) | ( list(...)[["g"]] < 0 ) ) ) stop( 'type_measure="FGTT1" is defined for 0 <= g <= 1 only.' )
+    if ('type_measure' %in% names(list(...)) &&
+        (list(...)[["type_measure"]] == 'FGTT1') &&
+        ((list(...)[["g"]] > 1) |
+         (list(...)[["g"]] < 0)))
+      stop('type_measure="FGTT1" is defined for 0 <= g <= 1 only.')
 
-    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT2' ) && ( list(...)[["g"]] <= 1 ) ) stop( 'type_measure="FGTT2" is defined for g > 1 only.' )
+    if ('type_measure' %in% names(list(...)) &&
+        (list(...)[["type_measure"]] == 'FGTT2') &&
+        (list(...)[["g"]] <= 1))
+      stop('type_measure="FGTT2" is defined for g > 1 only.')
 
-    if( 'type_measure' %in% names( list( ... ) ) && ( list(...)[["type_measure"]] == 'FGTT2' ) ) warning( 'Brzezinski (2014) warns about poor inferential performance for convex richness measures. See ?svyrich for reference.' )
+    if ('type_measure' %in% names(list(...)) &&
+        (list(...)[["type_measure"]] == 'FGTT2'))
+      warning(
+        'Brzezinski (2014) warns about poor inferential performance for convex richness measures. See ?svyrich for reference.'
+      )
 
-    if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq", "relm" or "abs". See ?svyrich for more detail.' )
+    if ('type_thresh' %in% names(list(...)) &&
+        !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
+      stop('type_thresh= must be "relq", "relm" or "abs". See ?svyrich for more detail.')
 
-    if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+    if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+      stop(
+        "convey package functions currently only support one variable in the `formula=` argument"
+      )
 
     UseMethod("svyrich", design)
 
@@ -153,132 +175,220 @@ svyrich <-
 #' @rdname svyrich
 #' @export
 svyrich.survey.design <-
-  function(formula, design, type_measure , g, type_thresh="abs",  abs_thresh=NULL, times = 1, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula,
+           design,
+           type_measure ,
+           g,
+           type_thresh = "abs",
+           abs_thresh = NULL,
+           times = 1,
+           quantiles = .50,
+           na.rm = FALSE,
+           thresh = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
+      )
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+    if (type_thresh == "abs" &
+        is.null(abs_thresh))
+      stop("abs_thresh= must be specified when type_thresh='abs'")
 
     # set up richness measures auxiliary functions
-    if ( type_measure == "Cha" ) {
-
+    if (type_measure == "Cha") {
       #  survey design h function
-      h <- function( y , thresh , g ) ifelse( y > thresh ,  1 - ( thresh / y )^g , 0 )
+      h <-
+        function(y , thresh , g)
+          ifelse(y > thresh ,  1 - (thresh / y) ^ g , 0)
 
       # ht function
-      ht <- function( y , thresh , g ) ifelse( y > thresh , -(g/thresh) * ( thresh / y )^g , 0 )
+      ht <-
+        function(y , thresh , g)
+          ifelse(y > thresh ,-(g / thresh) * (thresh / y) ^ g , 0)
 
-    } else if ( type_measure == "FGTT1" ) {
-
+    } else if (type_measure == "FGTT1") {
       #  survey design h function
-      h <- function( y , thresh , g ) ifelse( y > thresh , ( 1 - thresh / y )^g , 0 )
+      h <-
+        function(y , thresh , g)
+          ifelse(y > thresh , (1 - thresh / y) ^ g , 0)
 
       # ht function
-      ht <- function( y , thresh , g ) ifelse( y > thresh , -g/y * ( 1 - thresh / y )^(g - 1) , 0 )
+      ht <-
+        function(y , thresh , g)
+          ifelse(y > thresh ,-g / y * (1 - thresh / y) ^ (g - 1) , 0)
 
-    } else if ( type_measure == "FGTT2" ) {
-
+    } else if (type_measure == "FGTT2") {
       #  survey design h function
-      h <- function( y , thresh , g ) ifelse( y > thresh , ( y  / thresh - 1 )^g , 0 )
+      h <-
+        function(y , thresh , g)
+          ifelse(y > thresh , (y  / thresh - 1) ^ g , 0)
 
       # ht function
-      ht <- function( y , thresh , g ) ifelse( y > thresh , (-g*y / ( thresh*y - thresh^2 ) ) * ( y/thresh - 1 )^g , 0 )
+      ht <-
+        function(y , thresh , g)
+          ifelse(y > thresh , (-g * y / (thresh * y - thresh ^ 2)) * (y / thresh - 1) ^
+                   g , 0)
 
     }
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
 
     # domain
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      if (length(nas) > length(design$prob))incvar <- incvar[!nas] else incvar[nas] <- 0
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
     }
 
-    w <- 1/design$prob
+    w <- 1 / design$prob
 
-    if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+    if (is.null(names(design$prob)))
+      ind <-
+      as.character(seq(length(design$prob)))
+    else
+      ind <- names(design$prob)
 
     N <- sum(w)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+      design
+    else
+      full_design <- attr(design, "full_design")
 
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
-      if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
+    if (na.rm) {
+      nas <- is.na(incvec)
+      full_design <- full_design[!nas, ]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else
+        incvec[nas] <- 0
     }
 
-    wf <- 1/full_design$prob
+    wf <- 1 / full_design$prob
 
-    if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+    if (is.null(names(full_design$prob)))
+      ncom <-
+      as.character(seq(length(full_design$prob)))
+    else
+      ncom <- names(full_design$prob)
 
     htot <- h_fun(incvar, w)
-    if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else ID <- 1 * ( ncom %in% ind )
+    if (sum(1 / design$prob == 0) > 0)
+      ID <- 1 * (1 / design$prob != 0)
+    else
+      ID <- 1 * (ncom %in% ind)
 
     # linearization of the threshold
 
-    if( type_thresh == 'relq' ){
-
-      ARPT <- svyarpt(formula = formula, full_design, quantiles=quantiles, percent=times,  na.rm=na.rm, ...)
+    if (type_thresh == 'relq') {
+      ARPT <-
+        svyarpt(
+          formula = formula,
+          full_design,
+          quantiles = quantiles,
+          percent = times,
+          na.rm = na.rm,
+          ...
+        )
       th <- coef(ARPT)
       arptlin <- attr(ARPT, "lin")
-      rval <- sum(w*h(incvar,th,g))/N
-      ahat <- sum(w*ht(incvar,th,g))/N
+      rval <- sum(w * h(incvar, th, g)) / N
+      ahat <- sum(w * ht(incvar, th, g)) / N
 
-      if( g == 0 ){
+      if (g == 0) {
+        Fprime <-
+          densfun(
+            formula = formula,
+            design = design,
+            x = th,
+            FUN = "F",
+            na.rm = na.rm
+          )
+        richlin <-
+          ID * (h(incvec , th , g) - rval) / N + (-Fprime * arptlin)
 
-        Fprime <- densfun(formula=formula, design = design, x= th, FUN = "F", na.rm = na.rm )
-        richlin<- ID*( h( incvec , th , g ) - rval ) / N + ( -Fprime * arptlin )
-
-      } else richlin <- ID*( h( incvec , th , g ) - rval ) / N + ( ahat * arptlin )
+      } else
+        richlin <-
+        ID * (h(incvec , th , g) - rval) / N + (ahat * arptlin)
 
     }
 
-    if( type_thresh == 'relm'){
-
+    if (type_thresh == 'relm') {
       # thresh for the whole population
-      th <- times*sum(incvec*wf)/sum(wf)
-      rval <- sum(w*h(incvar,th,g))/N
-      ahat <- sum(w*ht(incvar,th,g))/N
+      th <- times * sum(incvec * wf) / sum(wf)
+      rval <- sum(w * h(incvar, th, g)) / N
+      ahat <- sum(w * ht(incvar, th, g)) / N
 
-      if( g == 0 ){
+      if (g == 0) {
+        Fprime <-
+          densfun(
+            formula = formula,
+            design = design,
+            x = th,
+            FUN = "F",
+            na.rm = na.rm
+          )
+        richlin <-
+          ID * (h(incvec , th , g) - rval) / N + (-Fprime * times * (incvec - sum(incvec *
+                                                                                    wf) / sum(wf)) / sum(wf))
 
-        Fprime <- densfun(formula=formula, design = design, x= th, FUN = "F", na.rm = na.rm )
-        richlin<- ID*( h( incvec , th , g ) - rval ) / N + ( -Fprime * times * ( incvec - sum(incvec*wf) / sum(wf) ) / sum(wf) )
-
-      } else richlin<- ID*( h( incvec , th , g ) - rval ) / N + ( ahat * times * ( incvec - (sum(incvec*wf) / sum(wf)) ) / sum(wf) )
+      } else
+        richlin <-
+        ID * (h(incvec , th , g) - rval) / N + (ahat * times * (incvec - (sum(incvec *
+                                                                                wf) / sum(wf))) / sum(wf))
 
     }
 
-    if( type_thresh == 'abs' ){
-
+    if (type_thresh == 'abs') {
       th <- abs_thresh
 
-      rval <- sum( w*h( incvar , th , g ) ) / N
+      rval <- sum(w * h(incvar , th , g)) / N
 
-      richlin <- ID*( h( incvec , th , g ) - rval ) / N
+      richlin <- ID * (h(incvec , th , g) - rval) / N
 
     }
 
-    variance <- survey::svyrecvar(richlin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+    variance <-
+      survey::svyrecvar(
+        richlin / full_design$prob,
+        full_design$cluster,
+        full_design$strata,
+        full_design$fpc,
+        postStrata = full_design$postStrata
+      )
 
 
 
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- c( "cvystat" , "svystat" )
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svystat")
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- paste0( type_measure, "-" , g, "-richness measure" )
+    attr(rval, "statistic") <-
+      paste0(type_measure, "-" , g, "-richness measure")
     attr(rval, "lin") <- richlin
-    if(thresh) attr(rval, "thresh") <- th
+    if (thresh)
+      attr(rval, "thresh") <- th
     rval
 
   }
@@ -288,62 +398,91 @@ svyrich.survey.design <-
 #' @rdname svyrich
 #' @export
 svyrich.svyrep.design <-
-  function(formula, design, type_measure, g, type_thresh="abs", abs_thresh=NULL, times = 1, quantiles = .50, na.rm = FALSE, thresh = FALSE,...) {
+  function(formula,
+           design,
+           type_measure,
+           g,
+           type_thresh = "abs",
+           abs_thresh = NULL,
+           times = 1,
+           quantiles = .50,
+           na.rm = FALSE,
+           thresh = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function."
+      )
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
-    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+    if (type_thresh == "abs" &
+        is.null(abs_thresh))
+      stop("abs_thresh= must be specified when type_thresh='abs'")
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
 
     # svyrep design h function
-    if ( type_measure == "Cha" ) {
-      h <- function( y , thresh , g ) ifelse( y > thresh ,  1 - ( thresh / y )^g , 0 )
-    } else if ( type_measure == "FGTT1" ) {
-      h <- function( y , thresh , g ) ifelse( y > thresh , ( 1 - thresh / y )^g , 0 )
-    } else if ( type_measure == "FGTT2" ) {
-      h <- function( y , thresh , g ) ifelse( y > thresh , ( y  / thresh - 1 )^g , 0 )
+    if (type_measure == "Cha") {
+      h <-
+        function(y , thresh , g)
+          ifelse(y > thresh ,  1 - (thresh / y) ^ g , 0)
+    } else if (type_measure == "FGTT1") {
+      h <-
+        function(y , thresh , g)
+          ifelse(y > thresh , (1 - thresh / y) ^ g , 0)
+    } else if (type_measure == "FGTT2") {
+      h <-
+        function(y , thresh , g)
+          ifelse(y > thresh , (y  / thresh - 1) ^ g , 0)
     }
 
     # svyrep design ComputeRich function
     ComputeRich <-
-      function( y , w , thresh , g ){
+      function(y , w , thresh , g) {
         N <- sum(w)
-        sum( w * h( y , thresh , g ) ) / N
+        sum(w * h(y , thresh , g)) / N
       }
 
     df <- model.frame(design)
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
 
     ws <- weights(design, "sampling")
 
-    df_full<- model.frame(full_design)
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    df_full <- model.frame(full_design)
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
+    if (na.rm) {
+      nas <- is.na(incvec)
+      full_design <- full_design[!nas, ]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
 
-    wsf <- weights(full_design,"sampling")
+    wsf <- weights(full_design, "sampling")
     names(incvec) <- names(wsf) <- row.names(df_full)
-    ind<- row.names(df)
+    ind <- row.names(df)
 
     # poverty threshold
-    if(type_thresh=='relq') th <- times * computeQuantiles( incvec, wsf, p = quantiles)
-    if(type_thresh=='relm') th <- times*sum(incvec*wsf)/sum(wsf)
-    if(type_thresh=='abs') th <- abs_thresh
+    if (type_thresh == 'relq')
+      th <- times * computeQuantiles(incvec, wsf, p = quantiles)
+    if (type_thresh == 'relm')
+      th <- times * sum(incvec * wsf) / sum(wsf)
+    if (type_thresh == 'abs')
+      th <- abs_thresh
 
 
     rval <- ComputeRich(incvar, ws, g = g, th)
@@ -351,47 +490,57 @@ svyrich.svyrep.design <-
     wwf <- weights(full_design, "analysis")
 
     qq <-
-      apply(wwf, 2, function(wi){
-        names(wi)<- row.names(df_full)
-        wd<-wi[ind]
+      apply(wwf, 2, function(wi) {
+        names(wi) <- row.names(df_full)
+        wd <- wi[ind]
         incd <- incvec[ind]
-        ComputeRich(incd, wd, g = g, th)}
-      )
-    if(anyNA(qq))variance <- NA
-    else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+        ComputeRich(incd, wd, g = g, th)
+      })
+    if (anyNA(qq))
+      variance <- NA
+    else
+      variance <-
+      survey::svrVar(qq,
+                     design$scale,
+                     design$rscales,
+                     mse = design$mse,
+                     coef = rval)
 
-    variance <- as.matrix( variance )
+    variance <- as.matrix(variance)
 
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- c( "cvystat" , "svrepstat" )
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svrepstat")
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- paste0( type_measure, "-" , g, "-richness measure" )
+    attr(rval, "statistic") <-
+      paste0(type_measure, "-" , g, "-richness measure")
     attr(rval, "lin") <- NA
-    if(thresh) attr(rval, "thresh") <- th
+    if (thresh)
+      attr(rval, "thresh") <- th
     rval
   }
 
 #' @rdname svyrich
 #' @export
 svyrich.DBIsvydesign <-
-  function (formula, design, ...){
-
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-      full_design <- attr( design , "full_design" )
+  function (formula, design, ...) {
+    if (!("logical" %in% class(attr(design, "full_design")))) {
+      full_design <- attr(design , "full_design")
 
       full_design$variables <-
         getvars(
           formula,
-          attr( design , "full_design" )$db$connection,
-          attr( design , "full_design" )$db$tablename,
-          updates = attr( design , "full_design" )$updates,
-          subset = attr( design , "full_design" )$subset
+          attr(design , "full_design")$db$connection,
+          attr(design , "full_design")$db$tablename,
+          updates = attr(design , "full_design")$updates,
+          subset = attr(design , "full_design")$subset
         )
 
-      attr( design , "full_design" ) <- full_design
+      attr(design , "full_design") <- full_design
 
-      rm( full_design )
+      rm(full_design)
 
     }
 
@@ -406,4 +555,3 @@ svyrich.DBIsvydesign <-
 
     NextMethod("svyrich", design)
   }
-

@@ -7,42 +7,57 @@ library(survey)
 
 
 data(api)
-dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
-test_that("svychu works on unweighted designs",{
-  for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
-    for ( this_g in c( .6 , 1 ) ) {
-      svychu(~api00, design=dstrat1, g=this_g, type_thresh= this_thresh, percent = 1, abs_thresh=600)
+dstrat1 <- convey_prep(svydesign(id =  ~ 1, data = apistrat))
+test_that("svychu works on unweighted designs", {
+  for (this_thresh in c("abs" , "relm" , "relq")) {
+    for (this_g in c(.6 , 1)) {
+      svychu(
+        ~ api00,
+        design = dstrat1,
+        g = this_g,
+        type_thresh = this_thresh,
+        percent = 1,
+        abs_thresh = 600
+      )
     }
   }
 })
 
-test_that("output svychu",{
+test_that("output svychu", {
   skip_on_cran()
 
-  data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
-  des_eusilc <- svydesign(ids = ~rb030, strata =~db040,  weights = ~rb050, data = eusilc)
+  data(eusilc)
+  names(eusilc) <- tolower(names(eusilc))
+  des_eusilc <-
+    svydesign(
+      ids = ~ rb030,
+      strata =  ~ db040,
+      weights = ~ rb050,
+      data = eusilc
+    )
   des_eusilc <- convey_prep(des_eusilc)
-  des_eusilc_rep <-as.svrepdesign(des_eusilc, type= "bootstrap" , replicates = 10 )
+  des_eusilc_rep <-
+    as.svrepdesign(des_eusilc, type = "bootstrap" , replicates = 10)
   des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
   # database-backed design
   library(RSQLite)
   library(DBI)
   dbfile <- tempfile()
-  conn <- dbConnect( RSQLite::SQLite() , dbfile )
-  dbWriteTable( conn , 'eusilc' , eusilc )
+  conn <- dbConnect(RSQLite::SQLite() , dbfile)
+  dbWriteTable(conn , 'eusilc' , eusilc)
 
   dbd_eusilc <-
     svydesign(
-      ids = ~rb030 ,
-      strata = ~db040 ,
-      weights = ~rb050 ,
-      data="eusilc",
-      dbname=dbfile,
-      dbtype="SQLite"
+      ids = ~ rb030 ,
+      strata = ~ db040 ,
+      weights = ~ rb050 ,
+      data = "eusilc",
+      dbname = dbfile,
+      dbtype = "SQLite"
     )
 
-  dbd_eusilc <- convey_prep( dbd_eusilc )
+  dbd_eusilc <- convey_prep(dbd_eusilc)
 
   # create a hacky database-backed svrepdesign object
   # mirroring des_eusilc_rep
@@ -54,53 +69,103 @@ test_that("output svychu",{
       rscales = des_eusilc_rep$rscales ,
       type = "bootstrap" ,
       data = "eusilc" ,
-      dbtype="SQLite" ,
+      dbtype = "SQLite" ,
       dbname = dbfile ,
       combined.weights = FALSE
     )
 
-  dbd_eusilc_rep <- convey_prep( dbd_eusilc_rep )
+  dbd_eusilc_rep <- convey_prep(dbd_eusilc_rep)
 
 
-  for ( this_thresh in c( "abs" , "relm" , "relq" ) ){
-    for ( this_g in c( 0 , .3 , .6 , 1 ) ) {
+  for (this_thresh in c("abs" , "relm" , "relq")) {
+    for (this_g in c(0 , .3 , .6 , 1)) {
+      a1 <-
+        svychu(
+          ~ eqincome,
+          design = des_eusilc,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
 
-      a1 <- svychu(~eqincome, design = des_eusilc, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+      a2 <-
+        svyby(
+          ~ eqincome,
+          by = ~ db040,
+          design = des_eusilc,
+          FUN = svychu,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000,
+          deff = FALSE
+        )
 
-      a2 <- svyby(~eqincome, by = ~db040, design = des_eusilc, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+      b1 <-
+        svychu(
+          ~ eqincome,
+          design = des_eusilc_rep,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
 
-      b1 <- svychu(~eqincome, design = des_eusilc_rep, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+      b2 <-
+        svyby(
+          ~ eqincome,
+          by = ~ db040,
+          design = des_eusilc_rep,
+          FUN = svychu,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000,
+          deff = FALSE
+        )
 
-      b2 <- svyby(~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svychu,g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
 
+      se_dif1 <- abs(SE(a1) - SE(b1))
+      se_diff2 <- max(abs(SE(a2) - SE(b2)))
 
-      se_dif1 <- abs(SE(a1)-SE(b1))
-      se_diff2 <- max(abs(SE(a2)-SE(b2)))
-
-      expect_is(coef(a1),"numeric")
+      expect_is(coef(a1), "numeric")
       expect_is(coef(a2), "numeric")
-      expect_is(coef(b1),"numeric")
-      expect_is(coef(b2),"numeric")
+      expect_is(coef(b1), "numeric")
+      expect_is(coef(b2), "numeric")
       expect_equal(coef(a1), coef(b1))
       expect_equal(coef(a2), coef(b2))
-      expect_lte(se_dif1, coef(a1) * 0.05 ) # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
-      expect_lte(se_diff2, max( coef(a2) ) * 0.15 ) # the difference between CVs should be less than 15% of the maximum coefficient, otherwise manually set it
-      expect_is(SE(a1),"matrix")
+      expect_lte(se_dif1, coef(a1) * 0.05) # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
+      expect_lte(se_diff2, max(coef(a2)) * 0.15) # the difference between CVs should be less than 15% of the maximum coefficient, otherwise manually set it
+      expect_is(SE(a1), "matrix")
       expect_is(SE(a2), "numeric")
-      expect_is(SE(b1),"numeric")
-      expect_is(SE(b2),"numeric")
+      expect_is(SE(b1), "numeric")
+      expect_is(SE(b2), "numeric")
       expect_lte(confint(a1)[1], coef(a1))
-      expect_gte(confint(a1)[2],coef(a1))
-      expect_lte(confint(b1)[,1], coef(b1))
+      expect_gte(confint(a1)[2], coef(a1))
+      expect_lte(confint(b1)[, 1], coef(b1))
       expect_gte(confint(b1)[2], coef(b1))
-      expect_equal(sum(confint(a2)[,1]<= coef(a2)),length(coef(a2)))
-      expect_equal(sum(confint(a2)[,2]>= coef(a2)),length(coef(a2)))
-      expect_equal(sum(confint(b2)[,1]<= coef(b2)),length(coef(b2)))
-      expect_equal(sum(confint(b2)[,2]>= coef(b2)),length(coef(b2)))
+      expect_equal(sum(confint(a2)[, 1] <= coef(a2)), length(coef(a2)))
+      expect_equal(sum(confint(a2)[, 2] >= coef(a2)), length(coef(a2)))
+      expect_equal(sum(confint(b2)[, 1] <= coef(b2)), length(coef(b2)))
+      expect_equal(sum(confint(b2)[, 2] >= coef(b2)), length(coef(b2)))
 
 
-      c1 <- svychu(~eqincome, design = dbd_eusilc, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
-      c2 <- svyby(~eqincome, by = ~db040, design = dbd_eusilc, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000, deff = FALSE)
+      c1 <-
+        svychu(
+          ~ eqincome,
+          design = dbd_eusilc,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
+      c2 <-
+        svyby(
+          ~ eqincome,
+          by = ~ db040,
+          design = dbd_eusilc,
+          FUN = svychu,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000,
+          deff = FALSE
+        )
 
 
       # database svychu"
@@ -111,10 +176,42 @@ test_that("output svychu",{
 
 
       # compare subsetted objects to svyby objects
-      sub_des <- svychu( ~eqincome , design = subset( des_eusilc , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-      sby_des <- svyby( ~eqincome, by = ~db040, design = des_eusilc, FUN = svychu , g=this_g, type_thresh= this_thresh, abs_thresh=10000)
-      sub_rep <- svychu( ~eqincome , design = subset( des_eusilc_rep , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-      sby_rep <- svyby( ~eqincome, by = ~db040, design = des_eusilc_rep, FUN = svychu, g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+      sub_des <-
+        svychu(
+          ~ eqincome ,
+          design = subset(des_eusilc , db040 == "Burgenland"),
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
+      sby_des <-
+        svyby(
+          ~ eqincome,
+          by = ~ db040,
+          design = des_eusilc,
+          FUN = svychu ,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
+      sub_rep <-
+        svychu(
+          ~ eqincome ,
+          design = subset(des_eusilc_rep , db040 == "Burgenland"),
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
+      sby_rep <-
+        svyby(
+          ~ eqincome,
+          by = ~ db040,
+          design = des_eusilc_rep,
+          FUN = svychu,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
 
       # subsets equal svyby"
       expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
@@ -126,16 +223,48 @@ test_that("output svychu",{
       expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_rep))[1])
 
       # coefficients of variation should be within five percent
-      cv_dif <- abs(cv(sub_des)-cv(sby_rep)[1])
+      cv_dif <- abs(cv(sub_des) - cv(sby_rep)[1])
 
-      expect_lte(cv_dif,5)
+      expect_lte(cv_dif, 5)
 
 
 
-      sub_dbd <- svychu( ~eqincome , design = subset( dbd_eusilc , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-      sby_dbd <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc, FUN = svychu ,g=this_g, type_thresh= this_thresh, abs_thresh=10000)
-      sub_dbr <- svychu( ~eqincome , design = subset( dbd_eusilc_rep , db040 == "Burgenland"), g=this_g, type_thresh= this_thresh, abs_thresh=10000 )
-      sby_dbr <- svyby( ~eqincome, by = ~db040, design = dbd_eusilc_rep, FUN = svychu , g=this_g, type_thresh= this_thresh, abs_thresh=10000)
+      sub_dbd <-
+        svychu(
+          ~ eqincome ,
+          design = subset(dbd_eusilc , db040 == "Burgenland"),
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
+      sby_dbd <-
+        svyby(
+          ~ eqincome,
+          by = ~ db040,
+          design = dbd_eusilc,
+          FUN = svychu ,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
+      sub_dbr <-
+        svychu(
+          ~ eqincome ,
+          design = subset(dbd_eusilc_rep , db040 == "Burgenland"),
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
+      sby_dbr <-
+        svyby(
+          ~ eqincome,
+          by = ~ db040,
+          design = dbd_eusilc_rep,
+          FUN = svychu ,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 10000
+        )
 
 
 
@@ -160,6 +289,6 @@ test_that("output svychu",{
     }
   }
 
-  dbRemoveTable( conn , 'eusilc' )
-  dbDisconnect( conn )
+  dbRemoveTable(conn , 'eusilc')
+  dbDisconnect(conn)
 })

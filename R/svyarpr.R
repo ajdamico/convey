@@ -84,188 +84,274 @@
 #'
 #' @export
 svyarpr <- function(formula, design, ...) {
+  if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+    stop(
+      "convey package functions currently only support one variable in the `formula=` argument"
+    )
 
-	if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
-
-	UseMethod("svyarpr", design)
+  UseMethod("svyarpr", design)
 
 }
 
 #' @rdname svyarpr
 #' @export
 svyarpr.survey.design <-
-	function(formula, design, quantiles = 0.5, percent = 0.6, na.rm=FALSE,...) {
-
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-
-		# if the class of the full_design attribute is just a TRUE, then the design is
-		# already the full design.  otherwise, pull the full_design from that attribute.
-		if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
-
-		# domain
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
-			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
-		}
-
-		if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
-
-		w <- 1/design$prob
-		N <- sum(w)
-
-		# if the class of the full_design attribute is just a TRUE, then the design is
-		# already the full design.  otherwise, pull the full_design from that attribute.
-		if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
-		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
-
-		if(na.rm){
-			nas<-is.na(incvec)
-			full_design<-full_design[!nas,]
-			if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
-		}
+  function(formula,
+           design,
+           quantiles = 0.5,
+           percent = 0.6,
+           na.rm = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
+      )
 
 
-		if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
+
+    # domain
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
+    }
+
+    if (is.null(names(design$prob)))
+      ind <-
+      as.character(seq(length(design$prob)))
+    else
+      ind <- names(design$prob)
+
+    w <- 1 / design$prob
+    N <- sum(w)
+
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+      design
+    else
+      full_design <- attr(design, "full_design")
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+
+    if (na.rm) {
+      nas <- is.na(incvec)
+      full_design <- full_design[!nas, ]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else
+        incvec[nas] <- 0
+    }
 
 
-		wf <- 1/full_design$prob
-		htot <- h_fun(incvar, w)
+    if (is.null(names(full_design$prob)))
+      ncom <-
+      as.character(seq(length(full_design$prob)))
+    else
+      ncom <- names(full_design$prob)
 
-		ARPT <- svyarpt(formula = formula, design=full_design, quantiles = quantiles, percent = percent, na.rm = na.rm,...)
-		arptv <- coef(ARPT)
-		arptlin <- attr(ARPT, "lin")
 
-		# value of arpr and first term of lin
-		poor <- incvar <= arptv
-		rval <- sum( poor * w ) / N
-		if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else
-		ID <- 1 * ( ncom %in% ind )
-		arpr1lin <- ( 1 / N ) * ID * ( ( incvec <= arptv ) - rval )
+    wf <- 1 / full_design$prob
+    htot <- h_fun(incvar, w)
 
-		# use h for the whole sample
-		Fprime <- densfun(formula = formula, design = design, arptv, h=htot, FUN = "F", na.rm=na.rm)
+    ARPT <-
+      svyarpt(
+        formula = formula,
+        design = full_design,
+        quantiles = quantiles,
+        percent = percent,
+        na.rm = na.rm,
+        ...
+      )
+    arptv <- coef(ARPT)
+    arptlin <- attr(ARPT, "lin")
 
-		arprlin <- arpr1lin + Fprime * arptlin
+    # value of arpr and first term of lin
+    poor <- incvar <= arptv
+    rval <- sum(poor * w) / N
+    if (sum(1 / design$prob == 0) > 0)
+      ID <- 1 * (1 / design$prob != 0)
+    else
+      ID <- 1 * (ncom %in% ind)
+    arpr1lin <- (1 / N) * ID * ((incvec <= arptv) - rval)
 
-		variance <-
-			survey::svyrecvar(
-				arprlin/full_design$prob,
-				full_design$cluster,
-				full_design$strata,
-				full_design$fpc,
-				postStrata = full_design$postStrata
-			)
+    # use h for the whole sample
+    Fprime <-
+      densfun(
+        formula = formula,
+        design = design,
+        arptv,
+        h = htot,
+        FUN = "F",
+        na.rm = na.rm
+      )
 
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svystat" )
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "arpr"
-		attr(rval, "lin") <- arprlin
-		rval
-	}
+    arprlin <- arpr1lin + Fprime * arptlin
+
+    variance <-
+      survey::svyrecvar(
+        arprlin / full_design$prob,
+        full_design$cluster,
+        full_design$strata,
+        full_design$fpc,
+        postStrata = full_design$postStrata
+      )
+
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svystat")
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "arpr"
+    attr(rval, "lin") <- arprlin
+    rval
+  }
 
 
 
 #' @rdname svyarpr
 #' @export
 svyarpr.svyrep.design <-
-	function(formula, design, quantiles = 0.5, percent = 0.6,na.rm=FALSE, ...) {
+  function(formula,
+           design,
+           quantiles = 0.5,
+           percent = 0.6,
+           na.rm = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function."
+      )
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
 
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
 
-		# if the class of the full_design attribute is just a TRUE, then the design is
-		# already the full design.  otherwise, pull the full_design from that attribute.
-		if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    df <- model.frame(design)
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		df <- model.frame(design)
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
 
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
-			df <- model.frame(design)
-			incvar <- incvar[!nas]
-		}
+    ws <- weights(design, "sampling")
 
-		ws <- weights(design, "sampling")
+    df_full <- model.frame(full_design)
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-		df_full<- model.frame(full_design)
-		incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvec)
+      full_design <- full_design[!nas, ]
+      df_full <- model.frame(full_design)
+      incvec <- incvec[!nas]
+    }
 
-		if(na.rm){
-			nas<-is.na(incvec)
-			full_design<-full_design[!nas,]
-			df_full <- model.frame(full_design)
-			incvec <- incvec[!nas]
-		}
+    wsf <- weights(full_design, "sampling")
+    names(incvec) <- names(wsf) <- row.names(df_full)
+    ind <- row.names(df)
 
-		wsf <- weights(full_design,"sampling")
-		names(incvec) <- names(wsf) <- row.names(df_full)
-		ind <- row.names(df)
+    ComputeArpr <-
+      function(xf, wf, ind, quantiles, percent) {
+        thresh <- percent * computeQuantiles(xf, wf, p = quantiles)
+        sum((xf[ind] <= thresh) * wf[ind]) / sum(wf[ind])
+      }
 
-		ComputeArpr <-
-			function(xf, wf, ind, quantiles, percent) {
-				thresh <- percent * computeQuantiles(xf, wf, p = quantiles)
-				sum((xf[ind] <= thresh) * wf[ind])/sum(wf[ind])
-			}
+    rval <-
+      ComputeArpr(
+        xf = incvec,
+        wf = wsf,
+        ind = ind,
+        quantiles = quantiles,
+        percent = percent
+      )
+    wwf <- weights(full_design, "analysis")
 
-		rval <- ComputeArpr(xf = incvec, wf=wsf, ind= ind, quantiles = quantiles, percent = percent)
-		wwf <- weights(full_design, "analysis")
+    qq <-
+      apply(wwf, 2, function(wi) {
+        names(wi) <- row.names(df_full)
+        ComputeArpr(incvec,
+                    wi,
+                    ind = ind,
+                    quantiles = quantiles,
+                    percent = percent)
+      })
+    if (anyNA(qq))
+      variance <- NA
+    else
+      variance <-
+      survey::svrVar(qq,
+                     design$scale,
+                     design$rscales,
+                     mse = design$mse,
+                     coef = rval)
 
-		qq <-
-			apply(wwf, 2, function(wi){
-				names(wi)<- row.names(df_full)
-				ComputeArpr(incvec, wi, ind=ind, quantiles = quantiles,percent = percent)}
-			)
-		if(anyNA(qq))variance <- NA
-		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- as.matrix(variance)
 
-		variance <- as.matrix( variance )
-
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svrepstat" )
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "arpr"
-		rval
-	}
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svrepstat")
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "arpr"
+    rval
+  }
 
 #' @rdname svyarpr
 #' @export
 svyarpr.DBIsvydesign <-
-	function (formula, design, ...){
+  function (formula, design, ...) {
+    if (!("logical" %in% class(attr(design, "full_design")))) {
+      full_design <- attr(design , "full_design")
 
-		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+      full_design$variables <-
+        getvars(
+          formula,
+          attr(design , "full_design")$db$connection,
+          attr(design , "full_design")$db$tablename,
+          updates = attr(design , "full_design")$updates,
+          subset = attr(design , "full_design")$subset
+        )
 
-			full_design <- attr( design , "full_design" )
+      attr(design , "full_design") <- full_design
 
-			full_design$variables <-
-				getvars(
-					formula,
-					attr( design , "full_design" )$db$connection,
-					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates,
-					subset = attr( design , "full_design" )$subset
-				)
+      rm(full_design)
 
-			attr( design , "full_design" ) <- full_design
+    }
 
-			rm( full_design )
+    design$variables <-
+      getvars(
+        formula,
+        design$db$connection,
+        design$db$tablename,
+        updates = design$updates,
+        subset = design$subset
+      )
 
-		}
-
-		design$variables <-
-			getvars(
-				formula,
-				design$db$connection,
-				design$db$tablename,
-				updates = design$updates,
-				subset = design$subset
-			)
-
-		NextMethod("svyarpr", design)
-	}
+    NextMethod("svyarpr", design)
+  }

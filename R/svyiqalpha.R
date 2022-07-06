@@ -62,13 +62,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfile,
 #' 		dbtype="SQLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyiqalpha( ~ eqincome , design = dbd_eusilc, .50 )
@@ -81,128 +81,178 @@
 #'
 #' @export
 svyiqalpha <-
-	function(formula, design, ...) {
+  function(formula, design, ...) {
+    if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+      stop(
+        "convey package functions currently only support one variable in the `formula=` argument"
+      )
 
-		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+    UseMethod("svyiqalpha", design)
 
-		UseMethod("svyiqalpha", design)
-
-	}
+  }
 
 #' @rdname svyiqalpha
 #' @export
 svyiqalpha.survey.design <-
-	function(formula, design, alpha, na.rm=FALSE, ...) {
+  function(formula, design, alpha, na.rm = FALSE, ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
+      )
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
 
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
 
-			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
+    }
 
-		}
+    ind <- names(design$prob)
+    w <- 1 / design$prob
+    N <- sum(w)
 
-		ind <- names(design$prob)
-		w <- 1/design$prob
-		N <- sum(w)
+    q_alpha <-
+      survey::oldsvyquantile(
+        x = formula,
+        design = design,
+        quantiles = alpha,
+        method = "constant",
+        na.rm = na.rm,
+        ...
+      )
 
-		q_alpha <- survey::oldsvyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
+    q_alpha <- as.vector(q_alpha)
 
-		q_alpha <- as.vector(q_alpha)
+    rval <- q_alpha
 
-		rval <- q_alpha
+    h <- h_fun(incvar, w)
 
-		h <- h_fun(incvar, w)
+    Fprime <-
+      densfun(
+        formula = formula,
+        design = design,
+        q_alpha,
+        h = h,
+        FUN = "F",
+        na.rm = na.rm
+      )
 
-		Fprime <- densfun(formula = formula, design = design, q_alpha, h=h, FUN = "F", na.rm=na.rm)
+    iq <- -(1 / (N * Fprime)) * ((incvar <= q_alpha) - alpha)
 
-		iq <- -(1/(N * Fprime)) * ((incvar <= q_alpha) - alpha)
+    variance <-
+      survey::svyrecvar(
+        iq / design$prob,
+        design$cluster,
+        design$strata,
+        design$fpc,
+        postStrata = design$postStrata
+      )
 
-		variance <- survey::svyrecvar(iq/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
 
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
+    class(rval) <- c("cvystat" , "svystat")
+    attr(rval, "lin") <- iq
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "quantile"
 
-		class(rval) <- c( "cvystat" , "svystat" )
-		attr(rval, "lin") <- iq
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "quantile"
-
-		rval
-	}
+    rval
+  }
 
 #' @rdname svyiqalpha
 #' @export
 #'
 svyiqalpha.svyrep.design <-
-	function(formula, design, alpha, na.rm=FALSE, ...) {
+  function(formula, design, alpha, na.rm = FALSE, ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function."
+      )
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
+    }
 
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
-			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
-		}
+    w <- weights(design, "sampling")
+    quant_val <- computeQuantiles(incvar, w, p = alpha)
+    quant_val <- as.vector(quant_val)
+    rval <- quant_val
+    ww <- weights(design, "analysis")
+    qq <-
+      apply(ww, 2, function(wi)
+        computeQuantiles(incvar, wi, p = alpha))
 
-		w <- weights(design, "sampling")
-		quant_val <- computeQuantiles(incvar, w, p = alpha)
-		quant_val <- as.vector(quant_val)
-		rval <- quant_val
-		ww <- weights(design, "analysis")
-		qq <- apply(ww, 2, function(wi)  computeQuantiles(incvar, wi, p = alpha))
+    if (anyNA(qq))
+      variance <- NA
+    else
+      variance <-
+      survey::svrVar(qq,
+                     design$scale,
+                     design$rscales,
+                     mse = design$mse,
+                     coef = rval)
 
-		if(anyNA(qq))variance <- NA
-		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- as.matrix(variance)
 
-		variance <- as.matrix( variance )
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svrepstat")
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "quantile"
 
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svrepstat" )
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "quantile"
-
-		rval
-	}
+    rval
+  }
 
 
 #' @rdname svyiqalpha
 #' @export
 svyiqalpha.DBIsvydesign <-
-	function (formula, design, ...){
+  function (formula, design, ...) {
+    if (!("logical" %in% class(attr(design, "full_design")))) {
+      full_design <- attr(design , "full_design")
 
-		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+      full_design$variables <-
+        getvars(
+          formula,
+          attr(design , "full_design")$db$connection,
+          attr(design , "full_design")$db$tablename,
+          updates = attr(design , "full_design")$updates,
+          subset = attr(design , "full_design")$subset
+        )
 
-			full_design <- attr( design , "full_design" )
+      attr(design , "full_design") <- full_design
 
-			full_design$variables <-
-				getvars(
-					formula,
-					attr( design , "full_design" )$db$connection,
-					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates,
-					subset = attr( design , "full_design" )$subset
-				)
+      rm(full_design)
 
-			attr( design , "full_design" ) <- full_design
+    }
 
-			rm( full_design )
+    design$variables <-
+      getvars(
+        formula,
+        design$db$connection,
+        design$db$tablename,
+        updates = design$updates,
+        subset = design$subset
+      )
 
-		}
-
-		design$variables <-
-			getvars(
-				formula,
-				design$db$connection,
-				design$db$tablename,
-				updates = design$updates,
-				subset = design$subset
-			)
-
-		NextMethod("svyiqalpha", design)
-	}
+    NextMethod("svyiqalpha", design)
+  }

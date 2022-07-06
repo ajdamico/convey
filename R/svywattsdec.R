@@ -115,12 +115,16 @@
 #' @export
 svywattsdec <-
   function(formula, design, ...) {
-
     warning("The svywattsdec function is experimental and is subject to changes in later versions.")
 
-    if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs". see ?svywattsdec for more detail.' )
+    if ('type_thresh' %in% names(list(...)) &&
+        !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
+      stop('type_thresh= must be "relq" "relm" or "abs". see ?svywattsdec for more detail.')
 
-    if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+    if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+      stop(
+        "convey package functions currently only support one variable in the `formula=` argument"
+      )
 
     UseMethod("svywattsdec", design)
 
@@ -129,79 +133,176 @@ svywattsdec <-
 #' @rdname svywattsdec
 #' @export
 svywattsdec.survey.design <-
-  function(formula, design, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula,
+           design,
+           type_thresh = "abs",
+           abs_thresh = NULL,
+           percent = .60,
+           quantiles = .50,
+           na.rm = FALSE,
+           thresh = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
+      )
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+    if (type_thresh == "abs" &
+        is.null(abs_thresh))
+      stop("abs_thresh= must be specified when type_thresh='abs'")
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
 
     # domain
-    if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+    if (is.null(names(design$prob)))
+      ind <-
+        as.character(seq(length(design$prob)))
+    else
+      ind <- names(design$prob)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
 
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    wf <- 1/full_design$prob
+    wf <- 1 / full_design$prob
 
-    if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+    if (is.null(names(full_design$prob)))
+      ncom <-
+      as.character(seq(length(full_design$prob)))
+    else
+      ncom <- names(full_design$prob)
 
-    if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else ID <- 1 * ( ncom %in% ind )
+    if (sum(1 / design$prob == 0) > 0)
+      ID <- 1 * (1 / design$prob != 0)
+    else
+      ID <- 1 * (ncom %in% ind)
 
-    if( any( incvec[wf > 0] <= 0 , na.rm = TRUE ) ){
+    if (any(incvec[wf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
       nps <- incvec <= 0
-      design <- full_design[!nps&ID,]
-      attr( design , "full_design" ) <- full_design <- full_design[!nps,]
+      design <- full_design[!nps & ID, ]
+      attr(design , "full_design") <-
+        full_design <- full_design[!nps, ]
     }
 
-    watts <- suppressWarnings( svywatts( formula=formula , design=design , type_thresh=type_thresh , percent=percent , quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh=thresh ) )
-    fgt0 <- svyfgt( formula=formula , design=design , g = 0 , type_thresh=type_thresh , percent=percent , quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh=thresh )
-    fgt1 <- svyfgt( formula=formula , design=design , g = 1 , type_thresh=type_thresh , percent=percent , quantiles=quantiles , abs_thresh=abs_thresh , na.rm=na.rm , thresh=thresh )
+    watts <-
+      suppressWarnings(
+        svywatts(
+          formula = formula ,
+          design = design ,
+          type_thresh = type_thresh ,
+          percent = percent ,
+          quantiles = quantiles ,
+          abs_thresh = abs_thresh ,
+          na.rm = na.rm ,
+          thresh = thresh
+        )
+      )
+    fgt0 <-
+      svyfgt(
+        formula = formula ,
+        design = design ,
+        g = 0 ,
+        type_thresh = type_thresh ,
+        percent = percent ,
+        quantiles = quantiles ,
+        abs_thresh = abs_thresh ,
+        na.rm = na.rm ,
+        thresh = thresh
+      )
+    fgt1 <-
+      svyfgt(
+        formula = formula ,
+        design = design ,
+        g = 1 ,
+        type_thresh = type_thresh ,
+        percent = percent ,
+        quantiles = quantiles ,
+        abs_thresh = abs_thresh ,
+        na.rm = na.rm ,
+        thresh = thresh
+      )
 
-    if ( thresh ) thresh.value <- attr( fgt0 , "thresh" )
+    if (thresh)
+      thresh.value <- attr(fgt0 , "thresh")
 
-    if ( length( attr(watts , "lin" ) ) < length( attr(fgt0 , "lin" ) ) ) {
-      lin <- rep( 0 , length( attr(fgt0 , "lin" ) ) )
-      lin[ as.numeric( rownames(design) ) ] <- attr(watts , "lin" )[ attr(watts , "lin" ) != 0 ]
-      attr(watts , "lin" ) <- lin ; rm( lin )
+    if (length(attr(watts , "lin")) < length(attr(fgt0 , "lin"))) {
+      lin <- rep(0 , length(attr(fgt0 , "lin")))
+      lin[as.numeric(rownames(design))] <-
+        attr(watts , "lin")[attr(watts , "lin") != 0]
+      attr(watts , "lin") <- lin
+      rm(lin)
     }
 
     # Watts Poverty Gap Ratio
-    fgt0 <- list( value = fgt0[[1]], lin = attr( fgt0 , "lin" ) )
-    fgt1 <- list( value = fgt1[[1]], lin = attr( fgt1 , "lin" ) )
-    W_pgr <- convey::contrastinf( quote( log( fgt0/(fgt0 - fgt1 ) ) ) , list( fgt0 = fgt0 , fgt1 = fgt1 ) )
+    fgt0 <- list(value = fgt0[[1]], lin = attr(fgt0 , "lin"))
+    fgt1 <- list(value = fgt1[[1]], lin = attr(fgt1 , "lin"))
+    W_pgr <-
+      convey::contrastinf(quote(log(fgt0 / (fgt0 - fgt1))) , list(fgt0 = fgt0 , fgt1 = fgt1))
 
     # Theil inequality index of incomes among the poor
     # by residual
-    watts <- list( value = watts[[1]], lin = attr( watts , "lin" ) )
-    L_poor <- convey::contrastinf( quote( watts/fgt0 - W_pgr ) , list( watts = watts , fgt0 = fgt0 , W_pgr = W_pgr ) )
+    watts <- list(value = watts[[1]], lin = attr(watts , "lin"))
+    L_poor <-
+      convey::contrastinf(quote(watts / fgt0 - W_pgr) ,
+                          list(
+                            watts = watts ,
+                            fgt0 = fgt0 ,
+                            W_pgr = W_pgr
+                          ))
 
     lin.matrix <- cbind(watts$lin, fgt0$lin, W_pgr$lin , L_poor$lin)
-    lin.matrix <- as.matrix( lin.matrix )
-    colnames(lin.matrix) <- c( "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)" )
+    lin.matrix <- as.matrix(lin.matrix)
+    colnames(lin.matrix) <-
+      c("watts", "fgt0", "watts pov. gap ratio" , "theil(poor)")
 
-    estimates <- matrix( c( watts$value, fgt0$value, W_pgr$value , L_poor$value ), dimnames = list( c( "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)" ) ) )[,]
+    estimates <-
+      matrix(c(watts$value, fgt0$value, W_pgr$value , L_poor$value),
+             dimnames = list(c(
+               "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)"
+             )))[, ]
 
-    if( nrow( full_design ) > nrow( lin.matrix ) ) {
-      lin.matrix <- apply( lin.matrix , 2 , function(x) { y = 1/full_design$prob ; y[ y > 0 ] <- x ; return( y )  } )
-      lin.matrix <- as.matrix( lin.matrix )
+    if (nrow(full_design) > nrow(lin.matrix)) {
+      lin.matrix <-
+        apply(lin.matrix , 2 , function(x) {
+          y = 1 / full_design$prob
+          y[y > 0] <- x
+          return(y)
+        })
+      lin.matrix <- as.matrix(lin.matrix)
     }
-    variance <- survey::svyrecvar( lin.matrix/full_design$prob , full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+    variance <-
+      survey::svyrecvar(
+        lin.matrix / full_design$prob ,
+        full_design$cluster,
+        full_design$strata,
+        full_design$fpc,
+        postStrata = full_design$postStrata
+      )
 
-    rval <- list( estimate = estimates )
-    names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    attr(rval, "SE") <- sqrt(diag(variance[1:4,1:4]))
-    attr(rval, "var") <- variance[1:4,1:4]
+    rval <- list(estimate = estimates)
+    names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    attr(rval, "SE") <- sqrt(diag(variance[1:4, 1:4]))
+    attr(rval, "var") <- variance[1:4, 1:4]
     attr(rval, "statistic") <- "watts index decomposition"
-    if ( thresh ) attr(rval, "thresh") <- thresh.value
-    class(rval) <- c( "cvydstat" , "cvystat" , "svystat" , "svrepstat" )
+    if (thresh)
+      attr(rval, "thresh") <- thresh.value
+    class(rval) <-
+      c("cvydstat" , "cvystat" , "svystat" , "svrepstat")
 
     rval
 
@@ -212,41 +313,60 @@ svywattsdec.survey.design <-
 #' @rdname svywattsdec
 #' @export
 svywattsdec.svyrep.design <-
-  function(formula, design, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula,
+           design,
+           type_thresh = "abs",
+           abs_thresh = NULL,
+           percent = .60,
+           quantiles = .50,
+           na.rm = FALSE,
+           thresh = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
+      )
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+    if (type_thresh == "abs" &
+        is.null(abs_thresh))
+      stop("abs_thresh= must be specified when type_thresh='abs'")
 
     # svyrep design ComputeIndex functions
     ComputeWatts <-
-      function( y , w , thresh ) {
-        y <- y[ w > 0 ]
-        w <- w[ w > 0 ]
+      function(y , w , thresh) {
+        y <- y[w > 0]
+        w <- w[w > 0]
         N <- sum(w)
-        h <- function( y , thresh ) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 )
-        sum( w * h( y , thresh ) ) / N
+        h <-
+          function(y , thresh)
+            ifelse(y != 0 , ifelse(y <= thresh , log(thresh / y) , 0) , 0)
+        sum(w * h(y , thresh)) / N
       }
     ComputeFGT <-
-      function( y , w , g , thresh ) {
-        y <- y[ w > 0 ]
-        w <- w[ w > 0 ]
+      function(y , w , g , thresh) {
+        y <- y[w > 0]
+        w <- w[w > 0]
         N <- sum(w)
-        h <- function(y,thresh,g) ( ( ( thresh - y ) / thresh )^g ) * ( y <= thresh )
-        sum( w * h( y , thresh , g ) ) / N
+        h <-
+          function(y, thresh, g)
+            (((thresh - y) / thresh) ^ g) * (y <= thresh)
+        sum(w * h(y , thresh , g)) / N
       }
     ComputeGEI <-
-      function( y , w , epsilon ) {
+      function(y , w , epsilon) {
+        y <- y[w > 0]
+        w <- w[w > 0]
 
-        y <- y[ w > 0 ]
-        w <- w[ w > 0 ]
-
-        if ( epsilon == 0 ) {
-          result.est <- -T_fn( y , w , 0 ) / U_fn( y , w , 0 ) + log( U_fn( y , w , 1 ) / U_fn( y , w , 0 ) )
-        } else if ( epsilon == 1 ) {
-          result.est <- ( T_fn( y , w , 1 ) / U_fn( y , w , 1 ) ) - log( U_fn( y , w , 1 ) / U_fn( y , w , 0 ) )
+        if (epsilon == 0) {
+          result.est <-
+            -T_fn(y , w , 0) / U_fn(y , w , 0) + log(U_fn(y , w , 1) / U_fn(y , w , 0))
+        } else if (epsilon == 1) {
+          result.est <-
+            (T_fn(y , w , 1) / U_fn(y , w , 1)) - log(U_fn(y , w , 1) / U_fn(y , w , 0))
         } else {
-          result.est <- ( epsilon * ( epsilon - 1 ) )^( -1 ) * ( U_fn( y , w , 0 )^( epsilon - 1 ) * U_fn( y , w , 1 )^( -epsilon ) * U_fn( y , w , epsilon ) - 1 )
+          result.est <-
+            (epsilon * (epsilon - 1)) ^ (-1) * (U_fn(y , w , 0) ^ (epsilon - 1) * U_fn(y , w , 1) ^
+                                                  (-epsilon) * U_fn(y , w , epsilon) - 1)
         }
 
         result.est
@@ -255,83 +375,129 @@ svywattsdec.svyrep.design <-
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+      design
+    else
+      full_design <- attr(design, "full_design")
 
     # domain
-    if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+    if (is.null(names(design$prob)))
+      ind <-
+      as.character(seq(length(design$prob)))
+    else
+      ind <- names(design$prob)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+      design
+    else
+      full_design <- attr(design, "full_design")
 
     df <- model.frame(design)
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
     ws <- weights(design, "sampling")
 
-    if( any(incvar[ ws > 0 ] <= 0 , na.rm = TRUE ) ){
-      nps<-incvar <= 0
-      design<-design[!nps,]
+    if (any(incvar[ws > 0] <= 0 , na.rm = TRUE)) {
+      nps <- incvar <= 0
+      design <- design[!nps, ]
       df <- model.frame(design)
       incvar <- incvar[!nps]
       ws <- weights(design, "sampling")
     }
 
 
-    df_full<- model.frame(full_design)
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    df_full <- model.frame(full_design)
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    wsf <- weights(full_design,"sampling")
+    wsf <- weights(full_design, "sampling")
 
-    if( any(incvec[ wsf > 0 ] <= 0 , na.rm = TRUE ) ){
+    if (any(incvec[wsf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
-      nps<-incvec <= 0
-      full_design<-full_design[!nps,]
+      nps <- incvec <= 0
+      full_design <- full_design[!nps, ]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nps]
-      wsf <- weights(full_design,"sampling")
+      wsf <- weights(full_design, "sampling")
     }
 
     names(incvec) <- names(wsf) <- row.names(df_full)
-    ind<- row.names(df)
+    ind <- row.names(df)
 
     # poverty threshold
-    if(type_thresh=='relq') th <- percent * computeQuantiles( incvec, wsf, p = quantiles)
-    if(type_thresh=='relm') th <- percent*sum(incvec*wsf)/sum(wsf)
-    if(type_thresh=='abs') th <- abs_thresh
+    if (type_thresh == 'relq')
+      th <- percent * computeQuantiles(incvec, wsf, p = quantiles)
+    if (type_thresh == 'relm')
+      th <- percent * sum(incvec * wsf) / sum(wsf)
+    if (type_thresh == 'abs')
+      th <- abs_thresh
 
     # estimates
-    watts <- ComputeWatts(incvar, ws, thresh = th )
-    fgt0 <- ComputeFGT(incvar, ws, g = 0 , thresh = th )
-    fgt1 <- ComputeFGT(incvar, ws, g = 1 , thresh = th )
-    w_pgr <- log( fgt0/(fgt0 - fgt1 ) )
-    L_poor <- ComputeGEI( incvar, ifelse( incvar <= th , ws , 0 ) , epsilon = 0 )
+    watts <- ComputeWatts(incvar, ws, thresh = th)
+    fgt0 <- ComputeFGT(incvar, ws, g = 0 , thresh = th)
+    fgt1 <- ComputeFGT(incvar, ws, g = 1 , thresh = th)
+    w_pgr <- log(fgt0 / (fgt0 - fgt1))
+    L_poor <-
+      ComputeGEI(incvar, ifelse(incvar <= th , ws , 0) , epsilon = 0)
 
-    ww <- weights(design, "analysis" )
+    ww <- weights(design, "analysis")
 
     # get replicates
-    qq.watts <- apply( ww, 2, function(wi){ ComputeWatts( incvar, wi, thresh = th ) } )
-    qq.fgt0 <- apply( ww, 2, function(wi){ ComputeFGT( incvar, wi, g = 0 , thresh = th ) } )
-    qq.fgt1 <- apply( ww, 2, function(wi){ ComputeFGT( incvar, wi, g = 1 , thresh = th ) } )
-    qq.w_pgr <- qq.fgt0/( qq.fgt0 - qq.fgt1 )
-    qq.L_poor <- apply( ww, 2, function(wi){ ComputeGEI( incvar, ifelse( incvar <= th , wi , 0 ) , epsilon = 0 ) } )
+    qq.watts <-
+      apply(ww, 2, function(wi) {
+        ComputeWatts(incvar, wi, thresh = th)
+      })
+    qq.fgt0 <-
+      apply(ww, 2, function(wi) {
+        ComputeFGT(incvar, wi, g = 0 , thresh = th)
+      })
+    qq.fgt1 <-
+      apply(ww, 2, function(wi) {
+        ComputeFGT(incvar, wi, g = 1 , thresh = th)
+      })
+    qq.w_pgr <- qq.fgt0 / (qq.fgt0 - qq.fgt1)
+    qq.L_poor <-
+      apply(ww, 2, function(wi) {
+        ComputeGEI(incvar, ifelse(incvar <= th , wi , 0) , epsilon = 0)
+      })
 
-    qq <- cbind( qq.watts , qq.fgt0 , qq.w_pgr , qq.L_poor )
-    colnames(qq) <- c( "watts" , "fgt0" , "watts pov. gap ratio" , "theil(poor)" )
+    qq <- cbind(qq.watts , qq.fgt0 , qq.w_pgr , qq.L_poor)
+    colnames(qq) <-
+      c("watts" , "fgt0" , "watts pov. gap ratio" , "theil(poor)")
 
-    if (anyNA(qq)) variance <- NA else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    if (anyNA(qq))
+      variance <-
+      NA
+    else
+      variance <-
+      survey::svrVar(qq,
+                     design$scale,
+                     design$rscales,
+                     mse = design$mse,
+                     coef = rval)
 
-    variance <- as.matrix( variance )
+    variance <- as.matrix(variance)
 
-    estimates <- matrix( c( watts, fgt0, w_pgr , L_poor ), dimnames = list( c( "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)" ) ) )[,]
+    estimates <-
+      matrix(c(watts, fgt0, w_pgr , L_poor), dimnames = list(c(
+        "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)"
+      )))[, ]
 
-    rval <- list( estimate = estimates )
-    names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    attr(rval, "SE") <- sqrt(diag(variance[1:4,1:4]))
-    attr(rval, "var") <- variance[1:4,1:4]
+    rval <- list(estimate = estimates)
+    names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    attr(rval, "SE") <- sqrt(diag(variance[1:4, 1:4]))
+    attr(rval, "var") <- variance[1:4, 1:4]
     attr(rval, "statistic") <- "watts index decomposition"
-    if(thresh) attr(rval, "thresh") <- th
-    class(rval) <- c( "cvydstat" , "cvystat" , "svrepstat" , "svystat" )
+    if (thresh)
+      attr(rval, "thresh") <- th
+    class(rval) <-
+      c("cvydstat" , "cvystat" , "svrepstat" , "svystat")
 
     rval
 
@@ -342,24 +508,21 @@ svywattsdec.svyrep.design <-
 #' @export
 svywattsdec.DBIsvydesign <-
   function (formula, design, ...) {
-
-
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-      full_design <- attr( design , "full_design" )
+    if (!("logical" %in% class(attr(design, "full_design")))) {
+      full_design <- attr(design , "full_design")
 
       full_design$variables <-
         getvars(
           formula,
-          attr( design , "full_design" )$db$connection,
-          attr( design , "full_design" )$db$tablename,
-          updates = attr( design , "full_design" )$updates,
-          subset = attr( design , "full_design" )$subset
+          attr(design , "full_design")$db$connection,
+          attr(design , "full_design")$db$tablename,
+          updates = attr(design , "full_design")$updates,
+          subset = attr(design , "full_design")$subset
         )
 
-      attr( design , "full_design" ) <- full_design
+      attr(design , "full_design") <- full_design
 
-      rm( full_design )
+      rm(full_design)
 
     }
 
@@ -374,4 +537,3 @@ svywattsdec.DBIsvydesign <-
 
     NextMethod("svywattsdec", design)
   }
-

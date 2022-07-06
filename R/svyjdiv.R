@@ -85,8 +85,10 @@
 #'
 #' @export
 svyjdiv <- function(formula, design, ...) {
-
-  if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+  if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+    stop(
+      "convey package functions currently only support one variable in the `formula=` argument"
+    )
 
   warning("The svyjdiv function is experimental and is subject to changes in later versions.")
 
@@ -96,134 +98,188 @@ svyjdiv <- function(formula, design, ...) {
 
 #' @rdname svyjdiv
 #' @export
-svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, ... ) {
+svyjdiv.survey.design <-
+  function (formula, design, na.rm = FALSE, ...) {
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[nas == 0,]
+      if (length(nas) > length(design$prob)) {
+        incvar <- incvar[nas == 0]
+      }
+    }
 
-  if (na.rm) {
-    nas <- is.na(incvar)
-    design <- design[nas == 0, ]
-    if ( length(nas) > length(design$prob) ) { incvar <- incvar[nas == 0] }
-  }
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    w <- 1 / design$prob
 
-  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  w <- 1/design$prob
+    incvar <- incvar[w > 0]
+    w <- w[w > 0]
 
-  incvar <- incvar[ w > 0 ]
-  w <- w[ w > 0 ]
+    if (any(incvar <= 0 , na.rm = TRUE))
+      stop(
+        "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed."
+      )
 
-  if ( any( incvar <= 0 , na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
+    rval <- NULL
 
-  rval <- NULL
+    U_0 <- list(value = sum(w), lin = rep(1, length(incvar)))
+    U_1 <- list(value = sum(w * incvar), lin = incvar)
+    T_0 <-
+      list(value = sum(w * log(incvar)), lin = log(incvar))
+    T_1 <-
+      list(value = sum(w * incvar * log(incvar)),
+           lin = incvar * log(incvar))
 
-  U_0 <- list( value = sum( w ), lin = rep( 1, length( incvar ) ) )
-  U_1 <- list( value = sum( w * incvar ), lin = incvar )
-  T_0 <- list( value = sum( w * log( incvar ) ), lin = log( incvar ) )
-  T_1 <- list( value = sum( w * incvar * log( incvar ) ), lin = incvar * log( incvar ) )
+    list_all <- list(
+      U_0 = U_0,
+      U_1 = U_1,
+      T_0 = T_0,
+      T_1 = T_1
+    )
+    estimate <-
+      contrastinf(quote((T_1 / U_1) - (T_0 / U_0)) , list_all)
 
-  list_all <- list(  U_0 = U_0, U_1 = U_1, T_0 = T_0, T_1 = T_1 )
-  estimate <- contrastinf( quote( ( T_1 / U_1 ) - ( T_0 / U_0 ) ) , list_all )
+    rval <- estimate$value
 
-  rval <- estimate$value
+    if (is.na(rval)) {
+      variance <- as.matrix(NA)
+      colnames(variance) <-
+        rownames(variance) <-
+        names(rval) <-
+        strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+      class(rval) <- c("cvystat" , "svystat")
+      attr(rval, "statistic") <- "j-divergence"
+      attr(rval, "var") <- variance
+      return(rval)
+    }
 
-  if ( is.na(rval) ) {
-    variance <- as.matrix(NA)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- c( "cvystat" , "svystat" )
+    lin <- 1 * (1 / design$prob > 0)
+    lin[lin > 0] <- estimate$lin
+    estimate$lin <- lin
+    rm(lin , w)
+    variance <-
+      survey::svyrecvar(
+        estimate$lin / design$prob,
+        design$cluster,
+        design$strata,
+        design$fpc,
+        postStrata = design$postStrata
+      )
+
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svystat")
     attr(rval, "statistic") <- "j-divergence"
     attr(rval, "var") <- variance
-    return(rval)
+    attr(rval, "lin") <- estimate$lin
+
+    rval
+
   }
-
-  lin <- 1*( 1/design$prob > 0)
-  lin[ lin > 0 ] <- estimate$lin
-  estimate$lin <- lin ; rm( lin , w )
-  variance <- survey::svyrecvar( estimate$lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
-
-  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-  class(rval) <- c( "cvystat" , "svystat" )
-  attr(rval, "statistic") <- "j-divergence"
-  attr(rval, "var") <- variance
-  attr(rval, "lin") <- estimate$lin
-
-  rval
-
-}
 
 
 #' @rdname svyjdiv
 #' @export
-svyjdiv.svyrep.design <- function ( formula, design, na.rm = FALSE, ... ) {
+svyjdiv.svyrep.design <-
+  function (formula, design, na.rm = FALSE, ...) {
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
 
-  if(na.rm){
-    nas<-is.na(incvar)
-    design<-design[!nas,]
-    df <- model.frame(design)
-    incvar <- incvar[!nas]
-  }
+    ws <- weights(design, "sampling")
 
-  ws <- weights(design, "sampling")
+    if (any(incvar[ws != 0] <= 0, na.rm = TRUE))
+      stop(
+        "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed."
+      )
 
-  if ( any( incvar[ws != 0] <= 0, na.rm = TRUE ) ) stop( "The J-divergence measure is defined for strictly positive variables only.  Negative and zero values not allowed." )
+    rval <- calc.jdiv(x = incvar, weights = ws)
+    if (is.na(rval)) {
+      variance <- as.matrix(NA)
+      colnames(variance) <-
+        rownames(variance) <-
+        names(rval) <-
+        strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+      class(rval) <- c("cvystat" , "svrepstat")
+      attr(rval, "var") <- variance
+      attr(rval, "statistic") <- "j-divergence"
 
-  rval <- calc.jdiv( x = incvar, weights = ws )
-  if ( is.na(rval) ) {
-    variance <- as.matrix(NA)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- c( "cvystat" , "svrepstat" )
+      return(rval)
+    }
+
+    ww <- weights(design, "analysis")
+    qq <- apply(ww, 2, function(wi)
+      calc.jdiv(incvar, wi))
+    if (any(is.na(qq))) {
+      variance <- as.matrix(NA)
+      colnames(variance) <-
+        rownames(variance) <-
+        names(rval) <-
+        strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+      class(rval) <- c("cvystat" , "svrepstat")
+      attr(rval, "var") <- variance
+      attr(rval, "statistic") <- "j-divergence"
+
+      return(rval)
+
+    } else {
+      variance <-
+        survey::svrVar(qq,
+                       design$scale,
+                       design$rscales,
+                       mse = design$mse,
+                       coef = rval)
+
+      variance <- as.matrix(variance)
+    }
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svrepstat")
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "j-divergence"
 
     return(rval)
+
   }
-
-  ww <- weights(design, "analysis")
-  qq <- apply(ww, 2, function(wi) calc.jdiv(incvar, wi ) )
-  if ( any(is.na(qq))) {
-    variance <- as.matrix(NA)
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- c( "cvystat" , "svrepstat" )
-    attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "j-divergence"
-
-    return(rval)
-
-  } else {
-    variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
-
-    variance <- as.matrix( variance )
-  }
-  colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-  class(rval) <- c( "cvystat" , "svrepstat" )
-  attr(rval, "var") <- variance
-  attr(rval, "statistic") <- "j-divergence"
-
-  return( rval )
-
-}
 
 #' @rdname svyjdiv
 #' @export
 svyjdiv.DBIsvydesign <-
   function (formula, design, ...) {
-
-    design$variables <- getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
+    design$variables <-
+      getvars(
+        formula,
+        design$db$connection,
+        design$db$tablename,
+        updates = design$updates,
+        subset = design$subset
+      )
 
     NextMethod("svyjdiv", design)
   }
 
 
 # J-divergence measure:
-calc.jdiv <-  function( x, weights ) {
+calc.jdiv <-  function(x, weights) {
+  x <- x[weights > 0]
+  weights <- weights[weights > 0]
 
-  x <- x[ weights > 0]
-  weights <- weights[ weights > 0]
+  avg <- sum(x * weights) / sum(weights)
+  jdiv = ((x - avg) / avg) * log(x / avg)
 
-  avg <- sum( x * weights ) / sum( weights )
-  jdiv = ( ( x - avg ) / avg ) * log( x / avg )
-
-  return( sum( jdiv * weights ) / sum( weights ) )
+  return(sum(jdiv * weights) / sum(weights))
 
 }

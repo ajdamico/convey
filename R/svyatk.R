@@ -123,196 +123,247 @@
 #'
 #' @export
 svyatk <-
-	function(formula, design, ...) {
+  function(formula, design, ...) {
+    if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+      stop(
+        "convey package functions currently only support one variable in the `formula=` argument"
+      )
 
-		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+    if ('epsilon' %in% names(list(...)) &&
+        list(...)[["epsilon"]] <= 0)
+      stop("epsilon= must be positive.")
 
-		if( 'epsilon' %in% names( list(...) ) && list(...)[["epsilon"]] <= 0 ) stop( "epsilon= must be positive." )
+    UseMethod("svyatk", design)
 
-		UseMethod("svyatk", design)
-
-	}
+  }
 
 
 #' @rdname svyatk
 #' @export
 svyatk.survey.design <-
-	function ( formula, design, epsilon = 1, na.rm = FALSE, ... ) {
+  function (formula,
+            design,
+            epsilon = 1,
+            na.rm = FALSE,
+            ...) {
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[nas == 0,]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[nas == 0]
+      else
+        incvar[nas > 0] <- 0
+    }
 
-		if (na.rm) {
-			nas <- is.na(incvar)
-			design <- design[nas == 0, ]
-			if (length(nas) > length(design$prob))
-			incvar <- incvar[nas == 0]
-			else incvar[nas > 0] <- 0
-		}
+    w <- 1 / design$prob
+    if (any(is.na(incvar [w != 0]))) {
+      rval <- NA
+      variance <- as.matrix(NA)
+      colnames(variance) <-
+        rownames(variance) <-
+        names(rval) <-
+        strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+      class(rval) <- c("cvystat" , "svystat")
+      attr(rval, "var") <- variance
+      attr(rval, "statistic") <- "atkinson"
+      attr(rval, "epsilon") <- epsilon
+      return(rval)
+    }
 
-		w <- 1/design$prob
-		if ( any( is.na(incvar [w != 0]) ) ) {
-			rval <- NA
-			variance <- as.matrix(NA)
-			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-			class(rval) <- c( "cvystat" , "svystat" )
-			attr(rval, "var") <- variance
-			attr(rval, "statistic") <- "atkinson"
-			attr(rval,"epsilon")<- epsilon
-			return(rval)
-		}
+    if (any(incvar[w != 0] <= 0))
+      stop(
+        "The Atkinson Index is defined for strictly positive variables only.  Negative and zero values not allowed."
+      )
 
-		if ( any(incvar[w != 0] <= 0) ) stop( "The Atkinson Index is defined for strictly positive variables only.  Negative and zero values not allowed." )
+    w <- 1 / design$prob
 
-		w <- 1/design$prob
+    rval <- NULL
+    rval <-
+      calc.atkinson(x = incvar,
+                    weights = w,
+                    epsilon = epsilon)
 
-		rval <- NULL
-		rval <- calc.atkinson( x = incvar, weights = w, epsilon = epsilon )
+    if (is.na(rval)) {
+      variance <- as.matrix(NA)
+      colnames(variance) <-
+        rownames(variance) <-
+        names(rval) <-
+        strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+      class(rval) <- c("cvystat" , "svystat")
+      attr(rval, "var") <- variance
+      attr(rval, "statistic") <- "atkinson"
+      attr(rval, "epsilon") <- epsilon
+      return(rval)
+    }
 
-		if ( is.na(rval) ) {
-			variance <- as.matrix(NA)
-			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-			class(rval) <- c( "cvystat" , "svystat" )
-			attr(rval, "var") <- variance
-			attr(rval, "statistic") <- "atkinson"
-			attr(rval,"epsilon")<- epsilon
-			return(rval)
-		}
+    if (epsilon != 1) {
+      v <-
+        ((epsilon) / (1 - epsilon)) *
+        U_fn(incvar , w , 1) ^ (-1) *
+        U_fn(incvar , w , 1 - epsilon) ^ (1 / (1 - epsilon)) *
+        U_fn(incvar , w , 0) ^ (-1 / (1 - epsilon)) +
 
-		if ( epsilon != 1 ) {
+        U_fn(incvar , w , 0) ^ (-epsilon / (1 - epsilon)) *
+        U_fn(incvar , w , 1 - epsilon) ^ (1 / (1 - epsilon)) *
+        U_fn(incvar , w , 1) ^ (-2) *
+        incvar -
 
-			v <-
-				( ( epsilon ) / ( 1 - epsilon ) ) *
-				U_fn( incvar , w , 1 )^( -1 ) *
-				U_fn( incvar , w , 1 - epsilon )^( 1 / ( 1 - epsilon ) ) *
-				U_fn( incvar , w , 0 )^( -1 / ( 1 - epsilon ) ) +
+        (1 / (1 - epsilon)) *
+        U_fn(incvar , w , 0) ^ (-epsilon / (1 - epsilon)) *
+        U_fn(incvar , w , 1) ^ (-1) *
+        U_fn(incvar , w , 1 - epsilon) ^ (epsilon / (1 - epsilon)) *
+        incvar ^ (1 - epsilon)
 
-				U_fn( incvar , w , 0 )^( -epsilon / ( 1 - epsilon ) ) *
-				U_fn( incvar , w , 1 - epsilon )^( 1 / ( 1 - epsilon ) ) *
-				U_fn( incvar , w , 1 )^( -2 ) *
-				incvar -
+    } else {
+      v <-
+        (rval - 1) *
+        U_fn(incvar , w , 0) ^ (-1) *
+        (1 - U_fn(incvar , w , 0) ^ (-1) * T_fn(incvar[w != 0] , w[w != 0] , 0)) +
 
-				( 1 / ( 1 - epsilon ) ) *
-				U_fn( incvar , w , 0 )^( -epsilon / ( 1 - epsilon ) ) *
-				U_fn( incvar , w , 1 )^( -1 ) *
-				U_fn( incvar , w , 1 - epsilon )^( epsilon / ( 1 - epsilon ) ) *
-				incvar^( 1 - epsilon )
+        (1 - rval) * U_fn(incvar , w , 1) ^ (-1) * incvar +
+        (rval - 1) * U_fn(incvar , w , 0) ^ (-1) *
+        log(incvar)
 
-		} else {
+    }
 
-			v <-
-				( rval - 1 ) *
-				U_fn( incvar , w , 0 )^( -1 ) *
-				( 1 - U_fn( incvar , w , 0 )^( -1 ) * T_fn( incvar[w != 0] , w[ w != 0 ] , 0 ) ) +
+    v[w == 0] <- 0
 
-				( 1 - rval ) * U_fn( incvar , w , 1 )^( -1 ) * incvar +
-				( rval - 1 ) * U_fn( incvar , w , 0 )^( -1 ) *
-				log( incvar )
+    variance <-
+      survey::svyrecvar(v / design$prob,
+                        design$cluster,
+                        design$strata,
+                        design$fpc,
+                        postStrata = design$postStrata)
 
-		}
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svystat")
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "atkinson"
+    attr(rval, "epsilon") <- epsilon
 
-		v[w == 0] <- 0
-
-		variance <- survey::svyrecvar(v/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
-
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svystat" )
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "atkinson"
-		attr(rval,"epsilon")<- epsilon
-
-		rval
-	}
+    rval
+  }
 
 
 #' @rdname svyatk
 #' @export
 svyatk.svyrep.design <-
-	function(formula, design, epsilon = 1, na.rm=FALSE, ...) {
+  function(formula,
+           design,
+           epsilon = 1,
+           na.rm = FALSE,
+           ...) {
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      df <- model.frame(design)
+      incvar <- incvar[!nas]
+    }
 
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
-			df <- model.frame(design)
-			incvar <- incvar[!nas]
-		}
+    ws <- weights(design, "sampling")
 
-		ws <- weights(design, "sampling")
+    if (any(incvar[ws != 0] <= 0, na.rm = TRUE))
+      stop(
+        "The Atkinson Index is defined for strictly positive variables only.  Negative and zero values not allowed."
+      )
 
-		if ( any( incvar[ws != 0] <= 0, na.rm = TRUE ) ) stop( "The Atkinson Index is defined for strictly positive variables only.  Negative and zero values not allowed." )
+    ws <- weights(design, "sampling")
+    rval <-
+      calc.atkinson(x = incvar,
+                    weights = ws,
+                    epsilon = epsilon)
+    ww <- weights(design, "analysis")
+    qq <-
+      apply(ww, 2, function(wi)
+        calc.atkinson(incvar, wi, epsilon = epsilon))
 
-		ws <- weights(design, "sampling")
-		rval <- calc.atkinson( x = incvar, weights = ws, epsilon = epsilon)
-		ww <- weights(design, "analysis")
-		qq <- apply(ww, 2, function(wi) calc.atkinson(incvar, wi, epsilon = epsilon))
+    if (any(is.na(qq))) {
+      variance <- as.matrix(NA)
+      colnames(variance) <-
+        rownames(variance) <-
+        names(rval) <-
+        strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+      class(rval) <- c("cvystat" , "svrepstat")
+      attr(rval, "var") <- variance
+      attr(rval, "statistic") <- "atkinson"
+      attr(rval, "epsilon") <- epsilon
 
-		if ( any(is.na(qq))) {
+      return(rval)
 
-			variance <- as.matrix(NA)
-			colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-			class(rval) <- c( "cvystat" , "svrepstat" )
-			attr(rval, "var") <- variance
-			attr(rval, "statistic") <- "atkinson"
-			attr(rval,"epsilon")<- epsilon
+    } else {
+      variance <-
+        survey::svrVar(qq,
+                       design$scale,
+                       design$rscales,
+                       mse = design$mse,
+                       coef = rval)
 
-			return(rval)
+      variance <- as.matrix(variance)
 
-		} else {
+    }
 
-			variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svrepstat")
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "atkinson"
+    attr(rval, "epsilon") <- epsilon
+    return(rval)
 
-			variance <- as.matrix( variance )
-
-		}
-
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svrepstat" )
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "atkinson"
-		attr(rval,"epsilon")<- epsilon
-		return(rval)
-
-	}
+  }
 
 
 #' @rdname svyatk
 #' @export
 svyatk.DBIsvydesign <-
-	function (formula, design, ...) {
+  function (formula, design, ...) {
+    design$variables <-
+      getvars(
+        formula,
+        design$db$connection,
+        design$db$tablename,
+        updates = design$updates,
+        subset = design$subset
+      )
 
-	  design$variables <- getvars( formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset )
-
-		NextMethod("svyatk", design)
-	}
+    NextMethod("svyatk", design)
+  }
 
 
 
 
 
 calc.atkinson <-
-	function( x, weights, epsilon ) {
+  function(x, weights, epsilon) {
+    x <- x[weights != 0]
 
-		x <- x[ weights != 0 ]
+    weights <- weights[weights != 0]
 
-		weights <- weights[ weights != 0 ]
+    if (epsilon == 1) {
+      result.est <-
+        1 -
+        U_fn(x , weights , 0) *
+        U_fn(x , weights , 1) ^ (-1) *
+        exp(T_fn(x , weights , 0) / U_fn(x , weights , 0))
 
-		if ( epsilon == 1 ) {
+    } else {
+      result.est <-
+        1 -
+        (U_fn(x , weights , 0) ^ (-epsilon / (1 - epsilon))) *
+        U_fn(x , weights , 1 - epsilon) ^ (1 / (1 - epsilon))  / U_fn(x , weights , 1)
 
-			result.est <-
-				1 -
-				U_fn( x , weights , 0 ) *
-				U_fn( x , weights , 1 )^( -1 ) *
-				exp( T_fn( x , weights , 0 ) / U_fn( x , weights , 0 ) )
+    }
 
-		} else {
-
-			result.est <-
-				1 -
-				( U_fn( x , weights , 0 )^( -epsilon / ( 1 - epsilon ) ) ) *
-				U_fn( x , weights , 1 - epsilon )^( 1 / ( 1 - epsilon ) )  / U_fn( x , weights , 1 )
-
-		}
-
-		result.est
-	}
+    result.est
+  }

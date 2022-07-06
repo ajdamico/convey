@@ -110,16 +110,24 @@
 #' @export
 svychu <-
   function(formula, design,  ...) {
-
-    if( !( 'g' %in% names(list(...)) ) ) stop( "g= parameter must be specified" )
+    if (!('g' %in% names(list(...))))
+      stop("g= parameter must be specified")
 
     warning("The svychu function is experimental and is subject to changes in later versions.")
 
-    if( !is.na( list(...)[["g"]] ) && !( list(...)[["g"]] <= 1 & list(...)[["g"]] >= 0 ) ) stop( "g= must be in the [0, 1] interval." )
+    if (!is.na(list(...)[["g"]]) &&
+        !(list(...)[["g"]] <= 1 &
+          list(...)[["g"]] >= 0))
+      stop("g= must be in the [0, 1] interval.")
 
-    if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'relq' , 'abs' , 'relm' ) ) ) stop( 'type_thresh= must be "relq" "relm" or "abs".  see ?svychu for more detail.' )
+    if ('type_thresh' %in% names(list(...)) &&
+        !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
+      stop('type_thresh= must be "relq" "relm" or "abs".  see ?svychu for more detail.')
 
-    if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+    if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+      stop(
+        "convey package functions currently only support one variable in the `formula=` argument"
+      )
 
     UseMethod("svychu", design)
 
@@ -128,104 +136,152 @@ svychu <-
 #' @rdname svychu
 #' @export
 svychu.survey.design <-
-  function(formula, design, g, type_thresh="abs",  abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE, ...){
+  function(formula,
+           design,
+           g,
+           type_thresh = "abs",
+           abs_thresh = NULL,
+           percent = .60,
+           quantiles = .50,
+           na.rm = FALSE,
+           thresh = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
+      )
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
-
-    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+    if (type_thresh == "abs" &
+        is.null(abs_thresh))
+      stop("abs_thresh= must be specified when type_thresh='abs'")
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
 
     #  survey design h function
-    h <- function( y , thresh , g ) if (g==0) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 ) else ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
+    h <-
+      function(y , thresh , g)
+        if (g == 0)
+          ifelse(y != 0 , ifelse(y <= thresh , log(thresh / y) , 0) , 0)
+    else
+      ifelse(y <= thresh , (1 - (y / thresh) ^ g) / g , 0)
 
     # ht function
-    ht <- function( y , thresh , g ) if (g==0) ifelse( y != 0 , ifelse( y <= thresh , 1/thresh , 0 ) , 0 ) else ifelse( y <= thresh , (y^g / thresh^(g + 1) ) , 0 )
+    ht <-
+      function(y , thresh , g)
+        if (g == 0)
+          ifelse(y != 0 , ifelse(y <= thresh , 1 / thresh , 0) , 0)
+    else
+      ifelse(y <= thresh , (y ^ g / thresh ^ (g + 1)) , 0)
 
     # domain
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
-      if (length(nas) > length(design$prob))incvar <- incvar[!nas] else incvar[nas] <- 0
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
     }
 
-    w <- 1/design$prob
+    w <- 1 / design$prob
 
-    if( any( incvar[w > 0] <= 0 , na.rm = TRUE ) ){
-      nps<-incvar <= 0
-      design<-design[!nps,]
-      if (length(nps) > length(design$prob))incvar <- incvar[!nps] else incvar[nps] <- 0
-      w <- 1/design$prob
+    if (any(incvar[w > 0] <= 0 , na.rm = TRUE)) {
+      nps <- incvar <= 0
+      design <- design[!nps, ]
+      if (length(nps) > length(design$prob))
+        incvar <- incvar[!nps]
+      else
+        incvar[nps] <- 0
+      w <- 1 / design$prob
     }
 
-    if( is.null( names( design$prob ) ) ) ind <- as.character( seq( length( design$prob ) ) ) else ind <- names(design$prob)
+    if (is.null(names(design$prob)))
+      ind <-
+      as.character(seq(length(design$prob)))
+    else
+      ind <- names(design$prob)
 
     N <- sum(w)
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+      design
+    else
+      full_design <- attr(design, "full_design")
 
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
-      if (length(nas) > length(full_design$prob)) incvec <- incvec[!nas] else incvec[nas] <- 0
+    if (na.rm) {
+      nas <- is.na(incvec)
+      full_design <- full_design[!nas, ]
+      if (length(nas) > length(full_design$prob))
+        incvec <- incvec[!nas]
+      else
+        incvec[nas] <- 0
     }
 
-    wf <- 1/full_design$prob
+    wf <- 1 / full_design$prob
 
-    if( any( incvec[wf > 0] <= 0 , na.rm = TRUE ) ){
+    if (any(incvec[wf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
       nps <- incvec <= 0
-      full_design<-full_design[!nps,]
-      if (length(nps) > length(full_design$prob)) incvec <- incvec[!nps] else incvec[nps] <- 0
+      full_design <- full_design[!nps, ]
+      if (length(nps) > length(full_design$prob))
+        incvec <- incvec[!nps]
+      else
+        incvec[nps] <- 0
 
-      wf <- 1/full_design$prob
+      wf <- 1 / full_design$prob
     }
 
-    if( is.null( names( full_design$prob ) ) ) ncom <- as.character( seq( length( full_design$prob ) ) ) else ncom <- names(full_design$prob)
+    if (is.null(names(full_design$prob)))
+      ncom <-
+      as.character(seq(length(full_design$prob)))
+    else
+      ncom <- names(full_design$prob)
 
     htot <- h_fun(incvar, w)
-    if (sum(1/design$prob==0) > 0) ID <- 1*(1/design$prob!=0) else ID <- 1 * ( ncom %in% ind )
+    if (sum(1 / design$prob == 0) > 0)
+      ID <- 1 * (1 / design$prob != 0)
+    else
+      ID <- 1 * (ncom %in% ind)
 
 
     # linearization
 
-    if( type_thresh == 'relq' ){
-
-      ARPT <- svyarpt(formula = formula, full_design, quantiles=quantiles, percent=percent,  na.rm=na.rm, ...)
+    if (type_thresh == 'relq') {
+      ARPT <-
+        svyarpt(
+          formula = formula,
+          full_design,
+          quantiles = quantiles,
+          percent = percent,
+          na.rm = na.rm,
+          ...
+        )
       th <- coef(ARPT)
       arptlin <- attr(ARPT, "lin")
-      rval <- sum(w*h(incvar,th,g))/N
-      ahat <- sum(w*ht(incvar,th,g))/N
+      rval <- sum(w * h(incvar, th, g)) / N
+      ahat <- sum(w * ht(incvar, th, g)) / N
 
-      chulin <-ID*( h( incvec , th , g ) - rval ) / N + ( ahat * arptlin )
+      chulin <-
+        ID * (h(incvec , th , g) - rval) / N + (ahat * arptlin)
 
-      if ( g == 0 ) {
-        estimate <- contrastinf( quote(1 - exp(-watts) ) , list( watts = list( value = rval , lin = chulin ) ) )
-        rval <- estimate$value
-        chulin <- estimate$lin
-        rm(estimate)
-        }
-
-    }
-
-    if( type_thresh == 'relm'){
-
-      # thresh for the whole population
-      th <- percent*sum(incvec*wf)/sum(wf)
-      rval <- sum(w*h(incvar,th,g))/N
-      ahat <- sum(w*ht(incvar,th,g))/N
-      chulin <-ID*( h( incvec , th , g ) - rval + ( ( percent * incvec ) - th ) * ahat ) / N
-
-      if ( g == 0 ) {
-        estimate <- contrastinf( quote(1 - exp(-watts) ) , list( watts = list( value = rval , lin = chulin ) ) )
+      if (g == 0) {
+        estimate <-
+          contrastinf(quote(1 - exp(-watts)) , list(watts = list(value = rval , lin = chulin)))
         rval <- estimate$value
         chulin <- estimate$lin
         rm(estimate)
@@ -233,16 +289,34 @@ svychu.survey.design <-
 
     }
 
-    if( type_thresh == 'abs' ){
+    if (type_thresh == 'relm') {
+      # thresh for the whole population
+      th <- percent * sum(incvec * wf) / sum(wf)
+      rval <- sum(w * h(incvar, th, g)) / N
+      ahat <- sum(w * ht(incvar, th, g)) / N
+      chulin <-
+        ID * (h(incvec , th , g) - rval + ((percent * incvec) - th) * ahat) / N
 
+      if (g == 0) {
+        estimate <-
+          contrastinf(quote(1 - exp(-watts)) , list(watts = list(value = rval , lin = chulin)))
+        rval <- estimate$value
+        chulin <- estimate$lin
+        rm(estimate)
+      }
+
+    }
+
+    if (type_thresh == 'abs') {
       th <- abs_thresh
 
-      rval <- sum( w*h( incvar , th , g ) ) / N
+      rval <- sum(w * h(incvar , th , g)) / N
 
-      chulin <- ID*( h( incvec , th , g ) - rval ) / N
+      chulin <- ID * (h(incvec , th , g) - rval) / N
 
-      if ( g == 0 ) {
-        estimate <- contrastinf( quote(1 - exp(-watts) ) , list( watts = list( value = rval , lin = chulin ) ) )
+      if (g == 0) {
+        estimate <-
+          contrastinf(quote(1 - exp(-watts)) , list(watts = list(value = rval , lin = chulin)))
         rval <- estimate$value
         chulin <- estimate$lin
         rm(estimate)
@@ -250,16 +324,27 @@ svychu.survey.design <-
 
     }
 
-    variance <- survey::svyrecvar(chulin/full_design$prob, full_design$cluster, full_design$strata, full_design$fpc, postStrata = full_design$postStrata)
+    variance <-
+      survey::svyrecvar(
+        chulin / full_design$prob,
+        full_design$cluster,
+        full_design$strata,
+        full_design$fpc,
+        postStrata = full_design$postStrata
+      )
 
 
 
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- c( "cvystat" , "svystat" )
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svystat")
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- paste0("chu",g)
+    attr(rval, "statistic") <- paste0("chu", g)
     attr(rval, "lin") <- chulin
-    if(thresh) attr(rval, "thresh") <- th
+    if (thresh)
+      attr(rval, "thresh") <- th
     rval
 
   }
@@ -269,80 +354,107 @@ svychu.survey.design <-
 #' @rdname svychu
 #' @export
 svychu.svyrep.design <-
-  function(formula, design, g, type_thresh="abs", abs_thresh=NULL, percent = .60, quantiles = .50, na.rm = FALSE, thresh = FALSE,...) {
+  function(formula,
+           design,
+           g,
+           type_thresh = "abs",
+           abs_thresh = NULL,
+           percent = .60,
+           quantiles = .50,
+           na.rm = FALSE,
+           thresh = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function."
+      )
 
-    if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
-
-    if( type_thresh == "abs" & is.null( abs_thresh ) ) stop( "abs_thresh= must be specified when type_thresh='abs'" )
+    if (type_thresh == "abs" &
+        is.null(abs_thresh))
+      stop("abs_thresh= must be specified when type_thresh='abs'")
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design")))
+      full_design <-
+        design
+    else
+      full_design <- attr(design, "full_design")
 
     #  survey design h function
-    h <- function( y , thresh , g ) if (g==0) ifelse( y != 0 , ifelse( y <= thresh , log( thresh / y ) , 0 ) , 0 ) else ifelse( y <= thresh , ( 1 - ( y / thresh )^g ) / g , 0 )
+    h <-
+      function(y , thresh , g)
+        if (g == 0)
+          ifelse(y != 0 , ifelse(y <= thresh , log(thresh / y) , 0) , 0)
+    else
+      ifelse(y <= thresh , (1 - (y / thresh) ^ g) / g , 0)
 
     # svyrep design ComputeCHU function
     ComputeCHU <-
-      function( y , w , thresh , g ){
+      function(y , w , thresh , g) {
         N <- sum(w)
         if (g == 0) {
-          1 - exp( -sum( w * h( y , thresh , g ) ) / N )
+          1 - exp(-sum(w * h(y , thresh , g)) / N)
         } else {
-          sum( w * h( y , thresh , g ) ) / N
+          sum(w * h(y , thresh , g)) / N
         }
       }
 
 
     df <- model.frame(design)
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvar)
-      design<-design[!nas,]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
 
     ws <- weights(design, "sampling")
 
-    if( any(incvar[ ws > 0 ] <= 0 , na.rm = TRUE ) ){
-      nps<-incvar <= 0
-      design<-design[!nps,]
+    if (any(incvar[ws > 0] <= 0 , na.rm = TRUE)) {
+      nps <- incvar <= 0
+      design <- design[!nps, ]
       df <- model.frame(design)
       incvar <- incvar[!nps]
       ws <- weights(design, "sampling")
     }
 
 
-    df_full<- model.frame(full_design)
-    incvec <- model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+    df_full <- model.frame(full_design)
+    incvec <-
+      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
-    if(na.rm){
-      nas<-is.na(incvec)
-      full_design<-full_design[!nas,]
+    if (na.rm) {
+      nas <- is.na(incvec)
+      full_design <- full_design[!nas, ]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
 
-    wsf <- weights(full_design,"sampling")
+    wsf <- weights(full_design, "sampling")
 
-    if( any(incvec[ wsf > 0 ] <= 0 , na.rm = TRUE ) ){
+    if (any(incvec[wsf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
-      nps<-incvec <= 0
-      full_design<-full_design[!nps,]
+      nps <- incvec <= 0
+      full_design <- full_design[!nps, ]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nps]
-      wsf <- weights(full_design,"sampling")
+      wsf <- weights(full_design, "sampling")
     }
 
     names(incvec) <- names(wsf) <- row.names(df_full)
-    ind<- row.names(df)
+    ind <- row.names(df)
 
     # poverty threshold
-    if(type_thresh=='relq') th <- percent * computeQuantiles( incvec, wsf, p = quantiles)
-    if(type_thresh=='relm') th <- percent*sum(incvec*wsf)/sum(wsf)
-    if(type_thresh=='abs') th <- abs_thresh
+    if (type_thresh == 'relq')
+      th <- percent * computeQuantiles(incvec, wsf, p = quantiles)
+    if (type_thresh == 'relm')
+      th <- percent * sum(incvec * wsf) / sum(wsf)
+    if (type_thresh == 'abs')
+      th <- abs_thresh
 
 
     rval <- ComputeCHU(incvar, ws, thresh = th , g = g)
@@ -350,47 +462,56 @@ svychu.svyrep.design <-
     wwf <- weights(full_design, "analysis")
 
     qq <-
-      apply(wwf, 2, function(wi){
-        names(wi)<- row.names(df_full)
-        wd<-wi[ind]
+      apply(wwf, 2, function(wi) {
+        names(wi) <- row.names(df_full)
+        wd <- wi[ind]
         incd <- incvec[ind]
-        ComputeCHU( incd, wd, thresh = th , g = g )}
-      )
-    if(anyNA(qq))variance <- NA
-    else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+        ComputeCHU(incd, wd, thresh = th , g = g)
+      })
+    if (anyNA(qq))
+      variance <- NA
+    else
+      variance <-
+      survey::svrVar(qq,
+                     design$scale,
+                     design$rscales,
+                     mse = design$mse,
+                     coef = rval)
 
-    variance <- as.matrix( variance )
+    variance <- as.matrix(variance)
 
-    colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-    class(rval) <- c( "cvystat" , "svrepstat" )
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svrepstat")
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- paste0("chu",g)
+    attr(rval, "statistic") <- paste0("chu", g)
     attr(rval, "lin") <- NA
-    if(thresh) attr(rval, "thresh") <- th
+    if (thresh)
+      attr(rval, "thresh") <- th
     rval
   }
 
 #' @rdname svychu
 #' @export
 svychu.DBIsvydesign <-
-  function (formula, design, ...){
-
-    if (!( "logical" %in% class(attr(design, "full_design"))) ){
-
-      full_design <- attr( design , "full_design" )
+  function (formula, design, ...) {
+    if (!("logical" %in% class(attr(design, "full_design")))) {
+      full_design <- attr(design , "full_design")
 
       full_design$variables <-
         getvars(
           formula,
-          attr( design , "full_design" )$db$connection,
-          attr( design , "full_design" )$db$tablename,
-          updates = attr( design , "full_design" )$updates,
-          subset = attr( design , "full_design" )$subset
+          attr(design , "full_design")$db$connection,
+          attr(design , "full_design")$db$tablename,
+          updates = attr(design , "full_design")$updates,
+          subset = attr(design , "full_design")$subset
         )
 
-      attr( design , "full_design" ) <- full_design
+      attr(design , "full_design") <- full_design
 
-      rm( full_design )
+      rm(full_design)
 
     }
 
@@ -405,4 +526,3 @@ svychu.DBIsvydesign <-
 
     NextMethod("svychu", design)
   }
-

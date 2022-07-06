@@ -9,10 +9,12 @@
 #' @keywords survey
 #' @export
 h_fun <- function(incvar, w) {
-    N <- sum(w)
-    sd_inc <- sqrt((sum(w * incvar * incvar) - sum(w * incvar) * sum(w * incvar)/N)/N)
-    h <- sd_inc/exp(0.2 * log(sum(w)))
-    h
+  N <- sum(w)
+  sd_inc <-
+    sqrt((sum(w * incvar * incvar) - sum(w * incvar) * sum(w * incvar) / N) /
+           N)
+  h <- sd_inc / exp(0.2 * log(sum(w)))
+  h
 }
 
 #'Estimate the derivative of the cdf function using kernel estimator
@@ -44,30 +46,41 @@ h_fun <- function(incvar, w) {
 #' densfun ( ~ py010n , design = des_eusilc , 10000,FUN="F", na.rm = TRUE )
 #'
 #' @export
-densfun <- function(formula, design, x, h = NULL, FUN = "F" , na.rm=FALSE, ...) {
+densfun <-
+  function(formula,
+           design,
+           x,
+           h = NULL,
+           FUN = "F" ,
+           na.rm = FALSE,
+           ...) {
+    if (!(FUN %in% c("F" , "big_s")))
+      stop("valid choices for `FUN=` are 'F' and 'big_s'")
 
-	if( !( FUN %in% c( "F" , "big_s" ) ) ) stop( "valid choices for `FUN=` are 'F' and 'big_s'" )
-
-  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  if(na.rm){
-    nas<-is.na(incvar)
-    design<-design[!nas,]
-    if (length(nas) > length(design$prob))
-      incvar <- incvar[!nas]
-    else incvar[nas] <- 0
-  }
-  w <- 1/design$prob
-  N <- sum(w)
-  if(is.null(h)) h <- h_fun(incvar,w)
-  u <- (x - incvar)/h
-  vectf <- exp(-(u^2)/2)/sqrt(2 * pi)
-  if (FUN == "F")
-    res <- sum(vectf * w)/(N * h) else {
-      v <- w * incvar
-      res <- sum(vectf * v)/h
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
     }
-  res
-}
+    w <- 1 / design$prob
+    N <- sum(w)
+    if (is.null(h))
+      h <- h_fun(incvar, w)
+    u <- (x - incvar) / h
+    vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
+    if (FUN == "F")
+      res <- sum(vectf * w) / (N * h)
+    else {
+      v <- w * incvar
+      res <- sum(vectf * v) / h
+    }
+    res
+  }
 
 #' Linearization of the cumulative distribution function (cdf) of a variable
 #'
@@ -107,26 +120,32 @@ densfun <- function(formula, design, x, h = NULL, FUN = "F" , na.rm=FALSE, ...) 
 #' icdf( ~ py010n , design = des_eusilc , 10000, na.rm = TRUE )
 #' @export
 icdf <- function(formula, design, x, na.rm = FALSE, ...) {
-
-  incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
-  ncom<- names(design$prob)
-  if(na.rm){
-    nas<-is.na(incvar)
-    design<-design[!nas,]
+  incvar <-
+    model.frame(formula, design$variables, na.action = na.pass)[[1]]
+  ncom <- names(design$prob)
+  if (na.rm) {
+    nas <- is.na(incvar)
+    design <- design[!nas, ]
     if (length(nas) > length(design$prob))
       incvar <- incvar[!nas]
-    else incvar[nas] <- 0
+    else
+      incvar[nas] <- 0
   }
-  w <- 1/design$prob
+  w <- 1 / design$prob
   #ind<- names(w)
   N <- sum(w)
   poor <- (incvar <= x) * 1
-  value<- sum(poor*w)/N
-  lin<-((incvar<=x)-value)/N
+  value <- sum(poor * w) / N
+  lin <- ((incvar <= x) - value) / N
   rval <- value
-  variance <- survey::svyrecvar(lin/design$prob, design$cluster,
-    design$strata, design$fpc, postStrata = design$postStrata)
-  class(rval) <- c( "cvystat" , "svystat" )
+  variance <- survey::svyrecvar(
+    lin / design$prob,
+    design$cluster,
+    design$strata,
+    design$fpc,
+    postStrata = design$postStrata
+  )
+  class(rval) <- c("cvystat" , "svystat")
   attr(rval, "lin") <- lin
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "cdf"
@@ -136,22 +155,22 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
 
 # Functions U and big_t from Jenkins & Biewen:
 U_fn <-
-	function( x, weights, gamma ) {
-		x <- x[weights != 0]
+  function(x, weights, gamma) {
+    x <- x[weights != 0]
 
-		weights <- weights[weights != 0]
+    weights <- weights[weights != 0]
 
-		sum( weights * x^gamma )
-	}
+    sum(weights * x ^ gamma)
+  }
 
 T_fn <-
-	function( x, weights, gamma ) {
-		x <- x[weights != 0]
+  function(x, weights, gamma) {
+    x <- x[weights != 0]
 
-		weights <- weights[weights != 0]
+    weights <- weights[weights != 0]
 
-		sum( weights * x^gamma * log( x ) )
-	}
+    sum(weights * x ^ gamma * log(x))
+  }
 
 
 
@@ -159,15 +178,18 @@ T_fn <-
 #' @method print cvystat
 #' @export
 print.cvystat <- function(x, ...) {
-
   vv <- attr(x, "var")
 
-  if ( attr( x, "statistic" ) %in% c( "alkire-foster", "bourguignon-chakravarty", "bourguignon" ) ) {
+  if (attr(x, "statistic") %in% c("alkire-foster", "bourguignon-chakravarty", "bourguignon")) {
+    statistic <- attr(x, "statistic")
+    m <-
+      matrix(
+        data = c(x[1] , sqrt(vv)) ,
+        ncol = 2,
+        dimnames = list(NULL, c(statistic, "SE"))
+      )
 
-    statistic <- attr( x, "statistic" )
-    m <- matrix( data = c( x[1] , sqrt(vv) ) , ncol = 2, dimnames = list( NULL, c( statistic, "SE" ) ) )
-
-    return( printCoefmat(m) )
+    return(printCoefmat(m))
   }
 
   if (is.matrix(vv)) {
@@ -177,10 +199,13 @@ print.cvystat <- function(x, ...) {
   }
 
   nattr <- length(names(attributes(x)))
-  if (nattr>5) {
-    for(i in 6:nattr)
-    {m <- cbind(m, attr(x, names(attributes(x)[i])))}
-    colnames(m) <- c(attr(x, "statistic"), "SE", names(attributes(x))[6:nattr])
+  if (nattr > 5) {
+    for (i in 6:nattr)
+    {
+      m <- cbind(m, attr(x, names(attributes(x)[i])))
+    }
+    colnames(m) <-
+      c(attr(x, "statistic"), "SE", names(attributes(x))[6:nattr])
   }
   else {
     colnames(m) <- c(attr(x, "statistic"), "SE")
@@ -195,24 +220,24 @@ print.cvystat <- function(x, ...) {
 #' @export
 vcov.cvystat <- function (object, ...)
 {
-    as.matrix(attr(object, "var"))
+  as.matrix(attr(object, "var"))
 }
 
 
 # cvystat coef method
 #' @export
 coef.cvystat <- function(object, ...) {
-    attr(object, "statistic") <- NULL
-    attr(object, "deff") <- NULL
-    attr(object, "var") <- NULL
-	attr(object, "lin") <- NULL
-	attr(object, "quantile") <- NULL
-	attr(object, "epsilon") <- NULL
-	attr(object, "dimensions") <- NULL
-	attr(object, "parameters") <- NULL
-	attr(object, "extra") <- NULL
-	attr(object, "components") <- NULL
-	  unclass(object)
+  attr(object, "statistic") <- NULL
+  attr(object, "deff") <- NULL
+  attr(object, "var") <- NULL
+  attr(object, "lin") <- NULL
+  attr(object, "quantile") <- NULL
+  attr(object, "epsilon") <- NULL
+  attr(object, "dimensions") <- NULL
+  attr(object, "parameters") <- NULL
+  attr(object, "extra") <- NULL
+  attr(object, "components") <- NULL
+  unclass(object)
 }
 
 
@@ -222,16 +247,17 @@ coef.cvystat <- function(object, ...) {
 #' @method print cvydstat
 #' @export
 print.cvydstat <- function(x, ...) {
-
   vv <- attr(x, "var")
 
-  m <- matrix( x[[1]], nrow = 1 )
-  m <- rbind( m , matrix( sqrt( diag(vv) ), nrow = 1 ) )
+  m <- matrix(x[[1]], nrow = 1)
+  m <- rbind(m , matrix(sqrt(diag(vv)), nrow = 1))
 
-  if ( grepl( "watts index decomposition|fgt.* decomposition", attr( x , "statistic" ) ) ) {
-    dimnames(m) <- list( c( "coef", "SE" ), names(coef(x)) )
+  if (grepl("watts index decomposition|fgt.* decomposition",
+            attr(x , "statistic"))) {
+    dimnames(m) <- list(c("coef", "SE"), names(coef(x)))
   } else {
-    dimnames(m) <- list( c( "coef", "SE" ), c( "total", "within", "between" ) )
+    dimnames(m) <-
+      list(c("coef", "SE"), c("total", "within", "between"))
   }
 
   printCoefmat(m, digits = 5)
@@ -250,7 +276,6 @@ vcov.cvydstat <- function (object, ...)
 #' @method coef cvydstat
 #' @export
 coef.cvydstat <- function(object, ...) {
-
   object[[1]]
 
 }
@@ -259,10 +284,11 @@ coef.cvydstat <- function(object, ...) {
 #' @importFrom survey SE
 #' @export
 SE.cvydstat <- function (object, ...) {
-    vv <- as.matrix(attr(object, "var"))
-    if (!is.null(dim(object)) && length(object) == length(vv))
-        sqrt(vv)
-    else sqrt(diag(vv))
+  vv <- as.matrix(attr(object, "var"))
+  if (!is.null(dim(object)) && length(object) == length(vv))
+    sqrt(vv)
+  else
+    sqrt(diag(vv))
 }
 
 
@@ -311,110 +337,239 @@ SE.cvydstat <- function (object, ...) {
 #'
 #' @export
 convey_prep <- function(design) {
+  if (!is.null(attr(design, "full_design")))
+    stop("convey_prep has already been run on this design")
 
-    if (!is.null(attr(design, "full_design")))stop("convey_prep has already been run on this design")
+  if (as.character(design$call)[1] == 'subset')
+    warning(
+      "this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call."
+    )
 
-	if( as.character( design$call )[1] == 'subset' ) warning("this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call.")
+  # store the full design within one of the attributes of the design
+  attr(design, "full_design") <- design
 
-    # store the full design within one of the attributes of the design
-    attr(design, "full_design") <- design
+  # store the full_design's full_design attribute as TRUE
+  attr(attr(design, "full_design"), "full_design") <- TRUE
 
-    # store the full_design's full_design attribute as TRUE
-    attr(attr(design, "full_design"), "full_design") <- TRUE
+  class(design) <- c("convey.design" , class(design))
 
-	class( design ) <- c( "convey.design" , class( design ) )
-
-    design
+  design
 }
 
 
 #' @importFrom survey svyby
 #' @export
 svyby.convey.design <-
-	function (formula, by, design, ...){
+  function (formula, by, design, ...) {
+    if (("DBIsvydesign" %in% class(design)) &
+        !("logical" %in% class(attr(design, "full_design")))) {
+      full_design <- attr(design , "full_design")
 
-		if ( ( "DBIsvydesign" %in% class(design) ) & !( "logical" %in% class(attr(design, "full_design"))) ){
+      if ('sex' %in% names(list(...))) {
+        full_design$variables <-
+          cbind(
+            getvars(
+              formula,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            ),
+            getvars(
+              by,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            ) ,
+            getvars(
+              list(...)[["sex"]],
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            )
+          )
 
-			full_design <- attr( design , "full_design" )
+        design$variables <-
+          cbind(
+            getvars(
+              formula,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            ),
+            getvars(
+              by,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            ) ,
+            getvars(
+              list(...)[["sex"]],
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            )
+          )
 
-			if( 'sex' %in% names( list( ... ) ) ){
+      } else if ('age' %in% names(list(...))) {
+        full_design$variables <-
+          cbind(
+            getvars(
+              formula,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            ),
+            getvars(
+              by,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            ) ,
+            getvars(
+              list(...)[["age"]],
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            )
+          )
 
-				full_design$variables <-
-					cbind(
-							getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset),
-							getvars(by, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset) ,
-							getvars(list( ... )[["sex"]], full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset)
-						)
-
-				design$variables <-
-					cbind(
-							getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset),
-							getvars(by, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset) ,
-							getvars(list( ... )[["sex"]], design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
-						)
-
-			} else if( 'age' %in% names( list( ... ) ) ){
-
-				full_design$variables <-
-					cbind(
-							getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset),
-							getvars(by, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset) ,
-							getvars(list( ... )[["age"]], full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset)
-						)
-
-				design$variables <-
-					cbind(
-							getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset),
-							getvars(by, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset) ,
-							getvars(list( ... )[["age"]], design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
-						)
-
-
-			} else if( 'subgroup' %in% names( list( ... ) ) ){
-
-			  full_design$variables <-
-			    cbind(
-			      getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset),
-			      getvars(by, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset) ,
-			      getvars(list( ... )[["subgroup"]], full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset)
-			    )
-
-			  design$variables <-
-			    cbind(
-			      getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset),
-			      getvars(by, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset) ,
-			      getvars(list( ... )[["subgroup"]], design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
-			    )
-
-
-			} else {
-
-				full_design$variables <-
-					cbind(
-						getvars(formula, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset),
-						getvars(by, full_design$db$connection, full_design$db$tablename, updates = full_design$updates, subset = full_design$subset)
-					)
+        design$variables <-
+          cbind(
+            getvars(
+              formula,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            ),
+            getvars(
+              by,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            ) ,
+            getvars(
+              list(...)[["age"]],
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            )
+          )
 
 
-				design$variables <-
-					cbind(
-						getvars(formula, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset),
-						getvars(by, design$db$connection, design$db$tablename, updates = design$updates, subset = design$subset)
-					)
+      } else if ('subgroup' %in% names(list(...))) {
+        full_design$variables <-
+          cbind(
+            getvars(
+              formula,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            ),
+            getvars(
+              by,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            ) ,
+            getvars(
+              list(...)[["subgroup"]],
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            )
+          )
+
+        design$variables <-
+          cbind(
+            getvars(
+              formula,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            ),
+            getvars(
+              by,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            ) ,
+            getvars(
+              list(...)[["subgroup"]],
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            )
+          )
 
 
-			}
+      } else {
+        full_design$variables <-
+          cbind(
+            getvars(
+              formula,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            ),
+            getvars(
+              by,
+              full_design$db$connection,
+              full_design$db$tablename,
+              updates = full_design$updates,
+              subset = full_design$subset
+            )
+          )
 
-			attr( design , "full_design" ) <- full_design
 
-			rm( full_design )
+        design$variables <-
+          cbind(
+            getvars(
+              formula,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            ),
+            getvars(
+              by,
+              design$db$connection,
+              design$db$tablename,
+              updates = design$updates,
+              subset = design$subset
+            )
+          )
 
-		}
 
-		# remove the "convey.design" and "DBIsvydesign" classes from the current object
-		class(design) <- setdiff(class(design), "convey.design")
-		class(design) <- setdiff(class(design), "DBIsvydesign")
+      }
 
-		survey::svyby(formula,by,design,...)
-	}
+      attr(design , "full_design") <- full_design
 
+      rm(full_design)
+
+    }
+
+    # remove the "convey.design" and "DBIsvydesign" classes from the current object
+    class(design) <- setdiff(class(design), "convey.design")
+    class(design) <- setdiff(class(design), "DBIsvydesign")
+
+    survey::svyby(formula, by, design, ...)
+  }

@@ -62,13 +62,13 @@
 #' dbd_eusilc <-
 #' 	svydesign(
 #' 		ids = ~rb030 ,
-#' 		strata = ~db040 , 
+#' 		strata = ~db040 ,
 #' 		weights = ~rb050 ,
 #' 		data="eusilc",
 #' 		dbname=dbfile,
 #' 		dbtype="SQLite"
 #' 	)
-#' 
+#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
 #'
 #' svyisq( ~ eqincome , design = dbd_eusilc, .20 )
@@ -81,134 +81,204 @@
 #'
 #' @export
 svyisq <-
-	function(formula, design, ...) {
+  function(formula, design, ...) {
+    if (length(attr(terms.formula(formula) , "term.labels")) > 1)
+      stop(
+        "convey package functions currently only support one variable in the `formula=` argument"
+      )
 
-		if( length( attr( terms.formula( formula ) , "term.labels" ) ) > 1 ) stop( "convey package functions currently only support one variable in the `formula=` argument" )
+    UseMethod("svyisq", design)
 
-		UseMethod("svyisq", design)
-
-	}
+  }
 
 #' @rdname svyisq
 #' @export
 svyisq.survey.design <-
-	function(formula, design, alpha, quantile = FALSE, na.rm = FALSE,...) {
+  function(formula,
+           design,
+           alpha,
+           quantile = FALSE,
+           na.rm = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
+      )
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function.")
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
+    }
 
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
-			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
-		}
+    ind <- names(design$prob)
+    w <- 1 / design$prob
+    N <- sum(w)
+    h <- h_fun(incvar, w)
 
-		ind <- names(design$prob)
-		w <- 1/design$prob
-		N <- sum(w)
-		h <- h_fun(incvar, w)
+    q_alpha <-
+      survey::oldsvyquantile(
+        x = formula,
+        design = design,
+        quantiles = alpha,
+        method = "constant",
+        na.rm = na.rm,
+        ...
+      )
+    q_alpha <- as.vector(q_alpha)
 
-		q_alpha <- survey::oldsvyquantile(x = formula, design = design, quantiles = alpha, method = "constant", na.rm = na.rm,...)
-		q_alpha <- as.vector(q_alpha)
+    Fprime0 <-
+      densfun(
+        formula = formula,
+        design = design,
+        q_alpha,
+        h = h,
+        FUN = "F",
+        na.rm = na.rm
+      )
+    Fprime1 <-
+      densfun(
+        formula = formula,
+        design = design,
+        q_alpha,
+        FUN = "big_s",
+        na.rm = na.rm
+      )
 
-		Fprime0 <- densfun(formula = formula, design = design, q_alpha, h=h, FUN = "F", na.rm=na.rm)
-		Fprime1 <- densfun(formula = formula, design = design, q_alpha, FUN = "big_s", na.rm = na.rm)
+    rval <- sum((incvar <= q_alpha) * incvar * w)
 
-		rval <- sum((incvar<=q_alpha)*incvar * w)
+    iq <- -(1 / (N * Fprime0)) * ((incvar <= q_alpha) - alpha)
 
-		iq <- -( 1 / ( N * Fprime0 ) ) * ( ( incvar <= q_alpha ) - alpha )
+    isqalpha1 <- incvar * (incvar <= q_alpha)
+    isqalpha <- isqalpha1 + Fprime1 * iq
+    variance <-
+      survey::svyrecvar(
+        isqalpha / design$prob,
+        design$cluster,
+        design$strata,
+        design$fpc,
+        postStrata = design$postStrata
+      )
 
-		isqalpha1 <- incvar * (incvar <= q_alpha)
-		isqalpha <- isqalpha1 + Fprime1 * iq
-		variance <- survey::svyrecvar(isqalpha/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata)
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svystat")
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "isq"
+    attr(rval, "lin") <- isqalpha
+    if (quantile)
+      attr(rval, "quantile") <- q_alpha
 
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svystat" )
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "isq"
-		attr(rval, "lin") <- isqalpha
-		if(quantile) attr(rval, "quantile") <- q_alpha
-
-		rval
-	}
+    rval
+  }
 
 #' @rdname svyisq
 #' @export
 svyisq.svyrep.design <-
-	function(formula, design, alpha,quantile = FALSE, na.rm = FALSE,...){
+  function(formula,
+           design,
+           alpha,
+           quantile = FALSE,
+           na.rm = FALSE,
+           ...) {
+    if (is.null(attr(design, "full_design")))
+      stop(
+        "you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function."
+      )
 
-		if (is.null(attr(design, "full_design"))) stop("you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function.")
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-		incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[!nas]
+      else
+        incvar[nas] <- 0
+    }
 
-		if(na.rm){
-			nas<-is.na(incvar)
-			design<-design[!nas,]
-			if (length(nas) > length(design$prob)) incvar <- incvar[!nas] else incvar[nas] <- 0
-		}
+    compute_isq <-
+      function(x, w, alpha) {
+        q_alpha <- computeQuantiles(x , w , alpha)
+        c(q_alpha , sum(x * (x <= q_alpha) * w))
+      }
 
-		compute_isq <-
-			function(x, w, alpha){
-				q_alpha <- computeQuantiles( x , w , alpha )
-				c( q_alpha , sum( x * ( x <= q_alpha ) * w ) )
-			}
+    rval_isq <-
+      compute_isq(incvar, alpha = alpha, w = weights(design, "sampling"))
 
-		rval_isq <- compute_isq(incvar, alpha = alpha, w = weights(design, "sampling"))
+    rval <- rval_isq[2]
 
-		rval <- rval_isq[2]
+    ww <- weights(design, "analysis")
 
-		ww <- weights(design, "analysis")
+    qq <-
+      apply(ww, 2, function(wi)
+        compute_isq(incvar, wi, alpha = alpha)[2])
 
-		qq <- apply(ww, 2, function(wi) compute_isq(incvar, wi, alpha = alpha)[2])
+    if (anyNA(qq))
+      variance <- NA
+    else
+      variance <-
+      survey::svrVar(qq,
+                     design$scale,
+                     design$rscales,
+                     mse = design$mse,
+                     coef = rval)
 
-		if(anyNA(qq))variance <- NA
-		else variance <- survey::svrVar(qq, design$scale, design$rscales, mse = design$mse, coef = rval)
+    variance <- as.matrix(variance)
 
-		variance <- as.matrix( variance )
+    colnames(variance) <-
+      rownames(variance) <-
+      names(rval) <-
+      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+    class(rval) <- c("cvystat" , "svrepstat")
+    attr(rval, "var") <- variance
+    attr(rval, "statistic") <- "isq"
+    attr(rval, "lin") <- NA
+    if (quantile)
+      attr(rval, "quantile") <- rval_isq[1]
 
-		colnames( variance ) <- rownames( variance ) <-  names( rval ) <- strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]]
-		class(rval) <- c( "cvystat" , "svrepstat" )
-		attr(rval, "var") <- variance
-		attr(rval, "statistic") <- "isq"
-		attr(rval, "lin") <- NA
-		if(quantile)attr(rval, "quantile") <- rval_isq[1]
-
-		rval
-	}
+    rval
+  }
 
 #' @rdname svyisq
 #' @export
 svyisq.DBIsvydesign <-
-	function (formula, design, ...){
+  function (formula, design, ...) {
+    if (!("logical" %in% class(attr(design, "full_design")))) {
+      full_design <- attr(design , "full_design")
 
-		if (!( "logical" %in% class(attr(design, "full_design"))) ){
+      full_design$variables <-
+        getvars(
+          formula,
+          attr(design , "full_design")$db$connection,
+          attr(design , "full_design")$db$tablename,
+          updates = attr(design , "full_design")$updates,
+          subset = attr(design , "full_design")$subset
+        )
 
-			full_design <- attr( design , "full_design" )
+      attr(design , "full_design") <- full_design
 
-			full_design$variables <-
-				getvars(
-					formula,
-					attr( design , "full_design" )$db$connection,
-					attr( design , "full_design" )$db$tablename,
-					updates = attr( design , "full_design" )$updates,
-					subset = attr( design , "full_design" )$subset
-				)
+      rm(full_design)
 
-			attr( design , "full_design" ) <- full_design
+    }
 
-			rm( full_design )
+    design$variables <-
+      getvars(
+        formula,
+        design$db$connection,
+        design$db$tablename,
+        updates = design$updates,
+        subset = design$subset
+      )
 
-		}
-
-		design$variables <-
-			getvars(
-				formula,
-				design$db$connection,
-				design$db$tablename,
-				updates = design$updates,
-				subset = design$subset
-			)
-
-		NextMethod("svyisq", design)
-	}
+    NextMethod("svyisq", design)
+  }
