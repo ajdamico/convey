@@ -29,7 +29,6 @@ test_that("functions work on weird distributions" , {
       "svylorenz" ,
       "svyjdiv" ,
       "svyrich" ,
-      "svychu" ,
       "svywatts"
     )
 
@@ -166,23 +165,6 @@ test_that("functions work on weird distributions" , {
 
           }
 
-          if (identical(FUN , svychu)) {
-            lin_params_list <-
-              c(lin_params_list ,
-                list(
-                  g = 1,
-                  type_thresh = "abs",
-                  abs_thresh = 10000
-                ))
-            rep_params_list <-
-              c(rep_params_list ,
-                list(
-                  g = 1,
-                  type_thresh = "abs",
-                  abs_thresh = 10000
-                ))
-
-          }
 
           if (identical(FUN , svywatts)) {
             lin_params_list <-

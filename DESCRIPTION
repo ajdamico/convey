@@ -11,7 +11,7 @@ Description: Variance estimation on indicators of income concentration and
     poverty using complex sample survey designs. Wrapper around the
     'survey' package.
 Depends:
-    R (>= 4.2.0)
+    R (>= 4)
 Imports:
     survey (>= 4.1),
     methods
