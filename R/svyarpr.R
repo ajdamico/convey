@@ -194,7 +194,7 @@ svyarpr.survey.design <-
       densfun(
         formula = formula,
         design = design,
-        arptv,
+        arptv/percent,
         h = htot,
         FUN = "F",
         na.rm = na.rm
