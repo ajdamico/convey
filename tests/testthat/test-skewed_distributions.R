@@ -1,5 +1,5 @@
 library(survey)
-library(convey)
+
 
 
 test_that("functions work on weird distributions" , {
