@@ -88,6 +88,5 @@ test_that("compare results convey vs vardpoor", {
   expect_equal(vardestd[1:7], convestd)
   expect_identical(vardestd[8:9], as.numeric(c(NA, NA)))
   expect_identical(varsed[8:9], c(0, 0))
-  skip('different arpr se')
   expect_equal(varsed[1:7], convsed)
 })
