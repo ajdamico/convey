@@ -200,7 +200,7 @@ print.cvystat <- function(x, ...) {
 
   # index never gets printed
   attr(x, "index") <- NULL
-  
+
   nattr <- length(names(attributes(x)))
   if (nattr > 5) {
     for (i in 6:nattr)
@@ -230,6 +230,8 @@ vcov.cvystat <- function (object, ...)
 # cvystat coef method
 #' @export
 coef.cvystat <- function(object, ...) {
+  if (is.list(object))
+    object <- object[[1]]
   attr(object, "statistic") <- NULL
   attr(object, "deff") <- NULL
   attr(object, "var") <- NULL

@@ -288,7 +288,6 @@ svygini.svyrep.design <-
     rval <- estimate
     names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
-    class(rval) <- c("cvystat" , "svrepstat")
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gini"
     if (linearized)
@@ -302,7 +301,6 @@ svygini.svyrep.design <-
       attr(qq , "rscales") <- design$rscales
       attr(qq , "mse") <- design$mse
       rval <- list(mean = rval , replicates = qq)
-      class(rval) <- c("cvystat" , "svrepstat")
     }
 
     # add design effect estimate
@@ -311,6 +309,7 @@ svygini.svyrep.design <-
       attr(rval , "deff") <- deff.estimate
 
     # return object
+    class(rval) <- c("cvystat" , "svrepstat")
     rval
 
   }
