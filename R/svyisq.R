@@ -309,22 +309,14 @@ svyisq.svyrep.design <-
     if (is.character(deff) || deff || linearized) {
       # compute linearized functions
       h <- h_fun(incvar, ws)
-      Fprime0 <-
-        densfun(
-          formula = formula,
-          design = design ,
-          q_alpha[[1]] ,
-          FUN = "F",
-          na.rm = na.rm
-        )
-      Fprime1 <-
-        densfun(
-          formula = formula,
-          design = design ,
-          q_alpha[[1]] ,
-          FUN = "big_s",
-          na.rm = na.rm
-        )
+
+      N <- sum(ws)
+      u <- (q_alpha[[1]] - incvar) / h
+      vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
+      v <- ws * incvar
+      Fprime0 <- sum(vectf * ws) / (N * h)
+      Fprime1 <- sum(vectf * v) / h
+
       lin <- CalcISQ_IF(incvar , ws, alpha , Fprime0 , Fprime1)
       if (upper)
         lin <- incvar[ws > 0] - lin
