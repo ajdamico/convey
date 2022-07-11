@@ -186,13 +186,17 @@ svypoormed.survey.design <-
       dsub <-
         eval(substitute(subset(design, subset = (incvar <= arpt)), list(incvar = nome, arpt = arpt)))
 
-      if (nrow(dsub) == 0)
-        stop(
-          paste(
-            "zero records in the set of poor people.  determine the poverty threshold by running svyarpt on ~",
-            nome
-          )
-        )
+      if (nrow(dsub) == 0) {
+        warning( paste( "zero records in the set of poor people.  determine the poverty threshold by running svyarpt on ~", nome ) )
+        variance <- as.matrix( NA )
+        rval <- NA
+        colnames(variance) <- rownames(variance) <- names(rval) <- strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
+        class(rval) <- c("cvystat" , "svystat")
+        attr(rval , "var") <- variance
+        attr(rval, "lin") <- NA
+        attr(rval , "statistic") <- "poormed"
+        return( rval )
+      }
 
       medp <-
         survey::oldsvyquantile(x = formula,
