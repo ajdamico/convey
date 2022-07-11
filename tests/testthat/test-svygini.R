@@ -41,7 +41,7 @@ attributes(vardest) <- NULL
 vardest <- unlist(vardest)
 varse <- SE_lin2(vardpoor_giniw$lin$lin_gini, des_eusilc)
 attributes(varse) <- NULL
-fun_giniw <- svygini( ~ eqincome, design = des_eusilc)
+fun_giniw <- svygini(~ eqincome, design = des_eusilc)
 convest <- coef(fun_giniw)
 attributes(convest) <- NULL
 convse <- SE(fun_giniw)
