@@ -9,7 +9,7 @@ library(survey)
 data(api)
 dstrat1 <- convey_prep(svydesign(id =  ~ 1, data = apistrat))
 test_that("svygei works on unweighted designs", {
-  svygei( ~ api00, design = dstrat1)
+  svygei(~ api00, design = dstrat1)
 })
 
 
@@ -33,20 +33,20 @@ des_eusilc_rep <- subset(des_eusilc_rep , eqincome > 0)
 
 
 
-a1 <- svygei( ~ eqincome, design = des_eusilc)
+a1 <- svygei(~ eqincome, design = des_eusilc)
 a2 <-
-  svyby( ~ eqincome,
-         by = ~ hsize,
-         design = des_eusilc,
-         FUN = svygei)
+  svyby(~ eqincome,
+        by = ~ hsize,
+        design = des_eusilc,
+        FUN = svygei)
 
-b1 <- svygei( ~ eqincome, design = des_eusilc_rep)
+b1 <- svygei(~ eqincome, design = des_eusilc_rep)
 
 b2 <-
-  svyby( ~ eqincome,
-         by = ~ hsize,
-         design = des_eusilc_rep,
-         FUN = svygei)
+  svyby(~ eqincome,
+        by = ~ hsize,
+        design = des_eusilc_rep,
+        FUN = svygei)
 
 se_dif1 <- abs(SE(a1) - SE(b1))
 se_diff2 <- max(abs(SE(a2) - SE(b2)))
@@ -95,12 +95,12 @@ dbd_eusilc <- convey_prep(dbd_eusilc)
 
 dbd_eusilc <- subset(dbd_eusilc , eqincome > 0)
 
-c1 <- svygei(~ eqincome , design = dbd_eusilc)
+c1 <- svygei( ~ eqincome , design = dbd_eusilc)
 c2 <-
-  svyby( ~ eqincome,
-         by = ~ hsize,
-         design = dbd_eusilc,
-         FUN = svygei)
+  svyby(~ eqincome,
+        by = ~ hsize,
+        design = dbd_eusilc,
+        FUN = svygei)
 
 dbRemoveTable(conn , 'eusilc')
 dbDisconnect(conn)
@@ -115,19 +115,19 @@ test_that("database svygei", {
 
 # compare subsetted objects to svyby objects
 sub_des <-
-  svygei(~ eqincome , design = subset(des_eusilc , hsize == 1))
+  svygei( ~ eqincome , design = subset(des_eusilc , hsize == 1))
 sby_des <-
-  svyby(~ eqincome,
-        by = ~ hsize,
-        design = des_eusilc,
-        FUN = svygei)
+  svyby( ~ eqincome,
+         by = ~ hsize,
+         design = des_eusilc,
+         FUN = svygei)
 sub_rep <-
-  svygei(~ eqincome , design = subset(des_eusilc_rep , hsize == 1))
+  svygei( ~ eqincome , design = subset(des_eusilc_rep , hsize == 1))
 sby_rep <-
-  svyby(~ eqincome,
-        by = ~ hsize,
-        design = des_eusilc_rep,
-        FUN = svygei)
+  svyby( ~ eqincome,
+         by = ~ hsize,
+         design = des_eusilc_rep,
+         FUN = svygei)
 
 test_that("subsets equal svyby", {
   expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des))[1])
@@ -189,19 +189,19 @@ dbd_eusilc_rep <- convey_prep(dbd_eusilc_rep)
 dbd_eusilc_rep <- subset(dbd_eusilc_rep , eqincome > 0)
 
 sub_dbd <-
-  svygei(~ eqincome , design = subset(dbd_eusilc , hsize == 1))
+  svygei( ~ eqincome , design = subset(dbd_eusilc , hsize == 1))
 sby_dbd <-
-  svyby(~ eqincome,
-        by = ~ hsize,
-        design = dbd_eusilc,
-        FUN = svygei)
+  svyby( ~ eqincome,
+         by = ~ hsize,
+         design = dbd_eusilc,
+         FUN = svygei)
 sub_dbr <-
-  svygei(~ eqincome , design = subset(dbd_eusilc_rep , hsize == 1))
+  svygei( ~ eqincome , design = subset(dbd_eusilc_rep , hsize == 1))
 sby_dbr <-
-  svyby(~ eqincome,
-        by = ~ hsize,
-        design = dbd_eusilc_rep,
-        FUN = svygei)
+  svyby( ~ eqincome,
+         by = ~ hsize,
+         design = dbd_eusilc_rep,
+         FUN = svygei)
 
 dbRemoveTable(conn , 'eusilc')
 dbDisconnect(conn)
