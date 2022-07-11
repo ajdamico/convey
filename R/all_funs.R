@@ -231,6 +231,7 @@ coef.cvystat <- function(object, ...) {
   attr(object, "deff") <- NULL
   attr(object, "var") <- NULL
   attr(object, "lin") <- NULL
+  attr(object, "index") <- NULL
   attr(object, "quantile") <- NULL
   attr(object, "epsilon") <- NULL
   attr(object, "dimensions") <- NULL
