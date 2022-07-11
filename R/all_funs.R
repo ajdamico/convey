@@ -198,6 +198,9 @@ print.cvystat <- function(x, ...) {
     m <- cbind(x, sqrt(vv))
   }
 
+  # index never gets printed
+  attr(x, "index") <- NULL
+  
   nattr <- length(names(attributes(x)))
   if (nattr > 5) {
     for (i in 6:nattr)

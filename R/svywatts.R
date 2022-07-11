@@ -166,7 +166,7 @@ svywatts.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       if (length(nas) > length(design$prob))
         incvar <- incvar[!nas]
       else
@@ -177,7 +177,7 @@ svywatts.survey.design <-
 
     if (any(incvar[w > 0] <= 0 , na.rm = TRUE)) {
       nps <- incvar <= 0
-      design <- design[!nps, ]
+      design <- design[!nps,]
       if (length(nps) > length(design$prob))
         incvar <- incvar[!nps]
       else
@@ -206,7 +206,7 @@ svywatts.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       if (length(nas) > length(full_design$prob))
         incvec <- incvec[!nas]
       else
@@ -218,7 +218,7 @@ svywatts.survey.design <-
     if (any(incvec[wf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
       nps <- incvec <= 0
-      full_design <- full_design[!nps, ]
+      full_design <- full_design[!nps,]
       if (length(nps) > length(full_design$prob))
         incvec <- incvec[!nps]
       else
@@ -355,7 +355,7 @@ svywatts.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
@@ -364,7 +364,7 @@ svywatts.svyrep.design <-
 
     if (any(incvar[ws > 0] <= 0 , na.rm = TRUE)) {
       nps <- incvar <= 0
-      design <- design[!nps, ]
+      design <- design[!nps,]
       df <- model.frame(design)
       incvar <- incvar[!nps]
       ws <- weights(design, "sampling")
@@ -377,7 +377,7 @@ svywatts.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
       ws <- weights(design, "sampling")
@@ -388,7 +388,7 @@ svywatts.svyrep.design <-
     if (any(incvec[wsf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
       nps <- incvec <= 0
-      full_design <- full_design[!nps, ]
+      full_design <- full_design[!nps,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nps]
       wsf <- weights(full_design, "sampling")
