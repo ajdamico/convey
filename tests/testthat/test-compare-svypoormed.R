@@ -105,6 +105,7 @@ varsed <-
   sapply(data.frame(vardpoor_poormedd$lin)[, 2:10] , function(t)
     SE_lin2(t , des_eusilc))
 attributes(varsed) <- NULL
+varsed[varsed==0] <- NA
 
 ### using convey
 
