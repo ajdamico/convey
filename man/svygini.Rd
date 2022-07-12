@@ -125,6 +125,6 @@ URL \url{https://www150.statcan.gc.ca/n1/en/catalogue/12-001-X19990024882}.
 \code{\link{svyarpr}}
 }
 \author{
-Djalma Pessoa and Anthony Damico
+Djalma Pessoa, Guilherme Jacob, and Anthony Damico
 }
 \keyword{survey}
