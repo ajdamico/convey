@@ -344,7 +344,6 @@ svygeidec.survey.design <-
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval, "group") <- as.character(subgroup)[[2]]
     attr(rval, "epsilon") <- epsilon
-    class(rval) <- c("cvystat" , "svystat")
     if (linearized)
       attr(rval, "linearized") <- lin.matrix
     if (influence)
@@ -356,6 +355,8 @@ svygeidec.survey.design <-
     if (is.character(deff) ||
         deff)
       attr(rval , "deff") <- deff.estimate
+    stop()
+    class(rval) <- c("cvystat" , "svystat")
     rval
 
   }
@@ -665,7 +666,6 @@ svygeidec.svyrep.design <-
       attr(qq , "rscales") <- design$rscales
       attr(qq , "mse") <- design$mse
       rval <- list(mean = rval , replicates = qq)
-      class(rval) <- c("cvystat" , "svrepstat" , "svystat")
     }
 
     # add design effect estimate
@@ -674,6 +674,7 @@ svygeidec.svyrep.design <-
       attr(rval , "deff") <- deff.estimate
 
     # retorna objeto
+    class(rval) <- c("cvystat" , "svrepstat" , "svystat")
     rval
 
   }
