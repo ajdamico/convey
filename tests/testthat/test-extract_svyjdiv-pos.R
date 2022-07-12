@@ -8,7 +8,7 @@ library(survey)
 data(api)
 dstrat1 <- convey_prep(svydesign(id =  ~ 1, data = apistrat))
 test_that("svyjdiv works on unweighted designs", {
-  svyjdiv( ~ api00, design = dstrat1)
+  svyjdiv(~ api00, design = dstrat1)
 })
 
 
@@ -31,18 +31,18 @@ des_eusilc_rep <- subset(des_eusilc_rep , eqincome > 0)
 
 
 # estimates
-a1 <- svyjdiv( ~ eqincome, design = des_eusilc)
+a1 <- svyjdiv(~ eqincome, design = des_eusilc)
 a2 <-
-  svyby( ~ eqincome,
-         by = ~ hsize,
-         design = des_eusilc,
-         FUN = svyjdiv)
-b1 <- svyjdiv( ~ eqincome, design = des_eusilc_rep)
+  svyby(~ eqincome,
+        by = ~ hsize,
+        design = des_eusilc,
+        FUN = svyjdiv)
+b1 <- svyjdiv(~ eqincome, design = des_eusilc_rep)
 b2 <-
-  svyby( ~ eqincome,
-         by = ~ hsize,
-         design = des_eusilc_rep,
-         FUN = svyjdiv)
+  svyby(~ eqincome,
+        by = ~ hsize,
+        design = des_eusilc_rep,
+        FUN = svyjdiv)
 
 se_dif1 <- abs(SE(a1) - SE(b1))
 se_diff2 <- max(abs(SE(a2) - SE(b2)))
@@ -71,8 +71,8 @@ test_that("output svyjdiv", {
 })
 
 # compare for theil-decomposability
-g0 <- svygei(~ eqincome , design = des_eusilc , epsilon = 0)
-g1 <- svygei(~ eqincome , design = des_eusilc , epsilon = 1)
+g0 <- svygei( ~ eqincome , design = des_eusilc , epsilon = 0)
+g1 <- svygei( ~ eqincome , design = des_eusilc , epsilon = 1)
 
 test_that("jdiv qual sum of gei0 and gei1", {
   expect_equal(as.numeric(coef(a1)), as.numeric(coef(g0) + coef(g1))[1])
@@ -119,44 +119,44 @@ test_that("database-backed designs", {
   dbd_eusilc_rep <- subset(dbd_eusilc_rep , eqincome > 0)
 
   # point estimates
-  c1 <- svyjdiv(~ eqincome , design = dbd_eusilc)
+  c1 <- svyjdiv( ~ eqincome , design = dbd_eusilc)
   c2 <-
-    svyby( ~ eqincome,
-           by = ~ hsize,
-           design = dbd_eusilc,
-           FUN = svyjdiv)
-
-  # compare subsetted objects to svyby objects
-  sub_des <-
-    svyjdiv(~ eqincome , design = subset(des_eusilc , hsize == 1))
-  sby_des <-
-    svyby(~ eqincome,
-          by = ~ hsize,
-          design = des_eusilc,
-          FUN = svyjdiv)
-  sub_rep <-
-    svyjdiv(~ eqincome , design = subset(des_eusilc_rep , hsize == 1))
-  sby_rep <-
-    svyby(~ eqincome,
-          by = ~ hsize,
-          design = des_eusilc_rep,
-          FUN = svyjdiv)
-
-  # compare subsetted objects to svyby objects for resampling results
-  sub_dbd <-
-    svyjdiv(~ eqincome , design = subset(dbd_eusilc , hsize == 1))
-  sby_dbd <-
     svyby(~ eqincome,
           by = ~ hsize,
           design = dbd_eusilc,
           FUN = svyjdiv)
+
+  # compare subsetted objects to svyby objects
+  sub_des <-
+    svyjdiv( ~ eqincome , design = subset(des_eusilc , hsize == 1))
+  sby_des <-
+    svyby( ~ eqincome,
+           by = ~ hsize,
+           design = des_eusilc,
+           FUN = svyjdiv)
+  sub_rep <-
+    svyjdiv( ~ eqincome , design = subset(des_eusilc_rep , hsize == 1))
+  sby_rep <-
+    svyby( ~ eqincome,
+           by = ~ hsize,
+           design = des_eusilc_rep,
+           FUN = svyjdiv)
+
+  # compare subsetted objects to svyby objects for resampling results
+  sub_dbd <-
+    svyjdiv( ~ eqincome , design = subset(dbd_eusilc , hsize == 1))
+  sby_dbd <-
+    svyby( ~ eqincome,
+           by = ~ hsize,
+           design = dbd_eusilc,
+           FUN = svyjdiv)
   sub_dbr <-
-    svyjdiv(~ eqincome , design = subset(dbd_eusilc_rep , hsize == 1))
+    svyjdiv( ~ eqincome , design = subset(dbd_eusilc_rep , hsize == 1))
   sby_dbr <-
-    svyby(~ eqincome,
-          by = ~ hsize,
-          design = dbd_eusilc_rep,
-          FUN = svyjdiv)
+    svyby( ~ eqincome,
+           by = ~ hsize,
+           design = dbd_eusilc_rep,
+           FUN = svyjdiv)
 
   dbRemoveTable(conn , 'eusilc')
   dbDisconnect(conn)
