@@ -193,9 +193,9 @@ svywattsdec.survey.design <-
     if (any(incvec[wf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
       nps <- incvec <= 0
-      design <- full_design[!nps & ID,]
+      design <- full_design[!nps & ID, ]
       attr(design , "full_design") <-
-        full_design <- full_design[!nps,]
+        full_design <- full_design[!nps, ]
     }
 
     watts <-
@@ -273,7 +273,7 @@ svywattsdec.survey.design <-
       matrix(c(watts$value, fgt0$value, W_pgr$value , L_poor$value),
              dimnames = list(c(
                "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)"
-             )))[,]
+             )))[, ]
 
     if (nrow(full_design) > nrow(lin.matrix)) {
       lin.matrix <-
@@ -404,7 +404,7 @@ svywattsdec.svyrep.design <-
 
     if (any(incvar[ws > 0] <= 0 , na.rm = TRUE)) {
       nps <- incvar <= 0
-      design <- design[!nps,]
+      design <- design[!nps, ]
       df <- model.frame(design)
       incvar <- incvar[!nps]
       ws <- weights(design, "sampling")
@@ -420,7 +420,7 @@ svywattsdec.svyrep.design <-
     if (any(incvec[wsf > 0] <= 0 , na.rm = TRUE)) {
       warning("keeping strictly positive incomes only.")
       nps <- incvec <= 0
-      full_design <- full_design[!nps,]
+      full_design <- full_design[!nps, ]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nps]
       wsf <- weights(full_design, "sampling")
@@ -486,7 +486,7 @@ svywattsdec.svyrep.design <-
     estimates <-
       matrix(c(watts, fgt0, w_pgr , L_poor), dimnames = list(c(
         "watts", "fgt0", "watts pov. gap ratio" , "theil(poor)"
-      )))[,]
+      )))[, ]
 
     rval <- list(estimate = estimates)
     names(rval) <-
