@@ -198,19 +198,11 @@ print.cvystat <- function(x, ...) {
     m <- cbind(x, sqrt(vv))
   }
 
-  # index never gets printed
-  attr(x, "index") <- NULL
-
-  nattr <- length(names(attributes(x)))
-  if (nattr > 5) {
-    for (i in 6:nattr)
-    {
-      m <- cbind(m, attr(x, names(attributes(x)[i])))
-    }
-    colnames(m) <-
-      c(attr(x, "statistic"), "SE", names(attributes(x))[6:nattr])
-  }
-  else {
+  hasdeff <- !is.null(attr(x, "deff"))
+  if (hasdeff) {
+    m <- cbind(m, deff(x))
+    colnames(m) <- c(attr(x, "statistic"), "SE", "DEff")
+  } else {
     colnames(m) <- c(attr(x, "statistic"), "SE")
   }
 
