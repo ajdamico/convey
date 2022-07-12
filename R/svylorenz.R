@@ -548,7 +548,6 @@ svylorenz.svyrep.design <-
     names(rval) <- paste0("L(" , quantiles , ")")
     attr(rval , "var") <- variance
     attr(rval , "statistic") <- "lorenz"
-    class(rval) <- c("cvystat" , "svrepstat")
     if (linearized)
       attr(rval, "linearized") <- lin.matrix
     if (linearized)
@@ -625,7 +624,6 @@ svylorenz.svyrep.design <-
       attr(qq , "rscales") <- design$rscales
       attr(qq , "mse") <- design$mse
       rval <- list(mean = rval , replicates = qq)
-      class(rval) <- c("cvystat" , "svrepstat")
     }
 
     # add design effect estimate
@@ -634,6 +632,7 @@ svylorenz.svyrep.design <-
       attr(rval, "deff") <- deff.estimate
 
     # return final result object
+    class(rval) <- c("cvystat" , "svrepstat")
     return(rval)
 
   }
