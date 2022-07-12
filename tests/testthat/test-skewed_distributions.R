@@ -190,7 +190,7 @@ test_that("functions work on weird distributions" , {
             expect_equal(as.numeric(coef(do.call(FUN , lin_params_list))),NA_real_)
           } else if (((identical(svyrmpg , FUN) ) &
                coef(svyarpt(this_formula , lin_des)) < min(dist_frame[wt_vec , as.character(this_formula)[2]])) |
-              (identical(svyqsr , FUN) &
+              (( identical(svypoormed,FUN) | identical(svyqsr , FUN)) &
                identical(this_formula , ~ pois1))) {
             expect_error(do.call(FUN , lin_params_list))
 
