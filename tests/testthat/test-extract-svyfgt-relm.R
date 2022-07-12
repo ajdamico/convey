@@ -84,7 +84,7 @@ for (this.g in c(0, 1, 2)) {
       percent = .6 ,
       type_thresh = "relm" ,
       deff = TRUE ,
-      covmat = TRUE
+      covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
     )
   a2.nocov <-
     svyby(
@@ -220,7 +220,7 @@ for (this.g in c(0, 1, 2)) {
         percent = .6 ,
         type_thresh = "relm" ,
         deff = TRUE ,
-        covmat = TRUE
+        covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
       )
     c2.nocov <-
       svyby(
@@ -283,7 +283,7 @@ for (this.g in c(0, 1, 2)) {
       percent = .6 ,
       type_thresh = "relm" ,
       deff = TRUE ,
-      covmat = TRUE
+      covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
     )
   sub_rep <-
     svyfgt(
@@ -407,7 +407,7 @@ for (this.g in c(0, 1, 2)) {
         percent = .6 ,
         type_thresh = "relm" ,
         deff = TRUE ,
-        covmat = TRUE
+        covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
       )
     sub_dbr <-
       svyfgt(

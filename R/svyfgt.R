@@ -14,7 +14,7 @@
 #' @param na.rm Should cases with missing values be dropped?
 #' @param deff Return the design effect (see \code{survey::svymean})
 #' @param linearized Should a matrix of linearized variables be returned?
-#' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})
+#' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}}). Not implemented yet for linearized designs.
 #' @param return.replicates Return the replicate estimates?
 #' @param ... passed to \code{svyarpr} and \code{svyarpt}
 #'
@@ -225,17 +225,18 @@ svyfgt.survey.design <-
 
     # branch on threshold type and its linearized function
     if (type_thresh == 'relq') {
+
       ARPT <-
-        svyiqalpha(
+        svyarpt(
           formula = formula,
           full_design,
-          alpha = quantiles,
+          percent = percent ,
+          quantiles = quantiles,
           na.rm = na.rm,
-          linearized = TRUE ,
           ...
         )
-      th <- percent * coef(ARPT)[[1]]
-      arptlin <- percent * attr(ARPT , "linearized")[, 1]
+      th <- coef(ARPT)[[1]]
+      arptlin <- attr(ARPT , "lin")
 
     } else if (type_thresh == 'relm') {
       Yf <- sum(wf * incvec)
@@ -362,12 +363,12 @@ svyfgt.survey.design <-
       attr(rval, "thresh") <- th
     if (linearized)
       attr(rval , "linearized") <- fgtlin
-    if (influence)
-      attr(rval , "influence")  <-
-      sweep(fgtlin , 1 , full_design$prob[is.finite(full_design$prob)] , "/")
-    if (linearized |
-        influence)
-      attr(rval , "index") <- as.numeric(rownames(fgtlin))
+    # if (influence)
+    #   attr(rval , "influence")  <-
+    #   sweep(fgtlin , 1 , full_design$prob[is.finite(full_design$prob)] , "/")
+    # if (linearized |
+    #     influence)
+    #   attr(rval , "index") <- as.numeric(rownames(fgtlin))
     if (is.character(deff) ||
         deff)
       attr(rval , "deff") <- deff.estimate
@@ -527,12 +528,23 @@ svyfgt.svyrep.design <-
     if (is.character(deff) || deff || linearized) {
       # compute threshold linearized function on full sample
       # branch on threshold type and its linearized function
-      if (type_thresh == 'relq')
-        arptlin <- percent * CalcQuantile_IF(incvec , wsf , quantiles)
+      if (type_thresh == 'relq') {
+        q_alpha <- computeQuantiles( incvec , wsf , quantiles )
+        htot <- h_fun(incvec, wsf)
+        Nf <- sum( wsf)
+        u <- (q_alpha - incvec) / htot
+        vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
+        Fprime <- sum(vectf * wsf) / (Nf * htot)
+
+        Nd <- sum(ws)
+        # ID <- 1 * (names(wsf) %in% names(ws))
+        ID <- 1 * (rownames(full_design$variables) %in% rownames(design$variables)[ws > 0])
+        arptlin <- - ( percent / ( Nf * Fprime ) ) * ( ifelse( incvec <= q_alpha , 1 , 0 ) - quantiles )
+        arptlin <- arptlin[wsf>0]
+      }
       if (type_thresh == 'relm') {
-        Yf <- sum(wsf * incvec)
         Nf <- sum(wsf)
-        muf <- Yf / Nf
+        muf <- sum(incvec * wsf) / Nf
         arptlin <- percent * (incvec - muf) / Nf
         arptlin <- arptlin[wsf > 0]
       }
@@ -550,15 +562,11 @@ svyfgt.svyrep.design <-
       fgtlin1 <- fgtlin1[wsf > 0]
 
       # combine both linearization
-      Fprime <-
-        densfun(
-          formula ,
-          design = design ,
-          th ,
-          h = NULL ,
-          FUN = "F",
-          na.rm = na.rm
-        )
+      htot <- h_fun(incvar, ws)
+      u <- (th - incvar) / htot
+      vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
+      Fprime <- sum(vectf * ws) / (Nd * htot)
+
       ahat <- sum(ws * ht(incvar , th , g)) / Nd
       ahF <- ahat + h(th , th , g) * Fprime
       if (type_thresh %in% c("relq" , "relm"))
@@ -600,7 +608,6 @@ svyfgt.svyrep.design <-
       rownames(variance) <-
       names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
-    class(rval) <- c("cvystat" , "svrepstat")
     attr(rval , "var") <- variance
     attr(rval , "statistic") <- paste0("fgt", g)
     if (thresh)
@@ -616,7 +623,6 @@ svyfgt.svyrep.design <-
       attr(qq , "rscales") <- full_design$rscales
       attr(qq , "mse") <- full_design$mse
       rval <- list(mean = rval , replicates = qq)
-      class(rval) <- c("cvystat" , "svrepstat")
     }
 
     # add design effect estimate
@@ -625,6 +631,7 @@ svyfgt.svyrep.design <-
       attr(rval , "deff") <- deff.estimate
 
     # return object
+    class(rval) <- c("cvystat" , "svrepstat")
     rval
 
   }
