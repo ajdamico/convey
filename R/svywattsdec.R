@@ -266,7 +266,7 @@ svywattsdec.survey.design <-
         matrix(0 ,
                nrow = nrow(full_design$variables) ,
                ncol = ncol(lin.matrix))
-      tmplin[wf > 0 ,] <- lin.matrix
+      tmplin[wf > 0 , ] <- lin.matrix
       lin.matrix <- tmplin
       rm(tmplin)
       colnames(lin.matrix) <-
@@ -375,7 +375,7 @@ svywattsdec.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       incvec <-
         model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     }
@@ -400,7 +400,7 @@ svywattsdec.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       incvar <- incvar[!nas]
     }
 
@@ -425,7 +425,8 @@ svywattsdec.svyrep.design <-
     qq <- apply(wwf, 2, function(wi) {
       # compute threshold
       if (type_thresh == 'relq')
-        thr <- percent * computeQuantiles(incvec , wi , p = quantiles)
+        thr <-
+          percent * computeQuantiles(incvec , wi , p = quantiles)
       if (type_thresh == 'relm')
         thr <- percent * sum(incvec * wi) / sum(wi)
       if (type_thresh == 'abs')
@@ -463,7 +464,7 @@ svywattsdec.svyrep.design <-
     # compute variance
     if (anyNA(qq)) {
       variance <- diag(estimates)
-      variance[, ] <- NA
+      variance[,] <- NA
     } else {
       variance <-
         survey::svrVar(
