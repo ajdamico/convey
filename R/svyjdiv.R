@@ -105,7 +105,7 @@ svyjdiv.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[nas == 0,]
+      design <- design[nas == 0, ]
       if (length(nas) > length(design$prob)) {
         incvar <- incvar[nas == 0]
       }
@@ -192,7 +192,7 @@ svyjdiv.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
