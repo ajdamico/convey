@@ -1,5 +1,4 @@
 library(survey)
-library(convey)
 
 
 test_that("functions work on weird distributions" , {
@@ -59,11 +58,11 @@ test_that("functions work on weird distributions" , {
       FUN <- get(this_function)
 
       unwtd_des <-
-        convey_prep(svydesign(~ 1 , data = dist_frame))
+        convey_prep(svydesign( ~ 1 , data = dist_frame))
       binom_des <-
-        convey_prep(svydesign(~ 1 , data = dist_frame , weight = ~ wt_binom))
+        convey_prep(svydesign( ~ 1 , data = dist_frame , weight = ~ wt_binom))
       unif_des <-
-        convey_prep(svydesign(~ 1 , data = dist_frame , weight = ~ wt_unif))
+        convey_prep(svydesign( ~ 1 , data = dist_frame , weight = ~ wt_unif))
 
       unwtd_rep <-
         convey_prep(as.svrepdesign(unwtd_des , type = 'bootstrap'))
@@ -184,8 +183,12 @@ test_that("functions work on weird distributions" , {
             wt_vec <- which(dist_frame$wt_unif > 0)
 
 
-          if (((identical(svyrmpg , FUN) |
-                identical(svypoormed , FUN)) &
+
+          if ((
+                identical(svyrmpg , FUN) | identical(svypoormed , FUN)) &
+              ( (identical(this_formula , ~ pois1)) | ( coef(svyarpt(this_formula , lin_des)) < min(dist_frame[wt_vec , as.character(this_formula)[2]]))) ) {
+            expect_equal(as.numeric(coef(do.call(FUN , lin_params_list))),NA_real_)
+          } else if (((identical(svyrmpg , FUN) ) &
                coef(svyarpt(this_formula , lin_des)) < min(dist_frame[wt_vec , as.character(this_formula)[2]])) |
               (identical(svyqsr , FUN) &
                identical(this_formula , ~ pois1))) {
