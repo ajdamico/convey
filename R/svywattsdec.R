@@ -179,7 +179,6 @@ svywattsdec.survey.design <-
     else
       full_design <- attr(design, "full_design")
 
-    # compute poverty measures
     watts <-
       svywatts(
         formula = formula ,
