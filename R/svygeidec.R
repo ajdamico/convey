@@ -143,9 +143,9 @@ svygeidec.survey.design <-
             ...) {
     w <- 1 / design$prob
     incvar <-
-      model.frame(formula, design$variables, na.action = na.pass)[, ]
+      model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <-
-      model.frame(subgroup, design$variables, na.action = na.pass)[, ]
+      model.frame(subgroup, design$variables, na.action = na.pass)[,]
 
     if (inherits(grpvar, "labelled")) {
       stop("This function does not support 'labelled' variables. Try factor().")
@@ -153,7 +153,7 @@ svygeidec.survey.design <-
 
     if (na.rm) {
       nas <- (is.na(incvar) | is.na(grpvar))
-      design <- design[nas == 0,]
+      design <- design[nas == 0, ]
       w <- 1 / design$prob
     }
 
@@ -165,14 +165,14 @@ svygeidec.survey.design <-
       rval <-
         list(estimate = matrix(c(NA, NA, NA), dimnames = list(c(
           "total", "within", "between"
-        )))[, ])
+        )))[,])
       names(rval) <-
         strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
       attr(rval, "var") <-
         matrix(rep(NA, 9), ncol = 3, dimnames = list(
           c("total", "within", "between"),
           c("total", "within", "between")
-        ))[, ]
+        ))[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval, "epsilon") <- epsilon
       attr(rval, "group") <- as.character(subgroup)[[2]]
@@ -301,7 +301,8 @@ svygeidec.survey.design <-
       if (epsilon == 0) {
         grp.lin [, i] <-
           ifelse(
-            w_i > 0 ,-U_fn(incvar , w_i , 0) ^ (-1) * log(incvar) +
+            w_i > 0 ,
+            -U_fn(incvar , w_i , 0) ^ (-1) * log(incvar) +
               U_fn(incvar , w_i ,  1) ^ (-1) * incvar +
               U_fn(incvar , w_i , 0) ^ (-1) * (T_fn(incvar , w_i , 0) * U_fn(incvar , w_i , 0) ^
                                                  (-1) - 1) ,
@@ -396,7 +397,7 @@ svygeidec.survey.design <-
 
 
     estimates <-
-      matrix(c(ttl.gei, wtn.gei, btw.gei), dimnames = list(c("total", "within", "between")))[, ]
+      matrix(c(ttl.gei, wtn.gei, btw.gei), dimnames = list(c("total", "within", "between")))[,]
 
     lin.matrix <-
       matrix(
@@ -437,9 +438,9 @@ svygeidec.svyrep.design <-
            na.rm = FALSE,
            ...) {
     incvar <-
-      model.frame(formula, design$variables, na.action = na.pass)[, ]
+      model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <-
-      model.frame(subgroup, design$variables, na.action = na.pass)[, ]
+      model.frame(subgroup, design$variables, na.action = na.pass)[,]
 
     if (inherits(grpvar, "labelled")) {
       stop("This function does not support 'labelled' variables. Try factor().")
@@ -447,7 +448,7 @@ svygeidec.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvar) | is.na(grpvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
       grpvar <- grpvar[!nas]
@@ -462,14 +463,14 @@ svygeidec.svyrep.design <-
       rval <-
         list(estimate = matrix(c(NA, NA, NA), dimnames = list(c(
           "total", "within", "between"
-        )))[, ])
+        )))[,])
       names(rval) <-
         strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
       attr(rval, "var") <-
         matrix(rep(NA, 9), ncol = 3, dimnames = list(
           c("total", "within", "between"),
           c("total", "within", "between")
-        ))[, ]
+        ))[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval, "epsilon") <- epsilon
       attr(rval, "group") <- as.character(subgroup)[[2]]
@@ -540,14 +541,14 @@ svygeidec.svyrep.design <-
       rval <-
         list(estimate = matrix(c(NA, NA, NA), dimnames = list(c(
           "total", "within", "between"
-        )))[, ])
+        )))[,])
       names(rval) <-
         strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
       attr(rval, "var") <-
         matrix(rep(NA, 9), ncol = 3, dimnames = list(
           c("total", "within", "between"),
           c("total", "within", "between")
-        ))[, ]
+        ))[,]
       attr(rval, "statistic") <- "gei decomposition"
       attr(rval, "epsilon") <- epsilon
       attr(rval, "group") <- as.character(subgroup)[[2]]
@@ -575,7 +576,7 @@ svygeidec.svyrep.design <-
     rval <-
       list(estimate = matrix(c(ttl.gei, wtn.gei, btw.gei), dimnames = list(c(
         "total", "within", "between"
-      )))[, ])
+      )))[,])
     names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     attr(rval, "var") <- variance
