@@ -355,7 +355,6 @@ svygeidec.survey.design <-
     if (is.character(deff) ||
         deff)
       attr(rval , "deff") <- deff.estimate
-    stop()
     class(rval) <- c("cvystat" , "svystat")
     rval
 
