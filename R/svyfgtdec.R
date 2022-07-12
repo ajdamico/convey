@@ -237,7 +237,7 @@ svyfgtdec.survey.design <-
       lin.matrix <- as.matrix(lin.matrix)
     }
     if (length(design$prob) < nrow(lin.matrix)) {
-      lin.matrix <- lin.matrix [as.numeric(rownames(design)) ,]
+      lin.matrix <- lin.matrix [as.numeric(rownames(design)) , ]
     }
 
 
@@ -255,7 +255,7 @@ svyfgtdec.survey.design <-
         "fgt1" ,
         "igr" ,
         paste0("gei(poor;epsilon=", g, ")")
-      )))[, ]
+      )))[,]
     variance <-
       survey::svyrecvar(
         lin.matrix / design$prob ,
@@ -350,7 +350,7 @@ svyfgtdec.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
@@ -363,7 +363,7 @@ svyfgtdec.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
@@ -467,7 +467,7 @@ svyfgtdec.svyrep.design <-
         "fgt1" ,
         "igr" ,
         paste0("gei(poor;epsilon=", g, ")")
-      )))[, ]
+      )))[,]
 
     rval <- list(estimate = estimates)
     names(rval) <-

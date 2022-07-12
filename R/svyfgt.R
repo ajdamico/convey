@@ -189,7 +189,7 @@ svyfgt.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       if (length(nas) > length(design$prob))
         incvar <- incvar[!nas]
       else
@@ -219,7 +219,7 @@ svyfgt.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       if (length(nas) > length(full_design$prob))
         incvec <- incvec[!nas]
       else
@@ -291,7 +291,8 @@ svyfgt.survey.design <-
             FUN = "F",
             na.rm = na.rm
           )
-        fgtlin <- ID * (h(incvec, th, g) - rval + Fprime * (incvec - th)) /
+        fgtlin <-
+          ID * (h(incvec, th, g) - rval + Fprime * (incvec - th)) /
           N
 
       } else
@@ -385,7 +386,7 @@ svyfgt.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
@@ -398,7 +399,7 @@ svyfgt.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }

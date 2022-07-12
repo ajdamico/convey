@@ -271,7 +271,7 @@ svylorenz.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[nas == 0,]
+      design <- design[nas == 0, ]
       if (length(nas) > length(design$prob))
         incvar <- incvar[nas == 0]
       else
@@ -560,7 +560,7 @@ svylorenz.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
     }
 
     incvar <-
@@ -571,7 +571,7 @@ svylorenz.svyrep.design <-
     ordincvar <- order(incvar)
 
     ws <- ws[ordincvar]
-    ww <- ww[ordincvar,]
+    ww <- ww[ordincvar, ]
     incvar <- incvar[ordincvar]
 
     if (any(is.na(incvar [ws > 0]))) {
