@@ -210,8 +210,8 @@ test_that("output svywattsdec" , {
     # subsets equal svyby
     expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des)[grepl("^male", names(coef(sby_des)))]))
     expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep)[grepl("^male", names(coef(sby_rep)))]))
-    expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des)[1, ]))
-    expect_equal(as.numeric(SE(sub_rep)), as.numeric(SE(sby_rep)[1, ]))
+    expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des)[1,]))
+    expect_equal(as.numeric(SE(sub_rep)), as.numeric(SE(sby_rep)[1,]))
 
     # coefficients should match across svydesign & svrepdesign
     expect_equal(coef(sby_des), coef(sby_rep))
@@ -336,10 +336,10 @@ test_that("output svywattsdec" , {
 
     # compare database-backed subsetted objects to database-backed svyby objects
     # dbi subsets equal dbi svyby
-    expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[2, ]))) # inverted results!
-    expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[2, ]))) # inverted results!
-    expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[2, ]))) # inverted results!
-    expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[2, ]))) # inverted results!
+    expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[2,]))) # inverted results!
+    expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[2,]))) # inverted results!
+    expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[2,]))) # inverted results!
+    expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[2,]))) # inverted results!
 
 
   }
