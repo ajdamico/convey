@@ -102,10 +102,10 @@ test_that("coef and SE matrix values make sense", {
   this_df <-
     data.frame(
       function_name = "svylorenz" ,
-      coef_lin = lor_lin$quantiles[5] ,
-      se_lin = lor_lin$quantiles[5] - lor_lin$CIs[9] ,
-      coef_rep = lor_rep$quantiles[5] ,
-      se_rep = lor_rep$quantiles[5] - lor_rep$CIs[9] ,
+      coef_lin = coef(lor_lin)[ "L(0.5)" ] ,
+      se_lin = SE(lor_lin )[ "L(0.5)" ] ,
+      coef_rep = coef( lor_rep )[ "L(0.5)" ] ,
+      se_rep = SE( lor_rep )[ "L(0.5)" ] ,
       measure_of_uncertainty = "confidence interval length at median"
     )
 
