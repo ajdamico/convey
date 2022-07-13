@@ -9,10 +9,10 @@ library(survey)
 data(api)
 dstrat1 <- convey_prep(svydesign(id =  ~ 1, data = apistrat))
 
-expect_error(svypoormed( ~ api00, design = dstrat1))
+expect_equal(as.numeric(coef(svypoormed( ~ api00, design = dstrat1))),NA_real_)
 
 test_that("svypoormed works on unweighted designs", {
-  svypoormed( ~ api00, design = dstrat1, percent = 1)
+  expect_equal(SE(svypoormed( ~ api00, design = dstrat1, percent = 1))[1],13.55642)
 })
 
 

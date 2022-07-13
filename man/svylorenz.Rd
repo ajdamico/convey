@@ -20,6 +20,9 @@ svylorenz(formula, design, ...)
   ci = TRUE,
   alpha = 0.05,
   na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  influence = FALSE,
   ...
 )
 
@@ -34,6 +37,9 @@ svylorenz(formula, design, ...)
   ci = TRUE,
   alpha = 0.05,
   na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  return.replicates = FALSE,
   ...
 )
 
@@ -61,6 +67,14 @@ svylorenz(formula, design, ...)
 \item{alpha}{a number that especifies de confidence level for the graph.}
 
 \item{na.rm}{Should cases with missing values be dropped? Defaults to \code{FALSE}.}
+
+\item{deff}{Return the design effect (see \code{survey::svymean})}
+
+\item{linearized}{Should a matrix of linearized variables be returned}
+
+\item{influence}{Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})}
+
+\item{return.replicates}{Return the replicate estimates?}
 }
 \value{
 Object of class "\code{oldsvyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
