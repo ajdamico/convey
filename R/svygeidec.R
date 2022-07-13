@@ -153,23 +153,14 @@ svygeidec.survey.design <-
                   drop.unused.levels = TRUE)[, ]
 
     # check types
-    if (class(grpvar) == "labelled") {
+    if ( inherits( grpvar , "labelled" ) ) {
       stop("This function does not support 'labelled' variables. Try factor().")
     }
 
     # treat missing values
     if (na.rm) {
       nas <- (is.na(incvar) | is.na(grpvar))
-      design <- design[!nas,]
-      incvar <-
-        model.frame(formula, design$variables, na.action = na.pass)[, ]
-      grpvar <-
-        model.frame(
-          subgroup,
-          design$variables,
-          na.action = na.pass ,
-          drop.unused.levels = TRUE
-        )[, ]
+      design$prob <- ifelse( nas , Inf , design$prob )
     }
 
     # collect sampling weights
@@ -309,11 +300,12 @@ svygeidec.survey.design <-
       colnames(lin.matrix) <- c("total", "within", "between")
     }
     rownames(lin.matrix) <- rownames(design$variables)
+    if ( !anyNA( estimates ) ) lin.matrix[ is.na( lin.matrix ) ] <- 0 else lin.matrix[ , ] <- NA
 
     # compute variance
     variance <-
       survey::svyrecvar(
-        sweep(lin.matrix , 1 , 1 / design$prob , "*") ,
+        sweep(lin.matrix , 1 , w , "*") ,
         design$cluster,
         design$strata,
         design$fpc,
@@ -335,8 +327,8 @@ svygeidec.survey.design <-
       deff.estimate <- variance / vsrs
     }
 
-    # keep necessary linearized functions
-    lin.matrix <- lin.matrix[1 / design$prob > 0 ,]
+    # # keep necessary linearized functions
+    # lin.matrix <- lin.matrix[ w > 0 , ]
 
     # build result object
     rval <- c(estimates)
@@ -345,13 +337,13 @@ svygeidec.survey.design <-
     attr(rval, "group") <- as.character(subgroup)[[2]]
     attr(rval, "epsilon") <- epsilon
     if (linearized)
-      attr(rval, "linearized") <- lin.matrix
+      attr(rval, "linearized") <- lin.matrix[ w > 0 , ]
     if (influence)
       attr(rval , "influence")  <-
-      sweep(lin.matrix , 1 , design$prob[is.finite(design$prob)] , "/")
+      sweep(lin.matrix , 1 , w , "*")
     if (linearized |
         influence)
-      attr(rval , "index") <- as.numeric(rownames(lin.matrix))
+      attr(rval , "index") <- as.numeric(rownames(lin.matrix))[w>0]
     if (is.character(deff) ||
         deff)
       attr(rval , "deff") <- deff.estimate
@@ -436,7 +428,7 @@ svygeidec.svyrep.design <-
                   drop.unused.levels = TRUE)[, ]
 
     # check types
-    if (class(grpvar) == "labelled") {
+    if ( inherits( grpvar , "labelled" ) ) {
       stop("This function does not support 'labelled' variables. Try factor().")
     }
 
@@ -615,8 +607,6 @@ svygeidec.svyrep.design <-
       estimates <- c(ttl.gei, wtn.gei, btw.gei)
       names(estimates) <- c("total", "within", "between")
 
-      # treat out of sample
-
       # create linearized matrix
       lin.matrix <-
         matrix(
@@ -626,6 +616,20 @@ svygeidec.svyrep.design <-
         )
       rownames(lin.matrix) <- rownames(design$variables)
       rm(ttl.lin, within.lin, between.lin)
+
+      # ensure length
+      if (nrow(lin.matrix) != length(design$prob)) {
+        tmplin <-
+          matrix(0 ,
+                 nrow = nrow(design$variables) ,
+                 ncol = ncol(lin.matrix))
+        tmplin[ws > 0 ,] <- lin.matrix
+        lin.matrix <- tmplin
+        rm(tmplin)
+        colnames(lin.matrix) <- c("total", "within", "between")
+      }
+      rownames(lin.matrix) <- rownames(design$variables)
+      if ( !anyNA( estimates ) ) lin.matrix[ is.na( lin.matrix ) ] <- 0 else lin.matrix[ , ] <- NA
 
       ### compute deff
       nobs <- length(design$pweights)
