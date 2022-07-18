@@ -11,6 +11,7 @@
 #' @param quantiles the quantile used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
+#' @param return.replicates Return the replicate estimates?
 #' @param ... additional arguments. Currently not used.
 #'
 #'
@@ -222,10 +223,10 @@ svywattsdec.survey.design <-
     # Watts Poverty Gap Ratio
     fgt0 <-
       list(value = coef(fgt0)[[1]] ,
-           lin = attr(fgt0 , "linearized")[, 1])
+           lin = attr(fgt0 , "lin") )
     fgt1 <-
       list(value = coef(fgt1)[[1]] ,
-           lin = attr(fgt1 , "linearized")[, 1])
+           lin = attr(fgt1 , "lin") )
     W_pgr <-
       convey::contrastinf(quote(log(fgt0 / (fgt0 - fgt1))) , list(fgt0 = fgt0 , fgt1 = fgt1))
 
@@ -233,7 +234,7 @@ svywattsdec.survey.design <-
     # by residual
     watts <-
       list(value = coef(watts)[[1]] ,
-           lin = attr(watts , "linearized")[, 1])
+           lin = attr(watts , "lin") )
     L_poor <-
       convey::contrastinf(quote(watts / fgt0 - W_pgr) ,
                           list(
@@ -242,12 +243,12 @@ svywattsdec.survey.design <-
                             W_pgr = W_pgr
                           ))
     L_poor$lin <- as.numeric(L_poor$lin)
-    names(L_poor$lin) <- names(watts$lin)
+    names(L_poor$lin) <- rownames(fgt0$lin)
 
     # create linearization matrix
     lin.matrix <-
       do.call(cbind , lapply(list(watts , fgt0 , W_pgr , L_poor) , `[[` , "lin"))
-    rownames(lin.matrix) <- names(watts$lin)
+    rownames(lin.matrix) <- rownames(fgt0$lin)
     colnames(lin.matrix) <-
       c("watts", "fgt0", "watts pov. gap ratio" , "theil(poor)")
 
@@ -261,23 +262,23 @@ svywattsdec.survey.design <-
     wf <- 1 / full_design$prob
     wf[!(names(wf) %in% rownames(lin.matrix))] <- 0
 
-    # ensure length
-    if (nrow(lin.matrix) != length(full_design$prob)) {
-      tmplin <-
-        matrix(0 ,
-               nrow = nrow(full_design$variables) ,
-               ncol = ncol(lin.matrix))
-      tmplin[wf > 0 ,] <- lin.matrix
-      lin.matrix <- tmplin
-      rm(tmplin)
-      colnames(lin.matrix) <-
-        c("watts", "fgt0", "watts pov. gap ratio" , "theil(poor)")
-    }
+    # # ensure length
+    # if (nrow(lin.matrix) != length(full_design$prob)) {
+    #   tmplin <-
+    #     matrix(0 ,
+    #            nrow = nrow(full_design$variables) ,
+    #            ncol = ncol(lin.matrix))
+    #   tmplin[wf > 0 ,] <- lin.matrix
+    #   lin.matrix <- tmplin
+    #   rm(tmplin)
+    #   colnames(lin.matrix) <-
+    #     c("watts", "fgt0", "watts pov. gap ratio" , "theil(poor)")
+    # }
 
     # compute variance
     variance <-
       survey::svyrecvar(
-        sweep(lin.matrix , 1 , wf , "*") ,
+        sweep( lin.matrix , 1 , wf , "*" ) ,
         full_design$cluster,
         full_design$strata,
         full_design$fpc,
@@ -310,6 +311,7 @@ svywattsdec.svyrep.design <-
            quantiles = .50,
            na.rm = FALSE,
            thresh = FALSE,
+           return.replicates = FALSE ,
            ...) {
     # check for convey_prep
     if (is.null(attr(design, "full_design")))
@@ -415,7 +417,7 @@ svywattsdec.svyrep.design <-
     fgt1 <- ComputeFGT(incvar, ws, g = 1 , thresh = th)
     w_pgr <- log(fgt0 / (fgt0 - fgt1))
     L_poor <-
-      CalcGEI(incvar, ifelse(incvar <= th , ws , 0) , epsilon = 0)
+      calc.gei(incvar, ifelse(incvar <= th , ws , 0) , epsilon = 0)
 
     ### variance calculation
 
@@ -446,7 +448,7 @@ svywattsdec.svyrep.design <-
         ComputeFGT(incvec , wsi , g = 1 , thresh = thr)
       w_pgr.rep  <- log(fgt0.rep / (fgt0.rep - fgt1.rep))
       L_poor.rep <-
-        CalcGEI(incvec, ifelse(incvec <= thr , wsi , 0) , epsilon = 0)
+        calc.gei(incvec, ifelse(incvec <= thr , wsi , 0) , epsilon = 0)
 
       # combine esitmates
       c(watts.rep, fgt0.rep , w_pgr.rep , L_poor.rep)
@@ -482,6 +484,15 @@ svywattsdec.svyrep.design <-
       c("watts" , "fgt0" , "watts pov. gap ratio" , "theil(poor)")
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "watts decomposition"
+
+    # keep replicates
+    if (return.replicates) {
+      attr(qq , "scale") <- full_design$scale
+      attr(qq , "rscales") <- full_design$rscales
+      attr(qq , "mse") <- full_design$mse
+      rval <- list(mean = rval , replicates = qq)
+    }
+
     class(rval) <- c("cvystat" , "svrepstat" , "svystat")
     rval
 
