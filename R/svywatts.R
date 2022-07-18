@@ -199,17 +199,18 @@ svywatts.survey.design <-
 
     # branch on threshold type and its linearized function
     if (type_thresh == 'relq') {
+
       ARPT <-
-        svyiqalpha(
+        svyarpt(
           formula = formula,
           full_design,
-          alpha = quantiles,
+          percent = percent ,
+          quantiles = quantiles,
           na.rm = na.rm,
-          linearized = TRUE ,
           ...
         )
-      th <- percent * coef(ARPT)[[1]]
-      arptlin <- percent * attr(ARPT , "linearized")[, 1]
+      th <- coef(ARPT)[[1]]
+      arptlin <- attr(ARPT , "lin")
 
     } else if (type_thresh == 'relm') {
       Yf <- sum(wf * incvec)
@@ -510,8 +511,18 @@ svywatts.svyrep.design <-
     if (is.character(deff) || deff || linearized) {
       # compute threshold linearized function on full sample
       # branch on threshold type and its linearized function
-      if (type_thresh == 'relq')
-        arptlin <- percent * CalcQuantile_IF(incvec , wsf , quantiles)
+      if (type_thresh == 'relq') {
+        q_alpha <- computeQuantiles( incvec , wsf , quantiles )
+        htot <- h_fun(incvec, wsf)
+        Nf <- sum( wsf)
+        u <- (q_alpha - incvec) / htot
+        vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
+        Fprime <- sum(vectf * wsf) / (Nf * htot)
+        Nd <- sum(ws)
+        ID <- 1 * (rownames(full_design$variables) %in% rownames(design$variables)[ws > 0])
+        arptlin <- - ( percent / ( Nf * Fprime ) ) * ( ifelse( incvec <= q_alpha , 1 , 0 ) - quantiles )
+        arptlin <- arptlin[wsf>0]
+      }
       if (type_thresh == 'relm') {
         Yf <- sum(wsf * incvec)
         Nf <- sum(wsf)
@@ -534,15 +545,11 @@ svywatts.svyrep.design <-
       wattslin1[incvec[wsf > 0] <= 0] <- 0
 
       # combine both linearization
-      Fprime <-
-        densfun(
-          formula ,
-          design = design ,
-          th ,
-          h = NULL ,
-          FUN = "F",
-          na.rm = na.rm
-        )
+      htot <- h_fun(incvar, ws)
+      u <- (th - incvar) / htot
+      vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
+      Fprime <- sum(vectf * ws) / (Nd * htot)
+
       ahat <- sum(ws * ht(incvar , th)) / Nd
       ahF <- ahat + h(th , th) * Fprime
       if (type_thresh %in% c("relq" , "relm"))
@@ -594,8 +601,8 @@ svywatts.svyrep.design <-
       attr(rval , "deff") <- deff.estimate
     if (linearized)
       attr(rval , "linearized") <- wattslin
-    if (linearized)
-      attr(rval , "index") <- as.numeric(rownames(wattslin))
+    # if (linearized)
+    #   attr(rval , "index") <- as.numeric(rownames(wattslin))
 
     # keep replicates
     if (return.replicates) {
