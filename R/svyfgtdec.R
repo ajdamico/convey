@@ -234,18 +234,14 @@ svyfgtdec.survey.design <-
         "igr" ,
         paste0("gei(poor;epsilon=", g, ")"))
 
-    if (length(design$prob) > nrow(lin.matrix)) {
-      lin.matrix <-
-        apply(lin.matrix , 2 , function(x) {
-          y = 1 / design$prob
-          y[y > 0] <- x
-          return(y)
-        })
-      lin.matrix <- as.matrix(lin.matrix)
-    }
-    if (length(design$prob) < nrow(lin.matrix)) {
-      lin.matrix <- lin.matrix [as.numeric(rownames(design)) , ]
-    }
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+
+    tmat <- matrix( 0 , nrow = length( full_design$prob ) , ncol = ncol( lin.matrix ) )
+    tmat[ names( full_design$prob ) %in% rownames( lin.matrix ) , ] <- lin.matrix
+    lin.matrix <- tmat
+    rm( tmat )
 
 
     estimates <-
@@ -265,11 +261,11 @@ svyfgtdec.survey.design <-
       )))[,]
     variance <-
       survey::svyrecvar(
-        lin.matrix / design$prob ,
-        design$cluster,
-        design$strata,
-        design$fpc,
-        postStrata = design$postStrata
+        lin.matrix / full_design$prob ,
+        full_design$cluster,
+        full_design$strata,
+        full_design$fpc,
+        postStrata = full_design$postStrata
       )
 
     rval <- estimates

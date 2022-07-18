@@ -125,7 +125,7 @@ d1 <-
 d2 <-
   svyby(
     ~ eqincome ,
-    ~ rb090,
+    ~ hsize,
     des_eusilc ,
     svyfgt ,
     g = 2 ,
@@ -145,7 +145,7 @@ e1 <-
 e2 <-
   svyby(
     ~ eqincome ,
-    ~ rb090,
+    ~ hsize,
     des_eusilc ,
     svyfgt ,
     g = 0 ,
@@ -165,7 +165,7 @@ f1 <-
 f2 <-
   svyby(
     ~ eqincome ,
-    ~ rb090,
+    ~ hsize,
     des_eusilc ,
     svyfgt ,
     g = 1 ,
@@ -239,6 +239,9 @@ test_that("database svyfgtdec", {
   # prepare for convey
   dbd_eusilc <- convey_prep(dbd_eusilc)
 
+  # remove groups with zero observations
+  dbd_eusilc <- subset( dbd_eusilc , hsize < 7 )
+
   # calculate estimates
   c1 <-
     svyfgtdec(
@@ -253,7 +256,7 @@ test_that("database svyfgtdec", {
   c2 <-
     svyby(
       ~ eqincome ,
-      ~ rb090,
+      ~ hsize,
       dbd_eusilc ,
       svyfgtdec ,
       g = 2 ,
@@ -271,7 +274,7 @@ test_that("database svyfgtdec", {
   expect_equal(coef(a1) , coef(c1))
   expect_equal(coef(a2) , coef(c2)[match(names(coef(c2)) , names(coef(a2)))])
   expect_equal(SE(a1) , SE(c1))
-  expect_equal(SE(a2) , SE(c2)[2:1 ,])
+  expect_equal(SE(a2) , SE(c2))
   # expect_equal(deff(a1) , deff(c1))
   # expect_equal(deff(a2) , deff(c2)[2:1 ,])
 
@@ -287,7 +290,7 @@ test_that("database svyfgtdec", {
 sub_des <-
   svyfgtdec(
     ~ eqincome ,
-    design = subset(des_eusilc , rb090 == "male") ,
+    design = subset(des_eusilc , hsize == 1) ,
     g = 2 ,
     abs_thresh = 7000 ,
     type_thresh = "abs" ,
@@ -297,7 +300,7 @@ sub_des <-
 sby_des <-
   svyby(
     ~ eqincome,
-    by = ~ rb090,
+    by = ~ hsize,
     design = des_eusilc,
     FUN = svyfgtdec ,
     g = 2 ,
@@ -309,7 +312,7 @@ sby_des <-
 sub_rep <-
   svyfgtdec(
     ~ eqincome ,
-    design = subset(des_eusilc_rep , rb090 == "male") ,
+    design = subset(des_eusilc_rep , hsize == 1) ,
     g = 2 ,
     abs_thresh = 7000 ,
     type_thresh = "abs" ,
@@ -319,7 +322,7 @@ sub_rep <-
 sby_rep <-
   svyby(
     ~ eqincome,
-    by = ~ rb090,
+    by = ~ hsize,
     design = des_eusilc_rep,
     FUN = svyfgtdec ,
     g = 2 ,
@@ -411,7 +414,7 @@ test_that("dbi subsets equal non-dbi subsets", {
   sub_dbd <-
     svyfgtdec(
       ~ eqincome ,
-      design = subset( dbd_eusilc , rb090 == "male" ) ,
+      design = subset( dbd_eusilc , hsize == 1 ) ,
       g = 2 ,
       abs_thresh = 7000 ,
       type_thresh = "abs" ,
@@ -421,7 +424,7 @@ test_that("dbi subsets equal non-dbi subsets", {
   sby_dbd <-
     svyby(
       ~ eqincome,
-      by = ~ rb090,
+      by = ~ hsize,
       design = dbd_eusilc,
       FUN = svyfgtdec ,
       g = 2 ,
@@ -433,7 +436,7 @@ test_that("dbi subsets equal non-dbi subsets", {
   sub_dbr <-
     svyfgtdec(
       ~ eqincome ,
-      design = subset(dbd_eusilc_rep , rb090 == "male") ,
+      design = subset(dbd_eusilc_rep , hsize == 1) ,
       g = 2 ,
       abs_thresh = 7000 ,
       type_thresh = "abs" ,
@@ -443,7 +446,7 @@ test_that("dbi subsets equal non-dbi subsets", {
   sby_dbr <-
     svyby(
       ~ eqincome,
-      by = ~ rb090,
+      by = ~ hsize,
       design = dbd_eusilc_rep,
       FUN = svyfgtdec ,
       g = 2 ,
@@ -469,10 +472,10 @@ test_that("dbi subsets equal non-dbi subsets", {
 
   # compare database-backed subsetted objects to database-backed svyby objects
   # dbi subsets equal dbi svyby
-  expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[2, ])))
-  expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[2, ])))
-  expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[2, ])))
-  expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[2, ])))
+  expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[1, ])))
+  expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[1, ])))
+  expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[1, ])))
+  expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[1, ])))
   expect_equal(vcov(sub_dbd) , vcov(sub_des))
   expect_equal(vcov(sub_dbr) , vcov(sub_rep))
 
