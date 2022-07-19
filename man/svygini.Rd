@@ -9,9 +9,25 @@
 \usage{
 svygini(formula, design, ...)
 
-\method{svygini}{survey.design}(formula, design, na.rm = FALSE, ...)
+\method{svygini}{survey.design}(
+  formula,
+  design,
+  na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  influence = FALSE,
+  ...
+)
 
-\method{svygini}{svyrep.design}(formula, design, na.rm = FALSE, ...)
+\method{svygini}{svyrep.design}(
+  formula,
+  design,
+  na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  return.replicates = FALSE,
+  ...
+)
 
 \method{svygini}{DBIsvydesign}(formula, design, ...)
 }
@@ -23,6 +39,14 @@ svygini(formula, design, ...)
 \item{...}{future expansion}
 
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{deff}{Return the design effect (see \code{survey::svymean})}
+
+\item{linearized}{Should a matrix of linearized variables be returned}
+
+\item{influence}{Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})}
+
+\item{return.replicates}{Return the replicate estimates?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
@@ -101,6 +125,6 @@ URL \url{https://www150.statcan.gc.ca/n1/en/catalogue/12-001-X19990024882}.
 \code{\link{svyarpr}}
 }
 \author{
-Djalma Pessoa and Anthony Damico
+Djalma Pessoa, Guilherme Jacob, and Anthony Damico
 }
 \keyword{survey}
