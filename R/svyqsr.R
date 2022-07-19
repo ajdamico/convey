@@ -255,7 +255,8 @@ svyqsr.svyrep.design <-
       }
 
     ws <- weights(design, "sampling")
-    Qsr_val <- ComputeQsr(incvar, ws, alpha1 = alpha1, alpha2 = alpha2)
+    Qsr_val <-
+      ComputeQsr(incvar, ws, alpha1 = alpha1, alpha2 = alpha2)
 
     if (Qsr_val[4] == 0)
       stop(
