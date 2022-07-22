@@ -42,6 +42,10 @@ des_eusilc_rep <-
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
+# filter positive
+des_eusilc <- subset( des_eusilc , eqincome > 0 )
+des_eusilc_rep <- subset( des_eusilc_rep , eqincome > 0 )
+
 # calculate estimates
 a1 <-
   svygini(~ eqincome , des_eusilc , deff = TRUE , linearized = TRUE)
@@ -145,6 +149,9 @@ test_that("database svygini", {
 
   # prepare for convey
   dbd_eusilc <- convey_prep(dbd_eusilc)
+
+  # filter positive
+  dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
 
   # calculate estimates
   c1 <-
@@ -296,6 +303,10 @@ test_that("dbi subsets equal non-dbi subsets", {
   dbd_eusilc <- convey_prep(dbd_eusilc)
   dbd_eusilc_rep <- convey_prep(dbd_eusilc_rep)
 
+  # filter positive
+  dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
+  dbd_eusilc_rep <- subset( dbd_eusilc_rep , eqincome > 0 )
+
   # calculate estimates
   sub_dbd <-
     svygini(
@@ -363,4 +374,4 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(attr(sub_dbd , "index") , attr(sub_des , "index"))
   expect_equal(attr(sub_dbr , "index") , attr(sub_rep , "index"))
 
-})
+} )
