@@ -144,8 +144,10 @@ svygei.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
-      if (length(nas) > length(design$prob) ) incvar <- incvar[nas == 0] else incvar[nas > 0] <- 0
+      design <- design[!nas,]
+      if (length(nas) > length(design$prob))
+        incvar <- incvar[nas == 0]
+      else incvar[nas > 0, ] <- 0
     }
 
     # collect weights
@@ -155,18 +157,10 @@ svygei.survey.design <-
     if ( any( incvar[w > 0] <= 0 , na.rm = TRUE ) ) stop( "The GEI indices are defined for strictly positive variables only.\nNegative and zero values not allowed." )
 
     # compute value
-    estimate <- CalcGEI( x = incvar, weights = w, epsilon = epsilon )
+    estimate <- CalcGEI( incvar, w, epsilon )
 
     # compute linearized functions
-    lin <- CalcGEI_IF( x = incvar, weights = w, epsilon = epsilon )
-
-    # ensure length
-    if ( length( lin ) != length( design$prob ) ) {
-      tmplin <- rep( 0 , nrow( design$variables ) )
-      tmplin[ w > 0 ] <- lin
-      lin <- tmplin ; rm( tmplin )
-      names( lin ) <- rownames( design$variables )
-    }
+    lin <- CalcGEI_IF( incvar, w, epsilon )
 
     # compute variance
     variance <- survey::svyrecvar( lin/design$prob, design$cluster, design$strata, design$fpc, postStrata = design$postStrata )
@@ -182,8 +176,8 @@ svygei.survey.design <-
       deff.estimate <- variance/vsrs
     }
 
-    # keep necessary linearized functions
-    lin <- lin[ 1/design$prob > 0 ]
+    # # keep necessary linearized functions
+    # lin <- lin[ 1/design$prob > 0 ]
 
     # coerce to matrix
     lin <- matrix( lin , nrow = length( lin ) , dimnames = list( names( lin ) , strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]] ) )
@@ -196,7 +190,7 @@ svygei.survey.design <-
     attr(rval, "statistic") <- "gei"
     attr(rval,"epsilon")<- epsilon
     if ( linearized ) attr(rval,"linearized") <- lin
-    if ( influence )  attr( rval , "influence" )  <- sweep( lin , 1 , design$prob[ is.finite( design$prob ) ] , "/" )
+    if ( influence )  attr( rval , "influence" )  <- sweep( lin , 1 , design$prob , "/" )
     if ( linearized | influence ) attr( rval , "index" ) <- as.numeric( rownames( lin ) )
     if ( is.character(deff) || deff) attr( rval , "deff") <- deff.estimate
     rval
@@ -216,7 +210,6 @@ svygei.svyrep.design <-
     if(na.rm){
       nas<-is.na(incvar)
       design<-design[!nas,]
-      df <- model.frame(design)
       incvar <- incvar[!nas]
     }
 
@@ -224,10 +217,10 @@ svygei.svyrep.design <-
     ws <- weights(design, "sampling")
 
     # check for strictly positive incomes
-    if ( any( incvar[ ws != 0 ] == 0, na.rm = TRUE) ) stop( "The GEI indices are defined for strictly positive variables only.\nNegative and zero values not allowed." )
+    if ( any( incvar[ ws > 0 ] == 0, na.rm = TRUE) ) stop( "The GEI indices are defined for strictly positive variables only.\nNegative and zero values not allowed." )
 
     # compute point estimate
-    estimate <- CalcGEI( x = incvar, weights = ws, epsilon = epsilon)
+    estimate <- CalcGEI( incvar, ws, epsilon)
 
     # collect analysis weights
     ww <- weights(design, "analysis")
@@ -251,7 +244,7 @@ svygei.svyrep.design <-
       lin <- CalcGEI_IF( incvar , ws , epsilon )
 
       # compute deff
-      nobs <- length( design$pweights )
+      nobs <- sum( design$pweights > 0 )
       npop <- sum( design$pweights )
       vsrs <- unclass( survey::svyvar( lin , design, na.rm = na.rm, return.replicates = FALSE, estimate.only = TRUE)) * npop^2/nobs
       if (deff != "replace") vsrs <- vsrs * (npop - nobs)/npop
@@ -305,78 +298,62 @@ svygei.DBIsvydesign <-
 
 # function for point estimates
 CalcGEI <-
-  function( x, weights, epsilon ) {
+  function( y , w, epsilon ) {
 
     # filter observations
-    x <- x[weights > 0 ]
-    weights <- weights[weights > 0 ]
+    y <- y[w > 0 ]
+    w <- w[w > 0 ]
 
     # intermediate stats
-    N <- sum( weights )
-    Y <- sum( weights*x )
-    mu <- Y/N
+    N <- sum( w )
+    Ytot <- sum( w*y )
+    Ybar <- Ytot/N
 
     # branch on epsilon
+    uscore <- y/Ybar
     if ( epsilon == 0 ) {
-      estimate <- - sum( weights * log( x/mu ) ) / N
+      gscore <- - log( uscore )
     } else if ( epsilon == 1 ) {
-      estimate <- sum( weights * (x/mu) * log( x/mu ) ) / N
+      gscore <- uscore * log( uscore )
     } else {
-      estimate <- sum( weights * ( (x/mu)^epsilon - 1 ) ) / ( N * ( epsilon^2 - epsilon ) )
+      gscore <- ( uscore^epsilon - 1 ) / ( epsilon^2 - epsilon )
     }
+    gei <- sum( w * gscore ) / N
 
     # return estimate
-    return( estimate )
+    return( gei )
 
   }
 
 # function for linearized functions
 CalcGEI_IF <-
-  function( x, weights, epsilon ) {
+  function( y , w , epsilon ) {
 
-    # filter observations
-    x <- x[ weights > 0 ]
-    weights <- weights[ weights > 0 ]
+    N <- sum( w )
+    Ytot <- sum( w * y )
+    Ybar <- Ytot / N
+    gei <- CalcGEI(y,w,epsilon)
 
-    # compute intermediate statistics
-    N <- sum( weights )
-    X <- sum( weights * x )
-    mu <- X/N
+    # income-inequality score
+    uscore <- y/Ybar
+    if ( epsilon == 0 ) yscore <- - log( uscore )
+    else if ( epsilon == 1 ) yscore <- uscore * log( uscore )
+    else yscore <- ( uscore^epsilon - 1 ) / ( epsilon^2 - epsilon )
 
-    # compute transformed income
-    if ( epsilon == 0 ) {
-      y <- - log( x / mu )
-    } else if ( epsilon == 1 ) {
-      y <- ( x / mu ) * log( x / mu )
-    } else {
-      y <- ( ( x / mu )^epsilon - 1 ) / ( epsilon^2 - epsilon )
-    }
-    gei.val <- sum( y * weights ) / N
+    # first term
+    l1 <- (1/N) * ( yscore - gei )
 
-    # linearized function under fixed mean
-    lin.fixed <- ( y - gei.val ) / N
+    # second term
+    if ( epsilon == 0 ) partial.Ybar <- 1/Ybar
+    else if ( epsilon == 1 ) partial.Ybar <- -( 1/Ybar )*( gei + 1 )
+    else partial.Ybar <- - (1/(mu * ( epsilon - 1 ) )) * ( (epsilon^2 - epsilon) * gei + 1 )
+    lin.Ybar <- (y-Ybar) / N
+    l2 <- partial.Ybar * lin.Ybar
 
-    # compute derivative wrt mean
-    if ( epsilon == 0 ) {
-      dgei.dmu <- 1/mu
-    } else if ( epsilon == 1 ) {
-      dgei.dmu <- sum( weights * (-x/mu^2) * ( log( x / mu ) + 1 ) ) / N
-      # dgei.dmu <- -( gei.val + 1 ) / mu
-    } else {
-      dgei.dmu <- - sum( weights  *  (x/mu)^epsilon ) / ( X * ( epsilon - 1 ) )
-    }
-
-    # linearized function of the mean
-    I.mu <- ( x - mu ) / N
-
-    # linearized function
-    lin <- lin.fixed + dgei.dmu * I.mu
-
-    # add indices
-    names( lin ) <- names( weights )
-
-    # return linearized function
-    return( lin )
+    # linearized
+    ll <- l1 + l2
+    ll <- ifelse( w>0 , ll , 0 )
+    ll
 
   }
 
