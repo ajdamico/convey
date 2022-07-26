@@ -55,8 +55,12 @@ des_eusilc_rep <-
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
+# filter positive incomes
+des_eusilc <- subset( des_eusilc , eqincome > 0 )
+des_eusilc_rep <- subset( des_eusilc_rep , eqincome > 0 )
+
 # calculate estimates
-a1 <- svyisq( ~ eqincome , des_eusilc , alpha = .2 , deff = TRUE)
+a1 <- svyisq( ~ eqincome , des_eusilc , alpha = .2 , deff = TRUE , influence = TRUE , linearized = TRUE )
 a2 <-
   svyby( ~ eqincome ,
          ~ hsize,
@@ -133,8 +137,11 @@ test_that("database svyisq", {
   # prepare for convey
   dbd_eusilc <- convey_prep(dbd_eusilc)
 
+  # filter positive incomes
+  dbd_eusilc <- subset ( dbd_eusilc , eqincome > 0 )
+
   # calculate estimates
-  c1 <- svyisq( ~ eqincome , dbd_eusilc , alpha = .2 , deff = TRUE)
+  c1 <- svyisq( ~ eqincome , dbd_eusilc , alpha = .2 , deff = TRUE , influence = TRUE , linearized = TRUE )
   c2 <-
     svyby(
       ~ eqincome ,
@@ -178,7 +185,7 @@ sub_des <-
     ~ eqincome ,
     design = subset(des_eusilc , hsize == 1) ,
     alpha = .2 ,
-    deff = TRUE
+    deff = TRUE , influence = TRUE , linearized = TRUE
   )
 sby_des <-
   svyby(
@@ -194,7 +201,7 @@ sub_rep <-
     ~ eqincome ,
     design = subset(des_eusilc_rep , hsize == 1) ,
     alpha = .2 ,
-    deff = TRUE
+    deff = TRUE  , influence = TRUE , linearized = TRUE
   )
 sby_rep <-
   svyby(
@@ -228,7 +235,6 @@ test_that("subsets equal svyby", {
   # coefficients of variation should be within five percent
   cv_diff <- abs(cv(sub_des) - cv(sby_rep)[1])
   expect_lte(cv_diff , .5)
-
 
 })
 
@@ -278,13 +284,18 @@ test_that("dbi subsets equal non-dbi subsets", {
   dbd_eusilc <- convey_prep(dbd_eusilc)
   dbd_eusilc_rep <- convey_prep(dbd_eusilc_rep)
 
+  # prepare for convey
+  dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
+  dbd_eusilc_rep <- subset( dbd_eusilc_rep , eqincome > 0 )
+
   # calculate estimates
   sub_dbd <-
     svyisq(
       ~ eqincome ,
       design = subset(des_eusilc , hsize == 1) ,
       alpha = .2 ,
-      deff = TRUE
+      deff = TRUE ,
+      influence = TRUE , linearized = TRUE
     )
   sby_dbd <-
     svyby(
@@ -300,7 +311,8 @@ test_that("dbi subsets equal non-dbi subsets", {
       ~ eqincome ,
       design = subset(des_eusilc_rep , hsize == 1) ,
       alpha = .2 ,
-      deff = TRUE
+      deff = TRUE ,
+      influence = TRUE , linearized = TRUE
     )
   sby_dbr <-
     svyby(
@@ -334,6 +346,5 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(as.numeric(deff(sub_dbr)) , as.numeric(deff(sby_dbr))[1])
   expect_equal(vcov(sby_des) , vcov(sby_dbd))
   expect_equal(vcov(sby_rep) , vcov(sby_dbr))
-
 
 })
