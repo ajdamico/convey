@@ -42,9 +42,13 @@ des_eusilc_rep <-
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
+# filter positive incomes
+des_eusilc <- subset( des_eusilc , eqincome > 0 )
+des_eusilc_rep <- subset( des_eusilc_rep , eqincome > 0 )
+
 # calculate estimates
 a1 <-
-  svyqsr(~ eqincome , des_eusilc , deff = TRUE , linearized = TRUE)
+  svyqsr(~ eqincome , des_eusilc , deff = TRUE , linearized = TRUE , influence = TRUE )
 a2 <-
   svyby(~ eqincome ,
         ~ hsize,
@@ -146,12 +150,15 @@ test_that("database svyqsr", {
   # prepare for convey
   dbd_eusilc <- convey_prep(dbd_eusilc)
 
+  # filter positive incomes
+  dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
+
   # calculate estimates
   c1 <-
     svyqsr(~ eqincome ,
            dbd_eusilc ,
            deff = TRUE ,
-           linearized = TRUE)
+           linearized = TRUE , influence = TRUE )
   c2 <-
     svyby(
       ~ eqincome ,
@@ -177,12 +184,11 @@ test_that("database svyqsr", {
   expect_equal(vcov(a2) , vcov(c2))
 
   # test equality of linearized variables
-  expect_equal(attr(a1 , "linearized") , attr(c1 , "linearized"))
-  expect_equal(attr(a2 , "linearized") , attr(c2 , "linearized"))
-  expect_equal(attr(a1 , "influence") , attr(c1 , "influence"))
-  expect_equal(attr(a2 , "influence") , attr(c2 , "influence"))
-  expect_equal(attr(a1 , "index") , attr(c1 , "index"))
-  expect_equal(attr(a2 , "index") , attr(c2 , "index"))
+  expect_equal( colSums( attr(a1 , "linearized") ) , colSums( attr(c1 , "linearized") ) )
+  expect_equal( colSums( attr(a1 , "influence") ) , colSums( attr(c1 , "influence") ) )
+  expect_equal( colSums( attr(a2 , "influence") ) , colSums( attr( c2 , "influence") ) )
+  # expect_equal(attr(a1 , "index") , attr(c1 , "index"))
+  # expect_equal(attr(a2 , "index") , attr(c2 , "index"))
 
 })
 
@@ -296,14 +302,17 @@ test_that("dbi subsets equal non-dbi subsets", {
   dbd_eusilc <- convey_prep(dbd_eusilc)
   dbd_eusilc_rep <- convey_prep(dbd_eusilc_rep)
 
+  # filter positive incomes
+  dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
+  dbd_eusilc_rep <- subset( dbd_eusilc_rep , eqincome > 0 )
+
   # calculate estimates
   sub_dbd <-
     svyqsr(
       ~ eqincome ,
       design = subset(des_eusilc , hsize == 1) ,
       deff = TRUE ,
-      linearized = TRUE
-    )
+      linearized = TRUE )
   sby_dbd <-
     svyby(
       ~ eqincome,
@@ -363,4 +372,4 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(attr(sub_dbd , "index") , attr(sub_des , "index"))
   expect_equal(attr(sub_dbr , "index") , attr(sub_rep , "index"))
 
-})
+} )
