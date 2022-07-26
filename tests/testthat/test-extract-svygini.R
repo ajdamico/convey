@@ -111,7 +111,7 @@ test_that("output svygini" , {
   expect_equal(sum(confint(b2)[, 2] >= coef(b2)) , length(coef(b2)))
 
   # check equality of linearized variables
-  expect_equal(colSums( attr( a1 , "linearized") ) , attr(b1 , "linearized"))
+  expect_equal(attr( a1 , "linearized") , attr(b1 , "linearized"))
   expect_equal(attr(a1 , "index") , attr(b1 , "index"))
 
   # check equality vcov diagonals
