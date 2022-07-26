@@ -166,8 +166,8 @@ svygini.survey.design <-
       deff.estimate <- variance / vsrs
     }
 
-    # keep necessary linearized functions
-    lin <- lin[1 / design$prob > 0]
+    # # keep necessary linearized functions
+    # lin <- lin[1 / design$prob > 0]
 
     # coerce to matrix
     lin <-
@@ -186,7 +186,7 @@ svygini.survey.design <-
       attr(rval, "linearized") <- lin
     if (influence)
       attr(rval , "influence")  <-
-      sweep(lin , 1 , design$prob[is.finite(design$prob)] , "/")
+      sweep(lin , 1 , design$prob , "/")
     if (linearized |
         influence)
       attr(rval , "index") <- as.numeric(rownames(lin))
