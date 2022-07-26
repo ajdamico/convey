@@ -4,7 +4,7 @@ library(laeken)
 # library( vardpoor )
 
 # return test context
-context("svygini output survey.design and svyrep.design")
+context("svyqsr output survey.design and svyrep.design")
 
 ### test 1: test if funtion works on unweighted objects
 
@@ -16,9 +16,9 @@ expect_warning(dstrat1 <-
                  convey_prep(svydesign(id =  ~ 1, data = apistrat)))
 
 # perform tests
-test_that("svygini works on unweighted designs", {
-  expect_false(is.na (coef(svygini(~ api00, design = dstrat1))))
-  expect_false(is.na (SE(svygini(~ api00, design = dstrat1))))
+test_that("svyqsr works on unweighted designs", {
+  expect_false(is.na (coef(svyqsr(~ api00, design = dstrat1))))
+  expect_false(is.na (SE(svyqsr(~ api00, design = dstrat1))))
 })
 
 ### test 2: income data from eusilc --- data.frame-backed design object
@@ -42,44 +42,40 @@ des_eusilc_rep <-
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-des_eusilc <- subset( des_eusilc , eqincome > 0 )
-des_eusilc_rep <- subset(des_eusilc_rep , eqincome > 0 )
-
 # calculate estimates
 a1 <-
-  svygini(~ eqincome , des_eusilc , deff = TRUE , linearized = TRUE , influence = TRUE )
+  svyqsr(~ eqincome , des_eusilc , deff = TRUE , linearized = TRUE)
 a2 <-
   svyby(~ eqincome ,
         ~ hsize,
         des_eusilc,
-        svygini ,
+        svyqsr ,
         deff = TRUE ,
         covmat = TRUE)
 a2.nocov <-
   svyby(~ eqincome ,
         ~ hsize,
         des_eusilc,
-        svygini ,
+        svyqsr ,
         deff = TRUE ,
         covmat = FALSE)
 b1 <-
-  svygini(~ eqincome ,
-          des_eusilc_rep ,
-          influence = TRUE ,
-          deff = TRUE ,
-          linearized = TRUE)
+  svyqsr(~ eqincome ,
+         des_eusilc_rep ,
+         deff = TRUE ,
+         linearized = TRUE)
 b2 <-
   svyby(~ eqincome ,
         ~ hsize,
         des_eusilc_rep,
-        svygini ,
+        svyqsr ,
         deff = TRUE ,
         covmat = TRUE)
 b2.nocov <-
   svyby(~ eqincome ,
         ~ hsize,
         des_eusilc_rep,
-        svygini ,
+        svyqsr ,
         deff = TRUE ,
         covmat = FALSE)
 
@@ -88,7 +84,7 @@ cv_diff1 <- abs(cv(a1) - cv(b1))
 se_diff2 <- max(abs(SE(a2) - SE(b2)) , na.rm = TRUE)
 
 # perform tests
-test_that("output svygini" , {
+test_that("output svyqsr" , {
   expect_is(coef(a1) , "numeric")
   expect_is(coef(a2) , "numeric")
   expect_is(coef(b1) , "numeric")
@@ -111,7 +107,7 @@ test_that("output svygini" , {
   expect_equal(sum(confint(b2)[, 2] >= coef(b2)) , length(coef(b2)))
 
   # check equality of linearized variables
-  expect_equal(attr( a1 , "linearized") , attr(b1 , "linearized"))
+  expect_equal(attr(a1 , "linearized") , attr(b1 , "linearized"))
   expect_equal(attr(a1 , "index") , attr(b1 , "index"))
 
   # check equality vcov diagonals
@@ -123,7 +119,7 @@ test_that("output svygini" , {
 ### test 2: income data from eusilc --- database-backed design object
 
 # perform tests
-test_that("database svygini", {
+test_that("database svyqsr", {
   # skip test on cran
   skip_on_cran()
 
@@ -150,21 +146,18 @@ test_that("database svygini", {
   # prepare for convey
   dbd_eusilc <- convey_prep(dbd_eusilc)
 
-  dbd_eusilc <- subset(dbd_eusilc , eqincome > 0 )
-
   # calculate estimates
   c1 <-
-    svygini(~ eqincome ,
-            dbd_eusilc ,
-            deff = TRUE ,
-            influence = TRUE ,
-            linearized = TRUE )
+    svyqsr(~ eqincome ,
+           dbd_eusilc ,
+           deff = TRUE ,
+           linearized = TRUE)
   c2 <-
     svyby(
       ~ eqincome ,
       ~ hsize ,
       dbd_eusilc ,
-      FUN = svygini ,
+      FUN = svyqsr ,
       deff = TRUE ,
       covmat = TRUE
     )
@@ -184,19 +177,20 @@ test_that("database svygini", {
   expect_equal(vcov(a2) , vcov(c2))
 
   # test equality of linearized variables
-  expect_equal( colSums( attr( a1 , "linearized") ) , colSums( attr( c1 , "linearized") ) )
-  expect_equal( colSums( attr( a1 , "influence" ) ) , colSums( attr( c1 , "influence" ) ) )
-  expect_equal( colSums( attr( a2 , "influence" ) ) , colSums( attr( c2 , "influence" ) ) )
-  # expect_equal( attr(a1 , "index") , attr(c1 , "index") )
-  # expect_equal( attr(a2 , "index") , attr(c2 , "index") )
+  expect_equal(attr(a1 , "linearized") , attr(c1 , "linearized"))
+  expect_equal(attr(a2 , "linearized") , attr(c2 , "linearized"))
+  expect_equal(attr(a1 , "influence") , attr(c1 , "influence"))
+  expect_equal(attr(a2 , "influence") , attr(c2 , "influence"))
+  expect_equal(attr(a1 , "index") , attr(c1 , "index"))
+  expect_equal(attr(a2 , "index") , attr(c2 , "index"))
 
-} )
+})
 
 ### test 3: compare subsetted objects to svyby objects
 
 # calculate estimates
 sub_des <-
-  svygini(
+  svyqsr(
     ~ eqincome ,
     design = subset(des_eusilc , hsize == 1) ,
     deff = TRUE ,
@@ -207,12 +201,12 @@ sby_des <-
     ~ eqincome,
     by = ~ hsize,
     design = des_eusilc,
-    FUN = svygini ,
+    FUN = svyqsr ,
     deff = TRUE ,
     covmat = TRUE
   )
 sub_rep <-
-  svygini(
+  svyqsr(
     ~ eqincome ,
     design = subset(des_eusilc_rep , hsize == 1) ,
     deff = TRUE ,
@@ -223,7 +217,7 @@ sby_rep <-
     ~ eqincome,
     by = ~ hsize,
     design = des_eusilc_rep,
-    FUN = svygini ,
+    FUN = svyqsr ,
     deff = TRUE ,
     covmat = TRUE
   )
@@ -254,7 +248,7 @@ test_that("subsets equal svyby", {
   expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1])
   expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1])
 
-} )
+})
 
 ### test 4: compare subsetted objects to svyby objects
 
@@ -304,7 +298,7 @@ test_that("dbi subsets equal non-dbi subsets", {
 
   # calculate estimates
   sub_dbd <-
-    svygini(
+    svyqsr(
       ~ eqincome ,
       design = subset(des_eusilc , hsize == 1) ,
       deff = TRUE ,
@@ -315,12 +309,12 @@ test_that("dbi subsets equal non-dbi subsets", {
       ~ eqincome,
       by = ~ hsize,
       design = des_eusilc,
-      FUN = svygini ,
+      FUN = svyqsr ,
       deff = TRUE ,
       covmat = TRUE
     )
   sub_dbr <-
-    svygini(
+    svyqsr(
       ~ eqincome ,
       design = subset(des_eusilc_rep , hsize == 1) ,
       deff = TRUE ,
@@ -331,7 +325,7 @@ test_that("dbi subsets equal non-dbi subsets", {
       ~ eqincome,
       by = ~ hsize,
       design = des_eusilc_rep,
-      FUN = svygini ,
+      FUN = svyqsr ,
       deff = TRUE ,
       covmat = TRUE
     )
@@ -369,4 +363,4 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(attr(sub_dbd , "index") , attr(sub_des , "index"))
   expect_equal(attr(sub_dbr , "index") , attr(sub_rep , "index"))
 
-} )
+})
