@@ -32,6 +32,7 @@ svyfgtdec(formula, design, ...)
   quantiles = 0.5,
   na.rm = FALSE,
   thresh = FALSE,
+  return.replicates = FALSE,
   ...
 )
 
@@ -58,6 +59,8 @@ of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it
 \item{na.rm}{Should cases with missing values be dropped?}
 
 \item{thresh}{return the poverty threshold value}
+
+\item{return.replicates}{Return the replicate estimates?}
 }
 \value{
 Object of class "\code{cvydstat}", with estimates for the FGT(g), FGT(0), FGT(1), income gap ratio and GEI(income gaps; epsilon = g) with a "\code{var}" attribute giving the variance-covariance matrix.
@@ -89,17 +92,17 @@ des_eusilc_rep <- convey_prep( des_eusilc_rep )
 # absolute poverty threshold
 svyfgtdec(~eqincome, des_eusilc, g=2, abs_thresh=10000)
 # poverty threshold equal to arpt
-svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+svyfgtdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
 # poverty threshold equal to 0.6 times the mean
-svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
+svyfgtdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 
 # using svrep.design:
 # absolute poverty threshold
 svyfgtdec(~eqincome, des_eusilc_rep, g=2, abs_thresh=10000)
 # poverty threshold equal to arpt
-svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
+svyfgtdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
 # poverty threshold equal to 0.6 times the mean
-svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
+svyfgtdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
 
 \dontrun{
 
@@ -127,9 +130,9 @@ dbd_eusilc <- convey_prep( dbd_eusilc )
 # absolute poverty threshold
 svyfgtdec(~eqincome, dbd_eusilc, g=2, abs_thresh=10000)
 # poverty threshold equal to arpt
-svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+svyfgtdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
 # poverty threshold equal to 0.6 times the mean
-svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
+svyfgtdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 
 dbRemoveTable( conn , 'eusilc' )
 

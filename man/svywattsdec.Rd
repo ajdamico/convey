@@ -30,6 +30,7 @@ svywattsdec(formula, design, ...)
   quantiles = 0.5,
   na.rm = FALSE,
   thresh = FALSE,
+  return.replicates = FALSE,
   ...
 )
 
@@ -54,6 +55,8 @@ of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it
 \item{na.rm}{Should cases with missing values be dropped?}
 
 \item{thresh}{return the poverty threshold value}
+
+\item{return.replicates}{Return the replicate estimates?}
 }
 \value{
 Object of class "\code{cvydstat}", with estimates for the Watts index, FGT(0), Watts Poverty Gap Ratio, and Theil(poor incomes) with a "\code{var}" attribute giving the variance-covariance matrix.
@@ -74,13 +77,16 @@ library(laeken)
 data(eusilc) ; names( eusilc ) <- tolower( names( eusilc ) )
 
 # linearized design
-
 des_eusilc <- svydesign( ids = ~rb030 , strata = ~db040 ,  weights = ~rb050 , data = eusilc )
 des_eusilc <- convey_prep( des_eusilc )
 
 # replicate-weighted design
 des_eusilc_rep <- as.svrepdesign( des_eusilc , type = "bootstrap" )
 des_eusilc_rep <- convey_prep( des_eusilc_rep )
+
+# filter positive incomes
+des_eusilc <- subset( des_eusilc , eqincome > 0 )
+des_eusilc_rep <- subset( des_eusilc_rep , eqincome > 0 )
 
 # absolute poverty threshold
 svywattsdec(~eqincome, des_eusilc, abs_thresh=10000)
@@ -116,8 +122,8 @@ dbd_eusilc <-
 		dbtype="SQLite"
 	)
 
-
 dbd_eusilc <- convey_prep( dbd_eusilc )
+dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
 
 # absolute poverty threshold
 svywattsdec(~eqincome, dbd_eusilc, abs_thresh=10000)
@@ -159,6 +165,6 @@ URL \url{https://www150.statcan.gc.ca/n1/en/catalogue/12-001-X19990024882}.
 \code{\link{svywatts},\link{svyfgt},\link{svyfgt}}
 }
 \author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
+Guilherme Jacob, Djalma Pessoa, and Anthony Damico
 }
 \keyword{survey}

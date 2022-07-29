@@ -102,8 +102,10 @@
 #' 		dbtype="SQLite"
 #' 	)
 #'
-#'
 #' dbd_eusilc <- convey_prep( dbd_eusilc )
+#'
+#' # filter positive incomes
+#' dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
 #'
 #' # poverty threshold fixed
 #' svywatts(~eqincome, dbd_eusilc ,  abs_thresh=10000)

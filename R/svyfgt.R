@@ -365,7 +365,7 @@ svyfgt.survey.design <-
       attr(rval , "linearized") <- fgtlin
     # if (influence)
     #   attr(rval , "influence")  <-
-    #   sweep(fgtlin , 1 , full_design$prob[is.finite(full_design$prob)] , "/")
+    #   sweep(fgtlin , 1 , full_design$prob , "/")
     # if (linearized |
     #     influence)
     #   attr(rval , "index") <- as.numeric(rownames(fgtlin))

@@ -12,6 +12,7 @@
 #' @param quantiles the quantile used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
+#' @param return.replicates Return the replicate estimates?
 #' @param ... additional arguments. Currently not used.
 #'
 #'
@@ -62,17 +63,17 @@
 #' # absolute poverty threshold
 #' svyfgtdec(~eqincome, des_eusilc, g=2, abs_thresh=10000)
 #' # poverty threshold equal to arpt
-#' svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
 #' # poverty threshold equal to 0.6 times the mean
-#' svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' # using svrep.design:
 #' # absolute poverty threshold
 #' svyfgtdec(~eqincome, des_eusilc_rep, g=2, abs_thresh=10000)
 #' # poverty threshold equal to arpt
-#' svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
 #' # poverty threshold equal to 0.6 times the mean
-#' svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' \dontrun{
 #'
@@ -100,9 +101,9 @@
 #' # absolute poverty threshold
 #' svyfgtdec(~eqincome, dbd_eusilc, g=2, abs_thresh=10000)
 #' # poverty threshold equal to arpt
-#' svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+#' svyfgtdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
 #' # poverty threshold equal to 0.6 times the mean
-#' svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
+#' svyfgtdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -273,6 +274,12 @@ svyfgtdec.survey.design <-
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- thresh.value
+    # if (influence)
+    #   attr(rval , "influence")  <-
+    #   sweep(fgtlin , 1 , full_design$prob , "/")
+    # if (linearized |
+    #     influence)
+    #   attr(rval , "index") <- as.numeric(rownames(fgtlin))
     class(rval) <-
       c( "cvystat" , "svystat" , "svrepstat")
     rval
