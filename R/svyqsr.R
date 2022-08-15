@@ -132,16 +132,6 @@ svyqsr.survey.design <-
     incvar <-
       model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    # treat missing values
-    if (na.rm) {
-      nas <- is.na(incvar)
-      design <- design[!nas, ]
-      if (length(nas) > length(design$prob))
-        incvar <- incvar[!nas]
-      else
-        incvar[nas] <- 0
-    }
-
     # collect sampling weights
     w <- 1 / design$prob
 
@@ -217,16 +207,6 @@ svyqsr.survey.design <-
     list_all <- list(S20 = S20 , S80C = S80C)
     QSR <- contrastinf(quote(S80C / S20), list_all)
     lin <- as.numeric(QSR$lin)
-    names(lin) <- names(w)[w > 0]
-
-    # ensure length
-    if (length(lin) != length(design$prob)) {
-      tmplin <- rep(0 , nrow(design$variables))
-      tmplin[w > 0] <- lin
-      lin <- tmplin
-      rm(tmplin)
-      names(lin) <- rownames(design$variables)
-    }
 
     # compute variance
     variance <-
@@ -256,8 +236,7 @@ svyqsr.survey.design <-
     }
 
     # keep necessary linearized functions
-    lin <- lin[1 / design$prob > 0]
-    names(lin) <- rownames(design$variables)[w > 0]
+    names(lin) <- rownames(design$variables)
 
     # coerce to matrix
     lin <-
@@ -288,7 +267,7 @@ svyqsr.survey.design <-
       attr(rval, "linearized") <- lin
     if (influence)
       attr(rval , "influence")  <-
-      sweep(lin , 1 , design$prob[is.finite(design$prob)] , "/")
+      sweep(lin , 1 , design$prob , "/")
     if (linearized |
         influence)
       attr(rval , "index") <- as.numeric(rownames(lin))

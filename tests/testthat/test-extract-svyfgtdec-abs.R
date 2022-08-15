@@ -4,22 +4,7 @@ library(laeken)
 # library( vardpoor )
 
 # return test context
-context("svyqsr output survey.design and svyrep.design")
-
-### test 1: test if funtion works on unweighted objects
-
-# load data
-data("api")
-
-# set up convey design
-expect_warning(dstrat1 <-
-                 convey_prep(svydesign(id =  ~ 1, data = apistrat)))
-
-# perform tests
-test_that("svyqsr works on unweighted designs", {
-  expect_false(is.na (coef(svyqsr(~ api00, design = dstrat1))))
-  expect_false(is.na (SE(svyqsr(~ api00, design = dstrat1))))
-})
+context("svyfgtdec-abs decomposition output survey.design and svyrep.design")
 
 ### test 2: income data from eusilc --- data.frame-backed design object
 
@@ -42,73 +27,177 @@ des_eusilc_rep <-
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-# filter positive incomes
-des_eusilc <- subset( des_eusilc , eqincome > 0 )
-des_eusilc_rep <- subset( des_eusilc_rep , eqincome > 0 )
+# remove groups with zero observations
+des_eusilc <- subset( des_eusilc , hsize < 7 )
+des_eusilc_rep <- subset( des_eusilc_rep , hsize < 7 )
+
+# test "deff not implemented" error
+expect_error(
+  svyfgtdec(
+    ~ eqincome ,
+    des_eusilc ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    linearized = TRUE ,
+    deff = TRUE
+  )
+)
 
 # calculate estimates
 a1 <-
-  svyqsr(~ eqincome , des_eusilc , deff = TRUE , linearized = TRUE , influence = TRUE )
+  svyfgtdec(
+    ~ eqincome ,
+    des_eusilc ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    linearized = TRUE ,
+    deff = FALSE
+  )
 a2 <-
-  svyby(~ eqincome ,
-        ~ hsize,
-        des_eusilc,
-        svyqsr ,
-        deff = TRUE ,
-        covmat = TRUE)
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc ,
+    svyfgtdec ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
+    covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
+  )
 a2.nocov <-
-  svyby(~ eqincome ,
-        ~ hsize,
-        des_eusilc,
-        svyqsr ,
-        deff = TRUE ,
-        covmat = FALSE)
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc ,
+    svyfgtdec ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
+    covmat = FALSE
+  )
 b1 <-
-  svyqsr(~ eqincome ,
-         des_eusilc_rep ,
-         deff = TRUE ,
-         linearized = TRUE)
+  svyfgtdec(
+    ~ eqincome ,
+    des_eusilc_rep ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
+    linearized = TRUE
+  )
 b2 <-
-  svyby(~ eqincome ,
-        ~ hsize,
-        des_eusilc_rep,
-        svyqsr ,
-        deff = TRUE ,
-        covmat = TRUE)
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc_rep ,
+    svyfgtdec ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
+    covmat = TRUE
+  )
 b2.nocov <-
-  svyby(~ eqincome ,
-        ~ hsize,
-        des_eusilc_rep,
-        svyqsr ,
-        deff = TRUE ,
-        covmat = FALSE)
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc_rep ,
+    svyfgtdec ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
+    covmat = FALSE
+  )
+d1 <-
+  svyfgt(
+    ~ eqincome ,
+    des_eusilc ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE
+  )
+d2 <-
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc ,
+    svyfgt ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE
+  )
+e1 <-
+  svyfgt(
+    ~ eqincome ,
+    des_eusilc ,
+    g = 0 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE
+  )
+e2 <-
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc ,
+    svyfgt ,
+    g = 0 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE
+  )
+f1 <-
+  svyfgt(
+    ~ eqincome ,
+    des_eusilc ,
+    g = 1 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE
+  )
+f2 <-
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc ,
+    svyfgt ,
+    g = 1 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE
+  )
 
 # calculate auxilliary tests statistics
-cv_diff1 <- abs(cv(a1) - cv(b1))
+cv_diff1 <- max(abs(cv(a1) - cv(b1)))
 se_diff2 <- max(abs(SE(a2) - SE(b2)) , na.rm = TRUE)
 
 # perform tests
-test_that("output svyqsr" , {
+test_that("output svyfgtdec" , {
   expect_is(coef(a1) , "numeric")
   expect_is(coef(a2) , "numeric")
   expect_is(coef(b1) , "numeric")
   expect_is(coef(b2) , "numeric")
   expect_equal(coef(a1) , coef(b1))
   expect_equal(coef(a2) , coef(b2))
-  expect_lte(cv_diff1 , coef(a1) * .20)         # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
-  expect_lte(se_diff2 , max(coef(a2)) * .20)  # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
-  expect_is(SE(a1) , "matrix")
-  expect_is(SE(a2) , "numeric")
-  expect_is(SE(b1) , "numeric")
-  expect_is(SE(b2) , "numeric")
-  expect_lte(confint(a1)[1] ,  coef(a1))
-  expect_gte(confint(a1)[2] , coef(a1))
-  expect_lte(confint(b1)[, 1] , coef(b1))
-  expect_gte(confint(b1)[2] , coef(b1))
+  # expect_lte( cv_diff1 , (coef(a1)[[1]]) * 0.05 )         # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
+  expect_lte(se_diff2 , max(coef(a2)) * 0.05) # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
   expect_equal(sum(confint(a2)[, 1] <= coef(a2)) , length(coef(a2)))
   expect_equal(sum(confint(a2)[, 2] >= coef(a2)) , length(coef(a2)))
   expect_equal(sum(confint(b2)[, 1] <= coef(b2)) , length(coef(b2)))
   expect_equal(sum(confint(b2)[, 2] >= coef(b2)) , length(coef(b2)))
+  expect_equal(coef(a1)[[1]] , coef(d1)[[1]])
+  expect_equal(SE(a1)[[1]] , SE(d1)[[1]])
+  expect_equal(coef(a1)[[2]] , coef(e1)[[1]])
+  expect_equal(SE(a1)[[2]] , SE(e1)[[1]])
+  expect_equal(coef(a1)[[3]] , coef(f1)[[1]])
+  expect_equal(SE(a1)[[3]] , SE(f1)[[1]])
 
   # check equality of linearized variables
   expect_equal(attr(a1 , "linearized") , attr(b1 , "linearized"))
@@ -123,7 +212,7 @@ test_that("output svyqsr" , {
 ### test 2: income data from eusilc --- database-backed design object
 
 # perform tests
-test_that("database svyqsr", {
+test_that("database svyfgtdec", {
   # skip test on cran
   skip_on_cran()
 
@@ -150,23 +239,31 @@ test_that("database svyqsr", {
   # prepare for convey
   dbd_eusilc <- convey_prep(dbd_eusilc)
 
-  # filter positive incomes
-  dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
+  # remove groups with zero observations
+  dbd_eusilc <- subset( dbd_eusilc , hsize < 7 )
 
   # calculate estimates
   c1 <-
-    svyqsr(~ eqincome ,
-           dbd_eusilc ,
-           deff = TRUE ,
-           linearized = TRUE , influence = TRUE )
+    svyfgtdec(
+      ~ eqincome ,
+      dbd_eusilc ,
+      g = 2 ,
+      abs_thresh = 7000 ,
+      type_thresh = "abs" ,
+      deff = FALSE ,
+      linearized = TRUE
+    )
   c2 <-
     svyby(
       ~ eqincome ,
-      ~ hsize ,
+      ~ hsize,
       dbd_eusilc ,
-      FUN = svyqsr ,
-      deff = TRUE ,
-      covmat = TRUE
+      svyfgtdec ,
+      g = 2 ,
+      abs_thresh = 7000 ,
+      type_thresh = "abs" ,
+      deff = FALSE ,
+      covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
     )
 
   # remove table and close connection to database
@@ -175,20 +272,15 @@ test_that("database svyqsr", {
 
   # peform tests
   expect_equal(coef(a1) , coef(c1))
-  expect_equal(coef(a2) , coef(c2))
+  expect_equal(coef(a2) , coef(c2)[match(names(coef(c2)) , names(coef(a2)))])
   expect_equal(SE(a1) , SE(c1))
   expect_equal(SE(a2) , SE(c2))
-  expect_equal(deff(a1) , deff(c1))
-  expect_equal(deff(a2) , deff(c2))
-  expect_equal(vcov(a1) , vcov(c1))
-  expect_equal(vcov(a2) , vcov(c2))
+  # expect_equal(deff(a1) , deff(c1))
+  # expect_equal(deff(a2) , deff(c2)[2:1 ,])
 
-  # test equality of linearized variables
-  expect_equal( colSums( attr(a1 , "linearized") ) , colSums( attr(c1 , "linearized") ) )
-  expect_equal( colSums( attr(a1 , "influence") ) , colSums( attr(c1 , "influence") ) )
-  expect_equal( colSums( attr(a2 , "influence") ) , colSums( attr( c2 , "influence") ) )
-  # expect_equal(attr(a1 , "index") , attr(c1 , "index"))
-  # expect_equal(attr(a2 , "index") , attr(c2 , "index"))
+  # check equality of linearized variables
+  expect_equal(attr(c1 , "linearized") , attr(a1 , "linearized"))
+  expect_equal(attr(c1 , "index") , attr(a1 , "index"))
 
 })
 
@@ -196,10 +288,13 @@ test_that("database svyqsr", {
 
 # calculate estimates
 sub_des <-
-  svyqsr(
+  svyfgtdec(
     ~ eqincome ,
     design = subset(des_eusilc , hsize == 1) ,
-    deff = TRUE ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
     linearized = TRUE
   )
 sby_des <-
@@ -207,15 +302,21 @@ sby_des <-
     ~ eqincome,
     by = ~ hsize,
     design = des_eusilc,
-    FUN = svyqsr ,
-    deff = TRUE ,
-    covmat = TRUE
+    FUN = svyfgtdec ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
+    covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
   )
 sub_rep <-
-  svyqsr(
+  svyfgtdec(
     ~ eqincome ,
     design = subset(des_eusilc_rep , hsize == 1) ,
-    deff = TRUE ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
     linearized = TRUE
   )
 sby_rep <-
@@ -223,8 +324,11 @@ sby_rep <-
     ~ eqincome,
     by = ~ hsize,
     design = des_eusilc_rep,
-    FUN = svyqsr ,
-    deff = TRUE ,
+    FUN = svyfgtdec ,
+    g = 2 ,
+    abs_thresh = 7000 ,
+    type_thresh = "abs" ,
+    deff = FALSE ,
     covmat = TRUE
   )
 
@@ -244,7 +348,7 @@ test_that("subsets equal svyby", {
 
   # domain vs svyby and svydesign vs svyrepdesign:
   # coefficients of variation should be within five percent
-  cv_diff <- max(abs(cv(sub_des) - cv(sby_rep)[1]))
+  cv_diff <- max(abs(cv(sub_des) - cv(sby_rep)[1, ]))
   expect_lte(cv_diff , .05)
 
   # check equality of linearized variables
@@ -302,40 +406,53 @@ test_that("dbi subsets equal non-dbi subsets", {
   dbd_eusilc <- convey_prep(dbd_eusilc)
   dbd_eusilc_rep <- convey_prep(dbd_eusilc_rep)
 
-  # filter positive incomes
-  dbd_eusilc <- subset( dbd_eusilc , eqincome > 0 )
-  dbd_eusilc_rep <- subset( dbd_eusilc_rep , eqincome > 0 )
+  # remove groups with zero observations
+  dbd_eusilc <- subset( dbd_eusilc , hsize < 7 )
+  dbd_eusilc_rep <- subset( dbd_eusilc_rep , hsize < 7 )
 
   # calculate estimates
   sub_dbd <-
-    svyqsr(
+    svyfgtdec(
       ~ eqincome ,
-      design = subset(des_eusilc , hsize == 1) ,
-      deff = TRUE ,
-      linearized = TRUE )
+      design = subset( dbd_eusilc , hsize == 1 ) ,
+      g = 2 ,
+      abs_thresh = 7000 ,
+      type_thresh = "abs" ,
+      deff = FALSE ,
+      linearized = TRUE
+    )
   sby_dbd <-
     svyby(
       ~ eqincome,
       by = ~ hsize,
-      design = des_eusilc,
-      FUN = svyqsr ,
-      deff = TRUE ,
-      covmat = TRUE
+      design = dbd_eusilc,
+      FUN = svyfgtdec ,
+      g = 2 ,
+      abs_thresh = 7000 ,
+      type_thresh = "abs" ,
+      deff = FALSE ,
+      covmat = FALSE # should be TRUE once we find a way to deal with full_design in svyby
     )
   sub_dbr <-
-    svyqsr(
+    svyfgtdec(
       ~ eqincome ,
-      design = subset(des_eusilc_rep , hsize == 1) ,
-      deff = TRUE ,
+      design = subset(dbd_eusilc_rep , hsize == 1) ,
+      g = 2 ,
+      abs_thresh = 7000 ,
+      type_thresh = "abs" ,
+      deff = FALSE ,
       linearized = TRUE
     )
   sby_dbr <-
     svyby(
       ~ eqincome,
       by = ~ hsize,
-      design = des_eusilc_rep,
-      FUN = svyqsr ,
-      deff = TRUE ,
+      design = dbd_eusilc_rep,
+      FUN = svyfgtdec ,
+      g = 2 ,
+      abs_thresh = 7000 ,
+      type_thresh = "abs" ,
+      deff = FALSE ,
       covmat = TRUE
     )
 
@@ -348,8 +465,8 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(coef(sub_rep) , coef(sub_dbr))
   expect_equal(SE(sub_des) , SE(sub_dbd))
   expect_equal(SE(sub_rep) , SE(sub_dbr))
-  expect_equal(deff(sub_des) , deff(sub_dbd))
-  expect_equal(deff(sub_rep) , deff(sub_dbr))
+  # expect_equal(deff(sub_des) , deff(sub_dbd))
+  # expect_equal(deff(sub_rep) , deff(sub_dbr))
   expect_equal(vcov(sub_des) , vcov(sub_dbd))
   expect_equal(vcov(sub_rep) , vcov(sub_dbr))
 
@@ -372,4 +489,4 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(attr(sub_dbd , "index") , attr(sub_des , "index"))
   expect_equal(attr(sub_dbr , "index") , attr(sub_rep , "index"))
 
-} )
+})

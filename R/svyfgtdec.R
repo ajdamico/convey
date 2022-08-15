@@ -12,6 +12,7 @@
 #' @param quantiles the quantile used used in the poverty threshold definition
 #' @param thresh return the poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
+#' @param return.replicates Return the replicate estimates?
 #' @param ... additional arguments. Currently not used.
 #'
 #'
@@ -62,17 +63,17 @@
 #' # absolute poverty threshold
 #' svyfgtdec(~eqincome, des_eusilc, g=2, abs_thresh=10000)
 #' # poverty threshold equal to arpt
-#' svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
 #' # poverty threshold equal to 0.6 times the mean
-#' svywattsdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' # using svrep.design:
 #' # absolute poverty threshold
 #' svyfgtdec(~eqincome, des_eusilc_rep, g=2, abs_thresh=10000)
 #' # poverty threshold equal to arpt
-#' svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relq" , thresh = TRUE)
 #' # poverty threshold equal to 0.6 times the mean
-#' svywattsdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
+#' svyfgtdec(~eqincome, des_eusilc_rep, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' \dontrun{
 #'
@@ -100,9 +101,9 @@
 #' # absolute poverty threshold
 #' svyfgtdec(~eqincome, dbd_eusilc, g=2, abs_thresh=10000)
 #' # poverty threshold equal to arpt
-#' svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
+#' svyfgtdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relq" , thresh = TRUE)
 #' # poverty threshold equal to 0.6 times the mean
-#' svywattsdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
+#' svyfgtdec(~eqincome, dbd_eusilc, g=2, type_thresh= "relm" , thresh = TRUE)
 #'
 #' dbRemoveTable( conn , 'eusilc' )
 #'
@@ -115,9 +116,9 @@ svyfgtdec <-
   function(formula, design, ...) {
     warning("The svyfgtdec function is experimental and is subject to changes in later versions.")
 
-    # if( 'type_thresh' %in% names( list( ... ) ) && !( list(...)[["type_thresh"]] %in% c( 'abs' ) ) ) stop( 'type_thresh= must be "abs". See ?svyfgtdec for more detail.' )
-    if (!('abs_thresh' %in% names(list(...))))
-      stop("abs_thresh= parameter must be specified.")
+    if ('type_thresh' %in% names(list(...)) &&
+        !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
+      stop('type_thresh= must be "relq" "relm" or "abs".  see ?svyfgt for more detail.')
 
     if (!('g' %in% names(list(...))))
       stop("g= parameter must be specified")
@@ -129,6 +130,10 @@ svyfgtdec <-
       stop(
         "convey package functions currently only support one variable in the `formula=` argument"
       )
+
+    if ('deff' %in% names(list(...)) &&
+        list(...)[["deff"]])
+      stop("deff= not implemented.")
 
     UseMethod("svyfgtdec", design)
 
@@ -166,7 +171,8 @@ svyfgtdec.survey.design <-
         quantiles = quantiles ,
         abs_thresh = abs_thresh ,
         na.rm = na.rm ,
-        thresh = thresh
+        thresh = thresh ,
+        linearized = TRUE
       )
     fgt1 <-
       svyfgt(
@@ -178,7 +184,8 @@ svyfgtdec.survey.design <-
         quantiles = quantiles ,
         abs_thresh = abs_thresh ,
         na.rm = na.rm ,
-        thresh = thresh
+        thresh = thresh ,
+        linearized = TRUE
       )
     fgtg <-
       svyfgt(
@@ -190,7 +197,8 @@ svyfgtdec.survey.design <-
         quantiles = quantiles ,
         abs_thresh = abs_thresh ,
         na.rm = na.rm ,
-        thresh = thresh
+        thresh = thresh ,
+        linearized = TRUE
       )
 
     if (thresh)
@@ -227,18 +235,14 @@ svyfgtdec.survey.design <-
         "igr" ,
         paste0("gei(poor;epsilon=", g, ")"))
 
-    if (length(design$prob) > nrow(lin.matrix)) {
-      lin.matrix <-
-        apply(lin.matrix , 2 , function(x) {
-          y = 1 / design$prob
-          y[y > 0] <- x
-          return(y)
-        })
-      lin.matrix <- as.matrix(lin.matrix)
-    }
-    if (length(design$prob) < nrow(lin.matrix)) {
-      lin.matrix <- lin.matrix [as.numeric(rownames(design)) , ]
-    }
+    # if the class of the full_design attribute is just a TRUE, then the design is
+    # already the full design.  otherwise, pull the full_design from that attribute.
+    if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
+
+    tmat <- matrix( 0 , nrow = length( full_design$prob ) , ncol = ncol( lin.matrix ) )
+    tmat[ names( full_design$prob ) %in% rownames( lin.matrix ) , ] <- lin.matrix
+    lin.matrix <- tmat
+    rm( tmat )
 
 
     estimates <-
@@ -258,24 +262,26 @@ svyfgtdec.survey.design <-
       )))[,]
     variance <-
       survey::svyrecvar(
-        lin.matrix / design$prob ,
-        design$cluster,
-        design$strata,
-        design$fpc,
-        postStrata = design$postStrata
+        lin.matrix / full_design$prob ,
+        full_design$cluster,
+        full_design$strata,
+        full_design$fpc,
+        postStrata = full_design$postStrata
       )
 
-    rval <- list(estimate = estimates)
-    names(rval) <-
-      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
-    attr(rval, "SE") <- sqrt(diag(variance[1:5, 1:5]))
+    rval <- estimates
     attr(rval, "var") <- variance[1:5, 1:5]
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- thresh.value
+    # if (influence)
+    #   attr(rval , "influence")  <-
+    #   sweep(fgtlin , 1 , full_design$prob , "/")
+    # if (linearized |
+    #     influence)
+    #   attr(rval , "index") <- as.numeric(rownames(fgtlin))
     class(rval) <-
-      c("cvydstat" , "cvystat" , "svystat" , "svrepstat")
-
+      c( "cvystat" , "svystat" , "svrepstat")
     rval
 
 
@@ -294,6 +300,7 @@ svyfgtdec.svyrep.design <-
            quantiles = .50,
            na.rm = FALSE,
            thresh = FALSE,
+           return.replicates = FALSE ,
            ...) {
     if (is.null(attr(design, "full_design")))
       stop(
@@ -469,16 +476,22 @@ svyfgtdec.svyrep.design <-
         paste0("gei(poor;epsilon=", g, ")")
       )))[,]
 
-    rval <- list(estimate = estimates)
-    names(rval) <-
-      strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
-    attr(rval, "SE") <- sqrt(diag(variance[1:5, 1:5]))
+    rval <- estimates
     attr(rval, "var") <- variance[1:5, 1:5]
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- th
+
+    # keep replicates
+    if (return.replicates) {
+      attr(qq , "scale") <- full_design$scale
+      attr(qq , "rscales") <- full_design$rscales
+      attr(qq , "mse") <- full_design$mse
+      rval <- list(mean = rval , replicates = qq)
+    }
+
     class(rval) <-
-      c("cvydstat" , "cvystat" , "svrepstat" , "svystat")
+      c( "svrepstat" , "svystat")
 
     rval
 
