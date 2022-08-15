@@ -1,4 +1,4 @@
-#' Watts poverty index decomposition (EXPERIMENTAL)
+#' Watts poverty index decomposition
 #'
 #' Estimate the Watts (1968) poverty measure and its components
 #'
@@ -21,8 +21,6 @@
 #' A "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa, and Anthony Damico
-#'
-#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svywatts},\link{svyfgt},\link{svyfgt}}
 #'
@@ -119,7 +117,6 @@
 #' @export
 svywattsdec <-
   function(formula, design, ...) {
-    # warning("The svywattsdec function is experimental and is subject to changes in later versions.")
 
     if ('type_thresh' %in% names(list(...)) &&
         !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
@@ -417,7 +414,7 @@ svywattsdec.svyrep.design <-
     fgt1 <- ComputeFGT(incvar, ws, g = 1 , thresh = th)
     w_pgr <- log(fgt0 / (fgt0 - fgt1))
     L_poor <-
-      calc.gei(incvar, ifelse(incvar <= th , ws , 0) , epsilon = 0)
+      CalcGEI( incvar , ifelse(incvar <= th , ws , 0) , epsilon = 0 )
 
     ### variance calculation
 
@@ -448,7 +445,7 @@ svywattsdec.svyrep.design <-
         ComputeFGT(incvec , wsi , g = 1 , thresh = thr)
       w_pgr.rep  <- log(fgt0.rep / (fgt0.rep - fgt1.rep))
       L_poor.rep <-
-        calc.gei(incvec, ifelse(incvec <= thr , wsi , 0) , epsilon = 0)
+        CalcGEI( incvec , ifelse( incvec <= thr , wsi , 0 ) , epsilon = 0 )
 
       # combine esitmates
       c(watts.rep, fgt0.rep , w_pgr.rep , L_poor.rep)
