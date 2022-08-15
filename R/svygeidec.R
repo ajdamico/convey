@@ -176,44 +176,29 @@ svygeidec.survey.design <-
     grpvar <- interaction(grpvar)
 
     # total
-    ttl.gei <- CalcGEI(x = incvar,
-                       weights = w,
-                       epsilon = epsilon)
+    ttl.gei <- CalcGEI(incvar , w , epsilon)
 
     # compute linearized function
-    ttl.lin <-
-      CalcGEI_IF(x = incvar,
-                 weights = w,
-                 epsilon = epsilon)
-
-    # treat domain
-    ttl.lin <- ttl.lin[pmatch(names(w) , names(ttl.lin))]
-    names(ttl.lin) <- names(w)
-    ttl.lin[w <= 0] <- 0
+    ttl.lin <- CalcGEI_IF(incvar , w, epsilon)
 
     # create matrix of group-specific weights
-    wg <-
-      sapply(levels(grpvar) , function(z)
-        ifelse(grpvar == z , w , 0))
+    wg <- sapply(levels(grpvar) , function(z) ifelse(grpvar == z , w , 0))
 
     # calculate group-specific GEI and linearized functions
     grp.gei <- lapply(colnames(wg)  , function(this.group) {
       wi <- wg[, this.group]
       statobj <- list(
         value = CalcGEI(
-          x = incvar,
-          weights = wi ,
-          epsilon = epsilon
+          incvar,
+          wi ,
+          epsilon
         ) ,
         lin = CalcGEI_IF(
-          x = incvar,
-          weights = wi ,
-          epsilon = epsilon
+          incvar,
+          wi ,
+          epsilon
         )
       )
-      lin2 <- rep(0 , length(wi))
-      lin2[wi > 0] <- statobj$lin
-      statobj$lin <- lin2
       statobj
     })
     names(grp.gei) <- colnames(wg)
@@ -284,23 +269,9 @@ svygeidec.survey.design <-
       matrix(
         data = c(ttl.lin, within.lin, between.lin),
         ncol = 3,
-        dimnames = list(NULL, c("total", "within", "between"))
+        dimnames = list(names( w ) , c("total", "within", "between"))
       )
     rm(ttl.lin, within.lin, between.lin)
-
-    # ensure length
-    if (nrow(lin.matrix) != length(design$prob)) {
-      tmplin <-
-        matrix(0 ,
-               nrow = nrow(design$variables) ,
-               ncol = ncol(lin.matrix))
-      tmplin[w > 0 ,] <- lin.matrix
-      lin.matrix <- tmplin
-      rm(tmplin)
-      colnames(lin.matrix) <- c("total", "within", "between")
-    }
-    rownames(lin.matrix) <- rownames(design$variables)
-    if ( !anyNA( estimates ) ) lin.matrix[ is.na( lin.matrix ) ] <- 0 else lin.matrix[ , ] <- NA
 
     # compute variance
     variance <-
@@ -326,9 +297,6 @@ svygeidec.survey.design <-
         (npop * nobs)
       deff.estimate <- variance / vsrs
     }
-
-    # # keep necessary linearized functions
-    # lin.matrix <- lin.matrix[ w > 0 , ]
 
     # build result object
     rval <- c(estimates)
@@ -470,9 +438,7 @@ svygeidec.svyrep.design <-
 
     # total inequality
     ttl.gei <-
-      CalcGEI(x = incvar,
-              weights = ws ,
-              epsilon = epsilon)
+      CalcGEI(incvar , ws , epsilon )
     btw.gei <- fun.btw.gei(incvar , ws , grpvar , epsilon)
     # wtn.gei <- fun.wtn.gei( incvar , ws , grpvar , epsilon )
     wtn.gei <- ttl.gei - btw.gei
@@ -510,14 +476,7 @@ svygeidec.svyrep.design <-
 
       # compute linearized function
       ttl.lin <-
-        CalcGEI_IF(x = incvar,
-                   weights = ws,
-                   epsilon = epsilon)
-
-      # treat domain
-      ttl.lin <- ttl.lin[pmatch(names(ws) , names(ttl.lin))]
-      names(ttl.lin) <- names(ws)
-      ttl.lin[ws <= 0] <- 0
+        CalcGEI_IF(incvar , ws, epsilon )
 
       # create matrix of group-specific weights
       wg <-
@@ -528,20 +487,9 @@ svygeidec.svyrep.design <-
       grp.gei <- lapply(colnames(wg)  , function(this.group) {
         wi <- wg[, this.group]
         statobj <- list(
-          value = CalcGEI(
-            x = incvar,
-            weights = wi ,
-            epsilon = epsilon
-          ) ,
-          lin = CalcGEI_IF(
-            x = incvar,
-            weights = wi ,
-            epsilon = epsilon
-          )
+          value = CalcGEI( incvar , wi , epsilon ) ,
+          lin = CalcGEI_IF( incvar , wi , epsilon )
         )
-        lin2 <- rep(0 , length(wi))
-        lin2[wi > 0] <- statobj$lin
-        statobj$lin <- lin2
         statobj
       })
       names(grp.gei) <- colnames(wg)
@@ -612,24 +560,8 @@ svygeidec.svyrep.design <-
         matrix(
           data = c(ttl.lin, within.lin, between.lin),
           ncol = 3,
-          dimnames = list(NULL, c("total", "within", "between"))
+          dimnames = list(names( ws ) , c("total", "within", "between"))
         )
-      rownames(lin.matrix) <- rownames(design$variables)
-      rm(ttl.lin, within.lin, between.lin)
-
-      # ensure length
-      if (nrow(lin.matrix) != length(design$prob)) {
-        tmplin <-
-          matrix(0 ,
-                 nrow = nrow(design$variables) ,
-                 ncol = ncol(lin.matrix))
-        tmplin[ws > 0 ,] <- lin.matrix
-        lin.matrix <- tmplin
-        rm(tmplin)
-        colnames(lin.matrix) <- c("total", "within", "between")
-      }
-      rownames(lin.matrix) <- rownames(design$variables)
-      if ( !anyNA( estimates ) ) lin.matrix[ is.na( lin.matrix ) ] <- 0 else lin.matrix[ , ] <- NA
 
       ### compute deff
       nobs <- length(design$pweights)

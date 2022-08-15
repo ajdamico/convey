@@ -346,7 +346,7 @@ CalcGEI_IF <-
     # second term
     if ( epsilon == 0 ) partial.Ybar <- 1/Ybar
     else if ( epsilon == 1 ) partial.Ybar <- -( 1/Ybar )*( gei + 1 )
-    else partial.Ybar <- - (1/(mu * ( epsilon - 1 ) )) * ( (epsilon^2 - epsilon) * gei + 1 )
+    else partial.Ybar <- - (1/(Ybar * ( epsilon - 1 ) )) * ( (epsilon^2 - epsilon) * gei + 1 )
     lin.Ybar <- (y-Ybar) / N
     l2 <- partial.Ybar * lin.Ybar
 
