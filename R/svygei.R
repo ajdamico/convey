@@ -144,10 +144,7 @@ svygei.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas,]
-      if (length(nas) > length(design$prob))
-        incvar <- incvar[nas == 0]
-      else incvar[nas > 0, ] <- 0
+      design$prob <- ifelse( nas , Inf , design$prob )
     }
 
     # collect weights
