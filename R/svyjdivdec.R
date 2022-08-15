@@ -361,7 +361,6 @@ svyjdivdec.svyrep.design <-
       # calculate intermediate statistics
       gei0.group <- apply( wg , 2 , function( wi ) CalcGEI( incvar , wi , 0 ) )
       gei1.group <- apply( wg , 2 , function( wi ) CalcGEI( incvar , wi , 1 ) )
-      # sshare.group <- aggregate( ifelse( ws > 0 , ws * incvar , 0 ) , by = list( grpvar ) , FUN = sum )$x / sum( ws * ifelse( ws > 0 , incvar , 0 ) )
       sshare.group <- t( wg ) %*% incvar
       sshare.group <- c( t( sshare.group ) / sum( sshare.group ) )
 
