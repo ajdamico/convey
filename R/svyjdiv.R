@@ -103,11 +103,10 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, deff=FALSE ,
   # collect income data
   incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-  # fix missing values
+  # treat missing values
   if (na.rm) {
     nas <- is.na(incvar)
-    design <- design[nas == 0, ]
-    incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
+    design$prob <- ifelse( nas , Inf , design$prob )
   }
 
   # collect sampling weights
@@ -129,7 +128,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, deff=FALSE ,
   # method 2: compute point estimate
   estimate <- CalcJDiv( incvar , w )
   lin <- CalcJDiv_IF( incvar , w )
-  names( lin ) <- rownames( design$variables )[ w > 0 ]
+  lin <- ifelse( w > 0 , lin , 0 )
 
   # treat remaining missing
   if ( is.na( estimate ) ) {
@@ -140,14 +139,6 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, deff=FALSE ,
     attr(rval, "statistic") <- "j-divergence"
     attr(rval, "var") <- variance
     return(rval)
-  }
-
-  # ensure length
-  if ( length( lin ) != length( design$prob ) ) {
-    tmplin <- rep( 0 , nrow( design$variables ) )
-    tmplin[ w > 0 ] <- lin
-    lin <- tmplin ; rm( tmplin )
-    names( lin ) <- rownames( design$variables )
   }
 
   # compute variance
@@ -164,11 +155,8 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, deff=FALSE ,
     deff.estimate <- variance/vsrs
   }
 
-  # keep necessary linearized functions
-  lin <- lin[ 1/design$prob > 0 ]
-
   # coerce to matrix
-  lin <- matrix( lin , nrow = length( lin ) , dimnames = list( names( lin ) , strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]] ) )
+  lin <- matrix( lin , nrow = length( lin ) , dimnames = list( names( w ) , strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]] ) )
 
   # build result object
   rval <- estimate
@@ -177,7 +165,7 @@ svyjdiv.survey.design <- function ( formula, design, na.rm = FALSE, deff=FALSE ,
   attr(rval, "var") <- variance
   attr(rval, "statistic") <- "j-divergence"
   if ( linearized ) attr(rval,"linearized") <- lin
-  if ( influence )  attr( rval , "influence" )  <- sweep( lin , 1 , design$prob[ is.finite( design$prob ) ] , "/" )
+  if ( influence )  attr( rval , "influence" )  <- sweep( lin , 1 , design$prob , "/" )
   if ( linearized | influence ) attr( rval , "index" ) <- as.numeric( rownames( lin ) )
   if ( is.character(deff) || deff) attr( rval , "deff") <- deff.estimate
   rval
@@ -248,11 +236,8 @@ svyjdiv.svyrep.design <- function ( formula, design, na.rm = FALSE, deff = FALSE
     if (deff != "replace") vsrs <- vsrs * (npop - nobs)/npop
     deff.estimate <- variance / vsrs
 
-    # filter observation
-    names( lin ) <- rownames( design$variables )
-
     # coerce to matrix
-    lin <- matrix( lin , nrow = length( lin ) , dimnames = list( names( lin ) , strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]] ) )
+    lin <- matrix( lin , nrow = length( ws ) , dimnames = list( names( ws ) , strsplit( as.character( formula )[[2]] , ' \\+ ' )[[1]] ) )
 
   }
 
@@ -313,28 +298,30 @@ CalcJDiv <-  function( y , w ) {
 # function to compute linearized function
 CalcJDiv_IF <-  function( y , w ) {
 
-  # filter observations
-  y <- y[ w > 0]
-  w <- w[ w > 0]
+  # filter NAs
+  w <- ifelse( is.na( y ) , 0 , w )
 
   # compute intermediate statistics
-  N <- sum( w )
-  Y <- sum( y * w )
-  mu <- Y / N
-  jdiv <- sum( w * ( ( y / mu ) - 1 ) * log( y / mu ) ) / N
-  gei1 <- sum( w * (y/mu) * log(y/mu) ) / N
+  Ntot <- sum( w )
+  Ytot <- sum( y * w )
+  Ybar <- Ytot / Ntot
+  jdiv <- sum( ifelse( w > 0 ,  w * ( ( y / Ybar ) - 1 ) * log( y / Ybar ) , 0 ) ) / Ntot
+  gei1 <- sum( w * ifelse( w > 0 , (y/Ybar) * log(y/Ybar) , 0 ) ) / Ntot
 
   # linearized function under fixed mean
-  y.score <- ( ( ( y / mu ) - 1 ) * log( y / mu ) )
-  lin.fixed <- ( y.score - jdiv ) / N
+  u.score <- ( ( ( y / Ybar ) - 1 ) * log( y / Ybar ) )
+  lin.fixed <- ( u.score - jdiv ) / Ntot
 
   # derivative wrt mean
-  # djdiv.dmu <- 1/mu - sum( w * (y/mu) * ( log( y/mu ) + 1 ) ) / Y
-  djdiv.dmu <- - gei1 / mu
-  I.mu <- ( y - mu ) / N
+  # djdiv.dYbar <- 1/Ybar - sum( w * (y/Ybar) * ( log( y/Ybar ) + 1 ) ) / Ytot
+  djdiv.dYbar <- - gei1 / Ybar
+  I.Ybar <- ( y - Ybar ) / Ntot
 
   # compute final linearized function
-  lin <- lin.fixed + djdiv.dmu * I.mu
+  lin <- lin.fixed + djdiv.dYbar * I.Ybar
+
+  # fix domains
+  lin <- ifelse( w > 0 , lin , 0 )
 
   # return final linearized function
   return( lin )
