@@ -161,8 +161,7 @@ svyisq.survey.design <-
         na.rm = na.rm
       )
     lin <- CalcISQ_IF(incvar , w, alpha , Fprime0 , Fprime1)
-    if (upper)
-      lin <- incvar[w > 0] - lin
+    if (upper) lin <- ifelse( w > 0 , incvar - lin , 0 )
 
     # ensure length
     if (length(lin) != length(design$prob)) {
@@ -200,9 +199,6 @@ svyisq.survey.design <-
       deff.estimate <- variance / vsrs
     }
 
-    # keep necessary linearized functions
-    lin <- lin[1 / design$prob > 0]
-
     # coerce to matrix
     lin <-
       matrix(lin ,
@@ -222,7 +218,7 @@ svyisq.survey.design <-
       attr(rval, "linearized") <- lin
     if (influence)
       attr(rval , "influence")  <-
-      sweep(lin , 1 , design$prob[is.finite(design$prob)] , "/")
+      sweep(lin , 1 , design$prob , "/")
     if (linearized |
         influence)
       attr(rval , "index") <- as.numeric(rownames(lin))
@@ -433,9 +429,6 @@ CalcISQ <- function(x , pw , alpha) {
 
 # function for linearized functions
 CalcISQ_IF <- function(x , pw , alpha , Fprime0 , Fprime1) {
-  # filter observations
-  x <- x [pw > 0]
-  pw <- pw [pw > 0]
 
   # population size
   N <- sum(pw)
@@ -455,7 +448,7 @@ CalcISQ_IF <- function(x , pw , alpha , Fprime0 , Fprime1) {
   names(isqalpha) <- names(pw)
 
   # return estimate
-  isqalpha
+  ifelse( pw != 0 , isqalpha , 0 )
 
 }
 
