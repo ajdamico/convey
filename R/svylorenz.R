@@ -296,8 +296,8 @@ svylorenz.survey.design <-
     }
 
     # keep necessary linearized functions
-    lin.matrix <- lin.matrix[1 / design$prob > 0 , ]
-    rownames(lin.matrix) <- rownames(design$variables)[w > 0]
+    # lin.matrix <- lin.matrix[1 / design$prob > 0 , ]
+    rownames(lin.matrix) <- rownames(design$variables)
     colnames(lin.matrix) <- paste0("L(" , quantiles , ")")
 
     # compute CIs
@@ -335,7 +335,7 @@ svylorenz.survey.design <-
       attr(rval, "linearized") <- lin.matrix
     if (influence)
       attr(rval , "influence")  <-
-      sweep(lin.matrix , 1 , design$prob[is.finite(design$prob)] , "/")
+      sweep(lin.matrix , 1 , design$prob , "/")
     if (linearized |
         influence)
       attr(rval , "index") <- as.numeric(rownames(lin.matrix))

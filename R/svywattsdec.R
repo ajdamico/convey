@@ -1,4 +1,4 @@
-#' Watts poverty index decomposition (EXPERIMENTAL)
+#' Watts poverty index decomposition
 #'
 #' Estimate the Watts (1968) poverty measure and its components
 #'
@@ -21,8 +21,6 @@
 #' A "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa, and Anthony Damico
-#'
-#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svywatts},\link{svyfgt},\link{svyfgt}}
 #'
@@ -119,8 +117,6 @@
 #' @export
 svywattsdec <-
   function(formula, design, ...) {
-    # warning("The svywattsdec function is experimental and is subject to changes in later versions.")
-
     if ('type_thresh' %in% names(list(...)) &&
         !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
       stop('type_thresh= must be "relq" "relm" or "abs". see ?svywattsdec for more detail.')
@@ -223,10 +219,10 @@ svywattsdec.survey.design <-
     # Watts Poverty Gap Ratio
     fgt0 <-
       list(value = coef(fgt0)[[1]] ,
-           lin = attr(fgt0 , "lin") )
+           lin = attr(fgt0 , "lin"))
     fgt1 <-
       list(value = coef(fgt1)[[1]] ,
-           lin = attr(fgt1 , "lin") )
+           lin = attr(fgt1 , "lin"))
     W_pgr <-
       convey::contrastinf(quote(log(fgt0 / (fgt0 - fgt1))) , list(fgt0 = fgt0 , fgt1 = fgt1))
 
@@ -234,7 +230,7 @@ svywattsdec.survey.design <-
     # by residual
     watts <-
       list(value = coef(watts)[[1]] ,
-           lin = attr(watts , "lin") )
+           lin = attr(watts , "lin"))
     L_poor <-
       convey::contrastinf(quote(watts / fgt0 - W_pgr) ,
                           list(
@@ -278,7 +274,7 @@ svywattsdec.survey.design <-
     # compute variance
     variance <-
       survey::svyrecvar(
-        sweep( lin.matrix , 1 , wf , "*" ) ,
+        sweep(lin.matrix , 1 , wf , "*") ,
         full_design$cluster,
         full_design$strata,
         full_design$fpc,
@@ -378,7 +374,7 @@ svywattsdec.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       incvec <-
         model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
     }
@@ -403,7 +399,7 @@ svywattsdec.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       incvar <- incvar[!nas]
     }
 
@@ -417,7 +413,7 @@ svywattsdec.svyrep.design <-
     fgt1 <- ComputeFGT(incvar, ws, g = 1 , thresh = th)
     w_pgr <- log(fgt0 / (fgt0 - fgt1))
     L_poor <-
-      calc.gei(incvar, ifelse(incvar <= th , ws , 0) , epsilon = 0)
+      CalcGEI(incvar , ifelse(incvar <= th , ws , 0) , epsilon = 0)
 
     ### variance calculation
 
@@ -428,7 +424,8 @@ svywattsdec.svyrep.design <-
     qq <- apply(wwf, 2, function(wi) {
       # compute threshold
       if (type_thresh == 'relq')
-        thr <- percent * computeQuantiles(incvec , wi , p = quantiles)
+        thr <-
+          percent * computeQuantiles(incvec , wi , p = quantiles)
       if (type_thresh == 'relm')
         thr <- percent * sum(incvec * wi) / sum(wi)
       if (type_thresh == 'abs')
@@ -448,7 +445,7 @@ svywattsdec.svyrep.design <-
         ComputeFGT(incvec , wsi , g = 1 , thresh = thr)
       w_pgr.rep  <- log(fgt0.rep / (fgt0.rep - fgt1.rep))
       L_poor.rep <-
-        calc.gei(incvec, ifelse(incvec <= thr , wsi , 0) , epsilon = 0)
+        CalcGEI(incvec , ifelse(incvec <= thr , wsi , 0) , epsilon = 0)
 
       # combine esitmates
       c(watts.rep, fgt0.rep , w_pgr.rep , L_poor.rep)
@@ -466,7 +463,7 @@ svywattsdec.svyrep.design <-
     # compute variance
     if (anyNA(qq)) {
       variance <- diag(estimates)
-      variance[, ] <- NA
+      variance[,] <- NA
     } else {
       variance <-
         survey::svrVar(

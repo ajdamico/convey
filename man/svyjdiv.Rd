@@ -5,13 +5,29 @@
 \alias{svyjdiv.survey.design}
 \alias{svyjdiv.svyrep.design}
 \alias{svyjdiv.DBIsvydesign}
-\title{J-divergence measure (EXPERIMENTAL)}
+\title{J-divergence measure}
 \usage{
 svyjdiv(formula, design, ...)
 
-\method{svyjdiv}{survey.design}(formula, design, na.rm = FALSE, ...)
+\method{svyjdiv}{survey.design}(
+  formula,
+  design,
+  na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  influence = FALSE,
+  ...
+)
 
-\method{svyjdiv}{svyrep.design}(formula, design, na.rm = FALSE, ...)
+\method{svyjdiv}{svyrep.design}(
+  formula,
+  design,
+  na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  return.replicates = FALSE,
+  ...
+)
 
 \method{svyjdiv}{DBIsvydesign}(formula, design, ...)
 }
@@ -23,20 +39,25 @@ svyjdiv(formula, design, ...)
 \item{...}{future expansion}
 
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{deff}{Return the design effect (see \code{survey::svymean})}
+
+\item{linearized}{Should a matrix of linearized variables be returned}
+
+\item{influence}{Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})}
+
+\item{return.replicates}{Return the replicate estimates?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
-Estimate the j-divergence measure, an entropy-based measure of inequality
+Estimate the J-divergence measure, an entropy-based measure of inequality
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 
 This measure only allows for strictly positive variables.
-}
-\note{
-This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)
@@ -106,6 +127,6 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \code{\link{svygei}}
 }
 \author{
-Guilherme Jacob
+Guilherme Jacob, Djalma Pessoa, and Anthony Damico
 }
 \keyword{survey}

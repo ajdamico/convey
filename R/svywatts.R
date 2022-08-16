@@ -13,7 +13,7 @@
 #' @param na.rm Should cases with missing values be dropped?
 #' @param deff Return the design effect (see \code{survey::svymean})
 #' @param linearized Should a matrix of linearized variables be returned
-#' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})
+#' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}}). Not implemented yet for linearized designs.
 #' @param return.replicates Return the replicate estimates?
 #' @param ... passed to \code{svyarpr} and \code{svyarpt}
 #'
@@ -189,11 +189,7 @@ svywatts.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
-      if (length(nas) > length(full_design$prob))
-        incvec <- incvec[!nas]
-      else
-        incvec[nas] <- 0
+      full_design$prob <- ifelse(nas , Inf , full_design$prob)
     }
 
     # collect full sample weights
@@ -201,7 +197,6 @@ svywatts.survey.design <-
 
     # branch on threshold type and its linearized function
     if (type_thresh == 'relq') {
-
       ARPT <-
         svyarpt(
           formula = formula,
@@ -220,14 +215,14 @@ svywatts.survey.design <-
       muf <- Yf / Nf
       th <- percent * muf
       arptlin <- percent * (incvec - muf) / Nf
-      arptlin <- arptlin[wf > 0]
-      names(arptlin) <- rownames(full_design$variables)[wf > 0]
+      arptlin <- ifelse(wf == 0 , 0 ,  arptlin)
+      names(arptlin) <- rownames(full_design$variables)
 
     } else if (type_thresh == 'abs') {
       th <- abs_thresh
-      arptlin <- rep(0 , sum(wf > 0))
+      arptlin <- rep(0 , length(wf))
     }
-    names(arptlin) <- rownames(full_design$variables)[wf > 0]
+    names(arptlin) <- rownames(full_design$variables)
 
     ### domain poverty measure estimate
 
@@ -238,11 +233,7 @@ svywatts.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
-      if (length(nas) > length(design$prob))
-        incvar <- incvar[!nas]
-      else
-        incvar[nas] <- 0
+      design$prob <- ifelse(nas , Inf , design$prob)
     }
 
     # collect full sample weights
@@ -265,11 +256,10 @@ svywatts.survey.design <-
 
     # add linearized threshold
     ID <-
-      1 * (rownames(full_design$variables) %in% rownames(design$variables)[1 /
-                                                                             design$prob > 0])
+      1 * (rownames(full_design$variables) %in% rownames(design$variables)[is.finite(design$prob)])
     wattslin1 <- ID * (h(incvec , th) - estimate) / Nd
-    wattslin1 <- wattslin1[wf > 0]
-    wattslin1[incvec[wf > 0] <= 0] <- 0
+    wattslin1 <- ifelse(wf == 0 , 0 , wattslin1)
+    wattslin1[incvec <= 0 & wf != 0] <- 0
     Fprime <-
       densfun(
         formula ,
@@ -286,16 +276,7 @@ svywatts.survey.design <-
     else
       wattslin2 <- 0
     wattslin <- wattslin1 + wattslin2
-    names(wattslin) <- rownames(full_design$variables)[wf > 0]
-
-    # ensure length
-    if (length(wattslin) != length(full_design$prob)) {
-      names(wattslin) <- rownames(full_design$variables)[wf > 0]
-      wattslin <-
-        wattslin[pmatch(rownames(full_design$variables) , names(wattslin))]
-      names(wattslin) <- rownames(full_design$variables)
-      wattslin[is.na(wattslin)] <- 0
-    }
+    names(wattslin) <- rownames(full_design$variables)
 
     # compute variance
     variance <-
@@ -325,9 +306,6 @@ svywatts.survey.design <-
       deff.estimate <- variance / vsrs
     }
 
-    # keep necessary linearized functions
-    wattslin <- wattslin[1 / full_design$prob > 0]
-
     # coerce to matrix
     wattslin <-
       matrix(wattslin ,
@@ -347,12 +325,12 @@ svywatts.survey.design <-
       attr(rval, "thresh") <- th
     if (linearized)
       attr(rval, "linearized") <- wattslin
-    if (influence)
-      attr(rval , "influence")  <-
-      sweep(wattslin , 1 , full_design$prob[is.finite(full_design$prob)] , "/")
-    if (linearized |
-        influence)
-      attr(rval , "index") <- as.numeric(rownames(wattslin))
+    # if (influence)
+    #   attr(rval , "influence")  <-
+    #   sweep(wattslin , 1 , full_design$prob[is.finite(full_design$prob)] , "/")
+    # if (linearized |
+    #     influence)
+    #   attr(rval , "index") <- as.numeric(rownames(wattslin))
     if (is.character(deff) ||
         deff)
       attr(rval , "deff") <- deff.estimate
@@ -423,7 +401,7 @@ svywatts.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
@@ -440,7 +418,7 @@ svywatts.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
@@ -475,7 +453,8 @@ svywatts.svyrep.design <-
       names(wi) <- row.names(df_full)
 
       if (type_thresh == 'relq')
-        thr <- percent * computeQuantiles(incvec , wi , p = quantiles)
+        thr <-
+          percent * computeQuantiles(incvec , wi , p = quantiles)
       if (type_thresh == 'relm')
         thr <- percent * sum(incvec * wi) / sum(wi)
       if (type_thresh == 'abs')
@@ -514,16 +493,18 @@ svywatts.svyrep.design <-
       # compute threshold linearized function on full sample
       # branch on threshold type and its linearized function
       if (type_thresh == 'relq') {
-        q_alpha <- computeQuantiles( incvec , wsf , quantiles )
+        q_alpha <- computeQuantiles(incvec , wsf , quantiles)
         htot <- h_fun(incvec, wsf)
-        Nf <- sum( wsf)
+        Nf <- sum(wsf)
         u <- (q_alpha - incvec) / htot
         vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
         Fprime <- sum(vectf * wsf) / (Nf * htot)
         Nd <- sum(ws)
-        ID <- 1 * (rownames(full_design$variables) %in% rownames(design$variables)[ws > 0])
-        arptlin <- - ( percent / ( Nf * Fprime ) ) * ( ifelse( incvec <= q_alpha , 1 , 0 ) - quantiles )
-        arptlin <- arptlin[wsf>0]
+        ID <-
+          1 * (rownames(full_design$variables) %in% rownames(design$variables)[ws > 0])
+        arptlin <-
+          -(percent / (Nf * Fprime)) * (ifelse(incvec <= q_alpha , 1 , 0) - quantiles)
+        arptlin <- arptlin[wsf > 0]
       }
       if (type_thresh == 'relm') {
         Yf <- sum(wsf * incvec)

@@ -9,9 +9,27 @@
 \usage{
 svygei(formula, design, ...)
 
-\method{svygei}{survey.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
+\method{svygei}{survey.design}(
+  formula,
+  design,
+  epsilon = 1,
+  na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  influence = FALSE,
+  ...
+)
 
-\method{svygei}{svyrep.design}(formula, design, epsilon = 1, na.rm = FALSE, ...)
+\method{svygei}{svyrep.design}(
+  formula,
+  design,
+  epsilon = 1,
+  na.rm = FALSE,
+  deff = FALSE,
+  linearized = FALSE,
+  return.replicates = FALSE,
+  ...
+)
 
 \method{svygei}{DBIsvydesign}(formula, design, ...)
 }
@@ -25,6 +43,14 @@ svygei(formula, design, ...)
 \item{epsilon}{a parameter that determines the sensivity towards inequality in the top of the distribution. Defaults to epsilon = 1.}
 
 \item{na.rm}{Should cases with missing values be dropped?}
+
+\item{deff}{Return the design effect (see \code{survey::svymean})}
+
+\item{linearized}{Should a matrix of linearized variables be returned}
+
+\item{influence}{Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}})}
+
+\item{return.replicates}{Return the replicate estimates?}
 }
 \value{
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
