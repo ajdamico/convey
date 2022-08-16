@@ -2,6 +2,7 @@
 
 
 
+
 skip_on_cran()
 
 library(laeken)
@@ -10,7 +11,7 @@ library(survey)
 data(api)
 dstrat1 <- convey_prep(svydesign(id =  ~ 1, data = apistrat))
 test_that("svygeidec works on unweighted designs", {
-  svygei( ~ api00, design = dstrat1)
+  svygei(~ api00, design = dstrat1)
 })
 
 
@@ -35,7 +36,7 @@ des_eusilc_rep <- subset(des_eusilc_rep , eqincome > 0)
 
 
 a1 <-
-  svygeidec( ~ eqincome, subgroup = ~ db040, design = des_eusilc)
+  svygeidec(~ eqincome, subgroup = ~ db040, design = des_eusilc)
 a2 <-
   svyby(
     formula = ~ eqincome,
@@ -45,7 +46,7 @@ a2 <-
     svygeidec
   )
 b1 <-
-  svygeidec( ~ eqincome, subgroup = ~ db040, design = des_eusilc_rep)
+  svygeidec(~ eqincome, subgroup = ~ db040, design = des_eusilc_rep)
 b2 <-
   svyby(
     formula = ~ eqincome,
@@ -76,42 +77,42 @@ test_that("output svygeidec", {
   expect_gte(confint(a1)[2, 2], coef(a1)[2])
   expect_lte(confint(a1)[3, 1], coef(a1)[3])
   expect_gte(confint(a1)[3, 2], coef(a1)[3])
-  expect_lte(max(confint(a2[1, ])[, 1] - coef(a2[1, ])) , 0)
-  expect_gte(min(confint(a2[1, ])[, 2] - coef(a2[1, ])) , 0)
-  expect_lte(max(confint(a2[2, ])[, 1] - coef(a2[2, ])) , 0)
-  expect_gte(min(confint(a2[2, ])[, 2] - coef(a2[2, ])) , 0)
-  expect_lte(max(confint(a2[3, ])[, 1] - coef(a2[3, ])) , 0)
-  expect_gte(min(confint(a2[3, ])[, 2] - coef(a2[3, ])) , 0)
-  expect_lte(max(confint(a2[4, ])[, 1] - coef(a2[4, ])) , 0)
-  expect_gte(min(confint(a2[4, ])[, 2] - coef(a2[4, ])) , 0)
-  expect_lte(max(confint(a2[5, ])[, 1] - coef(a2[5, ])) , 0)
-  expect_gte(min(confint(a2[5, ])[, 2] - coef(a2[5, ])) , 0)
-  expect_lte(max(confint(a2[6, ])[, 1] - coef(a2[6, ])) , 0)
-  expect_gte(min(confint(a2[6, ])[, 2] - coef(a2[6, ])) , 0)
-  expect_lte(max(confint(a2[7, ])[, 1] - coef(a2[7, ])) , 0)
-  expect_gte(min(confint(a2[7, ])[, 2] - coef(a2[7, ])) , 0)
-  expect_lte(max(confint(b2[1, ])[, 1] - coef(b2[1, ])) , 0)
-  expect_gte(min(confint(b2[1, ])[, 2] - coef(b2[1, ])) , 0)
-  expect_lte(max(confint(b2[2, ])[, 1] - coef(b2[2, ])) , 0)
-  expect_gte(min(confint(b2[2, ])[, 2] - coef(b2[2, ])) , 0)
-  expect_lte(max(confint(b2[3, ])[, 1] - coef(b2[3, ])) , 0)
-  expect_gte(min(confint(b2[3, ])[, 2] - coef(b2[3, ])) , 0)
-  expect_lte(max(confint(b2[4, ])[, 1] - coef(b2[4, ])) , 0)
-  expect_gte(min(confint(b2[4, ])[, 2] - coef(b2[4, ])) , 0)
-  expect_lte(max(confint(b2[5, ])[, 1] - coef(b2[5, ])) , 0)
-  expect_gte(min(confint(b2[5, ])[, 2] - coef(b2[5, ])) , 0)
-  expect_lte(max(confint(b2[6, ])[, 1] - coef(b2[6, ])) , 0)
-  expect_gte(min(confint(b2[6, ])[, 2] - coef(b2[6, ])) , 0)
-  expect_lte(max(confint(b2[7, ])[, 1] - coef(b2[7, ])) , 0)
-  expect_gte(min(confint(b2[7, ])[, 2] - coef(b2[7, ])) , 0)
+  expect_lte(max(confint(a2[1,])[, 1] - coef(a2[1,])) , 0)
+  expect_gte(min(confint(a2[1,])[, 2] - coef(a2[1,])) , 0)
+  expect_lte(max(confint(a2[2,])[, 1] - coef(a2[2,])) , 0)
+  expect_gte(min(confint(a2[2,])[, 2] - coef(a2[2,])) , 0)
+  expect_lte(max(confint(a2[3,])[, 1] - coef(a2[3,])) , 0)
+  expect_gte(min(confint(a2[3,])[, 2] - coef(a2[3,])) , 0)
+  expect_lte(max(confint(a2[4,])[, 1] - coef(a2[4,])) , 0)
+  expect_gte(min(confint(a2[4,])[, 2] - coef(a2[4,])) , 0)
+  expect_lte(max(confint(a2[5,])[, 1] - coef(a2[5,])) , 0)
+  expect_gte(min(confint(a2[5,])[, 2] - coef(a2[5,])) , 0)
+  expect_lte(max(confint(a2[6,])[, 1] - coef(a2[6,])) , 0)
+  expect_gte(min(confint(a2[6,])[, 2] - coef(a2[6,])) , 0)
+  expect_lte(max(confint(a2[7,])[, 1] - coef(a2[7,])) , 0)
+  expect_gte(min(confint(a2[7,])[, 2] - coef(a2[7,])) , 0)
+  expect_lte(max(confint(b2[1,])[, 1] - coef(b2[1,])) , 0)
+  expect_gte(min(confint(b2[1,])[, 2] - coef(b2[1,])) , 0)
+  expect_lte(max(confint(b2[2,])[, 1] - coef(b2[2,])) , 0)
+  expect_gte(min(confint(b2[2,])[, 2] - coef(b2[2,])) , 0)
+  expect_lte(max(confint(b2[3,])[, 1] - coef(b2[3,])) , 0)
+  expect_gte(min(confint(b2[3,])[, 2] - coef(b2[3,])) , 0)
+  expect_lte(max(confint(b2[4,])[, 1] - coef(b2[4,])) , 0)
+  expect_gte(min(confint(b2[4,])[, 2] - coef(b2[4,])) , 0)
+  expect_lte(max(confint(b2[5,])[, 1] - coef(b2[5,])) , 0)
+  expect_gte(min(confint(b2[5,])[, 2] - coef(b2[5,])) , 0)
+  expect_lte(max(confint(b2[6,])[, 1] - coef(b2[6,])) , 0)
+  expect_gte(min(confint(b2[6,])[, 2] - coef(b2[6,])) , 0)
+  expect_lte(max(confint(b2[7,])[, 1] - coef(b2[7,])) , 0)
+  expect_gte(min(confint(b2[7,])[, 2] - coef(b2[7,])) , 0)
 })
 
 
 # compare subsetted objects to svyby objects
 sub_des <-
-  svygeidec(~ eqincome ,
-            subgroup = ~ db040 ,
-            design = subset(des_eusilc , rb090 == "male"))
+  svygeidec( ~ eqincome ,
+             subgroup = ~ db040 ,
+             design = subset(des_eusilc , rb090 == "male"))
 sby_des <-
   svyby(
     ~ eqincome,
@@ -136,10 +137,10 @@ sby_rep <-
   )
 
 test_that("subsets equal svyby", {
-  expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des[1,])))
-  expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep[1,])))
-  expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des[1, ])))
-  expect_equal(as.numeric(SE(sub_rep)), as.numeric(SE(sby_rep[1, ])))
+  expect_equal(as.numeric(coef(sub_des)), as.numeric(coef(sby_des[1, ])))
+  expect_equal(as.numeric(coef(sub_rep)), as.numeric(coef(sby_rep[1, ])))
+  expect_equal(as.numeric(SE(sub_des)), as.numeric(SE(sby_des[1,])))
+  expect_equal(as.numeric(SE(sub_rep)), as.numeric(SE(sby_rep[1,])))
 
   # coefficients should match across svydesign & svrepdesign
   expect_equal(coef(sub_des), coef(sub_rep))
@@ -192,7 +193,7 @@ dbd_eusilc_rep <- convey_prep(dbd_eusilc_rep)
 dbd_eusilc_rep <- subset(dbd_eusilc_rep , eqincome > 0)
 
 c1 <-
-  svygeidec(~ eqincome , subgroup = ~ db040 , design = dbd_eusilc)
+  svygeidec( ~ eqincome , subgroup = ~ db040 , design = dbd_eusilc)
 c2 <-
   svyby(
     formula = ~ eqincome,
@@ -202,7 +203,7 @@ c2 <-
     svygeidec
   )
 d1 <-
-  svygeidec(~ eqincome , subgroup = ~ db040 , design = dbd_eusilc_rep)
+  svygeidec( ~ eqincome , subgroup = ~ db040 , design = dbd_eusilc_rep)
 d2 <-
   svyby(
     formula = ~ eqincome,
@@ -229,34 +230,34 @@ test_that("output database svygeidec", {
   expect_gte(confint(c1)[2, 2], coef(c1)[2])
   expect_lte(confint(c1)[3, 1], coef(c1)[3])
   expect_gte(confint(c1)[3, 2], coef(c1)[3])
-  expect_lte(max(confint(c2[1, ])[, 1] - coef(c2[1, ])) , 0)
-  expect_gte(min(confint(c2[1, ])[, 2] - coef(c2[1, ])) , 0)
-  expect_lte(max(confint(c2[2, ])[, 1] - coef(c2[2, ])) , 0)
-  expect_gte(min(confint(c2[2, ])[, 2] - coef(c2[2, ])) , 0)
-  expect_lte(max(confint(c2[3, ])[, 1] - coef(c2[3, ])) , 0)
-  expect_gte(min(confint(c2[3, ])[, 2] - coef(c2[3, ])) , 0)
-  expect_lte(max(confint(c2[4, ])[, 1] - coef(c2[4, ])) , 0)
-  expect_gte(min(confint(c2[4, ])[, 2] - coef(c2[4, ])) , 0)
-  expect_lte(max(confint(c2[5, ])[, 1] - coef(c2[5, ])) , 0)
-  expect_gte(min(confint(c2[5, ])[, 2] - coef(c2[5, ])) , 0)
-  expect_lte(max(confint(c2[6, ])[, 1] - coef(c2[6, ])) , 0)
-  expect_gte(min(confint(c2[6, ])[, 2] - coef(c2[6, ])) , 0)
-  expect_lte(max(confint(c2[7, ])[, 1] - coef(c2[7, ])) , 0)
-  expect_gte(min(confint(c2[7, ])[, 2] - coef(c2[7, ])) , 0)
-  expect_lte(max(confint(d2[1, ])[, 1] - coef(d2[1, ])) , 0)
-  expect_gte(min(confint(d2[1, ])[, 2] - coef(d2[1, ])) , 0)
-  expect_lte(max(confint(d2[2, ])[, 1] - coef(d2[2, ])) , 0)
-  expect_gte(min(confint(d2[2, ])[, 2] - coef(d2[2, ])) , 0)
-  expect_lte(max(confint(d2[3, ])[, 1] - coef(d2[3, ])) , 0)
-  expect_gte(min(confint(d2[3, ])[, 2] - coef(d2[3, ])) , 0)
-  expect_lte(max(confint(d2[4, ])[, 1] - coef(d2[4, ])) , 0)
-  expect_gte(min(confint(d2[4, ])[, 2] - coef(d2[4, ])) , 0)
-  expect_lte(max(confint(d2[5, ])[, 1] - coef(d2[5, ])) , 0)
-  expect_gte(min(confint(d2[5, ])[, 2] - coef(d2[5, ])) , 0)
-  expect_lte(max(confint(d2[6, ])[, 1] - coef(d2[6, ])) , 0)
-  expect_gte(min(confint(d2[6, ])[, 2] - coef(d2[6, ])) , 0)
-  expect_lte(max(confint(d2[7, ])[, 1] - coef(d2[7, ])) , 0)
-  expect_gte(min(confint(d2[7, ])[, 2] - coef(d2[7, ])) , 0)
+  expect_lte(max(confint(c2[1,])[, 1] - coef(c2[1,])) , 0)
+  expect_gte(min(confint(c2[1,])[, 2] - coef(c2[1,])) , 0)
+  expect_lte(max(confint(c2[2,])[, 1] - coef(c2[2,])) , 0)
+  expect_gte(min(confint(c2[2,])[, 2] - coef(c2[2,])) , 0)
+  expect_lte(max(confint(c2[3,])[, 1] - coef(c2[3,])) , 0)
+  expect_gte(min(confint(c2[3,])[, 2] - coef(c2[3,])) , 0)
+  expect_lte(max(confint(c2[4,])[, 1] - coef(c2[4,])) , 0)
+  expect_gte(min(confint(c2[4,])[, 2] - coef(c2[4,])) , 0)
+  expect_lte(max(confint(c2[5,])[, 1] - coef(c2[5,])) , 0)
+  expect_gte(min(confint(c2[5,])[, 2] - coef(c2[5,])) , 0)
+  expect_lte(max(confint(c2[6,])[, 1] - coef(c2[6,])) , 0)
+  expect_gte(min(confint(c2[6,])[, 2] - coef(c2[6,])) , 0)
+  expect_lte(max(confint(c2[7,])[, 1] - coef(c2[7,])) , 0)
+  expect_gte(min(confint(c2[7,])[, 2] - coef(c2[7,])) , 0)
+  expect_lte(max(confint(d2[1,])[, 1] - coef(d2[1,])) , 0)
+  expect_gte(min(confint(d2[1,])[, 2] - coef(d2[1,])) , 0)
+  expect_lte(max(confint(d2[2,])[, 1] - coef(d2[2,])) , 0)
+  expect_gte(min(confint(d2[2,])[, 2] - coef(d2[2,])) , 0)
+  expect_lte(max(confint(d2[3,])[, 1] - coef(d2[3,])) , 0)
+  expect_gte(min(confint(d2[3,])[, 2] - coef(d2[3,])) , 0)
+  expect_lte(max(confint(d2[4,])[, 1] - coef(d2[4,])) , 0)
+  expect_gte(min(confint(d2[4,])[, 2] - coef(d2[4,])) , 0)
+  expect_lte(max(confint(d2[5,])[, 1] - coef(d2[5,])) , 0)
+  expect_gte(min(confint(d2[5,])[, 2] - coef(d2[5,])) , 0)
+  expect_lte(max(confint(d2[6,])[, 1] - coef(d2[6,])) , 0)
+  expect_gte(min(confint(d2[6,])[, 2] - coef(d2[6,])) , 0)
+  expect_lte(max(confint(d2[7,])[, 1] - coef(d2[7,])) , 0)
+  expect_gte(min(confint(d2[7,])[, 2] - coef(d2[7,])) , 0)
 })
 
 test_that("check dbi and non-dbi svygeidec output", {
@@ -279,9 +280,9 @@ test_that("check dbi and non-dbi svygeidec output", {
 })
 
 sub_dbd <-
-  svygeidec(~ eqincome ,
-            subgroup = ~ db040,
-            design = subset(dbd_eusilc , rb090 == "male"))
+  svygeidec( ~ eqincome ,
+             subgroup = ~ db040,
+             design = subset(dbd_eusilc , rb090 == "male"))
 sub_dbr <-
   svygeidec(
     ~ eqincome ,
@@ -317,10 +318,10 @@ test_that("dbi subsets equal non-dbi subsets", {
 
 # compare database-backed subsetted objects to database-backed svyby objects
 test_that("dbi subsets equal dbi svyby", {
-  expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[2, ]))) # inverted results!
-  expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[2, ]))) # inverted results!
-  expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[2, ]))) # inverted results!
-  expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[2, ]))) # inverted results!
+  expect_equal(as.numeric(coef(sub_dbd)), as.numeric(coef(sby_dbd[2,]))) # inverted results!
+  expect_equal(as.numeric(coef(sub_dbr)), as.numeric(coef(sby_dbr[2,]))) # inverted results!
+  expect_equal(as.numeric(SE(sub_dbd)), as.numeric(SE(sby_dbd[2,]))) # inverted results!
+  expect_equal(as.numeric(SE(sub_dbr)), as.numeric(SE(sby_dbr[2,]))) # inverted results!
 })
 
 

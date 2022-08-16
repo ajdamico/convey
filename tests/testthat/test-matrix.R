@@ -73,10 +73,10 @@ test_that("coef and SE matrix values make sense", {
     this_df <-
       data.frame(
         function_name = this_fun ,
-        coef_lin = coef(final_fun(~ eqincome , des_eusilc)) ,
-        se_lin = SE(final_fun(~ eqincome , des_eusilc))[1] ,
-        coef_rep = coef(final_fun(~ eqincome , des_eusilc_rep)) ,
-        se_rep = SE(final_fun(~ eqincome , des_eusilc_rep))[1] ,
+        coef_lin = coef(final_fun( ~ eqincome , des_eusilc)) ,
+        se_lin = SE(final_fun( ~ eqincome , des_eusilc))[1] ,
+        coef_rep = coef(final_fun( ~ eqincome , des_eusilc_rep)) ,
+        se_rep = SE(final_fun( ~ eqincome , des_eusilc_rep))[1] ,
         measure_of_uncertainty = "standard error"
       )
 
@@ -87,25 +87,25 @@ test_that("coef and SE matrix values make sense", {
   }
 
   lor_lin <-
-    svylorenz(~ eqincome ,
-              des_eusilc,
-              seq(0, 1, .05),
-              alpha = .01 ,
-              plot = FALSE)
+    svylorenz( ~ eqincome ,
+               des_eusilc,
+               seq(0, 1, .05),
+               alpha = .01 ,
+               plot = FALSE)
   lor_rep <-
-    svylorenz(~ eqincome ,
-              des_eusilc_rep,
-              seq(0, 1, .05),
-              alpha = .01 ,
-              plot = FALSE)
+    svylorenz( ~ eqincome ,
+               des_eusilc_rep,
+               seq(0, 1, .05),
+               alpha = .01 ,
+               plot = FALSE)
 
   this_df <-
     data.frame(
       function_name = "svylorenz" ,
-      coef_lin = coef(lor_lin)[ "L(0.5)" ] ,
-      se_lin = SE(lor_lin )[ "L(0.5)" ] ,
-      coef_rep = coef( lor_rep )[ "L(0.5)" ] ,
-      se_rep = SE( lor_rep )[ "L(0.5)" ] ,
+      coef_lin = coef(lor_lin)["L(0.5)"] ,
+      se_lin = SE(lor_lin)["L(0.5)"] ,
+      coef_rep = coef(lor_rep)["L(0.5)"] ,
+      se_rep = SE(lor_rep)["L(0.5)"] ,
       measure_of_uncertainty = "confidence interval length at median"
     )
 
@@ -114,18 +114,18 @@ test_that("coef and SE matrix values make sense", {
   out <- rbind(out , this_df)
 
   div_lin <-
-    svyjdivdec(~ eqincome , ~ rb090 , subset(des_eusilc, eqincome > 0))
+    svyjdivdec( ~ eqincome , ~ rb090 , subset(des_eusilc, eqincome > 0))
   div_rep <-
-    svyjdivdec(~ eqincome , ~ rb090 , subset(des_eusilc_rep, eqincome > 0))
+    svyjdivdec( ~ eqincome , ~ rb090 , subset(des_eusilc_rep, eqincome > 0))
 
   for (i in 1:3) {
     this_df <-
       data.frame(
         function_name = paste("svyjdivdec" , c("total" , "within" , "between")[i]) ,
         coef_lin = coef(div_lin)[i] ,
-        se_lin = attr(div_lin, 'var')[i,i] ,
+        se_lin = attr(div_lin, 'var')[i, i] ,
         coef_rep = coef(div_rep)[i] ,
-        se_rep = attr(div_rep, 'var')[i,i] ,
+        se_rep = attr(div_rep, 'var')[i, i] ,
         measure_of_uncertainty = "variance"
       )
 
@@ -136,18 +136,18 @@ test_that("coef and SE matrix values make sense", {
   }
 
   dec_lin <-
-    svygeidec(~ eqincome , ~ rb090 , des_eusilc , epsilon = .5)
+    svygeidec( ~ eqincome , ~ rb090 , des_eusilc , epsilon = .5)
   dec_rep <-
-    svygeidec(~ eqincome , ~ rb090 , des_eusilc_rep , epsilon = .5)
+    svygeidec( ~ eqincome , ~ rb090 , des_eusilc_rep , epsilon = .5)
 
   for (i in 1:3) {
     this_df <-
       data.frame(
         function_name = paste("svygeidec" , c("total" , "within" , "between")[i]) ,
         coef_lin = coef(dec_lin)[i] ,
-        se_lin = attr(dec_lin, 'var')[i,i] ,
+        se_lin = attr(dec_lin, 'var')[i, i] ,
         coef_rep = coef(dec_lin)[i] ,
-        se_rep = attr(dec_rep, 'var')[i,i] ,
+        se_rep = attr(dec_rep, 'var')[i, i] ,
         measure_of_uncertainty = "variance"
       )
 

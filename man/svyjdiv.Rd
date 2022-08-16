@@ -59,9 +59,6 @@ you must run the \code{convey_prep} function on your survey design object immedi
 
 This measure only allows for strictly positive variables.
 }
-\note{
-This function is experimental and is subject to change in later versions.
-}
 \examples{
 library(survey)
 library(laeken)
@@ -119,7 +116,7 @@ dbDisconnect( conn , shutdown = TRUE )
 \references{
 Nicholas Rohde (2016). J-divergence measurements of economic inequality.
 J. R. Statist. Soc. A, v. 179, Part 3 (2016), pp. 847-870.
-URL \url{https://onlinelibrary.wiley.com/doi/10.1111/rssa.12153/abstract}.
+URL \url{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssa.12153}.
 
 Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
 and Atkinson Inequality Indices from Complex Survey Data. \emph{DIW Discussion Papers},
@@ -130,6 +127,6 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \code{\link{svygei}}
 }
 \author{
-Guilherme Jacob
+Guilherme Jacob, Djalma Pessoa, and Anthony Damico
 }
 \keyword{survey}

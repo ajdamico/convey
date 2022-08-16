@@ -111,12 +111,12 @@ for (this.epsilon in c(0, .5, 1, 2)) {
       linearized = TRUE
     )
   d2 <-
-    svyby(~ eqincome ,
-          ~ rb090,
-          des_eusilc ,
-          svygei ,
-          epsilon = this.epsilon ,
-          deff = TRUE)
+    svyby( ~ eqincome ,
+           ~ rb090,
+           des_eusilc ,
+           svygei ,
+           epsilon = this.epsilon ,
+           deff = TRUE)
 
   # calculate auxilliary tests statistics
   cv_diff1 <- max(abs(cv(a1) - cv(b1)))
@@ -218,9 +218,9 @@ for (this.epsilon in c(0, .5, 1, 2)) {
     expect_equal(coef(a1) , coef(c1))
     expect_equal(coef(a2) , coef(c2)[match(names(coef(c2)) , names(coef(a2)))])
     expect_equal(SE(a1) , SE(c1))
-    expect_equal(SE(a2) , SE(c2)[2:1 ,])
+    expect_equal(SE(a2) , SE(c2)[2:1 , ])
     expect_equal(deff(a1) , deff(c1))
-    expect_equal(deff(a2) , deff(c2)[2:1 ,])
+    expect_equal(deff(a2) , deff(c2)[2:1 , ])
 
     # check equality of linearized variables
     expect_equal(attr(c1 , "linearized") , attr(a1 , "linearized"))
@@ -275,20 +275,20 @@ for (this.epsilon in c(0, .5, 1, 2)) {
   # perform tests
   test_that("subsets equal svyby", {
     # domain vs svyby: coefficients must be equal
-    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_des[1, ])))
-    expect_equal(as.numeric(coef(sub_rep)) , as.numeric(coef(sby_rep[1, ])))
+    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_des[1,])))
+    expect_equal(as.numeric(coef(sub_rep)) , as.numeric(coef(sby_rep[1,])))
 
     # domain vs svyby: SEs must be equal
-    expect_equal(as.numeric(SE(sub_des)) , as.numeric(SE(sby_des[1, ])))
-    expect_equal(as.numeric(SE(sub_rep)) , as.numeric(SE(sby_rep[1, ])))
+    expect_equal(as.numeric(SE(sub_des)) , as.numeric(SE(sby_des[1,])))
+    expect_equal(as.numeric(SE(sub_rep)) , as.numeric(SE(sby_rep[1,])))
 
     # domain vs svyby and svydesign vs svyrepdesign:
     # coefficients should match across svydesign
-    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_rep[1, ])))
+    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_rep[1,])))
 
     # domain vs svyby and svydesign vs svyrepdesign:
     # coefficients of variation should be within five percent
-    cv_diff <- max(abs(cv(sub_des) - cv(sby_rep)[1, ]))
+    cv_diff <- max(abs(cv(sub_des) - cv(sby_rep)[1,]))
     expect_lte(cv_diff , .20)
 
     # check equality of linearized variables
@@ -408,10 +408,10 @@ for (this.epsilon in c(0, .5, 1, 2)) {
 
     # compare database-backed subsetted objects to database-backed svyby objects
     # dbi subsets equal dbi svyby
-    expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[2, ])))
-    expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[2, ])))
-    expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[2, ])))
-    expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[2, ])))
+    expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[2,])))
+    expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[2,])))
+    expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[2,])))
+    expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[2,])))
     expect_equal(vcov(sub_dbd) , vcov(sub_des))
     expect_equal(vcov(sub_dbr) , vcov(sub_rep))
 

@@ -25,7 +25,7 @@
 #'
 #' @references Anthony F. Shorrocks (1984). Inequality decomposition groups population subgroups.
 #' \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
-#' URL \url{http://www.jstor.org/stable/1913511}.
+#' URL \url{https://www.jstor.org/stable/1913511}.
 #'
 #' Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
 #' and Atkinson Inequality Indices from Complex Survey Data. \emph{DIW Discussion Papers},
@@ -145,22 +145,22 @@ svygeidec.survey.design <-
             ...) {
     # collect data
     incvar <-
-      model.frame(formula, design$variables, na.action = na.pass)[, ]
+      model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <-
       model.frame(subgroup,
                   design$variables,
                   na.action = na.pass ,
-                  drop.unused.levels = TRUE)[, ]
+                  drop.unused.levels = TRUE)[,]
 
     # check types
-    if ( inherits( grpvar , "labelled" ) ) {
+    if (inherits(grpvar , "labelled")) {
       stop("This function does not support 'labelled' variables. Try factor().")
     }
 
     # treat missing values
     if (na.rm) {
       nas <- (is.na(incvar) | is.na(grpvar))
-      design$prob <- ifelse( nas , Inf , design$prob )
+      design$prob <- ifelse(nas , Inf , design$prob)
     }
 
     # collect sampling weights
@@ -182,23 +182,19 @@ svygeidec.survey.design <-
     ttl.lin <- CalcGEI_IF(incvar , w, epsilon)
 
     # create matrix of group-specific weights
-    wg <- sapply(levels(grpvar) , function(z) ifelse(grpvar == z , w , 0))
+    wg <-
+      sapply(levels(grpvar) , function(z)
+        ifelse(grpvar == z , w , 0))
 
     # calculate group-specific GEI and linearized functions
     grp.gei <- lapply(colnames(wg)  , function(this.group) {
       wi <- wg[, this.group]
-      statobj <- list(
-        value = CalcGEI(
-          incvar,
-          wi ,
-          epsilon
-        ) ,
-        lin = CalcGEI_IF(
-          incvar,
-          wi ,
-          epsilon
-        )
-      )
+      statobj <- list(value = CalcGEI(incvar,
+                                      wi ,
+                                      epsilon) ,
+                      lin = CalcGEI_IF(incvar,
+                                       wi ,
+                                       epsilon))
       statobj
     })
     names(grp.gei) <- colnames(wg)
@@ -269,7 +265,7 @@ svygeidec.survey.design <-
       matrix(
         data = c(ttl.lin, within.lin, between.lin),
         ncol = 3,
-        dimnames = list(names( w ) , c("total", "within", "between"))
+        dimnames = list(names(w) , c("total", "within", "between"))
       )
     rm(ttl.lin, within.lin, between.lin)
 
@@ -305,13 +301,13 @@ svygeidec.survey.design <-
     attr(rval, "group") <- as.character(subgroup)[[2]]
     attr(rval, "epsilon") <- epsilon
     if (linearized)
-      attr(rval, "linearized") <- lin.matrix[ w > 0 , ]
+      attr(rval, "linearized") <- lin.matrix[w > 0 ,]
     if (influence)
       attr(rval , "influence")  <-
       sweep(lin.matrix , 1 , w , "*")
     if (linearized |
         influence)
-      attr(rval , "index") <- as.numeric(rownames(lin.matrix))[w>0]
+      attr(rval , "index") <- as.numeric(rownames(lin.matrix))[w > 0]
     if (is.character(deff) ||
         deff)
       attr(rval , "deff") <- deff.estimate
@@ -388,32 +384,32 @@ svygeidec.svyrep.design <-
 
     # collect data
     incvar <-
-      model.frame(formula, design$variables, na.action = na.pass)[, ]
+      model.frame(formula, design$variables, na.action = na.pass)[,]
     grpvar <-
       model.frame(subgroup,
                   design$variables,
                   na.action = na.pass ,
-                  drop.unused.levels = TRUE)[, ]
+                  drop.unused.levels = TRUE)[,]
 
     # check types
-    if ( inherits( grpvar , "labelled" ) ) {
+    if (inherits(grpvar , "labelled")) {
       stop("This function does not support 'labelled' variables. Try factor().")
     }
 
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar) | is.na(grpvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <-
-        model.frame(formula, design$variables, na.action = na.pass)[, ]
+        model.frame(formula, design$variables, na.action = na.pass)[,]
       grpvar <-
         model.frame(
           subgroup,
           design$variables,
           na.action = na.pass ,
           drop.unused.levels = TRUE
-        )[, ]
+        )[,]
     }
 
     # collect samling weights
@@ -438,7 +434,7 @@ svygeidec.svyrep.design <-
 
     # total inequality
     ttl.gei <-
-      CalcGEI(incvar , ws , epsilon )
+      CalcGEI(incvar , ws , epsilon)
     btw.gei <- fun.btw.gei(incvar , ws , grpvar , epsilon)
     # wtn.gei <- fun.wtn.gei( incvar , ws , grpvar , epsilon )
     wtn.gei <- ttl.gei - btw.gei
@@ -460,7 +456,7 @@ svygeidec.svyrep.design <-
     # compute variance
     if (anyNA(qq)) {
       variance <- diag(estimates)
-      variance[, ] <- NA
+      variance[,] <- NA
     } else {
       variance <-
         survey::svrVar(qq ,
@@ -476,7 +472,7 @@ svygeidec.svyrep.design <-
 
       # compute linearized function
       ttl.lin <-
-        CalcGEI_IF(incvar , ws, epsilon )
+        CalcGEI_IF(incvar , ws, epsilon)
 
       # create matrix of group-specific weights
       wg <-
@@ -486,10 +482,8 @@ svygeidec.svyrep.design <-
       # calculate group-specific GEI and linearized functions
       grp.gei <- lapply(colnames(wg)  , function(this.group) {
         wi <- wg[, this.group]
-        statobj <- list(
-          value = CalcGEI( incvar , wi , epsilon ) ,
-          lin = CalcGEI_IF( incvar , wi , epsilon )
-        )
+        statobj <- list(value = CalcGEI(incvar , wi , epsilon) ,
+                        lin = CalcGEI_IF(incvar , wi , epsilon))
         statobj
       })
       names(grp.gei) <- colnames(wg)
@@ -560,7 +554,7 @@ svygeidec.svyrep.design <-
         matrix(
           data = c(ttl.lin, within.lin, between.lin),
           ncol = 3,
-          dimnames = list(names( ws ) , c("total", "within", "between"))
+          dimnames = list(names(ws) , c("total", "within", "between"))
         )
 
       ### compute deff
