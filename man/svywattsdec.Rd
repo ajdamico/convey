@@ -5,7 +5,7 @@
 \alias{svywattsdec.survey.design}
 \alias{svywattsdec.svyrep.design}
 \alias{svywattsdec.DBIsvydesign}
-\title{Watts poverty index decomposition (EXPERIMENTAL)}
+\title{Watts poverty index decomposition}
 \usage{
 svywattsdec(formula, design, ...)
 
@@ -67,9 +67,6 @@ Estimate the Watts (1968) poverty measure and its components
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
-}
-\note{
-This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)

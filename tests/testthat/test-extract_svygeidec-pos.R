@@ -1,5 +1,7 @@
 
 
+
+
 skip_on_cran()
 
 library(laeken)
@@ -32,7 +34,8 @@ des_eusilc_rep <- subset(des_eusilc_rep , eqincome > 0)
 
 
 
-a1 <- svygeidec( ~ eqincome, subgroup = ~ db040, design = des_eusilc)
+a1 <-
+  svygeidec( ~ eqincome, subgroup = ~ db040, design = des_eusilc)
 a2 <-
   svyby(
     formula = ~ eqincome,

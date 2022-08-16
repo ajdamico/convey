@@ -122,10 +122,10 @@ test_that("coef and SE matrix values make sense", {
     this_df <-
       data.frame(
         function_name = paste("svyjdivdec" , c("total" , "within" , "between")[i]) ,
-        coef_lin = div_lin$eqincome[i] ,
-        se_lin = attr(div_lin, 'var')[i] ,
-        coef_rep = div_rep$eqincome[i] ,
-        se_rep = attr(div_rep, 'var')[i] ,
+        coef_lin = coef(div_lin)[i] ,
+        se_lin = attr(div_lin, 'var')[i,i] ,
+        coef_rep = coef(div_rep)[i] ,
+        se_rep = attr(div_rep, 'var')[i,i] ,
         measure_of_uncertainty = "variance"
       )
 
@@ -144,10 +144,10 @@ test_that("coef and SE matrix values make sense", {
     this_df <-
       data.frame(
         function_name = paste("svygeidec" , c("total" , "within" , "between")[i]) ,
-        coef_lin = dec_lin$eqincome[i] ,
-        se_lin = attr(dec_lin, 'var')[i] ,
-        coef_rep = dec_rep$eqincome[i] ,
-        se_rep = attr(dec_rep, 'var')[i] ,
+        coef_lin = coef(dec_lin)[i] ,
+        se_lin = attr(dec_lin, 'var')[i,i] ,
+        coef_rep = coef(dec_lin)[i] ,
+        se_rep = attr(dec_rep, 'var')[i,i] ,
         measure_of_uncertainty = "variance"
       )
 
