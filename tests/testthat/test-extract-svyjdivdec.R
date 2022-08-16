@@ -4,7 +4,7 @@ library(laeken)
 # library( vardpoor )
 
 # return test context
-context( "svyjdivdec decomposition output survey.design and svyrep.design" )
+context("svyjdivdec decomposition output survey.design and svyrep.design")
 
 
 ### test 2: income data from eusilc --- data.frame-backed design object
@@ -92,18 +92,16 @@ b2.nocov <-
     covmat = FALSE
   )
 d1 <-
-  svyjdiv(
-    ~ eqincome ,
-    des_eusilc ,
-    deff = TRUE ,
-    linearized = TRUE
-  )
+  svyjdiv(~ eqincome ,
+          des_eusilc ,
+          deff = TRUE ,
+          linearized = TRUE)
 d2 <-
-  svyby(~ eqincome ,
-        ~ rb090,
-        des_eusilc ,
-        svyjdiv ,
-        deff = TRUE)
+  svyby( ~ eqincome ,
+         ~ rb090,
+         des_eusilc ,
+         svyjdiv ,
+         deff = TRUE)
 
 # calculate auxilliary tests statistics
 cv_diff1 <- max(abs(cv(a1) - cv(b1)))
@@ -140,13 +138,12 @@ test_that("output svyjdivdec" , {
   expect_equal(as.numeric(attr(a1 , "linearized")[, 1, drop = FALSE]) , as.numeric(attr(d1 , "linearized")))
   expect_equal(as.numeric(SE(a2)[, 1]) , as.numeric(SE(d2)))
 
-} )
+})
 
 ### test 2: income data from eusilc --- database-backed design object
 
 # perform tests
 test_that("database svyjdivdec", {
-
   # skip test on cran
   skip_on_cran()
 
@@ -206,14 +203,14 @@ test_that("database svyjdivdec", {
   expect_equal(coef(a1) , coef(c1))
   expect_equal(coef(a2) , coef(c2)[match(names(coef(c2)) , names(coef(a2)))])
   expect_equal(SE(a1) , SE(c1))
-  expect_equal(SE(a2) , SE(c2)[2:1 ,])
+  expect_equal(SE(a2) , SE(c2)[2:1 , ])
   expect_equal(deff(a1) , deff(c1))
-  expect_equal(deff(a2) , deff(c2)[2:1 ,])
+  expect_equal(deff(a2) , deff(c2)[2:1 , ])
 
   # check equality of linearized variables
-  expect_equal( colSums( attr(a1 , "linearized") ) , colSums( attr(c1 , "linearized") ) )
-  expect_equal( colSums( attr(a1 , "influence") ) , colSums( attr(c1 , "influence") ) )
-  expect_equal( colSums( attr(a2 , "influence") ) , colSums( attr(c2 , "influence") ) )
+  expect_equal(colSums(attr(a1 , "linearized")) , colSums(attr(c1 , "linearized")))
+  expect_equal(colSums(attr(a1 , "influence")) , colSums(attr(c1 , "influence")))
+  expect_equal(colSums(attr(a2 , "influence")) , colSums(attr(c2 , "influence")))
   # expect_equal(attr(c1 , "index") , attr(a1 , "index"))
 
 })
@@ -262,20 +259,20 @@ sby_rep <-
 # perform tests
 test_that("subsets equal svyby", {
   # domain vs svyby: coefficients must be equal
-  expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_des[1, ])))
-  expect_equal(as.numeric(coef(sub_rep)) , as.numeric(coef(sby_rep[1, ])))
+  expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_des[1,])))
+  expect_equal(as.numeric(coef(sub_rep)) , as.numeric(coef(sby_rep[1,])))
 
   # domain vs svyby: SEs must be equal
-  expect_equal(as.numeric(SE(sub_des)) , as.numeric(SE(sby_des[1, ])))
-  expect_equal(as.numeric(SE(sub_rep)) , as.numeric(SE(sby_rep[1, ])))
+  expect_equal(as.numeric(SE(sub_des)) , as.numeric(SE(sby_des[1,])))
+  expect_equal(as.numeric(SE(sub_rep)) , as.numeric(SE(sby_rep[1,])))
 
   # domain vs svyby and svydesign vs svyrepdesign:
   # coefficients should match across svydesign
-  expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_rep[1, ])))
+  expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_rep[1,])))
 
   # domain vs svyby and svydesign vs svyrepdesign:
   # coefficients of variation should be within five percent
-  cv_diff <- max(abs(cv(sub_des) - cv(sby_rep)[1, ]))
+  cv_diff <- max(abs(cv(sub_des) - cv(sby_rep)[1,]))
   expect_lte(cv_diff , .20)
 
   # check equality of linearized variables
@@ -392,20 +389,20 @@ test_that("dbi subsets equal non-dbi subsets", {
 
   # compare database-backed subsetted objects to database-backed svyby objects
   # dbi subsets equal dbi svyby
-  expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[2, ])))
-  expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[2, ])))
-  expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[2, ])))
-  expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[2, ])))
+  expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[2,])))
+  expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[2,])))
+  expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[2,])))
+  expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[2,])))
   expect_equal(vcov(sub_dbd) , vcov(sub_des))
   expect_equal(vcov(sub_dbr) , vcov(sub_rep))
 
   # compare equality of linearized variables
-  expect_equal( colSums( attr(sub_dbd , "linearized") ) , colSums( attr(sub_dbr , "linearized") ) )
-  expect_equal( colSums( attr(sub_dbd , "linearized") ) , colSums( attr(sub_des , "linearized") ) )
+  expect_equal(colSums(attr(sub_dbd , "linearized")) , colSums(attr(sub_dbr , "linearized")))
+  expect_equal(colSums(attr(sub_dbd , "linearized")) , colSums(attr(sub_des , "linearized")))
   expect_equal(attr(sub_dbr , "linearized") , attr(sub_rep , "linearized"))
 
   # compare equality of influence functions
-  expect_equal( colSums( attr(sub_dbd , "influence") ) , colSums( attr(sub_des , "influence") ) )
+  expect_equal(colSums(attr(sub_dbd , "influence")) , colSums(attr(sub_des , "influence")))
   expect_equal(attr(sub_dbr , "influence") , attr(sub_rep , "influence"))
 
   # compare equality of indices
