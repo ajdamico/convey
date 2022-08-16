@@ -6,6 +6,7 @@ library(laeken)
 # return test context
 context( "svyjdivdec decomposition output survey.design and svyrep.design" )
 
+
 ### test 2: income data from eusilc --- data.frame-backed design object
 
 # collect and format data
@@ -145,6 +146,7 @@ test_that("output svyjdivdec" , {
 
 # perform tests
 test_that("database svyjdivdec", {
+
   # skip test on cran
   skip_on_cran()
 
@@ -215,8 +217,6 @@ test_that("database svyjdivdec", {
   # expect_equal(attr(c1 , "index") , attr(a1 , "index"))
 
 })
-
-### test 3: compare subsetted objects to svyby objects
 
 # calculate estimates
 sub_des <-
@@ -291,7 +291,6 @@ test_that("subsets equal svyby", {
 
 # compare database-backed designs to non-database-backed designs
 test_that("dbi subsets equal non-dbi subsets", {
-  # skip test on cran
   skip_on_cran()
 
   # load libraries
@@ -416,4 +415,3 @@ test_that("dbi subsets equal non-dbi subsets", {
 
 
 })
-
