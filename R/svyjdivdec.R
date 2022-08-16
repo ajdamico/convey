@@ -18,9 +18,7 @@
 #'
 #' @return Object of class "\code{cvydstat}", which are vectors with a "\code{var}" attribute giving the variance-covariance matrix and a "\code{statistic}" attribute giving the name of the statistic.
 #'
-#' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
-#'
-#' @note This function is experimental and is subject to change in later versions.
+#' @author Guilherme Jacob, Djalma Pessoa, and Anthony Damico
 #'
 #' @seealso \code{\link{svyjdiv}}
 #'

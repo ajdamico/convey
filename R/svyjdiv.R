@@ -17,15 +17,13 @@
 #'
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
-#' @author Guilherme Jacob
-#'
-#' @note This function is experimental and is subject to change in later versions.
+#' @author Guilherme Jacob, Djalma Pessoa, and Anthony Damico
 #'
 #' @seealso \code{\link{svygei}}
 #'
 #' @references Nicholas Rohde (2016). J-divergence measurements of economic inequality.
 #' J. R. Statist. Soc. A, v. 179, Part 3 (2016), pp. 847-870.
-#' URL \url{https://onlinelibrary.wiley.com/doi/10.1111/rssa.12153/abstract}.
+#' URL \url{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssa.12153}.
 #'
 #' Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
 #' and Atkinson Inequality Indices from Complex Survey Data. \emph{DIW Discussion Papers},

@@ -63,9 +63,6 @@ you must run the \code{convey_prep} function on your survey design object immedi
 
 This measure only allows for strictly positive variables.
 }
-\note{
-This function is experimental and is subject to change in later versions.
-}
 \examples{
 library(survey)
 library(laeken)
@@ -149,6 +146,6 @@ URL \url{https://www.diw.de/documents/publikationen/73/diw_01.c.40394.de/dp345.p
 \code{\link{svyjdiv}}
 }
 \author{
-Guilherme Jacob, Djalma Pessoa and Anthony Damico
+Guilherme Jacob, Djalma Pessoa, and Anthony Damico
 }
 \keyword{survey}
