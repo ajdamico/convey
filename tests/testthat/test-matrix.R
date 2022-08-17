@@ -41,7 +41,8 @@ test_that("coef and SE matrix values make sense", {
     "svyarpr" ,
     "svyarpt" ,
     "svyfgt" ,
-    "svygini"
+    "svygini" ,
+    "svyzenga"
   )) {
     final_fun <- FUN <- get(this_fun)
 
