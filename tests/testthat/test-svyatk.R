@@ -6,7 +6,7 @@ skip_on_cran()
 # function from the IC2 library 1.0-1
 # removed from CRAN but available at
 # https://cran.r-project.org/src/contrib/Archive/IC2/
-calcAtkinson <- function(x, w = NULL, epsilon = 1)
+IC2_calcAtkinson <- function(x, w = NULL, epsilon = 1)
 {
   if (epsilon < 0)
     return(NULL)
@@ -91,7 +91,7 @@ des_eusilc <- convey_prep(des_eusilc)
 convey_atk <- svyatk( ~ eqIncome, subset(des_eusilc, eqIncome > 0))
 
 IC2_atk <-
-  calcAtkinson(x = dati_nz$eqIncome, w = dati_nz$rb050)$ineq$index
+  IC2_calcAtkinson(x = dati_nz$eqIncome, w = dati_nz$rb050)$ineq$index
 
 # point estiamte
 vardest <- as.numeric(IC2_atk)
@@ -100,7 +100,7 @@ convest <- as.numeric(coef(convey_atk)[1])
 # IC2 point estimates
 vardestd <-
   sapply(split(dati_nz, dati_nz$hsize), function(x) {
-    calcAtkinson(x = x$eqIncome, w = x$rb050)$ineq$index[[1]]
+    IC2_calcAtkinson(x = x$eqIncome, w = x$rb050)$ineq$index[[1]]
   })
 vardestd <- as.numeric(vardestd)
 

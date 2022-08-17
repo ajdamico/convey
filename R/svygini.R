@@ -1,6 +1,6 @@
 #' Gini coefficient
 #'
-#' Estimate the Gini coefficient, a measure of inequalty
+#' Estimate the Gini coefficient, an inequality measure
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
@@ -113,7 +113,7 @@ svygini.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[nas == 0, ]
+      design <- design[nas == 0,]
       if (length(nas) > length(design$prob))
         incvar <- incvar[nas == 0]
       else
@@ -215,7 +215,7 @@ svygini.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas,]
+      design <- design[!nas, ]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
