@@ -24,10 +24,10 @@ for (this.epsilon in c(.5, 1, 2)) {
   # perform tests
   test_that("svyatk works on unweighted designs", {
     expect_false(is.na (coef(
-      svyatk( ~ api00, design = dstrat1 , epsilon = this.epsilon)
+      svyatk(~ api00, design = dstrat1 , epsilon = this.epsilon)
     )))
     expect_false(is.na (SE(
-      svyatk( ~ api00, design = dstrat1 , epsilon = this.epsilon)
+      svyatk(~ api00, design = dstrat1 , epsilon = this.epsilon)
     )))
   })
 
@@ -53,7 +53,7 @@ for (this.epsilon in c(.5, 1, 2)) {
   des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
   # only striclty positive incomes
-  test_that("error on income <= 0 " , expect_error(svyatk( ~ eqincome , des_eusilc , epsilon = this.epsilon)))
+  test_that("error on income <= 0 " , expect_error(svyatk(~ eqincome , des_eusilc , epsilon = this.epsilon)))
 
   # filter positive
   des_eusilc <- subset(des_eusilc , eqincome > 0)
@@ -280,16 +280,16 @@ for (this.epsilon in c(.5, 1, 2)) {
   # perform tests
   test_that("subsets equal svyby", {
     # domain vs svyby: coefficients must be equal
-    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_des[1,])))
-    expect_equal(as.numeric(coef(sub_rep)) , as.numeric(coef(sby_rep[1,])))
+    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_des[1, ])))
+    expect_equal(as.numeric(coef(sub_rep)) , as.numeric(coef(sby_rep[1, ])))
 
     # domain vs svyby: SEs must be equal
-    expect_equal(as.numeric(SE(sub_des)) , as.numeric(SE(sby_des[1,])))
-    expect_equal(as.numeric(SE(sub_rep)) , as.numeric(SE(sby_rep[1,])))
+    expect_equal(as.numeric(SE(sub_des)) , as.numeric(SE(sby_des[1, ])))
+    expect_equal(as.numeric(SE(sub_rep)) , as.numeric(SE(sby_rep[1, ])))
 
     # domain vs svyby and svydesign vs svyrepdesign:
     # coefficients should match across svydesign
-    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_rep[1,])))
+    expect_equal(as.numeric(coef(sub_des)) , as.numeric(coef(sby_rep[1, ])))
 
     # domain vs svyby and svydesign vs svyrepdesign:
     # coefficients of variation should be within five percent
@@ -411,10 +411,10 @@ for (this.epsilon in c(.5, 1, 2)) {
 
     # compare database-backed subsetted objects to database-backed svyby objects
     # dbi subsets equal dbi svyby
-    expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[1,])))
-    expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[1,])))
-    expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[1,])))
-    expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[1,])))
+    expect_equal(as.numeric(coef(sub_dbd)) , as.numeric(coef(sby_dbd[1, ])))
+    expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[1, ])))
+    expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[1, ])))
+    expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[1, ])))
     expect_equal(vcov(sub_dbd) , vcov(sub_des))
     expect_equal(vcov(sub_dbr) , vcov(sub_rep))
 

@@ -154,7 +154,6 @@ svyatk.survey.design <-
            linearized = FALSE ,
            influence = FALSE ,
            ...) {
-
     # collect income data
     incvar <-
       model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -162,23 +161,23 @@ svyatk.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design$prob <- ifelse( nas , Inf , design$prob )
+      design$prob <- ifelse(nas , Inf , design$prob)
     }
 
     # collect sampling weights
     w <- 1 / design$prob
 
     # treat non-positive incomes
-    if (any( incvar[ w != 0 ] <= 0) )
+    if (any(incvar[w != 0] <= 0))
       stop(
         "The Atkinson Index is defined for strictly positive variables only. Negative and zero values not allowed."
       )
 
     # compute point estimate
-    estimate <- CalcAtkinson( incvar , w , epsilon )
+    estimate <- CalcAtkinson(incvar , w , epsilon)
 
     # compute linearized function
-    lin <- CalcAtkinson_IF( incvar , w , epsilon )
+    lin <- CalcAtkinson_IF(incvar , w , epsilon)
 
     # compute variance
     variance <-
@@ -255,7 +254,7 @@ svyatk.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas,]
+      design <- design[!nas, ]
       incvar <- incvar[!nas]
     }
 
@@ -263,20 +262,20 @@ svyatk.svyrep.design <-
     ws <- weights(design, "sampling")
 
     # treat non-positive incomes
-    if (any( incvar[ ws != 0 ] <= 0) )
+    if (any(incvar[ws != 0] <= 0))
       stop(
         "The Atkinson Index is defined for strictly positive variables only. Negative and zero values not allowed."
       )
 
     # compute point estimate
-    estimate <- CalcAtkinson( incvar , ws , epsilon )
+    estimate <- CalcAtkinson(incvar , ws , epsilon)
 
     # collect analysis weights
     ww <- weights(design, "analysis")
 
     # compute replicates
     qq <- apply(ww, 2, function(wi)
-      CalcAtkinson( incvar , wi , epsilon ) )
+      CalcAtkinson(incvar , wi , epsilon))
 
     # compute variance
     if (any(is.na(qq)))
@@ -299,7 +298,7 @@ svyatk.svyrep.design <-
     # compute deff
     if (is.character(deff) || deff || linearized) {
       # compute linearized function
-      lin <- CalcAtkinson_IF(incvar , ws , epsilon )
+      lin <- CalcAtkinson_IF(incvar , ws , epsilon)
 
       # compute deff
       nobs <- length(design$pweights)
@@ -379,51 +378,52 @@ svyatk.DBIsvydesign <-
 
 
 CalcAtkinson <-
-  function( yk , wk , epsilon ) {
-
+  function(yk , wk , epsilon) {
     # filter observations
     yk <- yk[wk != 0]
     wk <- wk[wk != 0]
 
     # compute intermediate statistics
-    U0 <- sum( wk )
-    U1 <- sum( wk * yk )
-    T0 <- sum( wk * log( yk ) )
-    T1 <- sum( wk * yk * log( yk ) )
+    U0 <- sum(wk)
+    U1 <- sum(wk * yk)
+    T0 <- sum(wk * log(yk))
+    T1 <- sum(wk * yk * log(yk))
     # compute values
     if (epsilon == 1) {
-      res <- 1 - (U0/U1) * exp( T0/U0 )
+      res <- 1 - (U0 / U1) * exp(T0 / U0)
     } else {
-      U.neps <- sum( wk * yk^( 1 - epsilon ) )
-      afac <- epsilon/(1-epsilon)
-      bfac <- 1/(1-epsilon)
-      res <- 1 - ( U.neps^bfac ) / ( U0^afac * U1 )
+      U.neps <- sum(wk * yk ^ (1 - epsilon))
+      afac <- epsilon / (1 - epsilon)
+      bfac <- 1 / (1 - epsilon)
+      res <- 1 - (U.neps ^ bfac) / (U0 ^ afac * U1)
     }
     res
 
   }
 
 CalcAtkinson_IF <-
-  function( yk , wk , epsilon ) {
-    U0 <- sum( wk )
-    U1 <- sum( wk * yk )
-    T0 <- sum( wk * ifelse( wk != 0 , log( yk ) , 0 ) )
-    T1 <- sum( wk * ifelse( wk != 0 , yk * log( yk ) , 0 ) )
+  function(yk , wk , epsilon) {
+    U0 <- sum(wk)
+    U1 <- sum(wk * yk)
+    T0 <- sum(wk * ifelse(wk != 0 , log(yk) , 0))
+    T1 <- sum(wk * ifelse(wk != 0 , yk * log(yk) , 0))
     if (epsilon == 1) {
-      A1 <- CalcAtkinson( yk , wk , 1 )
-      L1 <- (A1 - 1) * ( 1- T0/U0 ) / U0
+      A1 <- CalcAtkinson(yk , wk , 1)
+      L1 <- (A1 - 1) * (1 - T0 / U0) / U0
       L2 <- yk * (1 - A1) / U1
-      L3 <- ifelse( wk != 0 , log( yk ) * (A1 - 1) / U0 , 0 )
-      lin <- rowSums( cbind( L1 , L2 , L3 ) )
+      L3 <- ifelse(wk != 0 , log(yk) * (A1 - 1) / U0 , 0)
+      lin <- rowSums(cbind(L1 , L2 , L3))
     } else {
-      U.neps <- sum( wk * ifelse( wk != 0 , yk^( 1 - epsilon ) , 0 ) )
-      afac <- epsilon/(1-epsilon)
-      bfac <- 1/(1-epsilon)
-      L1 <- afac * ( U.neps^bfac ) / ( U1 * U0^bfac )
-      L2 <- yk * ( U.neps^bfac ) / ( U0^afac * U1^2 )
-      L3 <- - ifelse( wk != 0 , bfac * ( yk^( 1-epsilon ) ) * ( U.neps^afac ) / ( U0^afac * U1 ) , 0 )
-      lin <- rowSums( cbind( L1 , L2 , L3 ) )
+      U.neps <- sum(wk * ifelse(wk != 0 , yk ^ (1 - epsilon) , 0))
+      afac <- epsilon / (1 - epsilon)
+      bfac <- 1 / (1 - epsilon)
+      L1 <- afac * (U.neps ^ bfac) / (U1 * U0 ^ bfac)
+      L2 <- yk * (U.neps ^ bfac) / (U0 ^ afac * U1 ^ 2)
+      L3 <-
+        -ifelse(wk != 0 , bfac * (yk ^ (1 - epsilon)) * (U.neps ^ afac) / (U0 ^
+                                                                             afac * U1) , 0)
+      lin <- rowSums(cbind(L1 , L2 , L3))
     }
-    lin <- ifelse( wk != 0 , lin , 0 )
+    lin <- ifelse(wk != 0 , lin , 0)
     lin
   }
