@@ -1,6 +1,6 @@
 #' Gini coefficient
 #'
-#' Estimate the Gini coefficient, a measure of inequalty
+#' Estimate the Gini coefficient, an inequality measure
 #'
 #' @param formula a formula specifying the income variable
 #' @param design a design object of class \code{survey.design} or class \code{svyrep.design} from the \code{survey} library.
