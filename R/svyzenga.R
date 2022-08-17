@@ -114,20 +114,21 @@ svyzenga.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design$prob <- ifelse( nas , Inf , design$prob )
+      design$prob <- ifelse(nas , Inf , design$prob)
     }
 
     # collect sampling weights
     w <- 1 / design$prob
 
     # check for negative incomes
-    if ( any( incvar[ w != 0 ] < 0, na.rm = TRUE ) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
+    if (any(incvar[w != 0] < 0, na.rm = TRUE))
+      stop("The Zenga index is defined for non-negative numeric variables only.")
 
     # compute point estimate
-    estimate <- CalcZenga( incvar , w )
+    estimate <- CalcZenga(incvar , w)
 
     # compute linearized function
-    lin <- CalcZenga_IF( incvar , w )
+    lin <- CalcZenga_IF(incvar , w)
 
     # compute variance
     variance <-
@@ -195,7 +196,6 @@ svyzenga.svyrep.design <-
            linearized = FALSE ,
            return.replicates = FALSE ,
            ...) {
-
     # collect data
     incvar <-
       model.frame(formula, design$variables, na.action = na.pass)[[1]]
@@ -203,7 +203,7 @@ svyzenga.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas,]
+      design <- design[!nas, ]
       incvar <- incvar[!nas]
     }
 
@@ -211,16 +211,18 @@ svyzenga.svyrep.design <-
     ws <- weights(design, "sampling")
 
     # check for negative incomes
-    if ( any( incvar[ ws != 0 ] < 0, na.rm = TRUE ) ) stop( "The Zenga index is defined for non-negative numeric variables only." )
+    if (any(incvar[ws != 0] < 0, na.rm = TRUE))
+      stop("The Zenga index is defined for non-negative numeric variables only.")
 
     # compute point estimate
-    estimate <- CalcZenga( incvar, ws )
+    estimate <- CalcZenga(incvar, ws)
 
     # collect analysis weights
     ww <- weights(design, "analysis")
 
     # compute replicates
-    qq <- apply(ww, 2, function(wi) CalcZenga(incvar, wi) )
+    qq <- apply(ww, 2, function(wi)
+      CalcZenga(incvar, wi))
 
     # compute variance
     variance <-
@@ -315,62 +317,62 @@ svyzenga.DBIsvydesign <-
   }
 
 # BDP2016 estimator
-CalcZenga <- function( y.k , w.k ) {
-
+CalcZenga <- function(y.k , w.k) {
   # filter observation
-  y.k <- y.k[ w.k != 0 ]
-  w.k <- w.k[ w.k != 0 ]
+  y.k <- y.k[w.k != 0]
+  w.k <- w.k[w.k != 0]
 
   # reorder observations
-  ordy <- order( y.k )
-  y.k <- y.k[ ordy ]
-  w.k <- w.k[ ordy ]
+  ordy <- order(y.k)
+  y.k <- y.k[ordy]
+  w.k <- w.k[ordy]
 
   # compute intermediate statistical functionals
-  N <- sum( w.k )
-  Tot <- sum( w.k * y.k )
-  Hy <- cumsum( w.k )
-  Ky <- ( Tot - cumsum( w.k * y.k ) ) + w.k * y.k
+  N <- sum(w.k)
+  Tot <- sum(w.k * y.k)
+  Hy <- cumsum(w.k)
+  Ky <- (Tot - cumsum(w.k * y.k)) + w.k * y.k
 
   # compute zenga
-  1 - sum( w.k * ( N - Hy ) * ( Tot - Ky ) / ( N * Hy * Ky ) )
+  1 - sum(w.k * (N - Hy) * (Tot - Ky) / (N * Hy * Ky))
 
 }
 
 # BDP2016 estimator
-CalcZenga_IF <- function( y.k , w.k ) {
-
+CalcZenga_IF <- function(y.k , w.k) {
   # treat null weights
-  y.k <- ifelse( w.k == 0 , 0 , y.k )
+  y.k <- ifelse(w.k == 0 , 0 , y.k)
 
   # reorder observations
-  ordy <- order( y.k )
-  y.k <- y.k[ ordy ]
-  w.k <- w.k[ ordy ]
+  ordy <- order(y.k)
+  y.k <- y.k[ordy]
+  w.k <- w.k[ordy]
 
   # filter observations
   wf.k <- w.k
-  y.k <- y.k[ wf.k != 0 ]
-  w.k <- wf.k[ wf.k != 0 ]
+  y.k <- y.k[wf.k != 0]
+  w.k <- wf.k[wf.k != 0]
 
   # compute intermediate statistical functionals
-  N <- sum( w.k )
-  Tot <- sum( w.k * y.k )
-  Hy <- cumsum( w.k )
-  Ky <- ( Tot - cumsum( w.k * y.k ) ) + w.k * y.k
+  N <- sum(w.k)
+  Tot <- sum(w.k * y.k)
+  Hy <- cumsum(w.k)
+  Ky <- (Tot - cumsum(w.k * y.k)) + w.k * y.k
 
   # compute linearized variable
-  T1 <- - ( N - Hy ) * ( Tot - Ky ) / ( N * Hy * Ky )
-  T2 <- - sum( w.k * ( Tot - Ky ) / Ky ) / N^2
-  T3 <- - ( y.k / N ) * sum( w.k * (N - Hy)/( Hy * Ky ) )
-  T4 <- sum( w.k * ( Tot - Ky ) / ( Hy^2 * Ky ) ) - cumsum( w.k * ( Tot - Ky ) / ( Hy^2 * Ky ) ) + ( w.k * ( Tot - Ky ) / ( Hy^2 * Ky ) )
-  T5 <- (Tot * y.k / N ) * cumsum( w.k * (N - Hy)/(Hy * Ky^2) )
-  lin.domain <- rowSums( cbind( T1 , T2 , T3 , T4 , T5 ) )
+  T1 <- -(N - Hy) * (Tot - Ky) / (N * Hy * Ky)
+  T2 <- -sum(w.k * (Tot - Ky) / Ky) / N ^ 2
+  T3 <- -(y.k / N) * sum(w.k * (N - Hy) / (Hy * Ky))
+  T4 <-
+    sum(w.k * (Tot - Ky) / (Hy ^ 2 * Ky)) - cumsum(w.k * (Tot - Ky) / (Hy ^
+                                                                         2 * Ky)) + (w.k * (Tot - Ky) / (Hy ^ 2 * Ky))
+  T5 <- (Tot * y.k / N) * cumsum(w.k * (N - Hy) / (Hy * Ky ^ 2))
+  lin.domain <- rowSums(cbind(T1 , T2 , T3 , T4 , T5))
 
   # return linearized variable
-  lin <- rep( 0 , length( wf.k ) )
-  lin[ wf.k != 0 ] <- lin.domain
-  lin <- lin[ order( ordy ) ]
+  lin <- rep(0 , length(wf.k))
+  lin[wf.k != 0] <- lin.domain
+  lin <- lin[order(ordy)]
   lin
 
 }

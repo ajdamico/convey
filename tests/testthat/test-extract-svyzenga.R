@@ -42,20 +42,28 @@ des_eusilc_rep <-
 des_eusilc <- convey_prep(des_eusilc)
 des_eusilc_rep <- convey_prep(des_eusilc_rep)
 
-des_eusilc <- subset( des_eusilc , eqincome > 0 )
-des_eusilc_rep <- subset(des_eusilc_rep , eqincome > 0 )
+des_eusilc <- subset(des_eusilc , eqincome > 0)
+des_eusilc_rep <- subset(des_eusilc_rep , eqincome > 0)
 
 # calculate estimates
 a1 <-
-  svyzenga(~ eqincome , des_eusilc , deff = TRUE , linearized = TRUE , influence = TRUE )
+  svyzenga(
+    ~ eqincome ,
+    des_eusilc ,
+    deff = TRUE ,
+    linearized = TRUE ,
+    influence = TRUE
+  )
 a2 <-
-  svyby(~ eqincome ,
-        ~ hsize,
-        des_eusilc,
-        svyzenga ,
-        deff = TRUE ,
-        covmat = TRUE ,
-        influence = TRUE )
+  svyby(
+    ~ eqincome ,
+    ~ hsize,
+    des_eusilc,
+    svyzenga ,
+    deff = TRUE ,
+    covmat = TRUE ,
+    influence = TRUE
+  )
 a2.nocov <-
   svyby(~ eqincome ,
         ~ hsize,
@@ -64,11 +72,13 @@ a2.nocov <-
         deff = TRUE ,
         covmat = FALSE)
 b1 <-
-  svyzenga(~ eqincome ,
-          des_eusilc_rep ,
-          influence = TRUE ,
-          deff = TRUE ,
-          linearized = TRUE)
+  svyzenga(
+    ~ eqincome ,
+    des_eusilc_rep ,
+    influence = TRUE ,
+    deff = TRUE ,
+    linearized = TRUE
+  )
 b2 <-
   svyby(~ eqincome ,
         ~ hsize,
@@ -112,7 +122,7 @@ test_that("output svyzenga" , {
   expect_equal(sum(confint(b2)[, 2] >= coef(b2)) , length(coef(b2)))
 
   # check equality of linearized variables
-  expect_equal(attr( a1 , "linearized") , attr(b1 , "linearized"))
+  expect_equal(attr(a1 , "linearized") , attr(b1 , "linearized"))
   expect_equal(attr(a1 , "index") , attr(b1 , "index"))
 
   # check equality vcov diagonals
@@ -151,15 +161,17 @@ test_that("database svyzenga", {
   # prepare for convey
   dbd_eusilc <- convey_prep(dbd_eusilc)
 
-  dbd_eusilc <- subset(dbd_eusilc , eqincome > 0 )
+  dbd_eusilc <- subset(dbd_eusilc , eqincome > 0)
 
   # calculate estimates
   c1 <-
-    svyzenga(~ eqincome ,
-            dbd_eusilc ,
-            deff = TRUE ,
-            influence = TRUE ,
-            linearized = TRUE )
+    svyzenga(
+      ~ eqincome ,
+      dbd_eusilc ,
+      deff = TRUE ,
+      influence = TRUE ,
+      linearized = TRUE
+    )
   c2 <-
     svyby(
       ~ eqincome ,
@@ -185,13 +197,13 @@ test_that("database svyzenga", {
   expect_equal(vcov(a2) , vcov(c2))
 
   # test equality of linearized variables
-  expect_equal( colSums( attr( a1 , "linearized") ) , colSums( attr( c1 , "linearized") ) )
-  expect_equal( colSums( attr( a1 , "influence" ) ) , colSums( attr( c1 , "influence" ) ) )
-  expect_equal( colSums( attr( a2 , "influence" ) ) , colSums( attr( c2 , "influence" ) ) )
+  expect_equal(colSums(attr(a1 , "linearized")) , colSums(attr(c1 , "linearized")))
+  expect_equal(colSums(attr(a1 , "influence")) , colSums(attr(c1 , "influence")))
+  expect_equal(colSums(attr(a2 , "influence")) , colSums(attr(c2 , "influence")))
   # expect_equal( attr(a1 , "index") , attr(c1 , "index") )
   # expect_equal( attr(a2 , "index") , attr(c2 , "index") )
 
-} )
+})
 
 ### test 3: compare subsetted objects to svyby objects
 
@@ -255,7 +267,7 @@ test_that("subsets equal svyby", {
   expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1])
   expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1])
 
-} )
+})
 
 ### test 4: compare subsetted objects to svyby objects
 
@@ -370,4 +382,4 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(attr(sub_dbd , "index") , attr(sub_des , "index"))
   expect_equal(attr(sub_dbr , "index") , attr(sub_rep , "index"))
 
-} )
+})
