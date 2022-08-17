@@ -17,6 +17,7 @@ test_that("functions work on weird distributions" , {
       "svyarpt" ,
       "svyarpt" ,
       "svyatk" ,
+      "svyzenga" ,
       "svyfgt" ,
       "svygini" ,
       "svygpg" ,
