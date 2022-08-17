@@ -52,7 +52,7 @@ svygini(formula, design, ...)
 Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 }
 \description{
-Estimate the Gini coefficient, a measure of inequalty
+Estimate the Gini coefficient, an inequality measure
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
