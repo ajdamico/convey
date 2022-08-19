@@ -529,29 +529,24 @@ svyfgt.svyrep.design <-
       # compute threshold linearized function on full sample
       # branch on threshold type and its linearized function
       if (type_thresh == 'relq') {
+        Nf <- sum(wsf)
         q_alpha <- computeQuantiles( incvec , wsf , quantiles )
         htot <- h_fun(incvec, wsf)
-        Nf <- sum( wsf)
-        u <- (q_alpha - incvec) / htot
-        vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
-        Fprime <- sum(vectf * wsf) / (Nf * htot)
-
-        Nd <- sum(ws)
+        Fprime <- densfun( formula , design = full_design , th , h = htot , FUN = "F", na.rm = na.rm )
         # ID <- 1 * (names(wsf) %in% names(ws))
         ID <- 1 * (rownames(full_design$variables) %in% rownames(design$variables)[ws > 0])
         arptlin <- - ( percent / ( Nf * Fprime ) ) * ( ifelse( incvec <= q_alpha , 1 , 0 ) - quantiles )
-        arptlin <- arptlin[wsf>0]
       }
       if (type_thresh == 'relm') {
         Nf <- sum(wsf)
         muf <- sum(incvec * wsf) / Nf
         arptlin <- percent * (incvec - muf) / Nf
-        arptlin <- arptlin[wsf > 0]
       }
       if (type_thresh == 'abs') {
-        arptlin <- rep(0 , sum(wsf > 0))
+        arptlin <- rep(0 , length(wsf))
       }
-      names(arptlin) <- rownames(full_design$variables)[wsf > 0]
+      arptlin <- ifelse( wsf != 0 , arptlin , 0 )
+      names(arptlin) <- rownames(full_design$variables)
 
       # compute poverty measure linearized function
       # under fixed poverty threshold
@@ -563,12 +558,10 @@ svyfgt.svyrep.design <-
 
       # combine both linearization
       htot <- h_fun(incvar, ws)
-      u <- (th - incvar) / htot
-      vectf <- exp(-(u ^ 2) / 2) / sqrt(2 * pi)
-      Fprime <- sum(vectf * ws) / (Nd * htot)
+      Fprime.domain <- densfun( formula , design = design , th , h = htot , FUN = "F", na.rm = na.rm )
 
       ahat <- sum(ws * ht(incvar , th , g)) / Nd
-      ahF <- ahat + h(th , th , g) * Fprime
+      ahF <- ahat + h(th , th , g) * Fprime.domain
       if (type_thresh %in% c("relq" , "relm"))
         fgtlin2 <- ahF * arptlin
       else
