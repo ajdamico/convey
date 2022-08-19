@@ -67,7 +67,9 @@ densfun <-
       else
         incvar[nas] <- 0
     }
-    w <- 1 / design$prob
+    w <- if ( inherits( design , "svyrep.design" ) ) weights( design , "sampling" ) else 1 / design$prob
+    incvar <- incvar[ w != 0 ]
+    w <- w[ w != 0 ]
     N <- sum(w)
     if (is.null(h))
       h <- h_fun(incvar, w)
