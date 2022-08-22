@@ -213,7 +213,7 @@ svyfgt.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       if (length(nas) > length(full_design$prob))
         incvec <- incvec[!nas]
       else
@@ -225,7 +225,6 @@ svyfgt.survey.design <-
 
     # branch on threshold type and its linearized function
     if (type_thresh == 'relq') {
-
       ARPT <-
         svyarpt(
           formula = formula,
@@ -262,7 +261,7 @@ svyfgt.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       if (length(nas) > length(design$prob))
         incvar <- incvar[!nas]
       else
@@ -440,7 +439,7 @@ svyfgt.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
@@ -468,7 +467,7 @@ svyfgt.svyrep.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
@@ -489,7 +488,8 @@ svyfgt.svyrep.design <-
     qq <- apply(wwf, 2, function(wi) {
       names(wi) <- row.names(df_full)
       if (type_thresh == 'relq')
-        thr <- percent * computeQuantiles(incvec , wi , p = quantiles)
+        thr <-
+          percent * computeQuantiles(incvec , wi , p = quantiles)
       if (type_thresh == 'relm')
         thr <- percent * sum(incvec * wi) / sum(wi)
       if (type_thresh == 'abs')
@@ -530,12 +530,22 @@ svyfgt.svyrep.design <-
       # branch on threshold type and its linearized function
       if (type_thresh == 'relq') {
         Nf <- sum(wsf)
-        q_alpha <- computeQuantiles( incvec , wsf , quantiles )
+        q_alpha <- computeQuantiles(incvec , wsf , quantiles)
         htot <- h_fun(incvec, wsf)
-        Fprime <- densfun( formula , design = full_design , th , h = htot , FUN = "F", na.rm = na.rm )
+        Fprime <-
+          densfun(
+            formula ,
+            design = full_design ,
+            th ,
+            h = htot ,
+            FUN = "F",
+            na.rm = na.rm
+          )
         # ID <- 1 * (names(wsf) %in% names(ws))
-        ID <- 1 * (rownames(full_design$variables) %in% rownames(design$variables)[ws > 0])
-        arptlin <- - ( percent / ( Nf * Fprime ) ) * ( ifelse( incvec <= q_alpha , 1 , 0 ) - quantiles )
+        ID <-
+          1 * (rownames(full_design$variables) %in% rownames(design$variables)[ws > 0])
+        arptlin <-
+          -(percent / (Nf * Fprime)) * (ifelse(incvec <= q_alpha , 1 , 0) - quantiles)
       }
       if (type_thresh == 'relm') {
         Nf <- sum(wsf)
@@ -545,7 +555,7 @@ svyfgt.svyrep.design <-
       if (type_thresh == 'abs') {
         arptlin <- rep(0 , length(wsf))
       }
-      arptlin <- ifelse( wsf != 0 , arptlin , 0 )
+      arptlin <- ifelse(wsf != 0 , arptlin , 0)
       names(arptlin) <- rownames(full_design$variables)
 
       # compute poverty measure linearized function
@@ -558,7 +568,15 @@ svyfgt.svyrep.design <-
 
       # combine both linearization
       htot <- h_fun(incvar, ws)
-      Fprime.domain <- densfun( formula , design = design , th , h = htot , FUN = "F", na.rm = na.rm )
+      Fprime.domain <-
+        densfun(
+          formula ,
+          design = design ,
+          th ,
+          h = htot ,
+          FUN = "F",
+          na.rm = na.rm
+        )
 
       ahat <- sum(ws * ht(incvar , th , g)) / Nd
       ahF <- ahat + h(th , th , g) * Fprime.domain

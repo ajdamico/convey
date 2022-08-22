@@ -5,7 +5,7 @@
 #' @param incvar income variable used in the estimation of the indicators
 #' @param w vector of design weights
 #' @return value of the bandwidth
-#' @author Djalma Pessoa and Anthony Damico
+#' @author Djalma Pessoa, Guilherme Jacob, and Anthony Damico
 #' @keywords survey
 #' @export
 h_fun <- function(incvar, w) {
@@ -61,15 +61,19 @@ densfun <-
       model.frame(formula, design$variables, na.action = na.pass)[[1]]
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       if (length(nas) > length(design$prob))
         incvar <- incvar[!nas]
       else
         incvar[nas] <- 0
     }
-    w <- if ( inherits( design , "svyrep.design" ) ) weights( design , "sampling" ) else 1 / design$prob
-    incvar <- incvar[ w != 0 ]
-    w <- w[ w != 0 ]
+    w <-
+      if (inherits(design , "svyrep.design"))
+        weights(design , "sampling")
+    else
+      1 / design$prob
+    incvar <- incvar[w != 0]
+    w <- w[w != 0]
     N <- sum(w)
     if (is.null(h))
       h <- h_fun(incvar, w)
@@ -127,7 +131,7 @@ icdf <- function(formula, design, x, na.rm = FALSE, ...) {
   ncom <- names(design$prob)
   if (na.rm) {
     nas <- is.na(incvar)
-    design <- design[!nas, ]
+    design <- design[!nas,]
     if (length(nas) > length(design$prob))
       incvar <- incvar[!nas]
     else
