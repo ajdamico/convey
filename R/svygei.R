@@ -205,7 +205,7 @@ svygei.survey.design <-
     lin <-
       matrix(lin ,
              nrow = length(lin) ,
-             dimnames = list(names(lin) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
+             dimnames = list(names(w) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
 
     # build result object
     rval <- estimate
