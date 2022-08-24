@@ -379,8 +379,10 @@ CalcJDiv <-  function(y , w) {
 
 # function to compute linearized function
 CalcJDiv_IF <-  function(y , w) {
+
   # filter NAs
-  w <- ifelse(is.na(y) , 0 , w)
+  w <- ifelse( is.na(y) , 0 , w)
+  y <- ifelse( w>0 , y , 1 )
 
   # compute intermediate statistics
   Ntot <- sum(w)

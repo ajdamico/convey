@@ -403,6 +403,12 @@ CalcGEI <-
 # function for linearized functions
 CalcGEI_IF <-
   function(y , w , epsilon) {
+
+    # filter NAs
+    w <- ifelse( is.na(y) , 0 , w)
+    y <- ifelse( w>0 , y , 1 )
+
+    # compute intermediate
     N <- sum(w)
     Ytot <- sum(w * y)
     Ybar <- Ytot / N
