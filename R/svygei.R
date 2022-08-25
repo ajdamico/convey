@@ -205,7 +205,7 @@ svygei.survey.design <-
     lin <-
       matrix(lin ,
              nrow = length(lin) ,
-             dimnames = list(names(lin) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
+             dimnames = list(names(w) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
 
     # build result object
     rval <- estimate
@@ -403,6 +403,12 @@ CalcGEI <-
 # function for linearized functions
 CalcGEI_IF <-
   function(y , w , epsilon) {
+
+    # filter NAs
+    w <- ifelse( is.na(y) , 0 , w)
+    y <- ifelse( w>0 , y , 1 )
+
+    # compute intermediate
     N <- sum(w)
     Ytot <- sum(w * y)
     Ybar <- Ytot / N
