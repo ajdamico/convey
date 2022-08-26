@@ -375,6 +375,7 @@ svygei.DBIsvydesign <-
 # function for point estimates
 CalcGEI <-
   function(y , w, epsilon) {
+
     # filter observations
     y <- y[w > 0]
     w <- w[w > 0]
@@ -404,9 +405,8 @@ CalcGEI <-
 CalcGEI_IF <-
   function(y , w , epsilon) {
 
-    # filter NAs
-    w <- ifelse( is.na(y) , 0 , w)
-    y <- ifelse( w>0 , y , 1 )
+    # filter observations
+    y <- ifelse( w!=0 , y , 1 )
 
     # compute intermediate
     N <- sum(w)
