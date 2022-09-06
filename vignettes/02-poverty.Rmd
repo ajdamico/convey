@@ -1,0 +1,1096 @@
+---
+title: "02- Poverty Indices"
+author: "Guilherme Jacob, Anthony Damico, and Djalma Pessoa"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: [book.bib, packages.bib]
+vignette: >
+  %\VignetteIndexEntry{02- Poverty Indices}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+ 
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+ 
+
+Poverty is an issue discussed since long time ago. As @ravallion2016 points out, Aristotle and Confucius discussed ideas about poverty. In fact, Aristotle's ideas influenced Thomas Aquinas, one of the pillars of Western philosophy. Since then, societies changed, modifying the theories of justice underlying the idea of poverty.
+
+As the concept and the ethics towards poverty change, so does its measurement. From basic measures like the headcount rate to more complex metrics, such as the FGT index, poverty measurement evolved. Nowadays, poverty measures estimates are calculated using household surveys and censuses [@deaton1997]. Yet, only recently the aspects of statistical inference combining such measures and survey designs were explored^[For instance, see @deville1999, @berger2003, @bhat2007, and @osier2009.]. These advances become even more important given the recent efforts in poverty mapping, an analytical method that combined poverty analysis and small area estimation, like @elbers2003 and @bedi2007.
+
+The following subsections shows how poverty estimates and their sampling errors can be estimated using simple commands from the `convey` package.
+
+## At Risk of Poverty Threshold (svyarpt)
+
+The at-risk-of-poverty threshold (ARPT) is a measure used to define the people whose incomes imply a low standard of living in comparison to the general living standards. I.e., even though some people are not below the effective poverty line, those below the ARPT can be considered "almost deprived".
+
+This measure is defined as $0.6$ times the median income for the entire population:
+
+$$
+arpt = 0.6 \times median(y),
+$$
+where, $y$ is the income variable and `median` is estimated for the whole population. The details of the linearization of the `arpt` are discussed by @deville1999 and @osier2009.
+
+---
+
+**A replication example**
+
+The R `vardpoor` package [@vardpoor], created by researchers at the Central Statistical Bureau of Latvia, includes a arpt coefficient calculation using the ultimate cluster method.  The example below reproduces those statistics.
+
+Load and prepare the same data set:
+
+```{r}
+# load the convey package
+library(convey)
+
+# load the survey library
+library(survey)
+
+# load the vardpoor library
+library(vardpoor)
+
+# load the laeken library
+library(laeken)
+
+# load the synthetic EU statistics on income & living conditions
+data(eusilc)
+
+# make all column names lowercase
+names( eusilc ) <- tolower( names( eusilc ) )
+
+# add a column with the row number
+dati <- data.table::data.table(IDd = 1 : nrow(eusilc), eusilc)
+
+# calculate the arpt coefficient
+# using the R vardpoor library
+varpoord_arpt_calculation <-
+	varpoord(
+	
+		# analysis variable
+		Y = "eqincome", 
+		
+		# weights variable
+		w_final = "rb050",
+		
+		# row number variable
+		ID_level1 = "IDd",
+		
+		# row number variable
+		ID_level2 = "IDd",
+		
+		# strata variable
+		H = "db040", 
+		
+		N_h = NULL ,
+		
+		# clustering variable
+		PSU = "rb030", 
+		
+		# data.table
+		dataset = dati, 
+		
+		# arpt coefficient function
+		type = "linarpt",
+	  
+	  # poverty threshold range
+	  order_quant = 50L ,
+	  
+		# get linearized variable
+	  outp_lin = TRUE
+	)
+
+
+# construct a survey.design
+# using our recommended setup
+des_eusilc <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc
+	)
+
+# immediately run the convey_prep function on it
+des_eusilc <- convey_prep( des_eusilc )
+
+# coefficients do match
+varpoord_arpt_calculation$all_result$value
+coef( svyarpt( ~ eqincome , des_eusilc ) )
+
+# linearized variables do match
+# vardpoor
+lin_arpt_varpoord<- varpoord_arpt_calculation$lin_out$lin_arpt
+# convey 
+lin_arpt_convey <- attr(svyarpt( ~ eqincome , des_eusilc ),"lin")
+
+# check equality
+all.equal(lin_arpt_varpoord, lin_arpt_convey )
+
+# variances do not match exactly
+attr( svyarpt( ~ eqincome , des_eusilc ) , 'var' )
+varpoord_arpt_calculation$all_result$var
+
+# standard errors do not match exactly
+varpoord_arpt_calculation$all_result$se
+SE( svyarpt( ~ eqincome , des_eusilc ) )
+```
+
+The variance estimate is computed by using the approximation defined in \@ref(eq:var), where the linearized variable $z$ is defined by \@ref(eq:lin). The functions `convey::svyarpt` and `vardpoor::linarpt` produce the same linearized variable $z$.
+
+However, the measures of uncertainty do not line up, because `library(vardpoor)` defaults to an ultimate cluster method that can be replicated with an alternative setup of the `survey.design` object.
+
+```{r}
+# within each strata, sum up the weights
+cluster_sums <- aggregate( eusilc$rb050 , list( eusilc$db040 ) , sum )
+
+# name the within-strata sums of weights the `cluster_sum`
+names( cluster_sums ) <- c( "db040" , "cluster_sum" )
+
+# merge this column back onto the data.frame
+eusilc <- merge( eusilc , cluster_sums )
+
+# construct a survey.design
+# with the fpc using the cluster sum
+des_eusilc_ultimate_cluster <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc , 
+		fpc = ~ cluster_sum 
+	)
+
+# again, immediately run the convey_prep function on the `survey.design`
+des_eusilc_ultimate_cluster <- convey_prep( des_eusilc_ultimate_cluster )
+
+# matches
+attr( svyarpt( ~ eqincome , des_eusilc_ultimate_cluster ) , 'var' )
+varpoord_arpt_calculation$all_result$var
+
+# matches
+varpoord_arpt_calculation$all_result$se
+SE( svyarpt( ~ eqincome , des_eusilc_ultimate_cluster ) )
+```
+
+For additional usage examples of `svyarpt`, type `?convey::svyarpt` in the R console.
+
+## At Risk of Poverty Ratio (svyarpr)
+
+The at-risk-of-poverty rate (ARPR) is the share of persons with an income below the at-risk-of-poverty threshold (`arpt`). The logic behind this measure is that although most people below the ARPT cannot be considered "poor", they are the ones most vulnerable to becoming poor in the event of a negative economic phenomenon.
+
+The ARPR is a composite estimate, taking into account both the sampling error in the proportion itself and that in the ARPT estimate. The details of the linearization of the `arpr` and are discussed by @deville1999 and @osier2009.
+
+---
+
+**A replication example**
+
+The R `vardpoor` package [@vardpoor], created by researchers at the Central Statistical Bureau of Latvia, includes a ARPR coefficient calculation using the ultimate cluster method.  The example below reproduces those statistics.
+
+Load and prepare the same data set:
+
+```{r}
+# load the convey package
+library(convey)
+
+# load the survey library
+library(survey)
+
+# load the vardpoor library
+library(vardpoor)
+
+# load the vardpoor library
+library(laeken)
+
+# load the synthetic EU statistics on income & living conditions
+data(eusilc)
+
+# make all column names lowercase
+names( eusilc ) <- tolower( names( eusilc ) )
+
+# add a column with the row number
+dati <- data.table::data.table(IDd = 1 : nrow(eusilc), eusilc)
+
+# calculate the arpr coefficient
+# using the R vardpoor library
+varpoord_arpr_calculation <-
+	varpoord(
+	
+		# analysis variable
+		Y = "eqincome", 
+		
+		# weights variable
+		w_final = "rb050",
+		
+		# row number variable
+		ID_level1 = "IDd",
+		
+		# row number variable
+		ID_level2 = "IDd",
+		
+		# strata variable
+		H = "db040", 
+		
+		N_h = NULL ,
+		
+		# clustering variable
+		PSU = "rb030", 
+		
+		# data.table
+		dataset = dati, 
+		
+		# arpr coefficient function
+		type = "linarpr",
+	  
+	  # poverty threshold range
+	  order_quant = 50L ,
+	  	  
+	  # get linearized variable
+	  outp_lin = TRUE
+		
+	)
+
+
+# construct a survey.design
+# using our recommended setup
+des_eusilc <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc
+	)
+
+# immediately run the convey_prep function on it
+des_eusilc <- convey_prep( des_eusilc )
+
+# coefficients do match
+varpoord_arpr_calculation$all_result$value
+coef( svyarpr( ~ eqincome , des_eusilc ) ) * 100
+
+# linearized variables do match
+# vardpoor
+lin_arpr_varpoord<- varpoord_arpr_calculation$lin_out$lin_arpr
+# convey 
+lin_arpr_convey <- attr(svyarpr( ~ eqincome , des_eusilc ),"lin")
+
+# check equality
+all.equal(lin_arpr_varpoord,100*lin_arpr_convey )
+
+
+
+# variances do not match exactly
+attr( svyarpr( ~ eqincome , des_eusilc ) , 'var' ) * 10000
+varpoord_arpr_calculation$all_result$var
+
+# standard errors do not match exactly
+varpoord_arpr_calculation$all_result$se
+SE( svyarpr( ~ eqincome , des_eusilc ) ) * 100
+```
+The variance estimate is computed by using the approximation defined in \@ref(eq:var), where the linearized variable $z$ is defined by \@ref(eq:lin). The functions `convey::svyarpr` and `vardpoor::linarpr` produce the same linearized variable $z$.
+
+However, the measures of uncertainty do not line up, because `library(vardpoor)` defaults to an ultimate cluster method that can be replicated with an alternative setup of the `survey.design` object.
+
+```{r}
+# within each strata, sum up the weights
+cluster_sums <- aggregate( eusilc$rb050 , list( eusilc$db040 ) , sum )
+
+# name the within-strata sums of weights the `cluster_sum`
+names( cluster_sums ) <- c( "db040" , "cluster_sum" )
+
+# merge this column back onto the data.frame
+eusilc <- merge( eusilc , cluster_sums )
+
+# construct a survey.design
+# with the fpc using the cluster sum
+des_eusilc_ultimate_cluster <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc , 
+		fpc = ~ cluster_sum 
+	)
+
+# again, immediately run the convey_prep function on the `survey.design`
+des_eusilc_ultimate_cluster <- convey_prep( des_eusilc_ultimate_cluster )
+
+# matches
+attr( svyarpr( ~ eqincome , des_eusilc_ultimate_cluster ) , 'var' ) * 10000
+varpoord_arpr_calculation$all_result$var
+
+# matches
+varpoord_arpr_calculation$all_result$se
+SE( svyarpr( ~ eqincome , des_eusilc_ultimate_cluster ) ) * 100
+```
+
+For additional usage examples of `svyarpr`, type `?convey::svyarpr` in the R console.
+
+## Relative Median Income Ratio (svyrmir)
+
+The relative median income ratio (rmir) is the ratio of the median income of people aged above a value (65) to the median of people aged below the same value. In mathematical terms,
+
+$$
+rmir = \frac{median\{y_i; age_i >65 \}}{median\{y_i; age_i \leq 65 \}}.
+$$
+
+The details of the linearization of the `rmir` and are discussed by @deville1999 and @osier2009. 
+
+---
+
+**A replication example**
+
+The R `vardpoor` package [@vardpoor], created by researchers at the Central Statistical Bureau of Latvia, includes a rmir coefficient calculation using the ultimate cluster method.  The example below reproduces those statistics.
+
+Load and prepare the same data set:
+
+```{r}
+# load the convey package
+library(convey)
+
+# load the survey library
+library(survey)
+
+# load the vardpoor library
+library(vardpoor)
+
+# load the vardpoor library
+library(laeken)
+
+# load the synthetic EU statistics on income & living conditions
+data(eusilc)
+
+# make all column names lowercase
+names( eusilc ) <- tolower( names( eusilc ) )
+
+# add a column with the row number
+dati <- data.table::data.table(IDd = 1 : nrow(eusilc), eusilc)
+
+# calculate the rmir coefficient
+# using the R vardpoor library
+varpoord_rmir_calculation <-
+	varpoord(
+	
+		# analysis variable
+		Y = "eqincome", 
+		
+		# weights variable
+		w_final = "rb050",
+		
+		# row number variable
+		ID_level1 = "IDd",
+		
+		# row number variable
+		ID_level2 = "IDd",
+		
+		# strata variable
+		H = "db040", 
+		
+		N_h = NULL ,
+		
+		# clustering variable
+		PSU = "rb030", 
+		
+		# data.table
+		dataset = dati,
+	  
+	  # age variable
+	  age = "age",
+		
+		# rmir coefficient function
+		type = "linrmir",
+	  
+	  # poverty threshold range
+	  order_quant = 50L ,
+	  
+	  # get linearized variable
+	  outp_lin = TRUE
+		
+	)
+
+
+
+# construct a survey.design
+# using our recommended setup
+des_eusilc <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc
+	)
+
+# immediately run the convey_prep function on it
+des_eusilc <- convey_prep( des_eusilc )
+
+# coefficients do match
+varpoord_rmir_calculation$all_result$value
+coef( svyrmir( ~ eqincome , des_eusilc, age = ~age ) ) 
+
+# linearized variables do match
+# vardpoor
+lin_rmir_varpoord<- varpoord_rmir_calculation$lin_out$lin_rmir
+# convey 
+lin_rmir_convey <- attr(svyrmir( ~ eqincome , des_eusilc, age = ~age ),"lin")
+
+# check equality
+all.equal(lin_rmir_varpoord, lin_rmir_convey[,1] )
+
+# variances do not match exactly
+attr( svyrmir( ~ eqincome , des_eusilc, age = ~age ) , 'var' ) 
+varpoord_rmir_calculation$all_result$var
+
+# standard errors do not match exactly
+varpoord_rmir_calculation$all_result$se
+SE( svyrmir( ~ eqincome , des_eusilc , age = ~age) ) 
+```
+
+The variance estimate is computed by using the approximation defined in \@ref(eq:var), where the linearized variable $z$ is defined by \@ref(eq:lin). The functions `convey::svyrmir` and `vardpoor::linrmir` produce the same linearized variable $z$.
+
+However, the measures of uncertainty do not line up, because `library(vardpoor)` defaults to an ultimate cluster method that can be replicated with an alternative setup of the `survey.design` object.
+
+```{r}
+# within each strata, sum up the weights
+cluster_sums <- aggregate( eusilc$rb050 , list( eusilc$db040 ) , sum )
+
+# name the within-strata sums of weights the `cluster_sum`
+names( cluster_sums ) <- c( "db040" , "cluster_sum" )
+
+# merge this column back onto the data.frame
+eusilc <- merge( eusilc , cluster_sums )
+
+# construct a survey.design
+# with the fpc using the cluster sum
+des_eusilc_ultimate_cluster <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc , 
+		fpc = ~ cluster_sum 
+	)
+
+# again, immediately run the convey_prep function on the `survey.design`
+des_eusilc_ultimate_cluster <- convey_prep( des_eusilc_ultimate_cluster )
+
+# matches
+attr( svyrmir( ~ eqincome , des_eusilc_ultimate_cluster , age = ~age ) , 'var' ) 
+varpoord_rmir_calculation$all_result$var
+
+# matches
+varpoord_rmir_calculation$all_result$se
+SE( svyrmir( ~ eqincome , des_eusilc_ultimate_cluster, age = ~age ) ) 
+```
+
+For additional usage examples of `svyrmir`, type `?convey::svyrmir` in the R console.
+
+## Relative Median Poverty Gap (svyrmpg)
+
+The relative median poverty gap (`rmpg`) is the relative difference between the median income of people having income below the `arpt` and the `arpt` itself:
+
+$$
+rmpg = \frac{median\{y_i, y_i<arpt\}-arpt}{arpt}
+$$
+The details of the linearization of the `rmpg` are discussed by @deville1999 and @osier2009.
+
+---
+
+**A replication example**
+
+The R `vardpoor` package [@vardpoor], created by researchers at the Central Statistical Bureau of Latvia, includes a rmpg coefficient calculation using the ultimate cluster method.  The example below reproduces those statistics.
+
+Load and prepare the same data set:
+
+```{r}
+# load the convey package
+library(convey)
+
+# load the survey library
+library(survey)
+
+# load the vardpoor library
+library(vardpoor)
+
+# load the vardpoor library
+library(laeken)
+
+# load the synthetic EU statistics on income & living conditions
+data(eusilc)
+
+# make all column names lowercase
+names( eusilc ) <- tolower( names( eusilc ) )
+
+# add a column with the row number
+dati <- data.table::data.table(IDd = 1 : nrow(eusilc), eusilc)
+
+# calculate the rmpg coefficient
+# using the R vardpoor library
+varpoord_rmpg_calculation <-
+	varpoord(
+	
+		# analysis variable
+		Y = "eqincome", 
+		
+		# weights variable
+		w_final = "rb050",
+		
+		# row number variable
+		ID_level1 = "IDd",
+
+		# row number variable
+		ID_level2 = "IDd",
+				
+		# strata variable
+		H = "db040", 
+		
+		N_h = NULL ,
+		
+		# clustering variable
+		PSU = "rb030", 
+		
+		# data.table
+		dataset = dati, 
+		
+		# rmpg coefficient function
+		type = "linrmpg",
+	  
+	  # poverty threshold range
+	  order_quant = 50L ,
+	  
+	  # get linearized variable
+	  outp_lin = TRUE
+		
+	)
+
+
+
+# construct a survey.design
+# using our recommended setup
+des_eusilc <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc
+	)
+
+# immediately run the convey_prep function on it
+des_eusilc <- convey_prep( des_eusilc )
+
+# coefficients do match
+varpoord_rmpg_calculation$all_result$value
+coef( svyrmpg( ~ eqincome , des_eusilc ) ) * 100
+
+# linearized variables do match
+# vardpoor
+lin_rmpg_varpoord<- varpoord_rmpg_calculation$lin_out$lin_rmpg
+# convey 
+lin_rmpg_convey <- attr(svyrmpg( ~ eqincome , des_eusilc ),"lin")
+
+# check equality
+all.equal(lin_rmpg_varpoord, 100*lin_rmpg_convey[,1] )
+
+# variances do not match exactly
+attr( svyrmpg( ~ eqincome , des_eusilc ) , 'var' ) * 10000
+varpoord_rmpg_calculation$all_result$var
+
+# standard errors do not match exactly
+varpoord_rmpg_calculation$all_result$se
+SE( svyrmpg( ~ eqincome , des_eusilc ) ) * 100
+```
+
+The variance estimate is computed by using the approximation defined in \@ref(eq:var), where the linearized variable $z$ is defined by \@ref(eq:lin). The functions `convey::svyrmpg` and `vardpoor::linrmpg` produce the same linearized variable $z$.
+
+However, the measures of uncertainty do not line up, because `library(vardpoor)` defaults to an ultimate cluster method that can be replicated with an alternative setup of the `survey.design` object.
+
+```{r}
+# within each strata, sum up the weights
+cluster_sums <- aggregate( eusilc$rb050 , list( eusilc$db040 ) , sum )
+
+# name the within-strata sums of weights the `cluster_sum`
+names( cluster_sums ) <- c( "db040" , "cluster_sum" )
+
+# merge this column back onto the data.frame
+eusilc <- merge( eusilc , cluster_sums )
+
+# construct a survey.design
+# with the fpc using the cluster sum
+des_eusilc_ultimate_cluster <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc , 
+		fpc = ~ cluster_sum 
+	)
+
+# again, immediately run the convey_prep function on the `survey.design`
+des_eusilc_ultimate_cluster <- convey_prep( des_eusilc_ultimate_cluster )
+
+# matches
+attr( svyrmpg( ~ eqincome , des_eusilc_ultimate_cluster ) , 'var' ) * 10000
+varpoord_rmpg_calculation$all_result$var
+
+# matches
+varpoord_rmpg_calculation$all_result$se
+SE( svyrmpg( ~ eqincome , des_eusilc_ultimate_cluster ) ) * 100
+```
+
+For additional usage examples of `svyrmpg`, type `?convey::svyrmpg` in the R console.
+
+## Median Income Below the At Risk of Poverty Threshold  (svypoormed)
+
+Median income below the at-risk-of-poverty- threshold (poormed) is median of incomes of people having the income below the `arpt`:
+
+$$
+poormed = median\{y_i; y_i< arpt\}
+$$
+The details of the linearization of the `poormed` are discussed by @deville1999 and @osier2009.
+
+---
+
+**A replication example**
+
+The R `vardpoor` package [@vardpoor], created by researchers at the Central Statistical Bureau of Latvia, includes a poormed coefficient calculation using the ultimate cluster method.  The example below reproduces those statistics.
+
+Load and prepare the same data set:
+
+```{r}
+# load the convey package
+library(convey)
+
+# load the survey library
+library(survey)
+
+# load the vardpoor library
+library(vardpoor)
+
+# load the vardpoor library
+library(laeken)
+
+# load the synthetic EU statistics on income & living conditions
+data(eusilc)
+
+# make all column names lowercase
+names( eusilc ) <- tolower( names( eusilc ) )
+
+# add a column with the row number
+dati <- data.table::data.table(IDd = 1 : nrow(eusilc), eusilc)
+
+# calculate the poormed coefficient
+# using the R vardpoor library
+varpoord_poormed_calculation <-
+	varpoord(
+	
+		# analysis variable
+		Y = "eqincome", 
+		
+		# weights variable
+		w_final = "rb050",
+		
+		# row number variable
+		ID_level1 = "IDd",
+
+		# row number variable
+		ID_level2 = "IDd",
+				
+		# strata variable
+		H = "db040", 
+		
+		N_h = NULL ,
+		
+		# clustering variable
+		PSU = "rb030", 
+		
+		# data.table
+		dataset = dati, 
+		
+		# poormed coefficient function
+		type = "linpoormed",
+	  
+	  # poverty threshold range
+	  order_quant = 50L ,
+	  
+	  # get linearized variable
+	  outp_lin = TRUE
+		
+	)
+
+
+
+# construct a survey.design
+# using our recommended setup
+des_eusilc <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc
+	)
+
+# immediately run the convey_prep function on it
+des_eusilc <- convey_prep( des_eusilc )
+
+# coefficients do match
+varpoord_poormed_calculation$all_result$value
+coef( svypoormed( ~ eqincome , des_eusilc ) )
+
+# linearized variables do match
+# vardpoor
+lin_poormed_varpoord<- varpoord_poormed_calculation$lin_out$lin_poormed
+# convey 
+lin_poormed_convey <- attr(svypoormed( ~ eqincome , des_eusilc ),"lin")
+
+# check equality
+all.equal(lin_poormed_varpoord, lin_poormed_convey )
+
+# variances do not match exactly
+attr( svypoormed( ~ eqincome , des_eusilc ) , 'var' )
+varpoord_poormed_calculation$all_result$var
+
+# standard errors do not match exactly
+varpoord_poormed_calculation$all_result$se
+SE( svypoormed( ~ eqincome , des_eusilc ) )
+```
+
+The variance estimate is computed by using the approximation defined in \@ref(eq:var), where the linearized variable $z$ is defined by \@ref(eq:lin). The functions `convey::svypoormed` and `vardpoor::linpoormed` produce the same linearized variable $z$.
+
+However, the measures of uncertainty do not line up, because `library(vardpoor)` defaults to an ultimate cluster method that can be replicated with an alternative setup of the `survey.design` object.
+
+```{r}
+# within each strata, sum up the weights
+cluster_sums <- aggregate( eusilc$rb050 , list( eusilc$db040 ) , sum )
+
+# name the within-strata sums of weights the `cluster_sum`
+names( cluster_sums ) <- c( "db040" , "cluster_sum" )
+
+# merge this column back onto the data.frame
+eusilc <- merge( eusilc , cluster_sums )
+
+# construct a survey.design
+# with the fpc using the cluster sum
+des_eusilc_ultimate_cluster <- 
+	svydesign( 
+		ids = ~ rb030 , 
+		strata = ~ db040 ,  
+		weights = ~ rb050 , 
+		data = eusilc , 
+		fpc = ~ cluster_sum 
+	)
+
+# again, immediately run the convey_prep function on the `survey.design`
+des_eusilc_ultimate_cluster <- convey_prep( des_eusilc_ultimate_cluster )
+
+# matches
+attr( svypoormed( ~ eqincome , des_eusilc_ultimate_cluster ) , 'var' )
+varpoord_poormed_calculation$all_result$var
+
+# matches
+varpoord_poormed_calculation$all_result$se
+SE( svypoormed( ~ eqincome , des_eusilc_ultimate_cluster ) )
+```
+
+For additional usage examples of `svypoormed`, type `?convey::svypoormed` in the R console.
+
+## Foster-Greer-Thorbecke class (svyfgt, svyfgtdec)
+
+@foster1984 proposed a family of indicators to measure poverty.  This class of $FGT$ measures, can be defined as
+
+\[
+p=\frac{1}{N}\sum_{k\in U}h(y_{k},\theta ), 
+\]
+
+where
+
+\[
+h(y_{k},\theta )=\left[ \frac{(\theta -y_{k})}{\theta }\right] ^{\gamma
+}\delta \left\{ y_{k}\leq \theta \right\} , 
+\]
+
+where: $\theta$ is the poverty threshold; $\delta$ the indicator function that assigns value $1$ if the condition $\{y_{k}\leq \theta \}$ is satisfied and $0$ otherwise, and $\gamma$ is a non-negative constant.
+
+If $\gamma =0$, the FGT(0) equals the poverty headcount ratio, which accounts for the spread of poverty. If $\gamma =1$, FGT(1) is the mean of the normalized income shortfall of the poor. By doing so, the measure takes into account both the spread and the intensity of poverty. When $\gamma =2$, the relative weight of larger shortfalls increases even more, which yields a measure that accounts for poverty severity, i.e., the inequality among the poor. This way, a transfer from a poor person to an even poorer person would reduce the FGT(2).
+
+Although @foster1984 already presented a decomposition for the FGT(2) index, @aristondo2010 provided a general formula that decomposes the FGT($\gamma$) for any $\gamma \geqslant 2$. Put simply, any such FGT($\gamma$) index can be seen as function of the headcount ratio, the average normalized income gap among the poor and a generalized entropy index of the normalized income gaps among poor. In mathematical terms,
+
+\[
+FGT_\gamma = FGT_0 \cdot I^\gamma \cdot \big[ 1 + \big( \gamma^2 -\gamma \big) GEI_\gamma^* \big] , \text{ } \gamma \geq 2
+\]
+
+where $I$ is the average normalized income gap among the poor and $GEI_\gamma^*$ is a generalized entropy index of such income gaps among the poor.
+
+This result is particularly useful, as one can attribute cross-sectional differences of a FGT index to differences in the spread, depth and inequality of poverty.
+
+The FGT poverty class and its decomposition is implemented in the library convey by the function `svyfgt` and `svyfgtdec`, respectively.
+The argument `thresh_type` of this function defines the type of poverty threshold adopted.
+There are three possible choices:
+
+1. `abs` -- fixed and given by the argument thresh_value
+2. `relq` -- a proportion of a quantile fixed by the argument `proportion` and the quantile is defined by the argument `order`.
+3. `relm` -- a proportion of the mean fixed the argument `proportion`
+
+The quantile and the mean involved in the definition of the threshold are estimated for the whole population. When $\gamma=0$ and $\theta= .6*MED$ the measure is equal to the indicator `arpr` computed by the function  `svyarpr`. The linearization of the FGT(0) is presented in @berger2003.
+
+Next, we give some examples of the function `svyfgt` to estimate the values of the FGT poverty index.
+
+Consider first the poverty threshold fixed ($\gamma=0$) in the value $10000$. The headcount ratio (FGT0) is
+
+```{r comment=NA}
+svyfgt(~eqincome, des_eusilc, g=0, abs_thresh=10000)
+```
+
+The poverty gap ratio (FGT(1)) ($\gamma=1$) index for the poverty threshold fixed at the same value is
+
+```{r comment=NA}
+svyfgt(~eqincome, des_eusilc, g=1, abs_thresh=10000)
+```
+
+To estimate the FGT(0) with the poverty threshold fixed at $0.6* MED$ we fix the argument `type_thresh="relq"` and use the default values for `percent` and `order`:
+
+```{r comment=NA}
+svyfgt(~eqincome, des_eusilc, g=0, type_thresh= "relq")
+```
+that matches the estimate obtained by
+
+```{r comment=NA}
+svyarpr(~eqincome, design=des_eusilc, .5, .6)
+```
+To estimate the poverty gap ratio with the poverty threshold equal to $0.6*MEAN$, we use:
+
+```{r comment=NA}
+svyfgt(~eqincome, des_eusilc, g=1, type_thresh= "relm")
+```
+
+---
+
+**A replication example**
+
+In July 2006, @jenkins2006 presented at the North American Stata Users' Group Meetings on the stata Atkinson Index command.  The example below reproduces those statistics.
+
+In order to match the presentation's results using the `svyfgt` function from the convey library, the poverty threshold was considered absolute despite being directly estimated from the survey sample.  This effectively treats the variance of the estimated poverty threshold as zero; `svyfgt` does not account for the uncertainty of the poverty threshold when the level has been stated as absolute with the `abs_thresh=` parameter.  In general, we would instead recommend using either `relq` or `relm` in the `type_thresh=` parameter in order to account for the added uncertainty of the poverty threshold calculation.  This example serves only to show that `svyfgt` behaves properly as compared to other software.
+
+Load and prepare the same data set:
+```{r, cache = TRUE}
+# load the convey package
+library(convey)
+
+# load the survey library
+library(survey)
+
+# load the foreign library
+library(foreign)
+
+# create a temporary file on the local disk
+tf <- tempfile()
+
+# store the location of the presentation file
+presentation_zip <- "http://repec.org/nasug2006/nasug2006_jenkins.zip"
+
+# download jenkins' presentation to the temporary file
+download.file( presentation_zip , tf , mode = 'wb' )
+
+# unzip the contents of the archive
+presentation_files <- unzip( tf , exdir = tempdir() )
+
+# load the institute for fiscal studies' 1981, 1985, and 1991 data.frame objects
+x81 <- read.dta( grep( "ifs81" , presentation_files , value = TRUE ) )
+x85 <- read.dta( grep( "ifs85" , presentation_files , value = TRUE ) )
+x91 <- read.dta( grep( "ifs91" , presentation_files , value = TRUE ) )
+
+# NOTE: we recommend using ?convey::svyarpt rather than this unweighted calculation #
+
+# calculate 60% of the unweighted median income in 1981
+unwtd_arpt81 <- quantile( x81$eybhc0 , 0.5 ) * .6
+
+# calculate 60% of the unweighted median income in 1985
+unwtd_arpt85 <- quantile( x85$eybhc0 , 0.5 ) * .6
+
+# calculate 60% of the unweighted median income in 1991
+unwtd_arpt91 <- quantile( x91$eybhc0 , 0.5 ) * .6
+
+# stack each of these three years of data into a single data.frame
+x <- rbind( x81 , x85 , x91 )
+```
+
+Replicate the author's survey design statement from stata code..
+```
+. ge poor = (year==1981)*(x < $z_81) + (year==1985)*(x < $z_85) +  (year==1991)*(x < $z_91)
+. * account for clustering within HHs 
+. svyset hrn [pweight = wgt]
+```
+
+.. into R code:
+
+```{r}
+# initiate a linearized survey design object
+y <- svydesign( ~ hrn , data = x , weights = ~ wgt )
+
+# immediately run the `convey_prep` function on the survey design
+z <- convey_prep( y )
+```
+
+Replicate the author's headcount ratio results with stata..
+```
+. svy: mean poor if year == 1981
+(running mean on estimation sample)
+
+Survey: Mean estimation
+
+Number of strata =       1          Number of obs    =    9772
+Number of PSUs   =    7476          Population size  = 5.5e+07
+                                    Design df        =    7475
+
+--------------------------------------------------------------
+             |             Linearized
+             |       Mean   Std. Err.     [95% Conf. Interval]
+-------------+------------------------------------------------
+        poor |   .1410125   .0044859       .132219     .149806
+--------------------------------------------------------------
+
+. svy: mean poor if year == 1985
+(running mean on estimation sample)
+
+Survey: Mean estimation
+
+Number of strata =       1          Number of obs    =    8991
+Number of PSUs   =    6972          Population size  = 5.5e+07
+                                    Design df        =    6971
+
+--------------------------------------------------------------
+             |             Linearized
+             |       Mean   Std. Err.     [95% Conf. Interval]
+-------------+------------------------------------------------
+        poor |    .137645   .0046531      .1285235    .1467665
+--------------------------------------------------------------
+
+. svy: mean poor if year == 1991
+(running mean on estimation sample)
+
+Survey: Mean estimation
+
+Number of strata =       1          Number of obs    =    6468
+Number of PSUs   =    5254          Population size  = 5.6e+07
+                                    Design df        =    5253
+
+--------------------------------------------------------------
+             |             Linearized
+             |       Mean   Std. Err.     [95% Conf. Interval]
+-------------+------------------------------------------------
+        poor |   .2021312   .0062077      .1899615    .2143009
+--------------------------------------------------------------
+```
+
+..using R code:
+
+```{r}
+headcount_81 <- 
+	svyfgt( 
+		~ eybhc0 , 
+		subset( z , year == 1981 ) , 
+		g = 0 , 
+		abs_thresh = unwtd_arpt81
+	)
+
+headcount_81
+
+confint( headcount_81 , df = degf( subset( z , year == 1981 ) ) )
+
+headcount_85 <- 
+	svyfgt( 
+		~ eybhc0 , 
+		subset( z , year == 1985 ) , 
+		g = 0 , 
+		abs_thresh = unwtd_arpt85 
+	)
+	
+headcount_85
+
+confint( headcount_85 , df = degf( subset( z , year == 1985 ) ) )
+
+headcount_91 <- 
+	svyfgt( 
+		~ eybhc0 , 
+		subset( z , year == 1991 ) , 
+		g = 0 , 
+		abs_thresh = unwtd_arpt91 
+	)
+
+headcount_91
+	
+confint( headcount_91 , df = degf( subset( z , year == 1991 ) ) )
+```
+
+Confirm this replication applies for the normalized poverty gap as well, comparing stata code..
+```
+. ge ngap = poor*($z_81- x)/$z_81 if year == 1981
+
+. svy: mean ngap if year == 1981
+(running mean on estimation sample)
+
+Survey: Mean estimation
+
+Number of strata =       1          Number of obs    =    9772
+Number of PSUs   =    7476          Population size  = 5.5e+07
+                                    Design df        =    7475
+
+--------------------------------------------------------------
+             |             Linearized
+             |       Mean   Std. Err.     [95% Conf. Interval]
+-------------+------------------------------------------------
+        ngap |   .0271577   .0013502      .0245109    .0298044
+--------------------------------------------------------------
+```
+
+..to R code:
+
+```{r}
+norm_pov_81 <- 
+	svyfgt( 
+		~ eybhc0 , 
+		subset( z , year == 1981 ) , 
+		g = 1 , 
+		abs_thresh = unwtd_arpt81
+	)
+	
+norm_pov_81
+
+confint( norm_pov_81 , df = degf( subset( z , year == 1981 ) ) )
+```
+
+For additional usage examples of `svyfgt`, type `?convey::svyfgt` in the R console.
+
+## Watts poverty measure (svywatts, svywattsdec)
+
+The measure proposed in @watts1968 satisfies a number of desirable poverty measurement axioms and is known to be one of the first distribution-sensitive poverty measures, as noted by @haughton2009. It is defined as
+
+\[
+Watts = \frac{1}{N} \sum_{i \in U} \log{ \bigg( \frac{y_i}{\theta} \bigg) \delta ( y_i \leqslant \theta) }.
+\]
+
+@murdoch1998 points out that the Watts poverty index can provide an estimate of the expected time to exit poverty. Given the expected growth rate of income per capita among the poor, $g$, the expected time taken to exit poverty $T_\theta$ would be
+
+\[
+T_\theta = \frac{Watts}{g}.
+\]
+
+The Watts poverty index also has interesting decomposition properties. @blackburn1989 proposed a decomposition for the Watts poverty index, rewriting it in terms of the headcount ratio, the Watts poverty gap ratio and the mean log deviaton of poor incomes^[The mean log deviation (also known as Theil-L or Bourguignon-Theil index) is an inequality measure of the generalized entropy class. The family of generalized entropy indices is discussed in the next chapter.]. Mathematically,
+
+\[
+Watts = FGT_0 \big( I_w + L_* \big)
+\]
+
+where $I_w = \log(\theta/\mu_*)$ is the Watts poverty gap ratio^[ $\mu_*$ stands for the average income among the poor.] and $L_*$ is the mean log deviation of incomes among the poor. This can be estimated using the `svywattsdec` function.
+
+This result can also be interpreted as a decomposition of the time taken to exit poverty, since
+
+\[
+\begin{aligned}
+T_\theta &= \frac{Watts}{g} \\ 
+&= \frac{FGT_0}{g} \big( I_w + L_* \big)
+\end{aligned}
+\]
+
+As @murdoch1998 points out, if the income among the poor is equally distributed (i.e., $L_*=0$), the time taken to exit poverty is simply $FGT_0 I_w / g$. Therefore, $FGT_0 L_* / g$ can be seen as the additional time needed to exit poverty as a result of the inequality among the poor.

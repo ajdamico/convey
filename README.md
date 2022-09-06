@@ -31,15 +31,15 @@ remotes::install_github("djalmapessoa/convey")
 
 In order to know how to cite this package, run `citation("convey")`.
 
-## Complex surveys and statistical inference {#survey}
+## __Vignettes__: Complex surveys and statistical inference 
 
+Please consult the package vignette, where we demonstrate how to measure poverty and income concentration in a population based on microdata collected from a complex survey sample.  
 
- You can find the book at https://guilhermejacob.github.io/context/
-In this book, we demonstrate how to measure poverty and income concentration in a population based on microdata collected from a complex survey sample.  Most surveys administered by government agencies or larger research organizations utilize a sampling design that violates the assumption of simple random sampling (SRS), including:
+Most surveys administered by government agencies or larger research organizations utilize a sampling design that violates the assumption of simple random sampling (SRS), including:
 
 1. Different units selection probabilities;
 2. Clustering of units;
 3. Stratification of clusters;
 4. Reweighting to compensate for missing values and other adjustments.
 
-Readers are welcome to [propose changes to this book](https://github.com/guilhermejacob/context/) as well.
+
