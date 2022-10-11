@@ -213,11 +213,7 @@ svyfgt.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas,]
-      if (length(nas) > length(full_design$prob))
-        incvec <- incvec[!nas]
-      else
-        incvec[nas] <- 0
+      full_design$prob <- ifelse( nas , Inf , full_design$prob )
     }
 
     # collect full sample weights
@@ -243,14 +239,14 @@ svyfgt.survey.design <-
       muf <- Yf / Nf
       th <- percent * muf
       arptlin <- percent * (incvec - muf) / Nf
-      arptlin <- arptlin[wf > 0]
-      names(arptlin) <- rownames(full_design$variables)[wf > 0]
+      names(arptlin) <- rownames(full_design$variables)
 
     } else if (type_thresh == 'abs') {
       th <- abs_thresh
-      arptlin <- rep(0 , sum(wf > 0))
+      arptlin <- rep(0 , length(wf))
     }
-    names(arptlin) <- rownames(full_design$variables)[wf > 0]
+    arptlin <- ifelse( wf == 0  , 0 , arptlin )
+    names(arptlin) <- rownames(full_design$variables)
 
     ### domain poverty measure estimate
 
@@ -281,10 +277,9 @@ svyfgt.survey.design <-
 
     # add linearized threshold
     ID <-
-      1 * (rownames(full_design$variables) %in% rownames(design$variables)[1 /
-                                                                             design$prob > 0])
+      1 * (rownames(full_design$variables) %in% rownames(design$variables)[w>0])
     fgtlin1 <- ID * (h(incvec , th , g) - estimate) / Nd
-    fgtlin1 <- fgtlin1[wf > 0]
+    # fgtlin1 <- fgtlin1[wf > 0]
     Fprime <-
       densfun(
         formula ,
@@ -301,16 +296,8 @@ svyfgt.survey.design <-
     else
       fgtlin2 <- 0
     fgtlin <- fgtlin1 + fgtlin2
-    names(fgtlin) <- rownames(full_design$variables)[wf > 0]
-
-    # ensure length
-    if (length(fgtlin) != length(full_design$prob)) {
-      tmplin <- rep(0 , nrow(full_design$variables))
-      tmplin[wf > 0] <- fgtlin
-      fgtlin <- tmplin
-      rm(tmplin)
-      names(fgtlin) <- rownames(full_design$variables)
-    }
+    names(fgtlin) <- rownames(full_design$variables)
+    fgtlin <- ifelse( wf == 0 , 0 , fgtlin )
 
     # compute variance
     variance <-
@@ -339,9 +326,6 @@ svyfgt.survey.design <-
         (npop * nobs)
       deff.estimate <- variance / vsrs
     }
-
-    # keep necessary linearized functions
-    fgtlin <- fgtlin[1 / full_design$prob > 0]
 
     # coerce to matrix
     fgtlin <-
