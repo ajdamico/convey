@@ -397,6 +397,7 @@ svyfgtdec.svyrep.design <-
       ComputeGEI(ifelse(incvar < th , 1 - incvar / th , 0) ,
                  ifelse(incvar < th , ws , 0) ,
                  epsilon = g)
+    rval <- c( fgtg, fgt0, fgt1 , igr , gei_poor )
 
     ww <- weights(design, "analysis")
 
@@ -468,7 +469,7 @@ svyfgtdec.svyrep.design <-
     variance <- as.matrix(variance)
 
     estimates <-
-      matrix(c(fgtg, fgt0, fgt1, igr, gei_poor), dimnames = list(c(
+      matrix(rval, dimnames = list(c(
         paste0("fgt", g),
         "fgt0",
         "fgt1" ,
