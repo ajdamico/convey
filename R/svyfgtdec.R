@@ -397,7 +397,7 @@ svyfgtdec.svyrep.design <-
       ComputeGEI(ifelse(incvar < th , 1 - incvar / th , 0) ,
                  ifelse(incvar < th , ws , 0) ,
                  epsilon = g)
-    rval <- c( fgt0 ,  fgt1 , fgtg , igr , gei_poor )
+    rval <- c( fgtg, fgt0, fgt1 , igr , gei_poor )
 
     ww <- weights(design, "analysis")
 
