@@ -168,7 +168,7 @@ svyatk.survey.design <-
     w <- 1 / design$prob
 
     # treat non-positive incomes
-    if (any(incvar[w != 0] <= 0))
+    if ( any( incvar[w != 0] <= 0 , na.rm = TRUE ) )
       stop(
         "The Atkinson Index is defined for strictly positive variables only. Negative and zero values not allowed."
       )
@@ -262,7 +262,7 @@ svyatk.svyrep.design <-
     ws <- weights(design, "sampling")
 
     # treat non-positive incomes
-    if (any(incvar[ws != 0] <= 0))
+    if ( any(incvar[ws != 0] <= 0 , na.rm = TRUE ) )
       stop(
         "The Atkinson Index is defined for strictly positive variables only. Negative and zero values not allowed."
       )
@@ -403,6 +403,7 @@ CalcAtkinson <-
 
 CalcAtkinson_IF <-
   function(yk , wk , epsilon) {
+    yk <- ifelse( wk == 0 , 1 , yk )
     U0 <- sum(wk)
     U1 <- sum(wk * yk)
     T0 <- sum(wk * ifelse(wk != 0 , log(yk) , 0))
