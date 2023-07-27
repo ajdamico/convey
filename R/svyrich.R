@@ -295,7 +295,7 @@ svyrich.survey.design <-
     Nd <- sum(w)
 
     # compute value
-    estimate <- sum(w * h(incvar , th , g)) / Nd
+    estimate <- sum( ifelse( w > 0 , w * h(incvar , th , g) , 0 ) ) / Nd
 
     ### linearization and variance estimation
 
