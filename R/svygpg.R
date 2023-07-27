@@ -83,100 +83,71 @@ svygpg.survey.design <-
         "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
       )
 
+    # collect wage data
     wagevar <-
       model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    # sex factor
+    # sex indicator matrix
     mf <- model.frame(sex, design$variables, na.action = na.pass)
+    xx <- model.matrix.lm( update( sex , ~0 + . ), design$variables, na.action = na.pass)
 
-    xx <-
-      lapply(attr(terms(sex), "variables")[-1], function(tt)
-        model.matrix(eval(bquote( ~ 0 + .(
-          tt
-        ))), mf))
+    # filter columns
+    xx <- xx[ , 1:2 , drop = FALSE ]
+    x <- cbind( xx , wagevar )
 
-    cols <- sapply(xx, NCOL)
-
-    sex <- matrix(nrow = NROW(xx[[1]]), ncol = sum(cols))
-
-    scols <- c(0, cumsum(cols))
-
-    for (i in 1:length(xx))
-      sex[, scols[i] + 1:cols[i]] <- xx[[i]]
-
-
-    colnames(sex) <- do.call("c", lapply(xx, colnames))
-
-    sex <- as.matrix(sex)
-
-    x <- cbind(wagevar, sex)
-
-    if (na.rm) {
-      nas <- rowSums(is.na(x))
+    # treat missing values
+    if ( na.rm ) {
+      nas <- rowSums( is.na( x ) )
       design <- design[nas == 0, ]
-
       if (length(nas) > length(design$prob)) {
-        wagevar <- wagevar[nas == 0]
-        sex <- sex[nas == 0, ]
-      } else{
-        wagevar[nas > 0] <- 0
-        sex[nas > 0, ] <- 0
+        wagevar <- wagevar[nas == 0 ]
+        xx <- xx[nas == 0, , drop = FALSE ]
+      } else {
+        design$prob[ nas == 1 ] <- Inf
+        wagevar[nas != 0 ] <- 0
+        xx[nas != 0, ] <- 0
       }
-
     }
 
+    # collect weights
     w <- 1 / design$prob
-    ind <- names(design$prob)
 
-
-    if (na.rm) {
-      if (length(nas) > length(design$prob))
-        sex <- sex[!nas, ]
-      else
-        sex[nas] <- 0
-    }
-
-    col_female <- grep("female", colnames(sex))
-    col_male <- setdiff(1:2, col_female)
+    # compute means
+    popsize.est <- w %*% xx
+    means.est <- colSums( sweep( xx , 1 , w * wagevar , "*" ) ) / popsize.est
 
     # create linearization objects of totals
-    INDM <- list(value = sum(sex[, col_male] * w), lin = sex[, col_male])
-    INDF <-
-      list(value = sum(sex[, col_female] * w), lin = sex[, col_female])
-    TM <-
-      list(value = sum(wagevar * sex[, col_male] * w), lin = wagevar * sex[, col_male])
-    TF <-
-      list(value = sum(wagevar * sex[, col_female] * w), lin = wagevar * sex[, col_female])
-    list_all_tot <- list(
-      INDM = INDM,
-      INDF = INDF,
-      TM = TM,
-      TF = TF
-    )
-    IGPG <-
-      contrastinf(quote((TM / INDM - TF / INDF) / (TM / INDM)) , list_all_tot)
+    linmat <- sweep( xx , 1 , wagevar , "*" ) - sweep( xx , 2 , means.est , "*" )
+    linmat <- sweep( linmat , 2 , popsize.est , "/" )
+    R1 <- list( value = means.est[1], lin = linmat[,1] )
+    R2 <- list( value = means.est[2], lin = linmat[,2] )
+    list_all_tot <- list( R1 = R1 , R2 = R2 )
+    IGPG <- contrastinf( quote( 1 - R1/R2 ) , list_all_tot )
     infun <- IGPG$lin
 
+    # build result object
     rval <- IGPG$value
     variance <-
       survey::svyrecvar(
-        infun / design$prob,
+        infun / design$prob ,
         design$cluster,
         design$strata,
         design$fpc,
         postStrata = design$postStrata
       )
-
+    if ( is.nan( variance ) ) variance[,] <- NA
     colnames(variance) <-
       rownames(variance) <-
       names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     class(rval) <- c("cvystat" , "svystat")
-    attr(rval , "var") <- variance
-    attr(rval, "lin") <- infun
-    attr(rval , "statistic") <- "gpg"
+    attr( rval , "var" ) <- variance
+    attr( rval, "lin" ) <- infun
+    attr( rval , "statistic" ) <- "gpg"
 
+    # return final object
     rval
+
   }
 
 
@@ -189,74 +160,70 @@ svygpg.svyrep.design <-
         "you must run the ?convey_prep function on your replicate-weighted survey design object immediately after creating it with the svrepdesign() function."
       )
 
-    wage <- terms.formula(formula)[[2]]
-    df <- model.frame(design)
-    wage <- df[[as.character(wage)]]
+    # collect wage data
+    wagevar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    if (na.rm) {
-      nas <- is.na(wage)
-      design <- design[!nas, ]
-      df <- model.frame(design)
-      wage <- wage[!nas]
+    # sex indicator matrix
+    mf <- model.frame(sex, design$variables, na.action = na.pass )
+    xx <- model.matrix.lm( update( sex , ~0 + . ) , design$variables , na.action = na.pass )
+
+    # filter columns
+    xx <- xx[ , 1:2 , drop = FALSE ]
+    x <- cbind( xx , wagevar )
+
+    # treat missing values
+    if ( na.rm ) {
+      nas <- rowSums( is.na( x ) )
+      design <- design[nas == 0, ]
+      if (length(nas) > length(design$pweights)) {
+        wagevar <- wagevar[nas == 0 ]
+        xx <- xx[nas == 0, , drop = FALSE ]
+      } else {
+        design$prob[ nas == 1 ] <- Inf
+        wagevar[nas != 0 ] <- 0
+        xx[nas != 0, ] <- 0
+      }
     }
 
-    ws <- weights(design, "sampling")
-    design <- update(design, one = rep(1, length(wage)))
+    # collect sampling weights
+    ws <- weights( design , "sampling" )
 
-    # sex factor
-    mf <- model.frame(sex, design$variables, na.action = na.pass)
+    # compute means
+    popsize.est <- ws %*% xx
+    means.est <- colSums( sweep( xx , 1 , ws * wagevar , "*" ) ) / popsize.est
 
-    xx <-
-      lapply(attr(terms(sex), "variables")[-1], function(tt)
-        model.matrix(eval(bquote( ~ 0 + .(
-          tt
-        ))), mf))
+    # create linearization objects of totals
+    linmat <- sweep( xx , 1 , wagevar , "*" ) - sweep( xx , 2 , means.est , "*" )
+    linmat <- sweep( linmat , 2 , popsize.est , "/" )
+    R1 <- list( value = means.est[1], lin = linmat[,1] )
+    R2 <- list( value = means.est[2], lin = linmat[,2] )
+    list_all_tot <- list( R1 = R1 , R2 = R2 )
+    IGPG <- contrastinf( quote( 1 - R1/R2 ) , list_all_tot )
+    infun <- IGPG$lin
+    rval <- IGPG$value
 
-    cols <- sapply(xx, NCOL)
+    # collect replicate weights
+    ww <- weights( design , "analysis" )
 
-    sex <- matrix(nrow = NROW(xx[[1]]), ncol = sum(cols))
+    # compute replicates
+    qq <- apply( ww , 2 , function( tw ) {
+      popsize.rep <- tw %*% xx
+      means.rep <- colSums( sweep( xx , 1 , tw * wagevar , "*" ) ) / popsize.rep
+      gpg.rep <- 1 - means.rep[1] / means.rep[2]
+      gpg.rep
+    } )
 
-    scols <- c(0, cumsum(cols))
-
-    for (i in 1:length(xx))
-      sex[, scols[i] + 1:cols[i]] <- xx[[i]]
-
-    colnames(sex) <- do.call("c", lapply(xx, colnames))
-
-    sex <- as.matrix(sex)
-
-    ComputeGpg <-
-      function(earn_hour, w, sex) {
-        col_female <- grep("female", colnames(sex))
-        col_male <- setdiff(1:2, col_female)
-        ind_men <- sex[, col_male]
-        ind_fem <- sex[, col_female]
-        med_men <- sum(ind_men * earn_hour * w) / sum(ind_men * w)
-        med_fem <- sum(ind_fem * earn_hour * w) / sum(ind_fem * w)
-        gpg <- (med_men - med_fem) / med_men
-        gpg
-      }
-
-    rval <- ComputeGpg(earn_hour = wage,
-                       w = ws,
-                       sex = sex)
-
-    ww <- weights(design, "analysis")
-
-    qq <- apply(ww, 2, function(wi)
-      ComputeGpg(wage, wi, sex = sex))
-    if (anyNA(qq))
-      variance <- NA
-    else
+    # compute variance
+    if ( sum( !is.na( qq ) ) <= 1 ) variance <- NA else {
       variance <-
-      survey::svrVar(qq,
-                     design$scale,
-                     design$rscales,
-                     mse = design$mse,
-                     coef = rval)
-
-    variance <- as.matrix(variance)
-
+        survey::svrVar( qq,
+                        design$scale,
+                        design$rscales,
+                        mse = design$mse,
+                        coef = rval )
+    }
+    variance <- as.matrix( variance )
     colnames(variance) <-
       rownames(variance) <-
       names(rval) <-
@@ -265,6 +232,7 @@ svygpg.svyrep.design <-
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "gpg"
 
+    # return final object
     rval
   }
 
