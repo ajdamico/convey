@@ -225,13 +225,19 @@ svyzenga.svyrep.design <-
       CalcZenga(incvar, wi))
 
     # compute variance
-    variance <-
-      survey::svrVar(qq ,
-                     design$scale ,
-                     design$rscales ,
-                     mse = design$mse ,
-                     coef = estimate)
-    variance <- as.matrix(variance)
+    if (any(is.na(qq)))
+      variance <- as.matrix(NA)
+    else {
+      variance <-
+        survey::svrVar(qq ,
+                       design$scale ,
+                       design$rscales ,
+                       mse = design$mse ,
+                       coef = estimate)
+      this.mean <- attr(variance , "means")
+      variance <- as.matrix(variance)
+      attr(variance , "means") <- this.mean
+    }
     colnames(variance) <-
       rownames(variance) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
