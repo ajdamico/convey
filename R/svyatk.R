@@ -333,7 +333,7 @@ svyatk.svyrep.design <-
     names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "gini"
+    attr(rval, "statistic") <- "atkinson"
     if (linearized)
       attr(rval , "linearized") <- lin
     if (linearized)
