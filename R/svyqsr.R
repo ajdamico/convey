@@ -128,12 +128,15 @@ svyqsr.survey.design <-
         "you must run the ?convey_prep function on your linearized survey design object immediately after creating it with the svydesign() function."
       )
 
-    # colelct income data
+    # collect income data
     incvar <-
       model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
-    # collect sampling weights
-    w <- 1 / design$prob
+    # treat missing values
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas,]
+    }
 
     # collect domain indices
     ind <- names(design$prob)
