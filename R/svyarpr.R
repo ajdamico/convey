@@ -209,13 +209,15 @@ svyarpr.survey.design <-
     # *full sample* estimated threshold.
     # It "propagates" the uncertainty expressed in arptlin over to the arprlin.
     #
-    # This highlights two issues:
-    #   1. Fprime should be computed on the domain sample, since we are
-    #      interested in the impact on the domain poverty rate;
-    #   2. The domain indicator should be used only for the domain poverty rate term,
+    # This highlights three issues:
+    #   1. The domain indicator should be used only for the domain poverty rate term,
     #      as observations outside the domain still influence the ARPT estimation.
+    #   2. Fprime should be computed on the domain sample, since we are
+    #      interested in the impact on the domain poverty rate;
+    #   3. Fprime is the derivative wrt to the estimated threshold, not the
+    #      estimated quantile.
     #
-    # The issue on (1) is the reason why convey differs from vardpoor here.
+    # The issue on (3) is the reason why convey differs from vardpoor here.
 
     variance <-
       survey::svyrecvar(
