@@ -166,7 +166,6 @@ svyarpr.survey.design <-
 
 
     wf <- 1 / full_design$prob
-    htot <- h_fun(incvar, w)
 
     ARPT <-
       svyarpt(
@@ -189,18 +188,34 @@ svyarpr.survey.design <-
       ID <- 1 * (ncom %in% ind)
     arpr1lin <- (1 / N) * ID * ((incvec <= arptv) - rval)
 
-    # use h for the whole sample
+    # use h for the domain sample
+    htot <- h_fun( incvar , w )
     Fprime <-
       densfun(
         formula = formula,
-        design = design,
-        arptv,
+        design = design ,
+        arptv/percent , # on the quantile, not the threshold (differs from Osier 2009)
         h = htot,
         FUN = "F",
         na.rm = na.rm
       )
 
+    # combine linearization terms
     arprlin <- arpr1lin + Fprime * arptlin
+
+    # To understand why, notice that arpr1lin is the *domain* poverty rate
+    # assuming we know the poverty threshold, defined over the entire population.
+    # Now, Fprime works like a derivative of the *domain* poverty rate wrt the
+    # *full sample* estimated threshold.
+    # It "propagates" the uncertainty expressed in arptlin over to the arprlin.
+    #
+    # This highlights two issues:
+    #   1. Fprime should be computed on the domain sample, since we are
+    #      interested in the impact on the domain poverty rate;
+    #   2. The domain indicator should be used only for the domain poverty rate term,
+    #      as observations outside the domain still influence the ARPT estimation.
+    #
+    # The issue on (1) is the reason why convey differs from vardpoor here.
 
     variance <-
       survey::svyrecvar(
