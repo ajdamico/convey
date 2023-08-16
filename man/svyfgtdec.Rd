@@ -5,7 +5,7 @@
 \alias{svyfgtdec.survey.design}
 \alias{svyfgtdec.svyrep.design}
 \alias{svyfgtdec.DBIsvydesign}
-\title{FGT indices decomposition (EXPERIMENTAL)}
+\title{FGT indices decomposition}
 \usage{
 svyfgtdec(formula, design, ...)
 
@@ -71,9 +71,6 @@ Estimate the Foster et al. (1984) poverty class and its components
 }
 \details{
 you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
-}
-\note{
-This function is experimental and is subject to change in later versions.
 }
 \examples{
 library(survey)

@@ -168,14 +168,14 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 \references{
 Michal Brzezinski (2014). Statistical Inference for Richness Measures. \emph{Applied Economics},
-Vol. 46, No. 14, pp. 1599-1608, URL \url{http://dx.doi.org/10.1080/00036846.2014.880106}.
+Vol. 46, No. 14, pp. 1599-1608, URL \url{https://dx.doi.org/10.1080/00036846.2014.880106}.
 
 Andreas Peichl, Thilo Schaefer, and Christoph Scheicher (2010). Measuring richness and poverty: A micro data
 application to Europe and Germany. \emph{Review of Income and Wealth}, Vol. 56, No.3, pp. 597-619.
 
 Guillaume Osier (2009). Variance estimation for complex indicators of poverty and inequality.
 \emph{Journal of the European Survey Research Association}, Vol.3, No.3, pp. 167-195,
-ISSN 1864-3361, URL \url{http://ojs.ub.uni-konstanz.de/srm/article/view/369}.
+ISSN 1864-3361, URL \url{https://ojs.ub.uni-konstanz.de/srm/article/view/369}.
 }
 \seealso{
 \code{\link{svyfgt}}

@@ -1,4 +1,4 @@
-#' FGT indices decomposition (EXPERIMENTAL)
+#' FGT indices decomposition
 #'
 #' Estimate the Foster et al. (1984) poverty class and its components
 #'
@@ -22,8 +22,6 @@
 #' A "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
-#'
-#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyfgt},\link{svyfgt},\link{svyfgt}}
 #'
@@ -114,7 +112,6 @@
 #' @export
 svyfgtdec <-
   function(formula, design, ...) {
-    warning("The svyfgtdec function is experimental and is subject to changes in later versions.")
 
     if ('type_thresh' %in% names(list(...)) &&
         !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
