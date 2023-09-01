@@ -308,7 +308,7 @@ SE.cvydstat <- function (object, ...) {
 #'
 #' @author Djalma Pessoa and Anthony Damico
 #'
-#' @details  functions in the convey package that use a global poverty threshold require the complete (pre-subsetted) design in order to calculate variances correctly.  this function stores the full design object as a separate attribute so that functions from the \code{survey} package such as \code{subset} and \code{svyby} do not disrupt the calculation of error terms.
+#' @details functions in the convey package that use a global poverty threshold require the complete (pre-subsetted) design in order to calculate variances correctly.  this function stores the full design object as a separate attribute so that functions from the \code{survey} package such as \code{subset} and \code{svyby} do not disrupt the calculation of error terms.
 #'
 #' @keywords survey
 #'
