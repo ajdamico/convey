@@ -263,13 +263,14 @@ svyrich.survey.design <-
           ...
         )
       th <- percent * coef(ARPT)[[1]]
-      arptlin <- percent * attr(ARPT , "lin")
+      arptlin <- rep( 0 , length( wf ) )
+      arptlin[ wf > 0 ] <- percent * attr(ARPT , "lin")
     } else if (type_thresh == 'relm') {
-      Yf <- sum(wf * incvec)
-      Nf <- sum(wf)
+      Yf <- sum( ifelse( wf  > 0 ,  wf * incvec , 0 ) )
+      Nf <- sum( wf )
       muf <- Yf / Nf
       th <- percent * muf
-      arptlin <- percent * (incvec - muf) / Nf
+      arptlin <- ifelse( wf  > 0 , percent * (incvec - muf) / Nf , 0 )
     } else if (type_thresh == 'abs') {
       th <- abs_thresh
       arptlin <- rep(0 , length(wf))
@@ -313,7 +314,7 @@ svyrich.survey.design <-
         FUN = "F",
         na.rm = na.rm
       )
-    ahat <- sum(w * ht(incvar , th , g)) / Nd
+    ahat <- sum( ifelse( w > 0 , w * ht(incvar , th , g) , 0 ) ) / Nd
     ahF <- ahat + h(th , th , g) * Fprime
     if (type_thresh %in% c("relq" , "relm"))
       richlin2 <- ahF * arptlin

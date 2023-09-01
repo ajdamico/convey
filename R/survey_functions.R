@@ -7,7 +7,8 @@
 # https://stat.ethz.ch/pipermail/r-devel/2013-August/thread.html#67180
 
 computeQuantiles <- function(xx, w, p) {
-  if (any(is.na(xx)))
+
+  if (any(is.na(xx)[w!=0]))
     return(NA * p)
 
   if (sum(w) == 0)
