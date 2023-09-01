@@ -168,7 +168,7 @@ svyatk.survey.design <-
     w <- 1 / design$prob
 
     # treat non-positive incomes
-    if (any(incvar[w != 0] <= 0))
+    if ( any( incvar[w != 0] <= 0 , na.rm = TRUE ) )
       stop(
         "The Atkinson Index is defined for strictly positive variables only. Negative and zero values not allowed."
       )
@@ -262,7 +262,7 @@ svyatk.svyrep.design <-
     ws <- weights(design, "sampling")
 
     # treat non-positive incomes
-    if (any(incvar[ws != 0] <= 0))
+    if ( any( incvar[ws != 0] <= 0 , na.rm = TRUE ) )
       stop(
         "The Atkinson Index is defined for strictly positive variables only. Negative and zero values not allowed."
       )
@@ -403,27 +403,28 @@ CalcAtkinson <-
 
 CalcAtkinson_IF <-
   function(yk , wk , epsilon) {
-    U0 <- sum(wk)
-    U1 <- sum(wk * yk)
-    T0 <- sum(wk * ifelse(wk != 0 , log(yk) , 0))
-    T1 <- sum(wk * ifelse(wk != 0 , yk * log(yk) , 0))
+    U0 <- sum( wk )
+    U1 <- sum( ifelse( wk != 0 , wk * yk , 0 ) )
+    T0 <- sum( ifelse( wk != 0 , wk * log( yk ) , 0 ) )
+    T1 <- sum( ifelse( wk != 0 , wk * yk * log( yk ) , 0 ) )
     if (epsilon == 1) {
       A1 <- CalcAtkinson(yk , wk , 1)
-      L1 <- (A1 - 1) * (1 - T0 / U0) / U0
+      L1 <- ( A1 - 1 ) * (1 - T0 / U0) / U0
       L2 <- yk * (1 - A1) / U1
-      L3 <- ifelse(wk != 0 , log(yk) * (A1 - 1) / U0 , 0)
+      L3 <- ifelse( wk != 0 , log( yk ) * ( A1 - 1 ) / U0 , 0 )
       lin <- rowSums(cbind(L1 , L2 , L3))
     } else {
-      U.neps <- sum(wk * ifelse(wk != 0 , yk ^ (1 - epsilon) , 0))
-      afac <- epsilon / (1 - epsilon)
-      bfac <- 1 / (1 - epsilon)
-      L1 <- afac * (U.neps ^ bfac) / (U1 * U0 ^ bfac)
-      L2 <- yk * (U.neps ^ bfac) / (U0 ^ afac * U1 ^ 2)
+      U.neps <- sum( ifelse( wk != 0 , wk * yk^( 1 - epsilon ) , 0 ) )
+      afac <- epsilon / ( 1 - epsilon )
+      bfac <- 1 / ( 1 - epsilon )
+      L1 <- afac * ( U.neps^bfac ) / ( U1 * U0^bfac )
+      L2 <- yk * ( U.neps^bfac ) / ( U0^afac * U1^2 )
       L3 <-
-        -ifelse(wk != 0 , bfac * (yk ^ (1 - epsilon)) * (U.neps ^ afac) / (U0 ^
-                                                                             afac * U1) , 0)
-      lin <- rowSums(cbind(L1 , L2 , L3))
+        - ifelse( wk != 0 ,
+                  bfac * ( yk^( 1 - epsilon ) ) * (U.neps ^ afac) / ( U0^ afac * U1)
+                  , 0 )
+      lin <- rowSums( cbind( L1 , L2 , L3 ) )
     }
-    lin <- ifelse(wk != 0 , lin , 0)
+    lin <- ifelse( wk != 0 , lin , 0)
     lin
   }
