@@ -231,22 +231,23 @@ svyfgt.survey.design <-
           ...
         )
       th <- coef(ARPT)[[1]]
-      arptlin <- attr(ARPT , "lin")
+      arptlin <- rep(0 , length(wf))
+      arptlin[wf > 0] <- attr(ARPT , "lin")
 
     } else if (type_thresh == 'relm') {
-      Yf <- sum(wf * incvec)
-      Nf <- sum(wf)
+      Yf <- sum( ifelse( wf != 0 ,  wf * incvec , 0 ) )
+      Nf <- sum( wf )
       muf <- Yf / Nf
       th <- percent * muf
-      arptlin <- percent * (incvec - muf) / Nf
-      names(arptlin) <- rownames(full_design$variables)
+      arptlin <- percent * ( incvec - muf ) / Nf
+      arptlin <- ifelse( wf != 0 ,  arptlin ,  0 )
+      names( arptlin ) <- rownames(full_design$variables)
 
     } else if (type_thresh == 'abs') {
       th <- abs_thresh
       arptlin <- rep(0 , length(wf))
     }
-    arptlin <- ifelse( wf == 0  , 0 , arptlin )
-    names(arptlin) <- rownames(full_design$variables)
+    names( arptlin ) <- rownames( full_design$variables )
 
     ### domain poverty measure estimate
 

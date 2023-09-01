@@ -256,7 +256,6 @@ svywattsdec.survey.design <-
 
     # collect full weights
     wf <- 1 / full_design$prob
-    wf[!(names(wf) %in% rownames(lin.matrix))] <- 0
 
     # # ensure length
     # if (nrow(lin.matrix) != length(full_design$prob)) {
@@ -350,13 +349,6 @@ svywattsdec.svyrep.design <-
     else
       full_design <- attr(design, "full_design")
 
-    # domain
-    if (is.null(names(design$prob)))
-      ind <-
-      as.character(seq(length(design$prob)))
-    else
-      ind <- names(design$prob)
-
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design")))
@@ -373,7 +365,7 @@ svywattsdec.svyrep.design <-
 
     # treat missing values
     if (na.rm) {
-      nas <- is.na(incvec)
+      nas <- is.na( incvec )
       full_design <- full_design[!nas,]
       incvec <-
         model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
@@ -400,7 +392,8 @@ svywattsdec.svyrep.design <-
     if (na.rm) {
       nas <- is.na(incvar)
       design <- design[!nas,]
-      incvar <- incvar[!nas]
+      incvar <-
+        model.frame(formula, design$variables, na.action = na.pass)[[1]]
     }
 
     # collect domain sampling weights
@@ -421,7 +414,8 @@ svywattsdec.svyrep.design <-
     wwf <- weights(full_design , "analysis")
 
     # get replicates
-    qq <- apply(wwf, 2, function(wi) {
+    qq <- apply( wwf , 2 , function( wi ) {
+
       # compute threshold
       if (type_thresh == 'relq')
         thr <-
@@ -433,24 +427,23 @@ svywattsdec.svyrep.design <-
 
       # mark domains
       wsi <-
-        ifelse(rownames(full_design$variables)[wsf > 0] %in% rownames(design$variables)[ws > 0] ,
-               wi ,
-               0)
+        ifelse( rownames( full_design$variables ) %in% rownames( design$variables ) ,
+                wi , 0 )
 
       # compute estimates
-      watts.rep  <- ComputeWatts(incvec , wsi , thresh = thr)
+      watts.rep  <- ComputeWatts( incvec , wsi , thresh = thr )
       fgt0.rep   <-
-        ComputeFGT(incvec , wsi , g = 0 , thresh = thr)
+        ComputeFGT( incvec , wsi , g = 0 , thresh = thr )
       fgt1.rep   <-
-        ComputeFGT(incvec , wsi , g = 1 , thresh = thr)
-      w_pgr.rep  <- log(fgt0.rep / (fgt0.rep - fgt1.rep))
+        ComputeFGT( incvec , wsi , g = 1 , thresh = thr )
+      w_pgr.rep  <- log( fgt0.rep / ( fgt0.rep - fgt1.rep ) )
       L_poor.rep <-
-        CalcGEI(incvec , ifelse(incvec <= thr , wsi , 0) , epsilon = 0)
+        CalcGEI( incvec , ifelse( incvec <= thr & !is.na( incvec ) , wsi , 0 ) , epsilon = 0 )
 
       # combine esitmates
       c(watts.rep, fgt0.rep , w_pgr.rep , L_poor.rep)
 
-    })
+    } )
     qq <- t(qq)
     colnames(qq) <-
       c("watts" , "fgt0" , "watts pov. gap ratio" , "theil(poor)")
