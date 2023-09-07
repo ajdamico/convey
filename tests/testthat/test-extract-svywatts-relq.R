@@ -322,7 +322,7 @@ test_that("subsets equal svyby", {
 
   # check equality of linearized variables
   expect_warning(expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1]))
-  expect_warning(expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1]))
+  expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1])
 
 })
 
@@ -430,7 +430,7 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(deff(sub_des) , deff(sub_dbd))
   expect_equal(deff(sub_rep) , deff(sub_dbr))
   expect_warning(expect_equal(vcov(sby_des) , vcov(sby_dbd)))
-  expect_warning(expect_equal(vcov(sby_rep) , vcov(sby_dbr)))
+  expect_equal(vcov(sby_rep) , vcov(sby_dbr))
 
   # compare database-backed subsetted objects to database-backed svyby objects
   # dbi subsets equal dbi svyby
