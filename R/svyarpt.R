@@ -120,41 +120,24 @@ svyarpt.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
-      if (length(nas) > length(design$prob))
-        incvar <- incvar[!nas]
-      else
-        incvar[nas] <- 0
+      design$prob <- ifelse( nas , Inf , design$prob )
+      incvar[nas] <- 0
     }
-
-    if (is.null(names(design$prob)))
-      ind <-
-      as.character(seq(length(design$prob)))
-    else
-      ind <- names(design$prob)
-
-    w <- 1 / design$prob
+    ind <- rownames( design$variables )[ is.finite( design$prob ) ]
 
     incvec <-
       model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
-      if (length(nas) > length(full_design$prob))
-        incvec <- incvec[!nas]
-      else
-        incvec[nas] <- 0
+      full_design$prob <- ifelse( nas , Inf , full_design$prob )
+      incvec[ nas ] <- 0
     }
+    ncom <- rownames( full_design$variables )
 
-    if (is.null(names(full_design$prob)))
-      ncom <-
-      as.character(seq(length(full_design$prob)))
-    else
-      ncom <- names(full_design$prob)
-
+    w <- 1 / design$prob
     wf <- 1 / full_design$prob
-    htot <- h_fun(incvar, w)
+    htot <- h_fun( incvar, w )
     q_alpha <-
       survey::oldsvyquantile(
         x = formula,
@@ -175,16 +158,12 @@ svyarpt.survey.design <-
         FUN = "F",
         na.rm = na.rm
       )
-    N <- sum(w)
-    if (sum(1 / design$prob == 0) > 0)
-      ID <- 1 * (1 / design$prob != 0)
-    else
-      ID <- 1 * (ncom %in% ind)
-    linquant <-
-      -(1 / (N * Fprime)) * ID * ((incvec <= q_alpha) - quantiles)
+    N <- sum( w )
+    ID <- 1 * ( ncom %in% ind )
+    linquant <- -(1 / (N * Fprime)) * ID * ((incvec <= q_alpha) - quantiles)
     lin <- percent * linquant
 
-    variance <-
+    varest <-
       survey::svyrecvar(
         lin / full_design$prob,
         full_design$cluster,
@@ -193,12 +172,12 @@ svyarpt.survey.design <-
         postStrata = full_design$postStrata
       )
 
-    colnames(variance) <-
-      rownames(variance) <-
+    colnames(varest) <-
+      rownames(varest) <-
       names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     class(rval) <- c("cvystat" , "svystat")
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- varest
     attr(rval, "statistic") <- "arpt"
     attr(rval, "lin") <- lin
     rval
@@ -247,23 +226,23 @@ svyarpt.svyrep.design <-
       apply(ww, 2, function(wi)
         0.6 * computeQuantiles(incvar, wi, p = quantiles))
     if (anyNA(qq))
-      variance <- NA
+      varest <- NA
     else
-      variance <-
+      varest <-
       survey::svrVar(qq,
                      design$scale,
                      design$rscales,
                      mse = design$mse,
                      coef = rval)
 
-    variance <- as.matrix(variance)
+    varest <- as.matrix(varest)
 
-    colnames(variance) <-
-      rownames(variance) <-
+    colnames(varest) <-
+      rownames(varest) <-
       names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     class(rval) <- c("cvystat" , "svrepstat")
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- varest
     attr(rval, "statistic") <- "arpt"
     rval
   }

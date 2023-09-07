@@ -10,9 +10,12 @@ computeQuantiles <- function(xx, w, p) {
 
   if (any(is.na(xx)[w!=0]))
     return(NA * p)
-
   if (sum(w) == 0)
     return(NA)
+  if ( any( w == 0 ) ) {
+    xx <- xx[ w != 0 ]
+    w <- w[ w != 0 ]
+  }
 
   oo <- order(xx)
   cum.w <- cumsum(w[oo]) / sum(w)

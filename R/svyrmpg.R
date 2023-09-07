@@ -130,11 +130,8 @@ svyrmpg.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
-      if (length(nas) > length(design$prob))
-        incvar <- incvar[!nas]
-      else
-        incvar[nas] <- 0
+      design$prob <- ifelse( nas , Inf , design$prob )
+      incvar[ nas ] <- 0
     }
 
     incvec <-
@@ -142,11 +139,8 @@ svyrmpg.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
-      if (length(nas) > length(full_design$prob))
-        incvec <- incvec[!nas]
-      else
-        incvec[nas] <- 0
+      full_design$prob <- ifelse( nas , Inf , full_design$prob )
+      incvec[nas] <- 0
     }
 
     ARPT <-
@@ -180,7 +174,8 @@ svyrmpg.survey.design <-
     rval <- RMPG$value
     infun <- unlist(RMPG$lin)
 
-    variance <-
+    # compute variance estimate
+    varest <-
       survey::svyrecvar(
         infun / full_design$prob,
         full_design$cluster,
@@ -189,12 +184,15 @@ svyrmpg.survey.design <-
         postStrata = full_design$postStrata
       )
 
-    colnames(variance) <-
-      rownames(variance) <-
+    # format result
+    varest <- as.matrix( varest )
+    varest[ is.nan( varest ) ] <- NA
+    colnames( varest ) <-
+      rownames( varest ) <-
       names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     class(rval) <- c("cvystat" , "svystat")
-    attr(rval , "var") <- variance
+    attr(rval , "var") <- varest
     attr(rval, "lin") <- infun
     attr(rval , "statistic") <- "rmpg"
     if (thresh)
@@ -224,95 +222,90 @@ svyrmpg.svyrep.design <-
 
     # if the class of the full_design attribute is just a TRUE, then the design is
     # already the full design.  otherwise, pull the full_design from that attribute.
-    if ("logical" %in% class(attr(design, "full_design")))
-      full_design <-
-        design
-    else
-      full_design <- attr(design, "full_design")
+    if ("logical" %in% class(attr(design, "full_design"))) {
+      full_design <- design
+    } else full_design <- attr(design, "full_design")
 
-    df <- model.frame(design)
-    incvar <-
-      model.frame(formula, design$variables, na.action = na.pass)[[1]]
-
-    if (na.rm) {
-      nas <- is.na(incvar)
-      design <- design[!nas, ]
-      df <- model.frame(design)
-      incvar <- incvar[!nas]
-    }
-
-    df_full <- model.frame(full_design)
+    # collect full sample income data
     incvec <-
-      model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
+      model.frame( formula, full_design$variables, na.action = na.pass)[[1]]
 
+    # treat missing
     if (na.rm) {
       nas <- is.na(incvec)
       full_design <- full_design[!nas, ]
-      df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
 
+    # collect domain income data
+    incvar <-
+      model.frame(formula, design$variables, na.action = na.pass)[[1]]
+
+    # treat missing
+    if (na.rm) {
+      nas <- is.na(incvar)
+      design <- design[!nas, ]
+      incvar <- incvar[!nas]
+    }
+
+    # collect weights
     wsf <- weights(full_design, "sampling")
-    names(incvec) <- names(wsf) <- row.names(df_full)
-    ind <- row.names(df)
+    names( incvec ) <- names( wsf ) <- rownames( full_design$variables )
+    names( incvar ) <- names( wsf ) <- rownames( design$variables )
+    ind <-  rownames( full_design$variables ) %in% rownames( design$variables )
 
-    ComputeRmpg <-
-      function(xf, wf, ind, quantiles, percent) {
-        tresh <- percent * computeQuantiles(xf, wf, p = quantiles)
-        x <- xf[ind]
-        w <- wf[ind]
-        indpoor <- (x <= tresh)
-        medp <- computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
-        c(tresh, medp, 1 - (medp / tresh))
-      }
-
+    # compute estimate
     ws <- weights(design, "sampling")
+    varname <- terms.formula( formula )[[2]]
     Rmpg_val <-
       ComputeRmpg(
-        xf = incvec,
-        wf = wsf,
-        ind = ind,
-        quantiles = quantiles,
-        percent = percent
+        xf = incvec ,
+        wf = wsf ,
+        ind = ind ,
+        quantiles = quantiles ,
+        percent = percent ,
+        varname = varname
       )
     rval <- Rmpg_val[3]
 
-    wwf <- weights(full_design, "analysis")
+    # collect replicate weights
+    wwf <- weights( full_design , "analysis" )
 
+    # compute replicates
     qq <-
-      apply(wwf, 2, function(wi) {
-        names(wi) <- row.names(df_full)
-        ComputeRmpg(incvec,
-                    wi,
-                    ind = ind,
-                    quantiles = quantiles,
-                    percent = percent)[3]
-      })
-    if (anyNA(qq))
-      variance <- NA
-    else
-      variance <-
-      survey::svrVar(qq,
-                     design$scale,
-                     design$rscales,
-                     mse = design$mse,
-                     coef = rval)
+      apply( wwf , 2 , function( wi ) {
+        suppressWarnings(
+          ComputeRmpg( incvec ,
+                       wi ,
+                       ind = ind ,
+                       quantiles = quantiles ,
+                       percent = percent ,
+                       varname = NULL )[3] )
+      } )
 
-    variance <- as.matrix(variance)
+    # compute variance
+    if ( anyNA( qq ) ) {
+      varest <- as.numeric( NA )
+    } else varest <- survey::svrVar( qq ,
+                                     design$scale ,
+                                     design$rscales ,
+                                     mse = design$mse ,
+                                     coef = rval )
 
-    colnames(variance) <-
-      rownames(variance) <-
+    # format result object
+    varest <- as.matrix( varest )
+    colnames(varest) <-
+      rownames(varest) <-
       names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     class(rval) <- c("cvystat" , "svrepstat")
-    attr(rval , "var") <- variance
+    attr(rval , "var") <- varest
     attr(rval, "lin") <- NA
     attr(rval , "statistic") <- "rmpg"
     if (thresh)
       attr(rval, "thresh") <- Rmpg_val[1]
     if (poor_median)
       attr(rval, "poor_median") <- Rmpg_val[2]
-
     rval
   }
 
@@ -349,4 +342,19 @@ svyrmpg.DBIsvydesign <-
 
     NextMethod("svyrmpg", design)
 
+  }
+
+ComputeRmpg <-
+  function(xf, wf, ind, quantiles, percent , varname = NULL ) {
+    thresh <- percent * computeQuantiles(xf, wf, p = quantiles)
+    x <- xf[ind]
+    w <- wf[ind]
+    if ( is.na( thresh ) ) return( NA )
+    indpoor <- ( x <= thresh )
+    if ( !any( indpoor ) ) {
+      if ( !is.null( varname ) ) warning( paste( "zero records in the set of poor people.  determine the poverty threshold by running svyarpt on ~", varname ) )
+      return( NA )
+    }
+    medp <- computeQuantiles(x[indpoor], w[indpoor], p = 0.5)
+    c( thresh , medp, 1 - ( medp / thresh ) )
   }
