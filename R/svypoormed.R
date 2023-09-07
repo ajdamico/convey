@@ -169,7 +169,7 @@ svypoormed.survey.design <-
     # if arpt is NA
     if ( is.na( arpt ) ) {
 
-      rval <- as.vector( NA , mode = "numeric" )
+      rval <- as.numeric( NA )
       linmedp <- rep( NA , length = length( wf ) )
       varest <- matrix( NA )
 
@@ -247,6 +247,8 @@ svypoormed.survey.design <-
     }
 
     # create estimate object
+    rval <- as.numeric( rval )
+    varest <- as.matrix( varest )
     colnames( varest ) <-
       rownames( varest ) <-
       names( rval ) <-
@@ -280,7 +282,7 @@ svypoormed.svyrep.design <-
       full_design <-
         design
     else
-      full_design <- attr(design, "full_design")
+      full_design <- attr( design , "full_design" )
 
     # collect income data for full sample
     incvec <-
@@ -294,11 +296,11 @@ svypoormed.svyrep.design <-
     }
 
     # collect full sample sampling weights
-    wsf <- weights(full_design, "sampling")
+    wsf <- weights( full_design , "sampling" )
 
     # collect domain income data
     incvar <-
-      model.frame(formula, design$variables, na.action = na.pass)[[1]]
+      model.frame( formula , design$variables , na.action = na.pass )[[1]]
 
     # treat missing
     if (na.rm) {
@@ -311,33 +313,38 @@ svypoormed.svyrep.design <-
     ws <- weights(design, "sampling")
 
     # create domain indicators
-    names( incvec ) <- names( wsf )
+    names( incvec ) <- names( wsf ) <- rownames( full_design$variables )
+    names( incvar ) <- names( ws ) <- rownames( design$variables )
     ind <- names( wsf ) %in% names( ws )
 
     # compute value
+    varname <- terms.formula( formula )[[2]]
     rval <-
       ComputePoormed( xf = incvec ,
                       wf = wsf ,
                       ind = ind ,
                       quantiles = quantiles ,
-                      percent = percent )
+                      percent = percent ,
+                      varname = varname )
 
     # collect replicate weights
     wwf <- weights( full_design , "analysis" )
 
     # compute replicates
     qq <-
-      apply( wwf , 2, function(wi) {
-        suppressWarnings( ComputePoormed( incvec,
-                                          wi,
-                                          ind = ind,
-                                          quantiles = quantiles,
-                                          percent = percent ) )
+      apply( wwf , 2 , function( wi ) {
+        suppressWarnings(
+          ComputePoormed( incvec ,
+                          wi ,
+                          ind = ind ,
+                          quantiles = quantiles ,
+                          percent = percent ,
+                          varname = NULL ) )
       } )
 
     # compute variance
     if ( anyNA( qq ) ) {
-      varest <- NA
+      varest <- matrix( NA )
     } else varest <- survey::svrVar( qq ,
                                      design$scale ,
                                      design$rscales ,
@@ -345,6 +352,7 @@ svypoormed.svyrep.design <-
                                      coef = rval )
 
     # format results
+    rval <- as.numeric( rval )
     varest <- as.matrix( varest )
     colnames( varest ) <-
       rownames( varest ) <-
@@ -394,15 +402,14 @@ svypoormed.DBIsvydesign <-
 
 # estimation function
 ComputePoormed <-
-  function(xf , wf , ind , quantiles , percent ) {
+  function(xf , wf , ind , quantiles , percent , varname = NULL ) {
     thresh <- percent * computeQuantiles( xf , wf , p = quantiles )
     x <- xf[ind]
     w <- wf[ind]
     if ( is.na( thresh ) ) return( NA )
     indpoor <- ( x <= thresh )
     if ( !any( indpoor ) ) {
-      nome <- terms.formula( formula )[[2]]
-      warning( paste( "zero records in the set of poor people.  determine the poverty threshold by running svyarpt on ~", nome ) )
+      if ( !is.null( varname ) ) warning( paste( "zero records in the set of poor people.  determine the poverty threshold by running svyarpt on ~", varname ) )
       return( NA )
     }
     medp <- computeQuantiles( x[indpoor] , w[indpoor] , p = 0.5)
