@@ -147,10 +147,11 @@ svyjdivdec.survey.design <-
 
     # collect weights
     w <- 1 / design$prob
+    incvar <- ifelse( w == 0 , 0 , incvar )
 
 
     # treat non-positive
-    if (any(incvar[w != 0] <= 0 , na.rm = TRUE))
+    if ( any( incvar[ w != 0 ] <= 0 , na.rm = TRUE ) )
       stop("The J-divergence index is defined for strictly positive incomes only.")
 
 
@@ -178,10 +179,10 @@ svyjdivdec.survey.design <-
     grpvar <- interaction(grpvar)
 
     # total
-    total.jdiv <- CalcJDiv(incvar , w)
+    total.jdiv <- CalcJDiv( incvar , w )
 
     # compute linearized function
-    total.lin <- CalcJDiv_IF(incvar , w)
+    total.lin <- CalcJDiv_IF( incvar , w )
 
 
     # within:
@@ -206,13 +207,13 @@ svyjdivdec.survey.design <-
         CalcGEI_IF(incvar , tw , epsilon = 1))
 
     # calc share components
-    pshare.group <- colSums (wg) / sum(w)
+    pshare.group <- colSums ( wg ) / sum( w )
     sshare.group <-
-      (ifelse(w > 0 , incvar , 0) %*% wg) / sum(ifelse(w > 0 , w * incvar , 0))
+      ( incvar %*% wg ) / sum( w * incvar )
     pshare.group.lin <-
-      sweep(ind , 2 , pshare.group , "-") / sum(w)
+      sweep( ind , 2 , pshare.group , "-" ) / sum( w )
     sshare.group.lin <-
-      (ind * incvar - incvar %*% sshare.group) / sum(w * incvar)
+      ( ind * incvar - incvar %*% sshare.group ) / sum( w * incvar )
 
     # create within estimates
     within.jdiv <-
@@ -221,8 +222,8 @@ svyjdivdec.survey.design <-
       sweep(gei0.group.lin , 2 , pshare.group , "*") + sweep(pshare.group.lin , 2 , gei0.group , "*")
     mat.gei1 <-
       sweep(gei1.group.lin , 2 , sshare.group , "*") + sweep(sshare.group.lin , 2 , gei1.group , "*")
-    within.jdiv <- sum(within.jdiv)
-    within.lin <- rowSums(mat.gei0 + mat.gei1)
+    within.jdiv <- sum( within.jdiv )
+    within.lin <- rowSums( mat.gei0 + mat.gei1 )
     within.lin[w == 0] <- 0
 
     # between
@@ -239,7 +240,7 @@ svyjdivdec.survey.design <-
       )
 
     # compute variance
-    variance <-
+    varest <-
       survey::svyrecvar(
         sweep(lin.matrix , 1 , w , "*") ,
         design$cluster,
@@ -247,7 +248,7 @@ svyjdivdec.survey.design <-
         design$fpc,
         postStrata = design$postStrata
       )
-    variance[which(is.nan(variance))] <- NA
+    varest[ which( is.nan( varest ) ) ] <- NA
 
     # compute deff
     if (is.character(deff) || deff) {
@@ -260,14 +261,14 @@ svyjdivdec.survey.design <-
         vsrs <-
         survey::svyvar(lin.matrix , design , na.rm = na.rm) * npop ^ 2 * (npop - nobs) /
         (npop * nobs)
-      deff.estimate <- variance / vsrs
+      deff.estimate <- varest / vsrs
     }
 
     # build result object
     estimates <- c(total.jdiv , within.jdiv , between.jdiv)
-    names(estimates) <- colnames(variance)
+    names(estimates) <- colnames(varest)
     rval <- c(estimates)
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- varest
     attr(rval, "statistic") <- "jdiv decomposition"
     attr(rval, "group") <- as.character(subgroup)[[2]]
     if (linearized)
@@ -312,7 +313,8 @@ svyjdivdec.svyrep.design <-
     }
 
     # collect sampling weights
-    ws <- weights(design, "sampling")
+    ws <- weights( design , "sampling" )
+    incvar <- ifelse( ws == 0 , 0 , incvar )
 
     # treat non-positive incomes
     if (any(incvar[ws != 0] <= 0, na.rm = TRUE))
@@ -368,92 +370,106 @@ svyjdivdec.svyrep.design <-
 
     # collect estimates
     estimates <- c(total.jdiv , within.jdiv , between.jdiv)
-    names(estimates) <- colnames(qq.matrix)
+    names( estimates ) <- colnames( qq.matrix )
 
     # variance estimation
-    variance <-
-      survey::svrVar(qq.matrix,
-                     design$scale,
-                     design$rscales,
-                     mse = design$mse,
-                     coef = estimates)
-
-    # compute deff
-    if (is.character(deff) || deff || linearized) {
-      # compute linearized function of the total jdiv
-      total.lin <- CalcJDiv_IF(incvar , ws)
-
-      # calculate intermediate statistics
-      gei0.group <-
-        apply(wg , 2 , function(wi)
-          CalcGEI(incvar , wi , 0))
-      gei1.group <-
-        apply(wg , 2 , function(wi)
-          CalcGEI(incvar , wi , 1))
-      sshare.group <- t(wg) %*% incvar
-      sshare.group <- c(t(sshare.group) / sum(sshare.group))
-
-      # compute linearized function of the within jdiv
-      gei0.group.lin <-
-        apply(wg , 2 , function(wi)
-          CalcGEI_IF(incvar , wi , 0))
-      gei1.group.lin <-
-        apply(wg , 2 , function(wi)
-          CalcGEI_IF(incvar , wi , 1))
-      pshare.group.lin <-
-        sweep(ind , 2 , pshare.group , "-") / sum(ws)
-      sshare.group.lin <-
-        (ind * incvar - incvar %*% t(sshare.group)) / sum(ws * incvar)
-      gei0.component.lin <-
-        sweep(gei0.group.lin , 2 , pshare.group , "*") + sweep(pshare.group.lin , 2 , gei0.group , "*")
-      gei1.component.lin <-
-        sweep(gei1.group.lin , 2 , sshare.group , "*") + sweep(sshare.group.lin , 2 , gei1.group , "*")
-      within.lin <-
-        rowSums(gei0.component.lin + gei1.component.lin)
-      within.lin[ws == 0] <- 0
-
-      # between (residual)
-      between.lin <- total.lin - within.lin
-      between.lin[ws == 0] <- 0
-
-      # create linearized matrix
+    if ( all( is.na( qq.matrix ) ) ) {
+      varest <- matrix( NA , 3 , 3 )
+      deff.estimate <- as.numeric( NA )
       lin.matrix <-
         matrix(
-          data = c(total.lin , within.lin, between.lin),
-          ncol = 3,
-          dimnames = list(names(ws) , c("total", "within", "between"))
+          data = NA ,
+          nrow = length( ws ) ,
+          ncol = 3 ,
+          dimnames = list( names( ws ) , c("total", "within", "between"))
         )
+    } else {
+      varest <-
+        survey::svrVar( qq.matrix ,
+                        design$scale ,
+                        design$rscales ,
+                        mse = design$mse ,
+                        coef = estimates )
 
-      ### compute deff
-      nobs <- length(design$pweights)
-      npop <- sum(design$pweights)
-      vsrs <-
-        unclass(
-          survey::svyvar(
-            lin.matrix ,
-            design,
-            na.rm = na.rm,
-            return.replicates = FALSE,
-            estimate.only = TRUE
+      # compute deff
+      if (is.character(deff) || deff || linearized) {
+
+        # compute linearized function of the total jdiv
+        total.lin <- CalcJDiv_IF(incvar , ws)
+
+        # calculate intermediate statistics
+        gei0.group <-
+          apply(wg , 2 , function(wi)
+            CalcGEI(incvar , wi , 0))
+        gei1.group <-
+          apply(wg , 2 , function(wi)
+            CalcGEI(incvar , wi , 1))
+        sshare.group <- t(wg) %*% incvar
+        sshare.group <- c(t(sshare.group) / sum(sshare.group))
+
+        # compute linearized function of the within jdiv
+        gei0.group.lin <-
+          apply(wg , 2 , function(wi)
+            CalcGEI_IF(incvar , wi , 0))
+        gei1.group.lin <-
+          apply(wg , 2 , function(wi)
+            CalcGEI_IF(incvar , wi , 1))
+        pshare.group.lin <-
+          sweep(ind , 2 , pshare.group , "-") / sum(ws)
+        sshare.group.lin <-
+          (ind * incvar - incvar %*% t(sshare.group)) / sum(ws * incvar)
+        gei0.component.lin <-
+          sweep(gei0.group.lin , 2 , pshare.group , "*") + sweep(pshare.group.lin , 2 , gei0.group , "*")
+        gei1.component.lin <-
+          sweep(gei1.group.lin , 2 , sshare.group , "*") + sweep(sshare.group.lin , 2 , gei1.group , "*")
+        within.lin <-
+          rowSums(gei0.component.lin + gei1.component.lin)
+        within.lin[ws == 0] <- 0
+
+        # between (residual)
+        between.lin <- total.lin - within.lin
+        between.lin[ws == 0] <- 0
+
+        # create linearized matrix
+        lin.matrix <-
+          matrix(
+            data = c(total.lin , within.lin, between.lin),
+            ncol = 3,
+            dimnames = list(names(ws) , c("total", "within", "between"))
           )
-        ) * npop ^ 2 / nobs
-      if (deff != "replace")
-        vsrs <- vsrs * (npop - nobs) / npop
-      deff.estimate <- variance / vsrs
+
+        ### compute deff
+        nobs <- length(design$pweights)
+        npop <- sum(design$pweights)
+        vsrs <-
+          unclass(
+            survey::svyvar(
+              lin.matrix ,
+              design,
+              na.rm = na.rm,
+              return.replicates = FALSE,
+              estimate.only = TRUE
+            )
+          ) * npop ^ 2 / nobs
+        if (deff != "replace")
+          vsrs <- vsrs * (npop - nobs) / npop
+        deff.estimate <- varest / vsrs
+
+      }
 
     }
 
     # build result object
     rval <- estimates
     names(rval) <- c("total", "within", "between")
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- varest
     attr(rval, "statistic") <- "jdiv decomposition"
-    attr(rval, "group") <- as.character(subgroup)[[2]]
+    attr(rval, "group") <- as.character( subgroup )[[2]]
     class(rval) <- c("cvystat" , "svrepstat" , "svystat")
     if (linearized)
       attr(rval, "linearized") <- lin.matrix
     if (linearized)
-      attr(rval , "index") <- as.numeric(rownames(lin.matrix))
+      attr(rval , "index") <- as.numeric(rownames( lin.matrix ) )
 
     # keep replicates
     if (return.replicates) {
