@@ -342,7 +342,7 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[2,])))
   expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[2,])))
   expect_equal(vcov(sub_dbd) , vcov(sub_des))
-  expect_warning(expect_equal(vcov(sub_dbr) , vcov(sub_rep)))
+  expect_equal(vcov(sub_dbr) , vcov(sub_rep))
 
   # compare equality of linearized variables
   expect_equal(colSums(attr(sub_dbd , "linearized")) , colSums(attr(sub_dbr , "linearized")))
