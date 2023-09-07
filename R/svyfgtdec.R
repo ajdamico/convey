@@ -236,12 +236,6 @@ svyfgtdec.survey.design <-
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-    tmat <- matrix( 0 , nrow = length( full_design$prob ) , ncol = ncol( lin.matrix ) )
-    tmat[ names( full_design$prob ) %in% rownames( lin.matrix ) , ] <- lin.matrix
-    lin.matrix <- tmat
-    rm( tmat )
-
-
     estimates <-
       matrix(c(
         fgtg$value,
@@ -257,7 +251,7 @@ svyfgtdec.survey.design <-
         "igr" ,
         paste0("gei(poor;epsilon=", g, ")")
       )))[,]
-    variance <-
+    varest <-
       survey::svyrecvar(
         lin.matrix / full_design$prob ,
         full_design$cluster,
@@ -267,7 +261,7 @@ svyfgtdec.survey.design <-
       )
 
     rval <- estimates
-    attr(rval, "var") <- variance[1:5, 1:5]
+    attr(rval, "var") <- varest[1:5, 1:5]
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- thresh.value
@@ -435,7 +429,7 @@ svyfgtdec.svyrep.design <-
     # qq.test.estimate <- qq.fgt0 * ( log( th / qq.mip ) + qq.L_poor )
 
     if (anyNA(qq))
-      variance <-
+      varest <-
       matrix(NA ,
              ncol = 5 ,
              nrow = 5 ,
@@ -456,14 +450,14 @@ svyfgtdec.svyrep.design <-
                )
              ))
     else
-      variance <-
+      varest <-
       survey::svrVar(qq,
                      design$scale,
                      design$rscales,
                      mse = design$mse,
                      coef = rval)
 
-    variance <- as.matrix(variance)
+    varest <- as.matrix(varest)
 
     estimates <-
       matrix(rval, dimnames = list(c(
@@ -475,7 +469,7 @@ svyfgtdec.svyrep.design <-
       )))[,]
 
     rval <- estimates
-    attr(rval, "var") <- variance[1:5, 1:5]
+    attr(rval, "var") <- varest[1:5, 1:5]
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- th
