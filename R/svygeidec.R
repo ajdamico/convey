@@ -160,11 +160,12 @@ svygeidec.survey.design <-
     # treat missing values
     if (na.rm) {
       nas <- (is.na(incvar) | is.na(grpvar))
-      design$prob <- ifelse(nas , Inf , design$prob)
+      design$prob <- ifelse( nas , Inf , design$prob )
     }
 
     # collect sampling weights
     w <- 1 / design$prob
+    incvar <- ifelse( w == 0 , 0 , incvar )
 
     # check for strictly positive incomes
     if (any(incvar[w != 0] <= 0, na.rm = TRUE))
@@ -176,10 +177,10 @@ svygeidec.survey.design <-
     grpvar <- interaction(grpvar)
 
     # total
-    ttl.gei <- CalcGEI(incvar , w , epsilon)
+    ttl.gei <- CalcGEI( incvar , w , epsilon )
 
     # compute linearized function
-    ttl.lin <- CalcGEI_IF(incvar , w, epsilon)
+    ttl.lin <- CalcGEI_IF( incvar , w, epsilon )
 
     # create matrix of group-specific weights
     wg <-
@@ -270,7 +271,7 @@ svygeidec.survey.design <-
     rm(ttl.lin, within.lin, between.lin)
 
     # compute variance
-    variance <-
+    varest <-
       survey::svyrecvar(
         sweep(lin.matrix , 1 , w , "*") ,
         design$cluster,
@@ -278,7 +279,7 @@ svygeidec.survey.design <-
         design$fpc,
         postStrata = design$postStrata
       )
-    variance[which(is.nan(variance))] <- NA
+    varest[which(is.nan(varest))] <- NA
 
     # compute deff
     if (is.character(deff) || deff) {
@@ -291,12 +292,12 @@ svygeidec.survey.design <-
         vsrs <-
         survey::svyvar(lin.matrix , design , na.rm = na.rm) * npop ^ 2 * (npop - nobs) /
         (npop * nobs)
-      deff.estimate <- variance / vsrs
+      deff.estimate <- varest / vsrs
     }
 
     # build result object
     rval <- c(estimates)
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- varest
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval, "group") <- as.character(subgroup)[[2]]
     attr(rval, "epsilon") <- epsilon
@@ -455,10 +456,10 @@ svygeidec.svyrep.design <-
 
     # compute variance
     if (anyNA(qq)) {
-      variance <- diag(estimates)
-      variance[,] <- NA
+      varest <- diag(estimates)
+      varest[,] <- NA
     } else {
-      variance <-
+      varest <-
         survey::svrVar(qq ,
                        design$scale,
                        design$rscales,
@@ -572,14 +573,14 @@ svygeidec.svyrep.design <-
         ) * npop ^ 2 / nobs
       if (deff != "replace")
         vsrs <- vsrs * (npop - nobs) / npop
-      deff.estimate <- variance / vsrs
+      deff.estimate <- varest / vsrs
 
     }
 
     # build result object
     rval <- estimates
     names(rval) <- c("total", "within", "between")
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- varest
     attr(rval, "statistic") <- "gei decomposition"
     attr(rval, "epsilon") <- epsilon
     attr(rval, "group") <- as.character(subgroup)[[2]]
