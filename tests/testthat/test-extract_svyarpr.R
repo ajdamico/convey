@@ -7,7 +7,7 @@ library(survey)
 library(vardpoor)
 
 data("api")
-dstrat1<-convey_prep(svydesign(id=~1,data=apistrat))
+suppressWarnings(dstrat1<-convey_prep(svydesign(id=~1,data=apistrat)))
 test_that("svyarpr works on unweighted designs",{
 	svyarpr(~api00, design=dstrat1)
 })

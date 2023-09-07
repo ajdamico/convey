@@ -204,8 +204,8 @@ test_that("output svyfgtdec" , {
   expect_equal(attr(a1 , "index") , attr(b1 , "index"))
 
   # check equality vcov diagonals
-  expect_equal(diag(vcov(a2)) , suppressWarnings(diag(vcov(a2.nocov))))
-  expect_equal(diag(vcov(b2)) , suppressWarnings(diag(vcov(b2.nocov))))
+  expect_warning(expect_equal(diag(vcov(a2)) , diag(vcov(a2.nocov))))
+  expect_warning(expect_equal(diag(vcov(b2)) , diag(vcov(b2.nocov))))
 
 })
 
@@ -355,7 +355,7 @@ test_that("subsets equal svyby", {
   expect_equal(attr(sub_des , "linearized") , attr(sub_rep , "linearized"))
 
   # check equality of variances
-  expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1])
+  expect_warning(expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1]))
   expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1])
 
 })

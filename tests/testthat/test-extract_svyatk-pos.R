@@ -7,7 +7,7 @@ library(survey)
 
 
 data(api)
-dstrat1 <- convey_prep(svydesign(id =  ~ 1, data = apistrat))
+dstrat1 <- convey_prep(suppressWarnings(svydesign(id =  ~ 1, data = apistrat)))
 test_that("svyatk works on unweighted designs", {
   svyatk( ~ api00, design = dstrat1)
 })
