@@ -371,12 +371,17 @@ svyjdivdec.svyrep.design <-
     names(estimates) <- colnames(qq.matrix)
 
     # variance estimation
-    variance <-
-      survey::svrVar(qq.matrix,
-                     design$scale,
-                     design$rscales,
-                     mse = design$mse,
-                     coef = estimates)
+    if (anyNA(qq.matrix)) {
+      varest <- diag(estimates)
+      varest[,] <- NA
+    } else {
+      varest <-
+        survey::svrVar( qq.matrix ,
+                       design$scale,
+                       design$rscales,
+                       mse = design$mse,
+                       coef = estimates)
+    }
 
     # compute deff
     if (is.character(deff) || deff || linearized) {
@@ -439,14 +444,14 @@ svyjdivdec.svyrep.design <-
         ) * npop ^ 2 / nobs
       if (deff != "replace")
         vsrs <- vsrs * (npop - nobs) / npop
-      deff.estimate <- variance / vsrs
+      deff.estimate <- varest / vsrs
 
     }
 
     # build result object
     rval <- estimates
     names(rval) <- c("total", "within", "between")
-    attr(rval, "var") <- variance
+    attr(rval, "var") <- varest
     attr(rval, "statistic") <- "jdiv decomposition"
     attr(rval, "group") <- as.character(subgroup)[[2]]
     class(rval) <- c("cvystat" , "svrepstat" , "svystat")
