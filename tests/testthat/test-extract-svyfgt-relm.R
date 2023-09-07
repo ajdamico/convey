@@ -164,8 +164,8 @@ for (this.g in c(0, 1, 2)) {
     expect_equal(attr(a1 , "linearized") , attr(b1 , "linearized"))
 
     # check equality vcov diagonals
-    expect_equal(diag(vcov(a2)) , suppressWarnings(diag(vcov(a2.nocov))))
-    expect_equal(diag(vcov(b2)) , suppressWarnings(diag(vcov(b2.nocov))))
+    expect_warning(expect_equal(diag(vcov(a2)) , diag(vcov(a2.nocov))))
+    expect_warning(expect_equal(diag(vcov(b2)) , diag(vcov(b2.nocov))))
 
   })
 
@@ -443,8 +443,8 @@ for (this.g in c(0, 1, 2)) {
     expect_equal(SE(sub_rep) , SE(sub_dbr))
     expect_equal(deff(sub_des) , deff(sub_dbd))
     expect_equal(deff(sub_rep) , deff(sub_dbr))
-    expect_equal(vcov(sby_des) , vcov(sby_dbd))
-    expect_equal(vcov(sby_rep) , vcov(sby_dbr))
+    expect_warning(expect_equal(vcov(sby_des) , vcov(sby_dbd)))
+    expect_warning(expect_equal(vcov(sby_rep) , vcov(sby_dbr)))
 
     # compare database-backed subsetted objects to database-backed svyby objects
     # dbi subsets equal dbi svyby

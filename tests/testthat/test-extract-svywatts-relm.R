@@ -154,8 +154,8 @@ test_that("output svywatts" , {
   expect_equal(attr(a1 , "linearized") , attr(b1 , "linearized"))
 
   # check equality vcov diagonals
-  expect_equal(diag(vcov(a2)) , suppressWarnings(diag(vcov(a2.nocov))))
-  expect_equal(diag(vcov(b2)) , suppressWarnings(diag(vcov(b2.nocov))))
+  expect_warning(expect_equal(diag(vcov(a2)) , diag(vcov(a2.nocov))))
+  expect_warning(expect_equal(diag(vcov(b2)) , diag(vcov(b2.nocov))))
 
 })
 
