@@ -28,6 +28,7 @@ test_that("coef and SE matrix values make sense", {
   out <- NULL
 
   for (this_fun in c(
+  "svyrich" , "svywatts" , "svywattsdec" , "svyfgtdec" ,
     "svygei" ,
     "svygpg" ,
     "svyatk" ,
@@ -46,6 +47,11 @@ test_that("coef and SE matrix values make sense", {
   )) {
     final_fun <- FUN <- get(this_fun)
 
+	 if( identical( FUN , svyrich ) ) final_fun <- function( ... ) FUN( ... , type_measure = "FGTT1" , g = 1 , abs_thresh = 10000 )
+    if( identical( FUN , svywatts ) ) final_fun <- function( ... ) FUN( ... , abs_thresh = 10000 )
+    if( identical( FUN , svywattsdec ) ) final_fun <- function( ... ) FUN( ... , abs_thresh = 10000 )
+      if( identical( FUN , svyfgtdec ) ) final_fun <- function( ... ) FUN( ... , g = 2 , abs_thresh = 10000 )
+   
     if (identical(FUN , svyrmpg))
       final_fun <- function(...)
         FUN(... , thresh = TRUE)

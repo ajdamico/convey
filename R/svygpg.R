@@ -89,7 +89,7 @@ svygpg.survey.design <-
 
     # sex indicator matrix
     mf <- model.frame(sex, design$variables, na.action = na.pass)
-    xx <- model.matrix.lm( update( sex , ~0 + . ), design$variables, na.action = na.pass)
+    xx <- stats::model.matrix.lm( update( sex , ~0 + . ), design$variables, na.action = na.pass)
 
     # filter columns
     xx <- xx[ , 1:2 , drop = FALSE ]
@@ -166,7 +166,7 @@ svygpg.svyrep.design <-
 
     # sex indicator matrix
     mf <- model.frame(sex, design$variables, na.action = na.pass )
-    xx <- model.matrix.lm( update( sex , ~0 + . ) , design$variables , na.action = na.pass )
+    xx <- stats::model.matrix.lm( update( sex , ~0 + . ) , design$variables , na.action = na.pass )
 
     # filter columns
     xx <- xx[ , 1:2 , drop = FALSE ]

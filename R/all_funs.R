@@ -181,6 +181,7 @@ T_fn <-
 
 
 # cvystat print method
+#' @importFrom survey deff
 #' @method print cvystat
 #' @export
 print.cvystat <- function(x, ...) {
@@ -206,7 +207,7 @@ print.cvystat <- function(x, ...) {
 
   hasdeff <- !is.null(attr(x, "deff"))
   if (hasdeff) {
-    m <- cbind(m, deff(x))
+    m <- cbind(m, survey::deff(x))
     colnames(m) <- c(attr(x, "statistic"), "SE", "DEff")
   } else {
     colnames(m) <- c(attr(x, "statistic"), "SE")
