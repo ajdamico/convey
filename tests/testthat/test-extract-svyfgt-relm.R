@@ -245,7 +245,7 @@ for (this.g in c(0, 1, 2)) {
     expect_equal(SE(a2) , SE(c2))
     expect_equal(deff(a1) , deff(c1))
     expect_equal(deff(a2) , deff(c2))
-    expect_equal(vcov(a2) , vcov(c2))
+    expect_warning(expect_equal(vcov(a2) , vcov(c2)))
     expect_equal(suppressWarnings(vcov(a2.nocov)) , suppressWarnings(vcov(c2.nocov)))
 
     # check equality of linearized variables
@@ -335,8 +335,8 @@ for (this.g in c(0, 1, 2)) {
     expect_equal(attr(sub_des , "linearized") , attr(sub_rep , "linearized"))
 
     # check equality of linearized variables
-    expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1])
-    expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1])
+    expect_warning(expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1]))
+    expect_warning(expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1]))
 
   })
 

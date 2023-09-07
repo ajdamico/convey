@@ -235,7 +235,7 @@ test_that("database svywatts", {
   expect_equal(SE(a2) , SE(c2))
   expect_equal(deff(a1) , deff(c1))
   expect_equal(deff(a2) , deff(c2))
-  expect_equal(vcov(a2) , vcov(c2))
+  expect_warning(expect_equal(vcov(a2) , vcov(c2)))
   expect_equal(suppressWarnings(vcov(a2.nocov)) , suppressWarnings(vcov(c2.nocov)))
 
   # check equality of linearized variables
@@ -429,8 +429,8 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(SE(sub_rep) , SE(sub_dbr))
   expect_equal(deff(sub_des) , deff(sub_dbd))
   expect_equal(deff(sub_rep) , deff(sub_dbr))
-  expect_equal(vcov(sby_des) , vcov(sby_dbd))
-  expect_equal(vcov(sby_rep) , vcov(sby_dbr))
+  expect_warning(expect_equal(vcov(sby_des) , vcov(sby_dbd)))
+  expect_warning(expect_equal(vcov(sby_rep) , vcov(sby_dbr)))
 
   # compare database-backed subsetted objects to database-backed svyby objects
   # dbi subsets equal dbi svyby
