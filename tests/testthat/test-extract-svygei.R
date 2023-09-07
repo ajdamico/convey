@@ -222,8 +222,8 @@ for (this.epsilon in c(0, .5, 1, 2)) {
     expect_equal(SE(a2) , SE(c2))
     expect_equal(deff(a1) , deff(c1))
     expect_equal(deff(a2) , deff(c2))
-    expect_warning(expect_equal(vcov(a1) , vcov(c1)))
-    expect_warning(expect_equal(vcov(a2) , vcov(c2)))
+    expect_equal(vcov(a1) , vcov(c1))
+    expect_equal(vcov(a2) , vcov(c2))
 
     # test equality of linearized variables
     expect_equal(colSums(attr(a1 , "linearized")) , colSums(attr(c1 , "linearized")))
@@ -300,8 +300,8 @@ for (this.epsilon in c(0, .5, 1, 2)) {
     expect_equal(attr(sub_des , "linearized") , attr(sub_rep , "linearized"))
 
     # check equality of variances
-    expect_warning(expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1]))
-    expect_warning(expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1]))
+    expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1])
+    expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1])
 
   })
 
@@ -406,8 +406,8 @@ for (this.epsilon in c(0, .5, 1, 2)) {
     expect_equal(SE(sub_rep) , SE(sub_dbr))
     expect_equal(deff(sub_des) , deff(sub_dbd))
     expect_equal(deff(sub_rep) , deff(sub_dbr))
-    expect_warning(expect_equal(vcov(sub_des) , vcov(sub_dbd)))
-    expect_warning(expect_equal(vcov(sub_rep) , vcov(sub_dbr)))
+    expect_equal(vcov(sub_des) , vcov(sub_dbd))
+    expect_equal(vcov(sub_rep) , vcov(sub_dbr))
 
     # compare database-backed subsetted objects to database-backed svyby objects
     # dbi subsets equal dbi svyby
@@ -415,8 +415,8 @@ for (this.epsilon in c(0, .5, 1, 2)) {
     expect_equal(as.numeric(coef(sub_dbr)) , as.numeric(coef(sby_dbr[1,])))
     expect_equal(as.numeric(SE(sub_dbd)) , as.numeric(SE(sby_dbd[1,])))
     expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr[1,])))
-    expect_warning(expect_equal(vcov(sub_dbd) , vcov(sub_des)))
-    expect_warning(expect_equal(vcov(sub_dbr) , vcov(sub_rep)))
+    expect_equal(vcov(sub_dbd) , vcov(sub_des))
+    expect_equal(vcov(sub_dbr) , vcov(sub_rep))
 
     # compare equality of linearized variables
     expect_equal(colSums(attr(sub_dbd , "linearized")) , colSums(attr(sub_dbr , "linearized")))

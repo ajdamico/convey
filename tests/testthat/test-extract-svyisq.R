@@ -173,7 +173,7 @@ test_that("database svyisq", {
   expect_equal(deff(a1) , deff(c1))
   expect_equal(deff(a2) , deff(c2))
   expect_warning(expect_equal(vcov(a2) , vcov(c2)))
-  expect_equal(diag(vcov(c2)) , diag(vcov(c3)))
+  expect_warning(expect_equal(diag(vcov(c2)) , diag(vcov(c3))))
 
 })
 
