@@ -30,20 +30,8 @@ des_eusilc_rep <- subset( des_eusilc_rep , py010n > 0 | is.na( py010n ) )
 # make initial object
 out <- NULL
 
-# https://github.com/ajdamico/convey/issues/405
-# "svyjdivdec" , 
-
-# https://github.com/ajdamico/convey/issues/404
-# "svygeidec" ,
-
-# https://github.com/ajdamico/convey/issues/403
-# "svyfgtdec" ,
-
-# https://github.com/ajdamico/convey/issues/402
-# "svyrmpg" , 
-
 # cycle through single-valued functions
-for( this_fun in c( "svygei" , "svygpg" , "svyatk" , "svyqsr" , "svypoormed" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" ,  "svyjdiv" , "svylorenz" , "svyrich" , "svywatts" , "svywattsdec" , "svyzenga" ) ){
+for( this_fun in c( "svyjdivdec" , "svygeidec" , "svyfgtdec" , "svyrmpg" , "svygei" , "svygpg" , "svyatk" , "svyqsr" , "svypoormed" , "svyrmir" , "svyisq" , "svyiqalpha" , "svyarpr" , "svyarpt" , "svyfgt" , "svygini" ,  "svyjdiv" , "svylorenz" , "svyrich" , "svywatts" , "svywattsdec" , "svyzenga" ) ){
 
   # test across functions
   test_that( paste( "coef and SE matrix must return missing:" , this_fun ) , {
