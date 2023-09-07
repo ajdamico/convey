@@ -321,8 +321,8 @@ test_that("subsets equal svyby", {
   expect_equal(attr(sub_des , "linearized") , attr(sub_rep , "linearized"))
 
   # check equality of linearized variables
-  expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1])
-  expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1])
+  expect_warning(expect_equal(vcov(sub_des)[1] , vcov(sby_des)[1, 1]))
+  expect_warning(expect_equal(vcov(sub_rep)[1] , vcov(sby_rep)[1, 1]))
 
 })
 
