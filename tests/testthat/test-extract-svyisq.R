@@ -172,8 +172,8 @@ test_that("database svyisq", {
   expect_equal(SE(a2) , SE(c2))
   expect_equal(deff(a1) , deff(c1))
   expect_equal(deff(a2) , deff(c2))
-  expect_equal(vcov(a2) , vcov(c2))
-  expect_equal(diag(vcov(c2)) , diag(vcov(c3)))
+  expect_warning(expect_equal(vcov(a2) , vcov(c2)))
+  expect_warning(expect_equal(diag(vcov(c2)) , diag(vcov(c3))))
 
 })
 
@@ -344,7 +344,7 @@ test_that("dbi subsets equal non-dbi subsets", {
   expect_equal(as.numeric(SE(sub_dbr)) , as.numeric(SE(sby_dbr))[1])
   expect_equal(as.numeric(deff(sub_dbd)) , as.numeric(deff(sby_dbd))[1])
   expect_equal(as.numeric(deff(sub_dbr)) , as.numeric(deff(sby_dbr))[1])
-  expect_equal(vcov(sby_des) , vcov(sby_dbd))
-  expect_equal(vcov(sby_rep) , vcov(sby_dbr))
+  expect_warning(expect_equal(vcov(sby_des) , vcov(sby_dbd)))
+  expect_warning(expect_equal(vcov(sby_rep) , vcov(sby_dbr)))
 
 })

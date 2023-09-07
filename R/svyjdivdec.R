@@ -339,14 +339,14 @@ svyjdivdec.svyrep.design <-
     wg <- sweep(ind , 1 , ws , "*")
 
     # calculate between component
-    Ybar <- weighted.mean(incvar , ws)
+    Ybar <- stats::weighted.mean(incvar , ws)
     Ybar.group <- colSums(wg * incvar) / colSums(wg)
     pshare.group <- colSums(wg) / sum(wg)
     between.jdiv <-
       sum(pshare.group * (Ybar.group / Ybar - 1) * log(Ybar.group / Ybar))
     qq.Ybar <-
       apply(ww , 2 , function(wi)
-        weighted.mean(incvar , wi))
+        stats::weighted.mean(incvar , wi))
     qq.Ybar.group <-
       apply(ww , 2 , function(wi)
         colSums((wi * incvar) * ind) / colSums(wi * ind))

@@ -12,6 +12,7 @@ test_that("functions work on weird distributions" , {
 
   all_funs <-
     c(
+		"svyarpr" ,
       "svyrmir" ,
       "svyqsr" ,
       "svyarpt" ,
@@ -31,7 +32,7 @@ test_that("functions work on weird distributions" , {
       "svyrich" ,
       "svywatts"
     )
-
+	
   for (n in c(50 , 1000)) {
     set.seed(n)
 
@@ -59,7 +60,7 @@ test_that("functions work on weird distributions" , {
       FUN <- get(this_function)
 
       unwtd_des <-
-        convey_prep(svydesign(~ 1 , data = dist_frame))
+        convey_prep(suppressWarnings(svydesign(~ 1 , data = dist_frame)))
       binom_des <-
         convey_prep(svydesign(~ 1 , data = dist_frame , weight = ~ wt_binom))
       unif_des <-
