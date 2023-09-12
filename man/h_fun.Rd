@@ -18,6 +18,6 @@ value of the bandwidth
 Using the whole sample, computes the bandwith used to get the linearized variable
 }
 \author{
-Djalma Pessoa and Anthony Damico
+Djalma Pessoa, Guilherme Jacob, and Anthony Damico
 }
 \keyword{survey}

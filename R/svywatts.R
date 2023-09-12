@@ -19,6 +19,8 @@
 #'
 #' @details you must run the \code{convey_prep} function on your survey design object immediately after creating it with the \code{svydesign} or \code{svrepdesign} function.
 #'
+#' For the \code{svywatts} and \code{svywattsdec} functions, zeroes and negative numbers in the analysis domain cause an error because of the logarithm function in the definition of this poverty measure.  However, zeroes and negative values in the full survey design that are outside of the domain of analysis are valid to calculate the poverty threshold because zeroes and negatives are not a problem for computing quantiles (used when \code{type_thresh = "relq"}) or means (used when \code{type_thresh = "relm"}) . Missing values are treated differently.  \code{NA} values anywhere in the full survey design (not only the subset, or the domain of analysis) will cause these quantiles and means to return \code{NA} results.  To ignore \code{NA} values throughout, set \code{na.rm = TRUE}.
+#' 
 #' @return Object of class "\code{cvystat}", which are vectors with a "\code{var}" attribute giving the variance and a "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa, and Anthony Damico
@@ -207,22 +209,23 @@ svywatts.survey.design <-
           ...
         )
       th <- coef(ARPT)[[1]]
-      arptlin <- attr(ARPT , "lin")
+      arptlin <- rep(0 , length(wf))
+      arptlin[wf > 0] <- attr(ARPT , "lin")
 
     } else if (type_thresh == 'relm') {
-      Yf <- sum(wf * incvec)
-      Nf <- sum(wf)
+      Yf <- sum( ifelse( wf != 0 ,  wf * incvec , 0 ) )
+      Nf <- sum( wf )
       muf <- Yf / Nf
       th <- percent * muf
-      arptlin <- percent * (incvec - muf) / Nf
-      arptlin <- ifelse(wf == 0 , 0 ,  arptlin)
-      names(arptlin) <- rownames(full_design$variables)
+      arptlin <- percent * ( incvec - muf ) / Nf
+      arptlin <- ifelse( wf != 0 ,  arptlin ,  0 )
+      names( arptlin ) <- rownames(full_design$variables)
 
     } else if (type_thresh == 'abs') {
       th <- abs_thresh
       arptlin <- rep(0 , length(wf))
     }
-    names(arptlin) <- rownames(full_design$variables)
+    names( arptlin ) <- rownames( full_design$variables )
 
     ### domain poverty measure estimate
 
@@ -250,7 +253,7 @@ svywatts.survey.design <-
 
     # compute value
     estimate <-
-      sum(ifelse(w > 0 , w * h(incvar , th) , 0)) / Nd
+      sum( ifelse( w != 0 , w * h(incvar , th) , 0)) / Nd
 
     ### linearization
 
@@ -258,7 +261,7 @@ svywatts.survey.design <-
     ID <-
       1 * (rownames(full_design$variables) %in% rownames(design$variables)[is.finite(design$prob)])
     wattslin1 <- ID * (h(incvec , th) - estimate) / Nd
-    wattslin1 <- ifelse(wf == 0 , 0 , wattslin1)
+    wattslin1 <- ifelse(wf != 0 , wattslin1 , 0 )
     wattslin1[incvec <= 0 & wf != 0] <- 0
     Fprime <-
       densfun(
@@ -269,8 +272,8 @@ svywatts.survey.design <-
         FUN = "F",
         na.rm = na.rm
       )
-    ahat <- sum(w * ht(incvar , th)) / Nd
-    ahF <- ahat + h(th , th) * Fprime
+    ahat <- sum( ifelse( w != 0 , w * ht( incvar , th ) , 0 ) ) / Nd
+    ahF <- ahat + h( th , th ) * Fprime
     if (type_thresh %in% c("relq" , "relm"))
       wattslin2 <- ahF * arptlin
     else

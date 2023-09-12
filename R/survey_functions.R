@@ -1,4 +1,4 @@
-#' @importFrom stats approxfun coef deriv model.frame model.matrix na.pass printCoefmat qnorm terms terms.formula update weights formula
+#' @importFrom stats approxfun coef deriv model.frame model.matrix na.pass printCoefmat qnorm terms terms.formula update weights formula weighted.mean model.matrix.lm
 #' @importFrom methods is
 
 # each of the functions below are from the survey library v3.30-3
@@ -7,11 +7,15 @@
 # https://stat.ethz.ch/pipermail/r-devel/2013-August/thread.html#67180
 
 computeQuantiles <- function(xx, w, p) {
-  if (any(is.na(xx)))
-    return(NA * p)
 
+  if (any(is.na(xx)[w!=0]))
+    return(NA * p)
   if (sum(w) == 0)
     return(NA)
+  if ( any( w == 0 ) ) {
+    xx <- xx[ w != 0 ]
+    w <- w[ w != 0 ]
+  }
 
   oo <- order(xx)
   cum.w <- cumsum(w[oo]) / sum(w)

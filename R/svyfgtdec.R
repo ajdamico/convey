@@ -1,4 +1,4 @@
-#' FGT indices decomposition (EXPERIMENTAL)
+#' FGT indices decomposition
 #'
 #' Estimate the Foster et al. (1984) poverty class and its components
 #'
@@ -22,8 +22,6 @@
 #' A "\code{statistic}" attribute giving the name of the statistic.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
-#'
-#' @note This function is experimental and is subject to change in later versions.
 #'
 #' @seealso \code{\link{svyfgt},\link{svyfgt},\link{svyfgt}}
 #'
@@ -114,7 +112,6 @@
 #' @export
 svyfgtdec <-
   function(formula, design, ...) {
-    warning("The svyfgtdec function is experimental and is subject to changes in later versions.")
 
     if ('type_thresh' %in% names(list(...)) &&
         !(list(...)[["type_thresh"]] %in% c('relq' , 'abs' , 'relm')))
@@ -239,12 +236,6 @@ svyfgtdec.survey.design <-
     # already the full design.  otherwise, pull the full_design from that attribute.
     if ("logical" %in% class(attr(design, "full_design"))) full_design <- design else full_design <- attr(design, "full_design")
 
-    tmat <- matrix( 0 , nrow = length( full_design$prob ) , ncol = ncol( lin.matrix ) )
-    tmat[ names( full_design$prob ) %in% rownames( lin.matrix ) , ] <- lin.matrix
-    lin.matrix <- tmat
-    rm( tmat )
-
-
     estimates <-
       matrix(c(
         fgtg$value,
@@ -260,7 +251,7 @@ svyfgtdec.survey.design <-
         "igr" ,
         paste0("gei(poor;epsilon=", g, ")")
       )))[,]
-    variance <-
+    varest <-
       survey::svyrecvar(
         lin.matrix / full_design$prob ,
         full_design$cluster,
@@ -270,7 +261,7 @@ svyfgtdec.survey.design <-
       )
 
     rval <- estimates
-    attr(rval, "var") <- variance[1:5, 1:5]
+    attr(rval, "var") <- varest[1:5, 1:5]
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- thresh.value
@@ -438,7 +429,7 @@ svyfgtdec.svyrep.design <-
     # qq.test.estimate <- qq.fgt0 * ( log( th / qq.mip ) + qq.L_poor )
 
     if (anyNA(qq))
-      variance <-
+      varest <-
       matrix(NA ,
              ncol = 5 ,
              nrow = 5 ,
@@ -459,14 +450,14 @@ svyfgtdec.svyrep.design <-
                )
              ))
     else
-      variance <-
+      varest <-
       survey::svrVar(qq,
                      design$scale,
                      design$rscales,
                      mse = design$mse,
                      coef = rval)
 
-    variance <- as.matrix(variance)
+    varest <- as.matrix(varest)
 
     estimates <-
       matrix(rval, dimnames = list(c(
@@ -478,7 +469,7 @@ svyfgtdec.svyrep.design <-
       )))[,]
 
     rval <- estimates
-    attr(rval, "var") <- variance[1:5, 1:5]
+    attr(rval, "var") <- varest[1:5, 1:5]
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- th
