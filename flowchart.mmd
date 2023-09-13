@@ -1,0 +1,83 @@
+
+graph TD
+
+	A["Do you have a complex sample survey design object created with either svydesign() or svrepdesign() ?"]
+	
+	A --> |No| B["Rather than convey, consider the laeken or vardpoor R libraries"]
+	
+	A --> |Yes| C["Would you like to visualize inequality?"]
+	
+	C --> |Yes| D["svylorenz() provides a straightforward graphic of how<br>your population of interest differs from perfect equality"]
+	
+	C --> |No| E["Are you looking for a score (similar to the gini coefficient)<br>commonly used by income concentration researchers,<br>but that might not be easily understood by the general public?"]
+	
+	E --> |No, I need statistics to describe a population explicitly to a lay audience| F["Are you examining poverty or inequality?"]
+	E --> |Yes, I am looking for a comprehensive measure of income concentration<br>even if the calculation and its interpretation might be<br>difficult for the general public to understand| G["Would you like a single statistic for the entire surveyed population?"]
+
+	F --> |Poverty| H["Are you interested in computing a poverty threshold<br>(for example, the poverty line)<br>or are you interested in the characteristics<br>of the population with lower incomes?"]
+	F --> I{Inequality}
+	
+	H --> J{Threshold}
+	J --> K["svyarpt() computes the threshold of a low standard<br>of living in comparison to the general living standards<br>of those in your survey dataset<br>(called the at-risk-of-poverty threshold)"]
+	
+	H --> L{"Characteristics"}
+	
+	L --> M["'How many are there overall?'<br>svyarpr() computes the share of the population<br>living below the at-risk-of-poverty threshold"]
+	L --> N["'How do the elderly compare to everyone else?'<br>svyrmir() computes the<br>ratio of median income of<br>people above vs below a certain age"]
+	L --> O["'How big is the gap, in terms of dollars (or other currency)?'<br>svyrmpg() computes the relative difference<br>between the median income of people below<br>the at-risk-of-poverty threshold<br>and the threshold itself"]
+	L --> P["'How much income does the median number of this at-risk-of-poverty group have?'<br>svypoormed() computes the median income among individuals<br>living below the at-risk-of-poverty threshold"]
+	
+	I --> Q["svygpg() computes the relative difference<br>of income between men and women"]
+	I --> R["svyqsr() computes the ratio of income earned<br>by the top 20% against the income of the bottom 20%"]
+
+
+	G --> S["Yes, I want a single statistic to compare<br>against either the same total population<br>(at other time periods) or against other surveyed populations"]
+	G --> T["No, I would like to make comparisons<br>within and between the subgroups<br>of my surveyed population"]
+
+
+	S --> U["Are you examining poverty or inequality?"]
+	
+	U --> V{"Poverty"}
+	
+	V --> W["svyfgt( ... , g = 0) computes the headcount poverty rate,<br>a score unaffected by being<br>$1 or $100 below the poverty line"]
+	V --> X["svyfgt( ... , g = 1) computes the<br>average normalized poverty gap,<br>which takes into account the distance to the poverty line:<br>people $100 below the poverty line have a<br>higher poverty score than those<br>$10 below the poverty line. <br>However, there is still an ethical problem:<br>distance to the poverty line is a linear function.<br>This means that if you take money<br>from the poorest and give it to<br>the less poor (without crossing<br>the poverty line),<br>the poverty measure is still the same"]
+	V --> Y["svyfgt( ... , g = 2) computes the<br>average squared normalized poverty gap,<br>where the above regressive transfer<br>will result in an increase of the<br>poverty measure. In other words,<br>gamma=2 takes 'inequality in poverty' into account"]
+	V --> Z["svywatts() computes a measure comparable<br>to the average squared normalized poverty gap<br>with a time-to-exit-poverty interpretation:<br>under some (unrealistic, but useful) assumptions,<br>dividing the Watts measure by an income annual growth rate R<br>yields the average number of years<br>for leaving poverty status."]
+	
+	U --> |Inequality| AA["Are you looking for a<br>social welfare function?<br>Do you wish to assign a<br>welfare, happiness, or satisfaction value<br>to a given amount of money?"]	
+	
+	AA --> TT{"No"}
+	
+	AA --> |Yes, I am interested in a social welfare function, a measure more interpretable to economists| RR["svyatk() computes the Atkinson index, an inequality measure focused on the marginal utility of money.<br>This calculation expresses the idea that more money provides more welfare, but at a diminishing rate.<br>So $100 makes less difference in someone's welfare as they move up the income distribution."]
+	
+	
+	
+	TT --> BB["svygini() computes the gini coefficient,<br>a commonly-used value to describe<br>economic inequality that weights outliers equally"]
+	TT --> CC["svygei( ... , epsilon = 0 ) computes the<br>Theil-L index, a measure sensitive to<br>differences among those with lower incomes"]
+	TT --> DD["svygei( ... , epsilon = 1 ) computes the<br>Theil-T index, a measure sensitive to<br>differences among those with higher incomes"]
+	TT --> EE["svyjdiv() computes the J-divergence measure<br>of inequality, a measure not<br>overly sensitive to either tail"]
+	
+	
+	T --> FF["Are you examining poverty or inequality?"]
+	
+	FF --> GG{"Poverty"}
+	
+	GG --> HH["svyfgtdec( ... , g = 0) computes the headcount poverty rate,<br>a score unaffected by being<br>$1 or $100 below the poverty line"]
+	GG -->II["svyfgtdec( ... , g = 1) computes the<br>average normalized poverty gap,<br>which takes into account the distance to the poverty line:<br>people $100 below the poverty line have a<br>higher poverty score than those<br>$10 below the poverty line. <br>However, there is still an ethical problem:<br>distance to the poverty line is a linear function.<br>This means that if you take money<br>from the poorest and give it to<br>the less poor (without crossing<br>the poverty line),<br>the poverty measure is still the same"]
+	GG --> JJ["svyfgtdec( ... , g = 2) computes the<br>average squared normalized poverty gap,<br>where the above regressive transfer<br>will result in an increase of the<br>poverty measure. In other words,<br>gamma=2 takes 'inequality in poverty' into account"]
+	GG --> KK["svywattsdec() computes a measure comparable<br>to the average squared normalized poverty gap<br>with a time-to-exit-poverty interpretation:<br>under some (unrealistic, but useful) assumptions,<br>dividing the Watts measure by an income annual growth rate R<br>yields the average number of years<br>for leaving poverty status."]
+	
+	
+	
+	FF --> LL{"Inequality"}
+	
+	LL --> MM["svygeidec( ... , epsilon = 0 ) computes the<br>Theil-L index, a measure sensitive to<br>differences among those with lower incomes"]
+	LL --> NN["svygeidec( ... , epsilon = 1 ) computes the<br>Theil-T index, a measure sensitive to<br>differences among those with higher incomes"]
+
+
+
+	OO["Some richness measures can be estimated using the svyrich function.<br>Those are not poverty or inequality measures, with particular properties.<br>Like poverty measures, it has a focus axiom -- it focuses on the top of the income distribution.<br>They can also have an income inequality or income polarization aspect, depending on the effect of progressive transfers among the rich.<br>An inequality-sensitive richness measure would say that richness is reduced with a progressive transfer among the rich, since the inequality in that part of the distribution has decreased.<br>On the other hand, a polarization-sensitive richness measure would increase after a progressive transfer among the rich, since the rich are more clustered after this transfer."]
+	
+	PP["svyiqalpha() computes the linearized variable of a quantile of variable"]
+	
+	QQ["svyisq() estimates the total income held by bottom % of the distribution.<br>At the population level, it is similar to the Lorenz curve multiplied by the total income.<br>However, even after the multiplication, they might differ a little at the sample level.<br>This is because svylorenz() uses a different estimator, producing an estimated curve more in line with the theoretical properties of the theoretical Lorenz curve."]
