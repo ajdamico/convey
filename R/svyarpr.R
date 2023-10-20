@@ -122,7 +122,7 @@ svyarpr.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       if (length(nas) > length(design$prob))
         incvar <- incvar[!nas]
       else
@@ -150,7 +150,7 @@ svyarpr.survey.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       if (length(nas) > length(full_design$prob))
         incvec <- incvec[!nas]
       else
@@ -166,6 +166,8 @@ svyarpr.survey.design <-
 
 
     wf <- 1 / full_design$prob
+
+    # VARDPOOR replication would not use this:
     htot <- h_fun(incvar, w)
 
     ARPT <-
@@ -189,18 +191,42 @@ svyarpr.survey.design <-
       ID <- 1 * (ncom %in% ind)
     arpr1lin <- (1 / N) * ID * ((incvec <= arptv) - rval)
 
-    # use h for the whole sample
+    # VARDPOOR replication instead uses h for the domain sample:
+    # htot <- h_fun( incvar , w )
+
     Fprime <-
       densfun(
         formula = formula,
-        design = design,
+        design = design ,
+
+
         arptv,
+        # VARDPOOR replication divides by the percent here:
+        # arptv/percent , # on the quantile, not the threshold (differs from Osier 2009)
+
         h = htot,
         FUN = "F",
         na.rm = na.rm
       )
 
+    # combine linearization terms
     arprlin <- arpr1lin + Fprime * arptlin
+
+    # To understand why, notice that arpr1lin is the *domain* poverty rate
+    # assuming we know the poverty threshold, defined over the entire population.
+    # Now, Fprime works like a derivative of the *domain* poverty rate wrt the
+    # *full sample* estimated threshold.
+    # It "propagates" the uncertainty expressed in arptlin over to the arprlin.
+    #
+    # This highlights three issues:
+    #   1. The domain indicator should be used only for the domain poverty rate term,
+    #      as observations outside the domain still influence the ARPT estimation.
+    #   2. Fprime should be computed on the domain sample, since we are
+    #      interested in the impact on the domain poverty rate;
+    #   3. Fprime is the derivative wrt to the estimated threshold, not the
+    #      estimated quantile.
+    #
+    # The issue on (3) is the reason why convey differs from vardpoor here.
 
     variance <-
       survey::svyrecvar(
@@ -253,7 +279,7 @@ svyarpr.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas, ]
+      design <- design[!nas,]
       df <- model.frame(design)
       incvar <- incvar[!nas]
     }
@@ -266,7 +292,7 @@ svyarpr.svyrep.design <-
 
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas, ]
+      full_design <- full_design[!nas,]
       df_full <- model.frame(full_design)
       incvec <- incvec[!nas]
     }
