@@ -166,6 +166,9 @@ svyarpr.survey.design <-
 
 
     wf <- 1 / full_design$prob
+	
+	# VARDPOOR replication would not use this:
+	htot <- h_fun(incvar, w)
 
     ARPT <-
       svyarpt(
@@ -188,13 +191,19 @@ svyarpr.survey.design <-
       ID <- 1 * (ncom %in% ind)
     arpr1lin <- (1 / N) * ID * ((incvec <= arptv) - rval)
 
-    # use h for the domain sample
-    htot <- h_fun( incvar , w )
-    Fprime <-
+	# VARDPOOR replication instead uses h for the domain sample:
+	# htot <- h_fun( incvar , w )
+    
+	Fprime <-
       densfun(
         formula = formula,
         design = design ,
-        arptv/percent , # on the quantile, not the threshold (differs from Osier 2009)
+		
+		
+        arptv,
+		# VARDPOOR replication divides by the percent here:
+		# arptv/percent , # on the quantile, not the threshold (differs from Osier 2009)
+		
         h = htot,
         FUN = "F",
         na.rm = na.rm

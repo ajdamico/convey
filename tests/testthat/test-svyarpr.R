@@ -94,7 +94,9 @@ test_that("compare results convey vs vardpoor", {
   expect_lte(confint(fun_arprw)[1], coef(fun_arprw))
   expect_gte(confint(fun_arprw)[2], coef(fun_arprw))
   expect_equal(coef(fun_arprw), coef(fun_arprw_rep))
-  # skip('density should be computed at the arpt')
+  
+  # for VARDPOOR replication do not skip:
+  skip('density should be computed at the arpt')
   expect_equal(varse, 100 * convse)
   expect_equal(varsed, 100 * convsed)
 })
