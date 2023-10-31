@@ -227,9 +227,7 @@ print.cvystat <- function(x, ...) {
 #' @export
 vcov.cvystat <- function (object, ...)
 {
-  if ( inherits( x , "svrepstat" ) & is.list(x)) {
-    x <- x[[1]]
-  }
+  if ( inherits( object , "svrepstat" ) & is.list( object )) object <- object[[1]]
   as.matrix(attr(object, "var"))
 }
 
