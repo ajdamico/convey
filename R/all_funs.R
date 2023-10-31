@@ -185,6 +185,11 @@ T_fn <-
 #' @method print cvystat
 #' @export
 print.cvystat <- function(x, ...) {
+
+  if ( inherits( x , "svrepstat" ) & is.list(x)) {
+    x <- x[[1]]
+  }
+
   vv <- attr(x, "var")
 
   if (attr(x, "statistic") %in% c("alkire-foster", "bourguignon-chakravarty", "bourguignon")) {
