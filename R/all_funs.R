@@ -185,6 +185,11 @@ T_fn <-
 #' @method print cvystat
 #' @export
 print.cvystat <- function(x, ...) {
+
+  if ( inherits( x , "svrepstat" ) & is.list(x)) {
+    x <- x[[1]]
+  }
+
   vv <- attr(x, "var")
 
   if (attr(x, "statistic") %in% c("alkire-foster", "bourguignon-chakravarty", "bourguignon")) {
@@ -222,6 +227,7 @@ print.cvystat <- function(x, ...) {
 #' @export
 vcov.cvystat <- function (object, ...)
 {
+  if ( inherits( object , "svrepstat" ) & is.list( object )) object <- object[[1]]
   as.matrix(attr(object, "var"))
 }
 
