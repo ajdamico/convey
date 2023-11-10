@@ -211,7 +211,7 @@ svyatk.survey.design <-
     lin <-
       matrix(lin ,
              nrow = length(lin) ,
-             dimnames = list(names(lin) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
+             dimnames = list( rownames( design$variables ) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
 
     # build result object
     rval <- estimate
@@ -221,11 +221,11 @@ svyatk.survey.design <-
     attr(rval, "var") <- variance
     attr(rval, "statistic") <- "atkinson"
     attr(rval, "epsilon") <- epsilon
-    if (linearized)
-      attr(rval, "linearized") <- lin
     if (influence)
       attr(rval , "influence")  <-
       sweep(lin , 1 , design$prob , "/")
+    if (linearized)
+      attr(rval, "linearized") <- lin
     if (linearized |
         influence)
       attr(rval , "index") <- as.numeric(rownames(lin))
@@ -324,7 +324,7 @@ svyatk.svyrep.design <-
       lin <-
         matrix(lin ,
                nrow = length(lin) ,
-               dimnames = list(names(lin) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
+               dimnames = list( rownames( design$variables ) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
 
     }
 
@@ -333,10 +333,10 @@ svyatk.svyrep.design <-
     names(rval) <-
       strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]
     attr(rval, "var") <- variance
-    attr(rval, "statistic") <- "gini"
+    attr(rval, "statistic") <- "atkinson"
     if (linearized)
-      attr(rval , "linearized") <- lin
-    if (linearized)
+      attr(rval, "linearized") <- lin
+    if (linearized )
       attr(rval , "index") <- as.numeric(rownames(lin))
 
     # keep replicates
@@ -379,23 +379,25 @@ svyatk.DBIsvydesign <-
 
 CalcAtkinson <-
   function(yk , wk , epsilon) {
+
     # filter observations
-    yk <- yk[wk != 0]
-    wk <- wk[wk != 0]
+    wk <- ifelse( yk > 0 & wk != 0 , wk , 0 )
+    yk <- ifelse( wk !=0 , yk , 1 )
 
     # compute intermediate statistics
-    U0 <- sum(wk)
-    U1 <- sum(wk * yk)
-    T0 <- sum(wk * log(yk))
-    T1 <- sum(wk * yk * log(yk))
+    U0 <- sum( wk )
+    U1 <- sum( wk * yk )
+    T0 <- sum( wk * log( yk ) )
+    T1 <- sum( wk * yk * log( yk ) )
+
     # compute values
     if (epsilon == 1) {
-      res <- 1 - (U0 / U1) * exp(T0 / U0)
+      res <- 1 - ( U0 / U1 ) * exp( T0 / U0 )
     } else {
-      U.neps <- sum(wk * yk ^ (1 - epsilon))
-      afac <- epsilon / (1 - epsilon)
-      bfac <- 1 / (1 - epsilon)
-      res <- 1 - (U.neps ^ bfac) / (U0 ^ afac * U1)
+      U.neps <- sum( wk * yk^( 1 - epsilon ) )
+      afac <- epsilon / ( 1 - epsilon )
+      bfac <- 1 / ( 1 - epsilon )
+      res <- 1 - ( U.neps^bfac ) / ( U0^afac * U1)
     }
     res
 
@@ -403,28 +405,30 @@ CalcAtkinson <-
 
 CalcAtkinson_IF <-
   function(yk , wk , epsilon) {
+
+    # filter observations
+    wk <- ifelse( yk > 0 & wk != 0 , wk , 0 )
+    yk <- ifelse( wk !=0 , yk , 1 )
+
     U0 <- sum( wk )
-    U1 <- sum( ifelse( wk != 0 , wk * yk , 0 ) )
-    T0 <- sum( ifelse( wk != 0 , wk * log( yk ) , 0 ) )
-    T1 <- sum( ifelse( wk != 0 , wk * yk * log( yk ) , 0 ) )
+    U1 <- sum( wk * yk )
+    T0 <- sum( wk * log( yk ) )
+    T1 <- sum( wk * yk * log( yk ) )
     if (epsilon == 1) {
-      A1 <- CalcAtkinson(yk , wk , 1)
-      L1 <- ( A1 - 1 ) * (1 - T0 / U0) / U0
-      L2 <- yk * (1 - A1) / U1
-      L3 <- ifelse( wk != 0 , log( yk ) * ( A1 - 1 ) / U0 , 0 )
-      lin <- rowSums(cbind(L1 , L2 , L3))
+      A1 <- CalcAtkinson( yk , wk , 1 )
+      L1 <- ( A1 - 1 ) * (1 - T0 / U0 ) / U0
+      L2 <- yk * ( 1 - A1 ) / U1
+      L3 <- log( yk ) * ( A1 - 1 ) / U0
+      lin <- rowSums( cbind( L1 , L2 , L3 ) )
     } else {
-      U.neps <- sum( ifelse( wk != 0 , wk * yk^( 1 - epsilon ) , 0 ) )
+      U.neps <- sum( wk * yk^( 1 - epsilon ) )
       afac <- epsilon / ( 1 - epsilon )
       bfac <- 1 / ( 1 - epsilon )
       L1 <- afac * ( U.neps^bfac ) / ( U1 * U0^bfac )
       L2 <- yk * ( U.neps^bfac ) / ( U0^afac * U1^2 )
-      L3 <-
-        - ifelse( wk != 0 ,
-                  bfac * ( yk^( 1 - epsilon ) ) * (U.neps ^ afac) / ( U0^ afac * U1)
-                  , 0 )
+      L3 <- - bfac * ( yk^( 1 - epsilon ) ) * ( U.neps^afac ) / ( U0^afac * U1 )
       lin <- rowSums( cbind( L1 , L2 , L3 ) )
     }
-    lin <- ifelse( wk != 0 , lin , 0)
+    lin <- ifelse( wk != 0 , lin , 0 )
     lin
   }
