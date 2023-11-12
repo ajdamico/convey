@@ -363,17 +363,19 @@ svyjdiv.DBIsvydesign <-
 
 # point estimate function
 CalcJDiv <-  function(y , w) {
+
   # filter observations
-  y <- y[w > 0]
-  w <- w[w > 0]
+  w <- ifelse( y > 0 & w != 0 , w , 0 )
+  y <- ifelse( w!=0 , y , 1 )
 
   # compute point esitmate
-  N <- sum(w)
-  mu <- sum(y * w) / N
-  jdiv <- ((y - mu) / mu) * log(y / mu)
+  N <- sum( w )
+  mu <- sum( y * w ) / N
+  jdiv <- ( ( y - mu ) / mu ) * log( y / mu )
 
   # compute point estimate
-  sum(jdiv * w) / N
+  jdiv <- ifelse( w != 0 , jdiv , 0 )
+  sum( jdiv * w ) / N
 
 }
 
@@ -381,11 +383,12 @@ CalcJDiv <-  function(y , w) {
 CalcJDiv_IF <-  function(y , w) {
 
   # filter observations
+  w <- ifelse( y > 0 & w != 0 , w , 0 )
   y <- ifelse( w!=0 , y , 1 )
 
   # compute intermediate statistics
-  Ntot <- sum(w)
-  Ytot <- sum(y * w)
+  Ntot <- sum( w )
+  Ytot <- sum( y * w )
   Ybar <- Ytot / Ntot
   jdiv <-
     sum(ifelse(w > 0 ,  w * ((y / Ybar) - 1) * log(y / Ybar) , 0)) / Ntot

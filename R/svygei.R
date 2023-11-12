@@ -160,7 +160,7 @@ svygei.survey.design <-
     w <- 1 / design$prob
 
     # check for strictly positive incomes
-    if (any(incvar[w > 0] <= 0 , na.rm = TRUE))
+    if (any(incvar[w != 0] <= 0 , na.rm = TRUE))
       stop(
         "The GEI indices are defined for strictly positive variables only.\nNegative and zero values not allowed."
       )
@@ -205,7 +205,7 @@ svygei.survey.design <-
     lin <-
       matrix(lin ,
              nrow = length(lin) ,
-             dimnames = list(names(w) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
+             dimnames = list( rownames( design$variables ) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
 
     # build result object
     rval <- estimate
@@ -256,7 +256,7 @@ svygei.svyrep.design <-
     ws <- weights(design, "sampling")
 
     # check for strictly positive incomes
-    if (any(incvar[ws > 0] == 0, na.rm = TRUE))
+    if (any(incvar[ws != 0] <= 0, na.rm = TRUE))
       stop(
         "The GEI indices are defined for strictly positive variables only.\nNegative and zero values not allowed."
       )
@@ -319,7 +319,7 @@ svygei.svyrep.design <-
       lin <-
         matrix(lin ,
                nrow = length(lin) ,
-               dimnames = list(names(lin) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
+               dimnames = list( rownames( design$variables ) , strsplit(as.character(formula)[[2]] , ' \\+ ')[[1]]))
 
     }
 
@@ -377,12 +377,12 @@ CalcGEI <-
   function(y , w, epsilon) {
 
     # filter observations
-    y <- y[w > 0]
-    w <- w[w > 0]
+    w <- ifelse( y > 0 & w != 0 , w , 0 )
+    y <- ifelse( w!=0 , y , 1 )
 
     # intermediate stats
-    N <- sum(w)
-    Ytot <- sum(w * y)
+    N <- sum( w )
+    Ytot <- sum( w * y )
     Ybar <- Ytot / N
 
     # branch on epsilon
@@ -394,7 +394,7 @@ CalcGEI <-
     } else {
       gscore <- (uscore ^ epsilon - 1) / (epsilon ^ 2 - epsilon)
     }
-    gei <- sum(w * gscore) / N
+    gei <- sum( w * gscore ) / N
 
     # return estimate
     return(gei)
@@ -406,13 +406,14 @@ CalcGEI_IF <-
   function(y , w , epsilon) {
 
     # filter observations
+    w <- ifelse( y > 0 & w != 0 , w , 0 )
     y <- ifelse( w!=0 , y , 1 )
 
     # compute intermediate
-    N <- sum(w)
-    Ytot <- sum(w * y)
+    N <- sum( w )
+    Ytot <- sum( w * y )
     Ybar <- Ytot / N
-    gei <- CalcGEI(y, w, epsilon)
+    gei <- CalcGEI( y , w , epsilon )
 
     # income-inequality score
     uscore <- y / Ybar
@@ -439,7 +440,7 @@ CalcGEI_IF <-
 
     # linearized
     ll <- l1 + l2
-    ll <- ifelse(w > 0 , ll , 0)
+    ll <- ifelse( w != 0 , ll , 0 )
     ll
 
   }
