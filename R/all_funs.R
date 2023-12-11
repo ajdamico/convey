@@ -307,13 +307,13 @@ SE.cvydstat <- function (object, ...) {
 
 #' prepare svydesign and svyrep.design objects for the convey package
 #'
-#' stores the full survey design (needed for convey functions that use a global poverty threshold) within the design.  this function must be run immediately after the full design object creation with \code{svydesign} or \code{svrepdesign}
+#' sets the population of reference for poverty threshold estimation (needed for convey functions that use a global poverty threshold) within the design.  this function generally should be run immediately after the full design object creation with \code{svydesign} or \code{svrepdesign}
 #'
 #' @param design a survey design object of the library survey.
 #'
 #' @return the same survey object with a \code{full_design} attribute as the storage space for the unsubsetted survey design
 #'
-#' @author Djalma Pessoa and Anthony Damico
+#' @author Djalma Pessoa, Anthony Damico, and Guilherme Jacob
 #'
 #' @details functions in the convey package that use a global poverty threshold require the complete (pre-subsetted) design in order to calculate variances correctly.  this function stores the full design object as a separate attribute so that functions from the \code{survey} package such as \code{subset} and \code{svyby} do not disrupt the calculation of error terms.
 #'
@@ -350,13 +350,6 @@ SE.cvydstat <- function (object, ...) {
 #'
 #' @export
 convey_prep <- function(design) {
-  if (!is.null(attr(design, "full_design")))
-    stop("convey_prep has already been run on this design")
-
-  if (as.character(design$call)[1] == 'subset')
-    warning(
-      "this function must be run on the full survey design object immediately after the svydesign() or svrepdesign() call."
-    )
 
   # store the full design within one of the attributes of the design
   attr(design, "full_design") <- design
