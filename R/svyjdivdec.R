@@ -24,11 +24,11 @@
 #'
 #' @references Anthony F. Shorrocks (1984). Inequality decomposition
 #' by population subgroups. \emph{Econometrica}, v. 52, n. 6, 1984, pp. 1369-1385.
-#' URL \url{https://www.jstor.org/stable/1913511}.
+#' DOI \doi{10.2307/1913511}.
 #'
 #' Nicholas Rohde (2016). J-divergence measurements of economic inequality.
 #' J. R. Statist. Soc. A, v. 179, Part 3 (2016), pp. 847-870.
-#' URL \url{https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/rssa.12153}.
+#' DOI \doi{10.1111/rssa.12153}.
 #'
 #' Martin Biewen and Stephen Jenkins (2002). Estimation of Generalized Entropy
 #' and Atkinson Inequality Indices from Complex Survey Data. \emph{DIW Discussion Papers},

@@ -168,7 +168,7 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 \references{
 Michal Brzezinski (2014). Statistical Inference for Richness Measures. \emph{Applied Economics},
-Vol. 46, No. 14, pp. 1599-1608, URL \url{https://dx.doi.org/10.1080/00036846.2014.880106}.
+Vol. 46, No. 14, pp. 1599-1608, DOI \doi{10.1080/00036846.2014.880106}.
 
 Andreas Peichl, Thilo Schaefer, and Christoph Scheicher (2010). Measuring richness and poverty: A micro data
 application to Europe and Germany. \emph{Review of Income and Wealth}, Vol. 56, No.3, pp. 597-619.

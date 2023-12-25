@@ -113,10 +113,10 @@ dbDisconnect( conn , shutdown = TRUE )
 }
 \references{
 Lucio Barabesi, Giancarlo Diana and Pier Francesco Perri (2016). Linearization of inequality indices in the design-based framework. Statistics, 50(5), 1161-1172.
-URL \url{https://www.tandfonline.com/doi/pdf/10.1080/02331888.2015.1135924}.
+DOI \doi{10.1080/02331888.2015.1135924}.
 
 Matti Langel and Yves Tille (2012). Inference by linearization for Zenga's new inequality index: a comparison with the Gini index.
-Metrika, 75, 1093-1110. URL \url{https://doi.org/10.1007/s00184-011-0369-1}.
+Metrika, 75, 1093-1110. DOI \doi{10.1007/s00184-011-0369-1}.
 
 Matti Langel (2012). Measuring inequality in finite population sampling.
 PhD thesis: Universite de Neuchatel,

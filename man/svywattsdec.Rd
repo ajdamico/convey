@@ -141,7 +141,7 @@ dbDisconnect( conn , shutdown = TRUE )
 \references{
 McKinley L. Blackburn (1989). Poverty measurement: an index related to a Theil measure of inequality.
 \emph{Journal of Business & Economic Statistics}, Vol.7, No.4, pp. 475-481,
-URL \url{https://amstat.tandfonline.com/doi/abs/10.1080/07350015.1989.10509760}.
+DOI \doi{10.1080/07350015.1989.10509760}.
 
 Satya R. Chakravarty, Joseph Deutsch and Jacques Silber (2008).
 On the Watts multidimensional poverty index and its decomposition.

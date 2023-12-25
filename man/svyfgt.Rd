@@ -177,7 +177,7 @@ James Foster, Joel Greer and Erik Thorbecke (1984). A class of decomposable pove
 
 Y.G. Berger and C. J. Skinner (2003), Variance estimation for a low income proportion.
 \emph{Journal of the Royal Statistical Society: Series C (Applied Statistics)}, Vol. 52, No. 4, pp. 457-468.
-URL \url{https://doi.org/10.1111/1467-9876.00417}
+DOI \doi{10.1111/1467-9876.00417}
 
 Buhong Zheng (2001). Statistical inference for poverty measures with relative poverty lines.
 \emph{Journal of Econometrics}, Vol. 101, pp. 337-356.
