@@ -16,7 +16,7 @@ bibentry( bibtype = "misc",
           url = "https://github.com/ajdamico/convey/" )
 
 
-bibentry( entry="Unpublished",
+bibentry( bibtype="Unpublished",
           year = year,
           note = "Auxiliary information about the usage of the R convey package" ,
           author = c( person("Guilherme", "Jacob") ,
