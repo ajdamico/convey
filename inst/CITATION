@@ -3,26 +3,26 @@ note <- sprintf("R package version %s", meta$Version)
 
 citHeader("To cite the convey package in publications use one or more of:")
 
-citEntry( entry = "misc",
+bibentry( bibtype = "misc",
           title = "convey: Estimation of indicators on social exclusion and poverty and its linearization, variance estimation",
           author = c(person("Djalma", "Pessoa"),
                      person("Anthony", "Damico"),
                      person("Guilherme", "Jacob")),
           year = year ,
           note = note ,
-          textVersion = "Djalma Pessoa, Anthony Damico and Guilherme Jacob (2021). convey:
+          textVersion = "Djalma Pessoa, Anthony Damico and Guilherme Jacob (2023). convey:
   Income Concentration Analysis with Complex Survey Samples. R
-  package version 0.2.3." ,
+  package version 1.0.0." ,
           url = "https://github.com/ajdamico/convey/" )
 
 
-citEntry( entry="Unpublished",
+bibentry( entry="Unpublished",
           year = year,
           note = "Auxiliary information about the usage of the R convey package" ,
           author = c( person("Guilherme", "Jacob") ,
                       person("Djalma", "Pessoa") ,
                       person("Anthony", "Damico") ) ,
           title = "Poverty and Inequality with Complex Survey Data",
-          textVersion="Guilherme Jacob, Djalma Pessoa and Anthony Damico (2021) Poverty and Inequality with Complex Survey Data." ,
+          textVersion="Guilherme Jacob, Djalma Pessoa and Anthony Damico (2023) Poverty and Inequality with Complex Survey Data." ,
           url = "https://guilhermejacob.github.io/context/" )
 
