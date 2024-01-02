@@ -475,6 +475,7 @@ svylorenz.svyrep.design <-
         )))
 
     # compute variance
+    if ( dim( qq )[1] == 1 ) qq <- t( qq )
     variance <-
       survey::svrVar(qq,
                      design$scale,
