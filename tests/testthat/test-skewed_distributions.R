@@ -15,7 +15,7 @@ test_that("functions work on weird distributions" , {
 		"svyarpr" ,
       "svyrmir" ,
       "svyqsr" ,
-      "svyarpt" ,
+      "svyafc" ,
       "svyarpt" ,
       "svyatk" ,
       "svyzenga" ,
@@ -89,7 +89,7 @@ test_that("functions work on weird distributions" , {
         )) {
           # function-specific parameters here
 
-          if (any(unlist(lapply(list(svygei , svyatk , svyjdiv) , function(z)
+          if (any(unlist(lapply(list(svygei , svyatk , svyjdiv,svyafc) , function(z)
             identical(z , FUN))))) {
             lin_des <-
               subset(lin_des , no.na(lin_des$variables[, as.character(this_formula)[2]] > 0))
@@ -98,9 +98,17 @@ test_that("functions work on weird distributions" , {
 
           }
 
+				if( any( unlist( lapply( list( svyafc ) , function( z ) identical( z , FUN ) ) ) ) ){
+
+					lin_params_list <- list( as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , lin_des )
+					rep_params_list <- list( as.formula( paste("~",as.character(this_formula)[2],"+wt_binom_two")) , rep_des )
+
+
+				} else {
+
           lin_params_list <- list(this_formula , lin_des)
           rep_params_list <- list(this_formula , rep_des)
-
+}
 
           if (identical(FUN , svyfgt)) {
             lin_params_list <-
@@ -119,6 +127,14 @@ test_that("functions work on weird distributions" , {
                 ))
 
           }
+		  
+		  
+		  if( identical( FUN , svyafc ) ){
+
+					lin_params_list <- c( lin_params_list , list( k = .5 , g = 0, cutoffs = list( 10000, 5000 ) ) )
+					rep_params_list <- c( rep_params_list , list( k = .5 , g = 0, cutoffs = list( 10000, 5000 ) ) )
+
+		}
 
           if (identical(FUN , svygpg)) {
             lin_params_list <- c(lin_params_list , list(sex = ~ sex))
