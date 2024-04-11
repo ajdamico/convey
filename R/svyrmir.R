@@ -148,13 +148,13 @@ svyrmir.survey.design  <-
         within_function_subset(design , subset = age < agelim) ,
         list(age = age.name, agelim = agelim)
       ))
-    if (nrow(dsub1) == 0)
+    if (sum( weights( dsub1 , "sampling" ) != 0 ) == 0)
       stop("zero records in the set of non-elderly people")
 
     if ("DBIsvydesign" %in% class(dsub1)) {
       ind1 <- names(design$prob) %in% which(dsub1$prob != Inf)
     } else{
-      ind1 <- names(design$prob) %in% names(dsub1$prob)
+      ind1 <- weights( dsub1 , "sampling" ) != 0
     }
 
 
@@ -189,13 +189,13 @@ svyrmir.survey.design  <-
         list(age = age.name, agelim = agelim)
       ))
 
-    if (nrow(dsub2) == 0)
+    if (sum( weights( dsub2 , "sampling" ) != 0 ) == 0)
       stop("zero records in the set of elderly people")
 
     if ("DBIsvydesign" %in% class(dsub2)) {
       ind2 <- names(design$prob) %in% which(dsub2$prob != Inf)
     } else{
-      ind2 <- names(design$prob) %in% names(dsub2$prob)
+      ind2 <- weights( dsub2 , "sampling" ) != 0
     }
 
 

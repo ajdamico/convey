@@ -16,6 +16,9 @@ for (this_measure in c("Cha" , "FGTT1" , "FGTT2")) {
       if (this_measure == "FGTT2")
         this_g = this_g + 2
 
+
+		if( this_measure != 'FGTT2' ) {
+		
       test_that(paste0(
         this_measure ,
         "-" ,
@@ -23,6 +26,7 @@ for (this_measure in c("Cha" , "FGTT1" , "FGTT2")) {
         "-svyrich works on unweighted designs"
       ),
       {
+		expect_is(
         svyrich(
           ~ api00,
           design = dstrat1,
@@ -30,8 +34,34 @@ for (this_measure in c("Cha" , "FGTT1" , "FGTT2")) {
           g = this_g,
           type_thresh = this_thresh,
           abs_thresh = 500
-        )
+        ),'cvystat')
       })
+	  
+		} else {
+		
+		
+      test_that(paste0(
+        this_measure ,
+        "-" ,
+        this_g ,
+        "-svyrich works on unweighted designs"
+      ),
+      {
+		expect_warning(
+        svyrich(
+          ~ api00,
+          design = dstrat1,
+          type_measure = this_measure ,
+          g = this_g,
+          type_thresh = this_thresh,
+          abs_thresh = 500
+        ))
+      })
+	 
+	 }
+
+
+	  
     }
   }
 }

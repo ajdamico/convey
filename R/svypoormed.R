@@ -180,7 +180,7 @@ svypoormed.survey.design <-
       dsub <- eval( substitute( subset( design, subset = ( incvar <= arpt ) ) , list(incvar = nome, arpt = arpt)))
 
       # if the dataset is empty or has all zero weights or has all zero income values, return a missing rval
-      if ( nrow( dsub ) == 0 || !( any( weights( dsub ) > 0 ) ) || all( dsub$variables[ , as.character(formula)[[2]] ] == 0 , na.rm = TRUE ) ) {
+      if ( sum( weights( dsub , "sampling" ) != 0 ) == 0 || !( any( weights( dsub ) > 0 ) ) || all( dsub$variables[ weights( dsub , "sampling" ) != 0 , as.character(formula)[[2]] ] == 0 , na.rm = TRUE ) ) {
 
         warning( paste( "zero records in the set of poor people.  determine the poverty threshold by running svyarpt on ~", nome ) )
         rval <- as.vector( NA , mode = "numeric" )

@@ -13,7 +13,7 @@
 #' @param na.rm Should cases with missing values be dropped?
 #' @param deff Return the design effect (see \code{survey::svymean})
 #' @param linearized Should a matrix of linearized variables be returned
-#' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}}). Not implemented yet for linearized designs.
+#' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}}).
 #' @param return.replicates Return the replicate estimates?
 #' @param ... passed to \code{svyarpr} and \code{svyarpt}
 #'
@@ -328,12 +328,12 @@ svywatts.survey.design <-
       attr(rval, "thresh") <- th
     if (linearized)
       attr(rval, "linearized") <- wattslin
-    # if (influence)
-    #   attr(rval , "influence")  <-
-    #   sweep(wattslin , 1 , full_design$prob[is.finite(full_design$prob)] , "/")
-    # if (linearized |
-    #     influence)
-    #   attr(rval , "index") <- as.numeric(rownames(wattslin))
+    if (influence)
+      attr(rval , "influence")  <-
+      sweep(wattslin , 1 , full_design$prob[is.finite(full_design$prob)] , "/")
+    if (linearized |
+        influence)
+      attr(rval , "index") <- as.numeric(rownames(wattslin))
     if (is.character(deff) ||
         deff)
       attr(rval , "deff") <- deff.estimate

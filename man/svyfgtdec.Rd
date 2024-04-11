@@ -19,6 +19,7 @@ svyfgtdec(formula, design, ...)
   quantiles = 0.5,
   na.rm = FALSE,
   thresh = FALSE,
+  influence = FALSE,
   ...
 )
 
@@ -59,6 +60,8 @@ of abs_thresh; if "relq" it is given by percent times the quantile; if "relm" it
 \item{na.rm}{Should cases with missing values be dropped?}
 
 \item{thresh}{return the poverty threshold value}
+
+\item{influence}{Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}}).}
 
 \item{return.replicates}{Return the replicate estimates?}
 }

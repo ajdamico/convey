@@ -13,6 +13,7 @@
 #' @param thresh return the poverty threshold value
 #' @param na.rm Should cases with missing values be dropped?
 #' @param return.replicates Return the replicate estimates?
+#' @param influence Should a matrix of (weighted) influence functions be returned? (for compatibility with \code{\link[survey]{svyby}}).
 #' @param ... additional arguments. Currently not used.
 #'
 #'
@@ -148,6 +149,7 @@ svyfgtdec.survey.design <-
            quantiles = .50,
            na.rm = FALSE,
            thresh = FALSE,
+           influence = FALSE ,
            ...) {
     if (is.null(attr(design, "full_design")))
       stop(
@@ -265,12 +267,13 @@ svyfgtdec.survey.design <-
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- thresh.value
-    # if (influence)
-    #   attr(rval , "influence")  <-
-    #   sweep(fgtlin , 1 , full_design$prob , "/")
-    # if (linearized |
-    #     influence)
-    #   attr(rval , "index") <- as.numeric(rownames(fgtlin))
+    
+	# if (influence){
+      # attr(rval , "influence")  <-
+      # sweep(fgtlin , 1 , full_design$prob , "/")
+	  # attr(rval , "index") <- as.numeric(rownames(fgtlin))
+	# }
+	
     class(rval) <-
       c( "cvystat" , "svystat" , "svrepstat")
     rval
