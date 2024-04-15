@@ -267,13 +267,12 @@ svyfgtdec.survey.design <-
     attr(rval, "statistic") <- paste0("fgt", g , " decomposition")
     if (thresh)
       attr(rval, "thresh") <- thresh.value
-    
-	# if (influence){
-      # attr(rval , "influence")  <-
-      # sweep(fgtlin , 1 , full_design$prob , "/")
-	  # attr(rval , "index") <- as.numeric(rownames(fgtlin))
-	# }
-	
+
+    if (influence){
+      attr(rval , "influence")  <- sweep( lin.matrix , 1 , full_design$prob , "/" )
+      attr( rval , "index" ) <- as.numeric( rownames( lin.matrix ) )
+    }
+
     class(rval) <-
       c( "cvystat" , "svystat" , "svrepstat")
     rval
