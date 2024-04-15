@@ -120,14 +120,13 @@ svyarpr.survey.design <-
     incvar <-
       model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
+
     if (na.rm) {
       nas <- is.na(incvar)
-      design <- design[!nas,]
-      if (length(nas) > length(design$prob))
-        incvar <- incvar[!nas]
-      else
-        incvar[nas] <- 0
+      design$prob <- ifelse( nas , Inf , design$prob )
+      incvar[nas] <- 0
     }
+
 
     if (is.null(names(design$prob)))
       ind <-
@@ -148,13 +147,12 @@ svyarpr.survey.design <-
     incvec <-
       model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
+
+
     if (na.rm) {
       nas <- is.na(incvec)
-      full_design <- full_design[!nas,]
-      if (length(nas) > length(full_design$prob))
-        incvec <- incvec[!nas]
-      else
-        incvec[nas] <- 0
+      full_design$prob <- ifelse( nas , Inf , full_design$prob )
+      incvec[nas] <- 0
     }
 
 
