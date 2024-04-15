@@ -124,19 +124,25 @@ svypoormed.survey.design <-
       model.frame(formula, full_design$variables, na.action = na.pass)[[1]]
 
     # treat missing
-    if ( na.rm ) {
-      nas <- is.na( incvec )
+    if (na.rm) {
+      nas <- is.na(incvec)
       full_design$prob <- ifelse( nas , Inf , full_design$prob )
+      incvec[nas] <- 0
     }
+
+
 
     # collect domain income data
     incvar <- model.frame(formula, design$variables, na.action = na.pass)[[1]]
 
     # treat missing
-    if ( na.rm ) {
-      nas <- is.na( incvar )
+    if (na.rm) {
+      nas <- is.na(incvar)
       design$prob <- ifelse( nas , Inf , design$prob )
+      incvar[nas] <- 0
     }
+
+
 
     # collect full sample weights
     wf <- 1 / full_design$prob
@@ -145,8 +151,7 @@ svypoormed.survey.design <-
     w <- 1 / design$prob
 
     # create domain indicator
-    ind <- rownames( design$variables ) [ is.finite( design$prob ) ]
-    ind <- rownames( full_design$variables ) %in% ind
+    ind <- is.finite( design$prob )
 
     # compute domain population size
     N <- sum( w )
@@ -226,12 +231,11 @@ svypoormed.survey.design <-
 
         # linearize cdf of medp
         ifmedp <- ( 1 / N ) * ID * ( ( incvec <= rval ) - 0.5 * arpr )
-        ifmedp <- ifmedp[ wf >0 ]
+        ifmedp[ wf <= 0 ] <- 0
 
         # linearize median of poor
         v1 <- ( 0.5 * ifarpr - ifmedp ) / Fprimemedp
-        linmedp <- ifelse( wf > 0 , 1 , 0 )
-        linmedp[ wf > 0 ] <- v1
+        linmedp <- ifelse( wf > 0 , v1 , 0 )
 
         # estimate variance
         varest <-

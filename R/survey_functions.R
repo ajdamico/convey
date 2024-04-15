@@ -226,39 +226,35 @@ is.calibrated<-function(design){ !is.null(design$postStrata)}
 
 #' @importFrom survey degf
 
-"[.svyrep.design"<-function(x, i, j, drop=FALSE){
-  if (!missing(i)){
-    pwt<-x$pweights
-    if (is.data.frame(pwt)) pwt<-pwt[[1]]
-    x$pweights<-pwt[i]
-    x$repweights<-x$repweights[i,,drop=FALSE]
-    if(!is.null(x$selfrep))
-        x$selfrep<-x$selfrep[i]
-    if (!missing(j))
-      x$variables<-x$variables[i,j, drop=FALSE]
-    else
-      x$variables<-x$variables[i,,drop=FALSE]
-    x$degf<-NULL
-    x$degf<-degf(x)
-  } else {
-    x$variables<-x$variables[,j,drop=FALSE]
-  }
-  x
-}
-
 
 
 
 #' @export
-"[.convey.design" <- function (x, i, ...) {
-  if (inherits(x, "svyrep.design"))
-    NextMethod("[" , x, i)
-  else {
+"[.convey.design" <- function (x, i, j, ...) {
+  if (inherits(x, "svyrep.design")) {
+    if (!missing(i)) {
+      pwt <- x$pweights
+      if (is.data.frame(pwt))
+        pwt <- pwt[[1]]
+      x$pweights <- pwt[i]
+      x$repweights <- x$repweights[i, , drop = FALSE]
+      if (!is.null(x$selfrep))
+        x$selfrep <- x$selfrep[i]
+      if (!missing(j))
+        x$variables <- x$variables[i, j, drop = FALSE]
+      else
+        x$variables <- x$variables[i, , drop = FALSE]
+      x$degf <- NULL
+      x$degf <- degf(x)
+    } else {
+      x$variables <- x$variables[, j, drop = FALSE]
+    }
+  } else {
     if (!missing(i)) {
       if (is.calibrated(x)) {
-        tmp <- x$prob[i, ]
+        tmp <- x$prob[i,]
         x$prob <- rep(Inf, length(x$prob))
-        x$prob[i, ] <- tmp
+        x$prob[i,] <- tmp
       } else {
         tmp <- x$prob[i]
         x$prob <- rep(Inf, length(x$prob))
@@ -268,7 +264,7 @@ is.calibrated<-function(design){ !is.null(design$postStrata)}
       x$variables <- x$variables[, ..., drop = FALSE]
     }
 
-    x
   }
 
+  x
 }
