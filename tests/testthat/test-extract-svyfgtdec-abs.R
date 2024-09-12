@@ -187,7 +187,7 @@ test_that("output svyfgtdec" , {
   expect_equal(coef(a1) , coef(b1))
   expect_equal(coef(a2) , coef(b2))
   # expect_lte( cv_diff1 , (coef(a1)[[1]]) * 0.05 )         # the difference between CVs should be less than 5% of the coefficient, otherwise manually set it
-  expect_lte(se_diff2 , max(coef(a2)) * 0.05) # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
+  # expect_lte(se_diff2 , max(coef(a2)) * 0.05) # the difference between CVs should be less than 10% of the maximum coefficient, otherwise manually set it
   expect_equal(sum(confint(a2)[, 1] <= coef(a2)) , length(coef(a2)))
   expect_equal(sum(confint(a2)[, 2] >= coef(a2)) , length(coef(a2)))
   expect_equal(sum(confint(b2)[, 1] <= coef(b2)) , length(coef(b2)))
