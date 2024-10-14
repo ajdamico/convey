@@ -25,12 +25,12 @@
 #'
 #' This way, as the number of quantiles of the quantile-based function increases, the quantile-based curve approacches the observation-based curve.
 #'
-#' @return Object of class "\code{oldsvyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
+#' @return Object of class "\code{survey::oldsvyquantile}", which are vectors with a "\code{quantiles}" attribute giving the proportion of income below that quantile,
 #' and a "\code{SE}" attribute giving the standard errors of the estimates.
 #'
 #' @author Guilherme Jacob, Djalma Pessoa and Anthony Damico
 #'
-#' @seealso \code{\link{oldsvyquantile}}
+#' @seealso \code{\link[survey]{oldsvyquantile}}
 #'
 #' @references Milorad Kovacevic and David Binder (1997). Variance Estimation for Measures of Income
 #' Inequality and Polarization - The Estimating Equations Approach. \emph{Journal of Official Statistics},

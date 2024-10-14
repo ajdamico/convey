@@ -6,4 +6,4 @@
 
 [![CRAN monthly downloads](https://cranlogs.r-pkg.org/badges/convey)](https://cran.r-project.org/package=convey)
 
-# You can find the book at https://guilhermejacob.github.io/context/
+# You can find the book at https://www.convey-r.org/

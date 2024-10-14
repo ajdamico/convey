@@ -138,15 +138,6 @@ updatesOutfilter <-
   }
 
 
-model.frame.survey.design <- function(formula, ..., drop = TRUE) {
-  formula$variables
-}
-model.frame.svyrep.design <- function(formula, ...) {
-  formula$variables
-}
-
-
-
 
 
 # lumley's survey subset functions were not written
@@ -163,8 +154,12 @@ within_function_subset <-
   function(x, subset, ...) {
     UseMethod("within_function_subset", x)
   }
+  
+  
 # within_function_subset for `survey.design` objects
 # is the same as survey:::subset.survey.design
+#' @method within_function_subset survey.design
+#' @export
 within_function_subset.survey.design <-
   function (x, subset, ...) {
     e <- substitute(subset)
@@ -176,6 +171,8 @@ within_function_subset.survey.design <-
   }
 
 # this is the edit that preserves getvars() columns
+#' @method within_function_subset DBIsvydesign
+#' @export
 within_function_subset.DBIsvydesign <-
   function (x, subset, ...) {
     e <- substitute(subset)
@@ -200,6 +197,18 @@ within_function_subset.DBIsvydesign <-
     x
   }
 
+
+
+
+#' @method model.frame survey.design
+model.frame.survey.design <- function(formula, ..., drop = TRUE) {
+  formula$variables
+}
+
+#' @method model.frame svyrep.design
+model.frame.svyrep.design <- function(formula, ...) {
+  formula$variables
+}
 
 
 
