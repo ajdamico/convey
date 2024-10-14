@@ -15,8 +15,7 @@ Depends:
 Imports:
     survey (>= 4.2-1),
     methods
-License: GPL-3 + file LICENSE
-LazyData: true
+License: GPL-3
 Suggests:
     testthat,
     knitr,
