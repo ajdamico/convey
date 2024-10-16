@@ -1,5 +1,8 @@
 # compares with vardpoor output
 
+skip_on_cran()
+
+
 # load libraries
 library(laeken)
 library(survey)

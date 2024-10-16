@@ -1,3 +1,6 @@
+
+skip_on_cran()
+
 # load libraries
 library(survey)
 library(convey)

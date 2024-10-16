@@ -1,5 +1,7 @@
 context("test treatment for variables with missings")
 
+skip_on_cran()
+
 # load libraries
 library( survey )
 library( convey )
