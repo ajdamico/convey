@@ -25,3 +25,4 @@ Suggests:
     DBI,
     RSQLite
 RoxygenNote: 7.3.2
+
